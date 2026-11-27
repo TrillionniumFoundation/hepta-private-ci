@@ -139,6 +139,101 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
 }
 
 #[test]
+fn ordinary_evaluation_binds_materialized_parameter_bytes_to_recorded_use()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::coupled_field_admission::CoupledFieldCandidateBindingV1;
+    use codex_hepta_learning_artifacts::{
+        ArtifactEvent, ArtifactKind, ArtifactManifest, ArtifactRegistry, CreateOnlyArtifactFile,
+        PinnedCandidateSpec, load_pinned_candidate, write_candidate_payload,
+        write_registry_snapshot,
+    };
+    use codex_hepta_types::Generation;
+    use std::fs::File;
+
+    let fixture = Fixture::with_candidate_generation(2);
+    let materialize = |data: &[u8]| -> Result<_, Box<dyn std::error::Error>> {
+        let dir = tempfile::tempdir()?;
+        let mut registry = ArtifactRegistry::new();
+        let manifest = |name, generation, predecessor_id, bytes: &[u8]| ArtifactManifest {
+            artifact_id: id(name),
+            kind: ArtifactKind::Parameters,
+            generation,
+            predecessor_id,
+            content_digest: Digest32::of_bytes(bytes),
+            objective_digest: fixture.qualification.objective_digest,
+            support_digest: digest("support"),
+            producer_id: id("producer"),
+            compatibility_digest: digest("compatibility"),
+            encoded_size_bytes: bytes.len() as u64,
+        };
+        let parent = manifest("baseline", Generation::new(1)?, None, b"baseline");
+        let update = manifest(
+            "policy",
+            Generation::new(2)?,
+            Some(parent.artifact_id.clone()),
+            data,
+        );
+        for member in [parent, update.clone()] {
+            registry.append(ArtifactEvent::Register {
+                event_id: id(&format!("register-{}", member.artifact_id)),
+                manifest: member,
+            })?;
+        }
+        let snapshot = dir.path().join("registry");
+        let payload = dir.path().join("candidate");
+        let registry_receipt = write_registry_snapshot(
+            CreateOnlyArtifactFile::create(&snapshot)?,
+            &registry,
+            digest("scope-registry"),
+        )?;
+        write_candidate_payload(
+            CreateOnlyArtifactFile::create(&payload)?,
+            &registry,
+            &update.artifact_id,
+            data,
+        )?;
+        Ok(load_pinned_candidate(
+            File::open(snapshot)?,
+            File::open(payload)?,
+            PinnedCandidateSpec {
+                registry_receipt,
+                manifest: update,
+            },
+        )?)
+    };
+    let pin = materialize(&fixture.bytes)?;
+    let resolve = |pin, now| {
+        CoupledFieldCandidateBindingV1::from_ordinary_qualification(
+            pin,
+            &fixture.runner,
+            &fixture.qualification,
+            &fixture.candidate_evidence,
+            &fixture.verifier,
+            now,
+        )
+    };
+    let bound = resolve(&pin, 50)?;
+    let recorded = fixture
+        .runner
+        .verified_qualification_use(&fixture.qualification)?;
+    assert_eq!(bound.candidate_id, fixture.qualification.candidate_id);
+    assert_eq!(
+        bound.artifact_bytes_digest,
+        Digest32::of_bytes(&fixture.bytes)
+    );
+    assert_eq!(
+        bound.evaluation_dataset_digest,
+        fixture.dataset.snapshot.dataset_digest
+    );
+    assert_eq!(bound.plan_digest, recorded.plan_digest);
+    assert_eq!(bound.holdout_use_digest, recorded.use_digest);
+    let other = materialize(b"separately registered policy bytes")?;
+    assert!(resolve(&other, 50).is_err());
+    assert!(resolve(&pin, 101).is_err());
+    Ok(())
+}
+
+#[test]
 fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes() {
     let fixture = Fixture::new();
     let temp = tempfile::tempdir().unwrap();

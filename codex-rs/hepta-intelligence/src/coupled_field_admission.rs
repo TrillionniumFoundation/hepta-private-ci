@@ -2,13 +2,18 @@
 //! Host integration must resolve the current registered profile, actual artifact
 //! bytes/holdout uses and owner/budget frontiers independently of the request.
 //! The receipt grants no writer, selection, installation or runtime authority.
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
+use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_learning_artifacts::ArtifactKind;
+use codex_hepta_learning_artifacts::LoadedPinnedCandidate;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
@@ -36,6 +41,61 @@ pub struct CoupledFieldCandidateBindingV1 {
     pub evaluation_dataset_digest: Digest32,
     pub plan_digest: Digest32,
     pub holdout_use_digest: Digest32,
+}
+
+impl CoupledFieldCandidateBindingV1 {
+    /// Bind an ordinary evaluator's signed, published result to an actual
+    /// materialized parameter pin and re-read the recorded use from its owner.
+    /// The host supplies current pins (e.g. within ParameterFamilyGuardV1::with_service)
+    /// and remains responsible for registry freshness, scope policy and budget.
+    pub fn from_ordinary_qualification<S: FinalHoldoutCasStoreV1>(
+        pin: &LoadedPinnedCandidate,
+        runner: &ProductEvaluationRunnerV1<S>,
+        qualification: &ProductQualificationReceiptV1,
+        candidate_evidence: &SignedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<Self, crate::EvaluatedShadowError> {
+        use crate::EvaluatedShadowError;
+
+        let use_receipt = runner
+            .verified_qualification_use(qualification)
+            .map_err(EvaluatedShadowError::Qualification)?;
+        let manifest = &pin.spec().manifest;
+        if manifest.kind != ArtifactKind::Parameters
+            || manifest.artifact_id != use_receipt.candidate_id
+            || manifest.predecessor_id.as_ref() != Some(&use_receipt.baseline_id)
+            || manifest.objective_digest != use_receipt.objective_digest
+            || qualification.decision.trust_digest != verifier.trust_digest()
+        {
+            return Err(EvaluatedShadowError::Binding("ordinary candidate identity"));
+        }
+        let payload = crate::evaluated_candidate_signing_payload_v2(
+            qualification,
+            pin.bytes(),
+            manifest.generation.get(),
+        )?;
+        let evaluator = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                candidate_evidence,
+                &payload,
+                now,
+            )
+            .map_err(EvaluatedShadowError::Evidence)?;
+        if evaluator.principal() != &qualification.evaluator {
+            return Err(EvaluatedShadowError::Binding(
+                "ordinary candidate evaluator",
+            ));
+        }
+        Ok(Self {
+            candidate_id: manifest.artifact_id.clone(),
+            artifact_bytes_digest: manifest.content_digest,
+            evaluation_dataset_digest: use_receipt.dataset_digest,
+            plan_digest: use_receipt.plan_digest,
+            holdout_use_digest: use_receipt.use_digest,
+        })
+    }
 }
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CoupledFieldCurrentSnapshotV1 {

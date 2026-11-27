@@ -19,7 +19,7 @@ pub(super) fn digest(text: &str) -> Digest32 {
 }
 
 #[derive(Clone, Default)]
-struct MemoryCas(Arc<Mutex<Option<FinalHoldoutCasRecordV1>>>);
+pub(super) struct MemoryCas(Arc<Mutex<Option<FinalHoldoutCasRecordV1>>>);
 
 impl FinalHoldoutCasStoreV1 for MemoryCas {
     fn load(
@@ -92,6 +92,7 @@ impl ProductQualificationEvidenceSinkV1 for Sink {
 }
 
 pub(super) struct Fixture {
+    pub runner: ProductEvaluationRunnerV1<MemoryCas>,
     pub run: LaneFRunRequestV1,
     pub dataset: DatasetSnapshotReceiptV3,
     pub qualification: ProductQualificationReceiptV1,
@@ -105,6 +106,10 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub fn new() -> Self {
+        Self::with_candidate_generation(1)
+    }
+
+    pub fn with_candidate_generation(candidate_generation: u64) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
@@ -290,7 +295,7 @@ impl Fixture {
                 ndu_artifact_digest: digest("ndu"),
                 neuron_checkpoint_digest: digest("checkpoint"),
                 prompt_registry_generation: 1,
-                learning_artifact_generation: 1,
+                learning_artifact_generation: candidate_generation,
                 context_schema_revision: 1,
             },
             budget: crate::LaneFBudgetV1 {
@@ -321,7 +326,7 @@ impl Fixture {
             objective_class_digest: digest("class"),
             state_digest: run.snapshot.digest().unwrap(),
             policy_digest: policy,
-            policy_generation: 1,
+            policy_generation: candidate_generation,
             sequence: 1,
             minimum_confidence: ProbabilityQ32::ONE,
             maximum_ece_ppm: 1,
@@ -342,7 +347,7 @@ impl Fixture {
                 artifact_digest: digest("test-calibration"),
                 policy_digest: policy,
                 objective_class_digest: digest("class"),
-                generation: 1,
+                generation: candidate_generation,
                 valid_from_sequence: 1,
                 expires_after_sequence: 10,
                 measured_ece_ppm: 0,
@@ -353,7 +358,7 @@ impl Fixture {
                 policy_digest: policy,
                 detector_digest: digest("test-detector"),
                 support_digest: digest("test-ood-support"),
-                generation: 1,
+                generation: candidate_generation,
                 valid_from_sequence: 1,
                 expires_after_sequence: 10,
                 maximum_in_domain_score: ProbabilityQ32::ZERO,
@@ -367,7 +372,8 @@ impl Fixture {
             &principals[1],
             &keys[1],
             LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v2(&qualification, &bytes, 1).unwrap(),
+            &evaluated_candidate_signing_payload_v2(&qualification, &bytes, candidate_generation)
+                .unwrap(),
         );
         let production_decision = evaluated_shadow_production_decision_v2(
             &run,
@@ -386,6 +392,7 @@ impl Fixture {
             &decision_signing_payload_v2(&production_decision).unwrap(),
         );
         Self {
+            runner,
             run,
             dataset,
             qualification,
