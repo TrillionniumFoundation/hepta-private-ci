@@ -188,6 +188,38 @@ fn missing_or_stale_required_owner_blocks_global_planning() {
 }
 
 #[test]
+fn an_unrequested_owner_cannot_contribute_to_the_snapshot() {
+    let required = summary(OwnerReadinessV1::Ready, 950, 1_800);
+    let mut unexpected = required.clone();
+    unexpected.owner_id = id("unrequested");
+    unexpected.expires_at_micros = 1_001;
+    assert_eq!(
+        must_err(collect_snapshot(
+            snapshot_request(),
+            vec![required, unexpected]
+        )),
+        PlannerError::UnexpectedOwnerSummary("unrequested".to_string()),
+    );
+}
+
+#[test]
+fn duplicate_final_payloads_are_not_canonicalized_away() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    let work = &mut request.candidates[1];
+    let duplicate = work.final_payload_digests[0];
+    work.final_payload_digests
+        .extend([digest("other"), duplicate]);
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::DuplicateFinalPayload("work".to_string()),
+    );
+}
+
+#[test]
 fn essential_floor_survives_overload_before_ndu_evaluation() {
     let snapshot = must(collect_snapshot(
         snapshot_request(),
