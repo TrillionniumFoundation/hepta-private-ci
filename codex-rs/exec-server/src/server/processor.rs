@@ -393,7 +393,9 @@ mod tests {
 
     #[tokio::test]
     async fn transport_disconnect_detaches_session_during_in_flight_read() {
-        let registry = SessionRegistry::new(crate::ExecServerTelemetry::default());
+        // This control checks transport detach/resume, not elapsed retention time.
+        // The registry's separate boundary controls exercise the unchanged expiry.
+        let registry = SessionRegistry::new_with_frozen_time(crate::ExecServerTelemetry::default());
         let (mut first_writer, mut first_lines, first_task) =
             spawn_test_connection(Arc::clone(&registry), "first");
 
