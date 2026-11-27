@@ -1,4 +1,5 @@
 """Compare real complete original and actual Cargo owner public APIs byte for byte."""
+from file_update_oracle.dependencies import verify_workspace_sources
 from collections import Counter
 import json
 from pathlib import Path
@@ -148,3 +149,5 @@ def verify(context):
     REPORT['original_sources_unchanged'] = all(common.bind(Path(x['path'])) == {k: x[k] for k in ('path', 'bytes', 'sha256')} for x in original_sources)
     REPORT['source_unchanged'] = snapshot(REPO) == before
     assert REPORT['source_unchanged'] and REPORT['original_sources_unchanged']
+    verify_workspace_sources(context.dependency_source_admission)
+    REPORT['dependency_source_inputs_unchanged'] = True

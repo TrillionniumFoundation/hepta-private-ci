@@ -1,0 +1,117 @@
+{
+  "schema": "codex.hia.current-owner-source-admission-qualification.v1",
+  "tested_source_commit": "af2e81fafc6bc1ba0cf733acee260b22c55a5461",
+  "tested_source_tree": "7025bd3a69ff2b5ca7339e2ddb419b54f137a212",
+  "publication_parent": "86a51df03f698506b18d1c0fb51d3fa1149c5da6",
+  "fixed_hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "scope": "Strict current physical source admission for the seven original patch and formatter owner gates",
+  "source_files": [
+    {
+      "path": "hia/tests/file_update_oracle/dependencies.py",
+      "sha256": "97e205b4d33cded36966892aeb0fa4422ecc156f443be2dd1ca4e780a1c02afd"
+    },
+    {
+      "path": "hia/tests/file_update_oracle/dependency_source_history_20261127.json",
+      "sha256": "151080d3dd24f67cae951c5166755fdd874d2b7197bcde08a1121ec2f1a503a6"
+    },
+    {
+      "path": "hia/tests/test_workspace_dependency_sources.py",
+      "sha256": "9b96fa298d824f41b51e5d9a336eb41a421d6bf61df42eaf6ae4dda5ad0a1dbb"
+    },
+    {
+      "path": "hia/tests/file_update_oracle/identity.py",
+      "sha256": "24abb685fc0a613ad03c9f83f671b8677a976e1f2c63a18617ef462514a0c6a3"
+    },
+    {
+      "path": "hia/tests/unified_diff_oracle/original.py",
+      "sha256": "533235e00e9356a0fc2683468fae4b2be4b92cfe23daf126b9ed921f135eca5e"
+    },
+    {
+      "path": "hia/tests/unified_diff_oracle/public.py",
+      "sha256": "3dfc9a76cfe98240713c53c39fe3c8973c5afea72fae9c090e2ee895da217db5"
+    },
+    {
+      "path": "hia/tests/file_update_oracle/exec_server_source_history.py",
+      "sha256": "1277afd878db27f1451fec7abcbd22c2f7880ea884bd9998613a933c66b3ca30"
+    }
+  ],
+  "controls": {
+    "original_owner_methods_changed": false,
+    "original_assertions_changed": false,
+    "original_fixed_fixtures_changed": false,
+    "original_budgets_changed": false,
+    "independent_source_controls": 22,
+    "source_terminal_unchanged": true,
+    "native_terminal_unchanged": true
+  },
+  "actual_owner_gates": [
+    {
+      "name": "file-update 159-case public matrix",
+      "elapsed_seconds": 208.149,
+      "passed": true,
+      "job_suffix": "55c0"
+    },
+    {
+      "name": "filesystem effects",
+      "job_suffix": "55c0",
+      "elapsed_seconds": 40.6879,
+      "passed": true
+    },
+    {
+      "name": "standalone patch",
+      "job_suffix": "55c0",
+      "elapsed_seconds": 32.0406,
+      "passed": true
+    },
+    {
+      "name": "patch application",
+      "job_suffix": "55c0",
+      "elapsed_seconds": 48.7589,
+      "passed": true
+    },
+    {
+      "name": "patch summary",
+      "job_suffix": "55c0",
+      "elapsed_seconds": 42.1523,
+      "passed": true
+    },
+    {
+      "name": "original formatter checked/wrapping policy and 8 negative controls",
+      "job": "1a21e8cd35c-ffbe-55fd",
+      "elapsed_seconds": 582.836696082,
+      "passed": true
+    },
+    {
+      "name": "complete original public formatter",
+      "job": "1a21e8cd35c-ffbe-55fd",
+      "elapsed_seconds": 18.496859681,
+      "passed": true
+    }
+  ],
+  "physical_source_materialization": {
+    "files": 10216,
+    "bytes": 121240383,
+    "all_git_blobs_verified": true,
+    "job_suffix": "55f1"
+  },
+  "evidence": {
+    "archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+    "archive_bytes": 26340328,
+    "logical_files": 2442,
+    "unique_payloads": 2245,
+    "uncompressed_bytes": 467130806,
+    "all_payloads_and_logical_index_sequentially_read_back": true,
+    "readback_job": "1a21ea6cd49-ffbe-5623",
+    "archive_index_sha256": "baa457922b6a1f65a6cbfc8afcdb86e830a7462786d213b68bf8f709cf8f1c6e",
+    "compiled_cargo_targets_archived": false,
+    "external_toolchains_archived": false,
+    "parts_count": 27,
+    "parts_manifest_sha256": "15024a948a34813a517711e4b54b3fdeeb8ace16135cfb7779286fad25ae7bb8",
+    "reconstruction_passed": true,
+    "reconstruction_job": "1a21ecdd5c9-ffbe-567a"
+  },
+  "prior_failures_preserved": true,
+  "new_publication_full_CI_qualified": false,
+  "whole_stack_rewrite_complete": false,
+  "retirement_approved": false
+}

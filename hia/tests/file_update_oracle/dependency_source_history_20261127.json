@@ -1,0 +1,208 @@
+{
+  "schema": "codex.hia.workspace-dependency-source-history.v1",
+  "scope": "Exact source admission only; actual current Cargo dependency and compiler inputs must still be captured and all unchanged original/native owners must execute.",
+  "revisions": {
+    "original": [
+      "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "aeb88f596b83186456caac577080bcb2f253ad32"
+    ],
+    "union29": "a05499eb5d2b2088de6a192d0c42ce9ba0249882",
+    "sqlx": "5c07ad6792d73357f3678a27874d0565a479d474"
+  },
+  "identities": {
+    "original": {
+      "codex-rs/Cargo.toml": {
+        "bytes": 22551,
+        "sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 422290,
+        "sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955"
+      }
+    },
+    "union29": {
+      "codex-rs/Cargo.toml": {
+        "bytes": 22552,
+        "sha256": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 423399,
+        "sha256": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3"
+      }
+    },
+    "sqlx": {
+      "codex-rs/Cargo.toml": {
+        "bytes": 22538,
+        "sha256": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 423355,
+        "sha256": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007"
+      }
+    }
+  },
+  "inverse": [
+    {
+      "name": "sqlx-chrono-features",
+      "before": "union29",
+      "after": "sqlx",
+      "changes": [
+        {
+          "package": "sqlx-core@0.9.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"sqlx-core\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb\"\ndependencies = [\n \"base64 0.22.1\",\n \"bytes\",\n \"cfg-if\",\n \"chrono\",\n \"crc\",\n \"crossbeam-queue\",\n \"either\",\n \"event-listener\",\n \"futures-core\",\n \"futures-intrusive\",\n \"futures-io\",\n \"futures-util\",\n \"hashbrown 0.16.1\",\n \"hashlink 0.11.0\",\n \"indexmap 2.14.2\",\n \"log\",\n \"memchr\",\n \"percent-encoding\",\n \"rustls\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"smallvec\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tokio\",\n \"tokio-stream\",\n \"tracing\",\n \"url\",\n \"uuid\",\n \"webpki-roots\",\n]\n",
+          "after": "name = \"sqlx-core\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb\"\ndependencies = [\n \"base64 0.22.1\",\n \"bytes\",\n \"cfg-if\",\n \"crc\",\n \"crossbeam-queue\",\n \"either\",\n \"event-listener\",\n \"futures-core\",\n \"futures-intrusive\",\n \"futures-io\",\n \"futures-util\",\n \"hashbrown 0.16.1\",\n \"hashlink 0.11.0\",\n \"indexmap 2.14.2\",\n \"log\",\n \"memchr\",\n \"percent-encoding\",\n \"rustls\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"smallvec\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tokio\",\n \"tokio-stream\",\n \"tracing\",\n \"url\",\n \"uuid\",\n \"webpki-roots\",\n]\n"
+        },
+        {
+          "package": "sqlx-mysql@0.9.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"sqlx-mysql\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"90b8020fe17c5f2c245bfa2505d7ef59c5604839527c740266ad2214acebea27\"\ndependencies = [\n \"bitflags 2.13.2\",\n \"byteorder\",\n \"bytes\",\n \"chrono\",\n \"crc\",\n \"digest 0.11.3\",\n \"dotenvy\",\n \"either\",\n \"futures-core\",\n \"futures-util\",\n \"generic-array\",\n \"log\",\n \"percent-encoding\",\n \"serde\",\n \"sha1 0.11.0\",\n \"sha2 0.11.0\",\n \"sqlx-core\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"uuid\",\n]\n",
+          "after": "name = \"sqlx-mysql\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"90b8020fe17c5f2c245bfa2505d7ef59c5604839527c740266ad2214acebea27\"\ndependencies = [\n \"bitflags 2.13.2\",\n \"byteorder\",\n \"bytes\",\n \"crc\",\n \"digest 0.11.3\",\n \"dotenvy\",\n \"either\",\n \"futures-core\",\n \"futures-util\",\n \"generic-array\",\n \"log\",\n \"percent-encoding\",\n \"serde\",\n \"sha1 0.11.0\",\n \"sha2 0.11.0\",\n \"sqlx-core\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"uuid\",\n]\n"
+        },
+        {
+          "package": "sqlx-postgres@0.9.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"sqlx-postgres\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"87a2bdd6e83f6b3ea525ca9fee568030508b58355a43d0b2c1674d5f79dcd65e\"\ndependencies = [\n \"atoi\",\n \"base64 0.22.1\",\n \"bitflags 2.13.2\",\n \"byteorder\",\n \"chrono\",\n \"crc\",\n \"dotenvy\",\n \"etcetera\",\n \"futures-channel\",\n \"futures-core\",\n \"futures-util\",\n \"hex\",\n \"hkdf 0.13.0\",\n \"hmac 0.13.0\",\n \"itoa\",\n \"log\",\n \"md-5\",\n \"memchr\",\n \"rand 0.10.3\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"smallvec\",\n \"sqlx-core\",\n \"stringprep\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"uuid\",\n \"whoami 2.1.2\",\n]\n",
+          "after": "name = \"sqlx-postgres\"\nversion = \"0.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"87a2bdd6e83f6b3ea525ca9fee568030508b58355a43d0b2c1674d5f79dcd65e\"\ndependencies = [\n \"atoi\",\n \"base64 0.22.1\",\n \"bitflags 2.13.2\",\n \"byteorder\",\n \"crc\",\n \"dotenvy\",\n \"etcetera\",\n \"futures-channel\",\n \"futures-core\",\n \"futures-util\",\n \"hex\",\n \"hkdf 0.13.0\",\n \"hmac 0.13.0\",\n \"itoa\",\n \"log\",\n \"md-5\",\n \"memchr\",\n \"rand 0.10.3\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"smallvec\",\n \"sqlx-core\",\n \"stringprep\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"uuid\",\n \"whoami 2.1.2\",\n]\n"
+        },
+        {
+          "package": "sqlx-sqlite@0.9.0|",
+          "before": "name = \"sqlx-sqlite\"\nversion = \"0.9.0\"\ndependencies = [\n \"atoi\",\n \"chrono\",\n \"flume\",\n \"form_urlencoded\",\n \"futures-channel\",\n \"futures-core\",\n \"futures-executor\",\n \"futures-intrusive\",\n \"futures-util\",\n \"libsqlite3-sys\",\n \"log\",\n \"percent-encoding\",\n \"serde\",\n \"sqlx-core\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"url\",\n \"uuid\",\n]\n",
+          "after": "name = \"sqlx-sqlite\"\nversion = \"0.9.0\"\ndependencies = [\n \"atoi\",\n \"flume\",\n \"form_urlencoded\",\n \"futures-channel\",\n \"futures-core\",\n \"futures-executor\",\n \"futures-intrusive\",\n \"futures-util\",\n \"libsqlite3-sys\",\n \"log\",\n \"percent-encoding\",\n \"serde\",\n \"sqlx-core\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tracing\",\n \"url\",\n \"uuid\",\n]\n"
+        }
+      ],
+      "manifest": {
+        "before": "    \"chrono\",\n    \"json\",\n",
+        "after": "    \"json\",\n"
+      }
+    },
+    {
+      "name": "union29-lock-generation",
+      "before": "original",
+      "after": "union29",
+      "changes": [
+        {
+          "package": "codex-agent-identity@0.0.0|",
+          "before": "name = \"codex-agent-identity\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"base64 0.22.1\",\n \"chrono\",\n \"codex-http-client\",\n \"codex-protocol\",\n \"crypto_box\",\n \"ed25519-dalek 2.2.0\",\n \"http 1.5.0\",\n \"jsonwebtoken\",\n \"pretty_assertions\",\n \"rand 0.9.3\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n]\n",
+          "after": "name = \"codex-agent-identity\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"base64 0.22.1\",\n \"codex-http-client\",\n \"codex-protocol\",\n \"crypto_box\",\n \"ed25519-dalek 2.2.0\",\n \"http 1.5.0\",\n \"jsonwebtoken\",\n \"pretty_assertions\",\n \"rand 0.9.3\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"time\",\n]\n"
+        },
+        {
+          "package": "codex-git-utils@0.0.0|",
+          "before": "name = \"codex-git-utils\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"chrono\",\n \"codex-file-system\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-path-uri\",\n \"codex-utils-pty\",\n \"futures\",\n \"gix\",\n \"once_cell\",\n \"pretty_assertions\",\n \"regex\",\n \"schemars 0.8.22\",\n \"serde\",\n \"similar\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"ts-rs\",\n \"walkdir\",\n]\n",
+          "after": "name = \"codex-git-utils\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"codex-file-system\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-path-uri\",\n \"codex-utils-pty\",\n \"futures\",\n \"gix\",\n \"once_cell\",\n \"pretty_assertions\",\n \"regex\",\n \"schemars 0.8.22\",\n \"serde\",\n \"similar\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"ts-rs\",\n \"walkdir\",\n]\n"
+        },
+        {
+          "package": "codex-network-proxy@0.0.0|",
+          "before": "name = \"codex-network-proxy\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"base64 0.22.1\",\n \"chrono\",\n \"clap\",\n \"codex-utils-absolute-path\",\n \"codex-utils-home-dir\",\n \"codex-utils-rustls-provider\",\n \"codex-windows-sandbox\",\n \"globset\",\n \"pretty_assertions\",\n \"rama-core\",\n \"rama-crypto\",\n \"rama-dns\",\n \"rama-http\",\n \"rama-http-backend\",\n \"rama-net\",\n \"rama-socks5\",\n \"rama-tcp\",\n \"rama-tls\",\n \"rama-tls-rustls\",\n \"rama-unix\",\n \"rand 0.9.3\",\n \"rustls-native-certs\",\n \"schannel\",\n \"security-framework 3.5.1\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tokio\",\n \"tracing\",\n \"url\",\n \"windows-sys 0.52.0\",\n]\n",
+          "after": "name = \"codex-network-proxy\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"base64 0.22.1\",\n \"clap\",\n \"codex-utils-absolute-path\",\n \"codex-utils-home-dir\",\n \"codex-utils-rustls-provider\",\n \"codex-windows-sandbox\",\n \"globset\",\n \"pretty_assertions\",\n \"rama-core\",\n \"rama-crypto\",\n \"rama-dns\",\n \"rama-http\",\n \"rama-http-backend\",\n \"rama-net\",\n \"rama-socks5\",\n \"rama-tcp\",\n \"rama-tls\",\n \"rama-tls-rustls\",\n \"rama-unix\",\n \"rand 0.9.3\",\n \"rustls-native-certs\",\n \"schannel\",\n \"security-framework 3.5.1\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tokio\",\n \"tracing\",\n \"url\",\n \"windows-sys 0.52.0\",\n]\n"
+        },
+        {
+          "package": "gix-date@0.15.1|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"gix-date\"\nversion = \"0.15.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"39acf819aa9fee65e4838a2eec5cb2506e47ebb89e02a5ab9918196e491571ea\"\ndependencies = [\n \"bstr\",\n \"gix-error\",\n \"itoa\",\n \"jiff\",\n \"smallvec\",\n]\n",
+          "after": "name = \"gix-date\"\nversion = \"0.15.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"39acf819aa9fee65e4838a2eec5cb2506e47ebb89e02a5ab9918196e491571ea\"\ndependencies = [\n \"bstr\",\n \"gix-error\",\n \"itoa\",\n \"jiff 0.2.43\",\n \"smallvec\",\n]\n"
+        },
+        {
+          "package": "hyper-util@0.1.20|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"hyper-util\"\nversion = \"0.1.20\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"96547c2556ec9d12fb1578c4eaf448b04993e7fb79cbaad930a656880a6bdfa0\"\ndependencies = [\n \"base64 0.22.1\",\n \"bytes\",\n \"futures-channel\",\n \"futures-util\",\n \"http 1.5.0\",\n \"http-body\",\n \"hyper\",\n \"ipnet\",\n \"libc\",\n \"percent-encoding\",\n \"pin-project-lite\",\n \"socket2 0.5.10\",\n \"system-configuration\",\n \"tokio\",\n \"tower-service\",\n \"tracing\",\n \"windows-registry\",\n]\n",
+          "after": "name = \"hyper-util\"\nversion = \"0.1.20\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"96547c2556ec9d12fb1578c4eaf448b04993e7fb79cbaad930a656880a6bdfa0\"\ndependencies = [\n \"base64 0.22.1\",\n \"bytes\",\n \"futures-channel\",\n \"futures-util\",\n \"http 1.5.0\",\n \"http-body\",\n \"hyper\",\n \"ipnet\",\n \"libc\",\n \"percent-encoding\",\n \"pin-project-lite\",\n \"socket2 0.6.5\",\n \"system-configuration\",\n \"tokio\",\n \"tower-service\",\n \"tracing\",\n \"windows-registry\",\n]\n"
+        },
+        {
+          "package": "jiff@0.2.43|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"jiff\"\nversion = \"0.2.43\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"26699905cc795a23e3949585cc7ba3ee8ade090872a27e4316304a777297894a\"\ndependencies = [\n \"jiff-core\",\n \"jiff-static\",\n \"jiff-tzdb-platform\",\n \"log\",\n \"portable-atomic\",\n \"portable-atomic-util\",\n \"serde_core\",\n \"windows-link\",\n]\n",
+          "after": "name = \"jiff\"\nversion = \"0.2.43\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"26699905cc795a23e3949585cc7ba3ee8ade090872a27e4316304a777297894a\"\ndependencies = [\n \"jiff-core 0.1.5\",\n \"jiff-static 0.2.43\",\n \"jiff-tzdb-platform\",\n \"log\",\n \"portable-atomic\",\n \"portable-atomic-util\",\n \"serde_core\",\n \"windows-link\",\n]\n"
+        },
+        {
+          "package": "jiff-static@0.2.43|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"jiff-static\"\nversion = \"0.2.43\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4b4ff49b2887190c760b86207b55cdcaabbdecaf7a0660d68aa2ed6f652abf0a\"\ndependencies = [\n \"jiff-core\",\n \"proc-macro2\",\n \"quote\",\n \"syn 2.0.117\",\n]\n",
+          "after": "name = \"jiff-static\"\nversion = \"0.2.43\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4b4ff49b2887190c760b86207b55cdcaabbdecaf7a0660d68aa2ed6f652abf0a\"\ndependencies = [\n \"jiff-core 0.1.5\",\n \"proc-macro2\",\n \"quote\",\n \"syn 2.0.117\",\n]\n"
+        },
+        {
+          "package": "prost-derive@0.14.6|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"prost-derive\"\nversion = \"0.14.6\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"1ad9c5423459fa2f729b8d9235fab810aa29628b171467744fc86d21460ad70d\"\ndependencies = [\n \"anyhow\",\n \"itertools 0.14.0\",\n \"proc-macro2\",\n \"quote\",\n \"syn 2.0.117\",\n]\n",
+          "after": "name = \"prost-derive\"\nversion = \"0.14.6\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"1ad9c5423459fa2f729b8d9235fab810aa29628b171467744fc86d21460ad70d\"\ndependencies = [\n \"anyhow\",\n \"itertools 0.15.0\",\n \"proc-macro2\",\n \"quote\",\n \"syn 2.0.117\",\n]\n"
+        },
+        {
+          "package": "quinn@0.11.9|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"quinn\"\nversion = \"0.11.9\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"b9e20a958963c291dc322d98411f541009df2ced7b5a4f2bd52337638cfccf20\"\ndependencies = [\n \"bytes\",\n \"cfg_aliases 0.2.1\",\n \"pin-project-lite\",\n \"quinn-proto\",\n \"quinn-udp\",\n \"rustc-hash 2.1.1\",\n \"rustls\",\n \"socket2 0.5.10\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tracing\",\n \"web-time\",\n]\n",
+          "after": "name = \"quinn\"\nversion = \"0.11.9\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"b9e20a958963c291dc322d98411f541009df2ced7b5a4f2bd52337638cfccf20\"\ndependencies = [\n \"bytes\",\n \"cfg_aliases 0.2.1\",\n \"pin-project-lite\",\n \"quinn-proto\",\n \"quinn-udp\",\n \"rustc-hash 2.1.1\",\n \"rustls\",\n \"socket2 0.6.5\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tracing\",\n \"web-time\",\n]\n"
+        },
+        {
+          "package": "quinn-udp@0.5.14|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"quinn-udp\"\nversion = \"0.5.14\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"addec6a0dcad8a8d96a771f815f0eaf55f9d1805756410b39f5fa81332574cbd\"\ndependencies = [\n \"cfg_aliases 0.2.1\",\n \"libc\",\n \"once_cell\",\n \"socket2 0.5.10\",\n \"tracing\",\n \"windows-sys 0.60.2\",\n]\n",
+          "after": "name = \"quinn-udp\"\nversion = \"0.5.14\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"addec6a0dcad8a8d96a771f815f0eaf55f9d1805756410b39f5fa81332574cbd\"\ndependencies = [\n \"cfg_aliases 0.2.1\",\n \"libc\",\n \"once_cell\",\n \"socket2 0.6.5\",\n \"tracing\",\n \"windows-sys 0.60.2\",\n]\n"
+        },
+        {
+          "package": "rama-http@0.3.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"rama-http\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"93b913a35449ba4697107dfb6f739849dfd0fa14fdf5c3da55b18ae5a56c82fd\"\ndependencies = [\n \"ahash\",\n \"base64 0.22.1\",\n \"bitflags 2.13.2\",\n \"const_format\",\n \"csv\",\n \"http-range-header\",\n \"httpdate\",\n \"iri-string\",\n \"jiff\",\n \"parking_lot\",\n \"percent-encoding\",\n \"pin-project-lite\",\n \"rama-core\",\n \"rama-http-headers\",\n \"rama-http-types\",\n \"rama-json\",\n \"rama-net\",\n \"rama-utils\",\n \"rand 0.10.3\",\n \"serde\",\n \"serde_html_form\",\n \"serde_json\",\n \"tokio\",\n \"uuid\",\n]\n",
+          "after": "name = \"rama-http\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"93b913a35449ba4697107dfb6f739849dfd0fa14fdf5c3da55b18ae5a56c82fd\"\ndependencies = [\n \"ahash\",\n \"base64 0.22.1\",\n \"bitflags 2.13.2\",\n \"const_format\",\n \"csv\",\n \"http-range-header\",\n \"httpdate\",\n \"iri-string\",\n \"jiff 0.2.43\",\n \"parking_lot\",\n \"percent-encoding\",\n \"pin-project-lite\",\n \"rama-core\",\n \"rama-http-headers\",\n \"rama-http-types\",\n \"rama-json\",\n \"rama-net\",\n \"rama-utils\",\n \"rand 0.10.3\",\n \"serde\",\n \"serde_html_form\",\n \"serde_json\",\n \"tokio\",\n \"uuid\",\n]\n"
+        },
+        {
+          "package": "rama-http-headers@0.3.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"rama-http-headers\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9ef54cc53e45dbd0b63caf14be1bdf1c22663a07955239e307c25e6e1e5c95d8\"\ndependencies = [\n \"ahash\",\n \"base64 0.22.1\",\n \"const_format\",\n \"httpdate\",\n \"jiff\",\n \"rama-core\",\n \"rama-http-types\",\n \"rama-macros\",\n \"rama-net\",\n \"rama-utils\",\n \"rand 0.10.3\",\n \"serde\",\n \"sha1 0.11.0\",\n]\n",
+          "after": "name = \"rama-http-headers\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9ef54cc53e45dbd0b63caf14be1bdf1c22663a07955239e307c25e6e1e5c95d8\"\ndependencies = [\n \"ahash\",\n \"base64 0.22.1\",\n \"const_format\",\n \"httpdate\",\n \"jiff 0.2.43\",\n \"rama-core\",\n \"rama-http-types\",\n \"rama-macros\",\n \"rama-net\",\n \"rama-utils\",\n \"rand 0.10.3\",\n \"serde\",\n \"sha1 0.11.0\",\n]\n"
+        },
+        {
+          "package": "rama-tls@0.3.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"rama-tls\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"7a31cce94550925ca7db7a27abf95ec60d060bea7f89c33f250145521ea72585\"\ndependencies = [\n \"ahash\",\n \"bytes\",\n \"flume\",\n \"hex\",\n \"itertools 0.15.0\",\n \"jiff\",\n \"md5\",\n \"nom 8.0.0\",\n \"parking_lot\",\n \"pin-project-lite\",\n \"rama-core\",\n \"rama-crypto\",\n \"rama-net\",\n \"rama-utils\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"tokio\",\n]\n",
+          "after": "name = \"rama-tls\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"7a31cce94550925ca7db7a27abf95ec60d060bea7f89c33f250145521ea72585\"\ndependencies = [\n \"ahash\",\n \"bytes\",\n \"flume\",\n \"hex\",\n \"itertools 0.15.0\",\n \"jiff 0.2.43\",\n \"md5\",\n \"nom 8.0.0\",\n \"parking_lot\",\n \"pin-project-lite\",\n \"rama-core\",\n \"rama-crypto\",\n \"rama-net\",\n \"rama-utils\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"tokio\",\n]\n"
+        },
+        {
+          "package": "schemars@1.2.1|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"schemars\"\nversion = \"1.2.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"a2b42f36aa1cd011945615b92222f6bf73c599a102a300334cd7f8dbeec726cc\"\ndependencies = [\n \"chrono\",\n \"dyn-clone\",\n \"ref-cast\",\n \"schemars_derive 1.2.1\",\n \"serde\",\n \"serde_json\",\n]\n",
+          "after": "name = \"schemars\"\nversion = \"1.2.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"a2b42f36aa1cd011945615b92222f6bf73c599a102a300334cd7f8dbeec726cc\"\ndependencies = [\n \"dyn-clone\",\n \"ref-cast\",\n \"schemars_derive 1.2.1\",\n \"serde\",\n \"serde_json\",\n]\n"
+        },
+        {
+          "package": "tempfile@3.27.0|registry+https://github.com/rust-lang/crates.io-index",
+          "before": "name = \"tempfile\"\nversion = \"3.27.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd\"\ndependencies = [\n \"fastrand\",\n \"getrandom 0.3.4\",\n \"once_cell\",\n \"rustix 1.1.6\",\n \"windows-sys 0.61.2\",\n]\n",
+          "after": "name = \"tempfile\"\nversion = \"3.27.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd\"\ndependencies = [\n \"fastrand\",\n \"getrandom 0.4.3\",\n \"once_cell\",\n \"rustix 1.1.6\",\n \"windows-sys 0.61.2\",\n]\n"
+        },
+        {
+          "package": "cookie@0.18.3",
+          "before": "name = \"cookie\"\nversion = \"0.18.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4ddef33a339a91ea89fb53151bd0a4689cfce27055c291dfa69945475d22c747\"\ndependencies = [\n \"percent-encoding\",\n \"time\",\n \"version_check\",\n]\n",
+          "after": "name = \"cookie\"\nversion = \"0.18.3\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"d55f2d6c30eeec7d5c6f98bd4395d4abb1895629eab97ee6522d340623615f8a\"\ndependencies = [\n \"percent-encoding\",\n \"time\",\n \"version_check\",\n]\n"
+        },
+        {
+          "package": "form_urlencoded@1.2.3",
+          "before": "name = \"form_urlencoded\"\nversion = \"1.2.2\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf\"\ndependencies = [\n \"percent-encoding\",\n]\n",
+          "after": "name = \"form_urlencoded\"\nversion = \"1.2.3\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"afa489199eaffb1211795df1c6236ce1ad0d41a6fa45250add73e3b02420f06e\"\ndependencies = [\n \"percent-encoding\",\n]\n"
+        },
+        {
+          "package": "jiff@1.0.3",
+          "before": null,
+          "after": "name = \"jiff\"\nversion = \"1.0.3\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"107f2e89536b6818514025f6787b0d94d819e54fe3b40365275fc753de485b3f\"\ndependencies = [\n \"jiff-core 1.0.2\",\n \"jiff-static 1.0.3\",\n \"log\",\n \"portable-atomic\",\n \"portable-atomic-util\",\n \"serde_core\",\n]\n"
+        },
+        {
+          "package": "jiff-core@1.0.2",
+          "before": null,
+          "after": "name = \"jiff-core\"\nversion = \"1.0.2\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"d44c923edf2bf456a982253f1a9ee1f6e89e421dffd0065d9b9a581da0def58f\"\ndependencies = [\n \"log\",\n]\n"
+        },
+        {
+          "package": "jiff-static@1.0.3",
+          "before": null,
+          "after": "name = \"jiff-static\"\nversion = \"1.0.3\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4996f71e569e3a3e32b925c28ef8f0027dc30bb1d594b33eeda409eea185f5c8\"\ndependencies = [\n \"jiff-core 1.0.2\",\n \"proc-macro2\",\n \"quote\",\n \"syn 3.0.3\",\n]\n"
+        },
+        {
+          "package": "rmcp@3.12.0",
+          "before": "name = \"rmcp\"\nversion = \"3.9.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"d24a7e92f4bcaa36b97fa93c4fa7ca8f3e669eced949345b3462dba333c7f909\"\ndependencies = [\n \"async-trait\",\n \"base64 0.23.1\",\n \"bytes\",\n \"chrono\",\n \"futures\",\n \"http 1.5.0\",\n \"http-body\",\n \"http-body-util\",\n \"indexmap 2.14.2\",\n \"libc\",\n \"oauth2\",\n \"pastey\",\n \"pin-project-lite\",\n \"process-wrap\",\n \"rand 0.10.3\",\n \"reqwest 0.13.5\",\n \"rmcp-macros\",\n \"schemars 1.2.1\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"sse-stream\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-stream\",\n \"tokio-util\",\n \"tower-service\",\n \"tracing\",\n \"url\",\n \"uuid\",\n]\n",
+          "after": "name = \"rmcp\"\nversion = \"3.12.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"fc4fa9a7558c480e1817c0f02e9a73782001ac1f47fb9d26cc073915963282ea\"\ndependencies = [\n \"async-trait\",\n \"base64 0.23.1\",\n \"bytes\",\n \"futures\",\n \"http 1.5.0\",\n \"http-body\",\n \"http-body-util\",\n \"indexmap 2.14.2\",\n \"jiff 1.0.3\",\n \"libc\",\n \"oauth2\",\n \"pastey\",\n \"percent-encoding\",\n \"pin-project-lite\",\n \"process-wrap\",\n \"rand 0.10.3\",\n \"reqwest 0.13.5\",\n \"rmcp-macros\",\n \"schemars 1.2.1\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.11.0\",\n \"sse-stream\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-stream\",\n \"tokio-util\",\n \"tower-service\",\n \"tracing\",\n \"unicode-general-category\",\n \"unicode-normalization\",\n \"url\",\n \"uuid\",\n]\n"
+        },
+        {
+          "package": "rmcp-macros@3.12.0",
+          "before": "name = \"rmcp-macros\"\nversion = \"3.10.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"b98a686693ee91b665c6f89f182fca6e141c8a63dc113b11b38c1bf3491606b7\"\ndependencies = [\n \"darling 0.24.0\",\n \"proc-macro2\",\n \"quote\",\n \"serde_json\",\n \"syn 3.0.3\",\n]\n",
+          "after": "name = \"rmcp-macros\"\nversion = \"3.12.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"43c1bf063ba32333267a8bc282ec33ae0edf56bf74890118cb0c7bf910a7a1c0\"\ndependencies = [\n \"darling 0.24.0\",\n \"proc-macro2\",\n \"quote\",\n \"serde_json\",\n \"syn 3.0.3\",\n]\n"
+        },
+        {
+          "package": "unicode-general-category@1.1.0",
+          "before": null,
+          "after": "name = \"unicode-general-category\"\nversion = \"1.1.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"0b993bddc193ae5bd0d623b49ec06ac3e9312875fdae725a975c51db1cc1677f\"\n"
+        },
+        {
+          "package": "url@2.5.9",
+          "before": "name = \"url\"\nversion = \"2.5.8\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed\"\ndependencies = [\n \"form_urlencoded\",\n \"idna\",\n \"percent-encoding\",\n \"serde\",\n \"serde_derive\",\n]\n",
+          "after": "name = \"url\"\nversion = \"2.5.9\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"f00cd2407bb42c0ef17be88d4cf020f5cceffd121665bac9b8b9493a369b3b1a\"\ndependencies = [\n \"form_urlencoded\",\n \"idna\",\n \"percent-encoding\",\n \"serde\",\n \"serde_derive\",\n]\n"
+        }
+      ],
+      "manifest": {
+        "before": "rmcp = { version = \"=3.9.0\", default-features = false }\n",
+        "after": "rmcp = { version = \"=3.12.0\", default-features = false }\n"
+      }
+    }
+  ]
+}
