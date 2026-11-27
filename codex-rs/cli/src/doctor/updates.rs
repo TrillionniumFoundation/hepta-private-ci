@@ -52,6 +52,10 @@ const BACKEND_DESKTOP_UPDATE_URL: &str = "https://chatgpt.com/backend-api/wham/a
 const DESKTOP_UPDATE_URL: &str =
     "https://persistent.oaistatic.com/codex-app-prod/windows-store-update.json";
 
+#[cfg(all(test, target_os = "macos"))]
+#[path = "updates_scan_observation.rs"]
+mod scan_observation;
+
 /// Builds the update-health row for the current installation.
 ///
 /// Network failures while fetching latest-version metadata degrade the row to a
@@ -362,39 +366,108 @@ fn windows_store_update(
 async fn latest_macos_staged_build(root: &Path, installed_build: u64) -> Option<u64> {
     const MAX_STAGED_BUNDLES: usize = 64;
 
-    if !std::fs::symlink_metadata(root).ok()?.is_dir() {
+    #[cfg(test)]
+    let mut observation = scan_observation::ScanObservation::new();
+    let root_metadata = std::fs::symlink_metadata(root);
+    #[cfg(test)]
+    observation.observe_io(scan_observation::IoStage::RootMetadata, &root_metadata);
+    if !root_metadata.ok()?.is_dir() {
+        #[cfg(test)]
+        {
+            observation.phase = scan_observation::Phase::RootNotDirectory;
+        }
         return None;
     }
     let deadline = tokio::time::Instant::now() + Duration::from_secs(1);
     let mut inspected = 0;
     let mut latest = None;
-    for entry in std::fs::read_dir(root).ok()? {
+    let entries = std::fs::read_dir(root);
+    #[cfg(test)]
+    {
+        observation.phase = scan_observation::Phase::DirectoryOpen;
+        observation.observe_io(scan_observation::IoStage::DirectoryOpen, &entries);
+        if entries.is_ok() {
+            observation.phase = scan_observation::Phase::Scanning;
+        }
+    }
+    for entry in entries.ok()? {
+        #[cfg(test)]
+        {
+            observation.entries = observation.entries.saturating_add(1);
+        }
         if inspected == MAX_STAGED_BUNDLES || tokio::time::Instant::now() >= deadline {
+            #[cfg(test)]
+            {
+                observation.phase = if inspected == MAX_STAGED_BUNDLES {
+                    scan_observation::Phase::BundleLimit
+                } else {
+                    scan_observation::Phase::ScanDeadline
+                };
+            }
             break;
         }
+        #[cfg(test)]
+        observation.observe_io(scan_observation::IoStage::ReadEntry, &entry);
         let Ok(entry) = entry else {
             continue;
         };
-        if !entry.file_type().is_ok_and(|kind| kind.is_dir()) {
+        let file_type = entry.file_type();
+        #[cfg(test)]
+        observation.observe_io(scan_observation::IoStage::EntryType, &file_type);
+        if !file_type.is_ok_and(|kind| kind.is_dir()) {
             continue;
         }
         let extracted = entry.path().join("extracted");
-        if !std::fs::symlink_metadata(&extracted).is_ok_and(|metadata| metadata.is_dir()) {
+        let extracted_metadata = std::fs::symlink_metadata(&extracted);
+        #[cfg(test)]
+        observation.observe_io(
+            scan_observation::IoStage::ExtractedMetadata,
+            &extracted_metadata,
+        );
+        if !extracted_metadata.is_ok_and(|metadata| metadata.is_dir()) {
             continue;
         }
         let bundle = extracted.join("ChatGPT.app");
-        if !std::fs::symlink_metadata(&bundle).is_ok_and(|metadata| metadata.is_dir()) {
+        let bundle_metadata = std::fs::symlink_metadata(&bundle);
+        #[cfg(test)]
+        observation.observe_io(scan_observation::IoStage::BundleMetadata, &bundle_metadata);
+        if !bundle_metadata.is_ok_and(|metadata| metadata.is_dir()) {
             continue;
         }
         inspected += 1;
-        let Ok(result) = tokio::time::timeout_at(
+        #[cfg(test)]
+        let inspection_started = std::time::Instant::now();
+        #[cfg(test)]
+        {
+            observation.inspected = inspected as u64;
+            observation.phase = scan_observation::Phase::Inspecting;
+        }
+        let inspection = tokio::time::timeout_at(
             deadline,
             super::desktop::platform::inspect_macos_bundle(&bundle),
         )
-        .await
-        else {
+        .await;
+        #[cfg(test)]
+        observation.inspection_finished(inspection_started);
+        let Ok(result) = inspection else {
+            #[cfg(test)]
+            {
+                observation.phase = scan_observation::Phase::InspectionDeadline;
+            }
             break;
         };
+        #[cfg(test)]
+        {
+            let counter = match &result {
+                Err(_) => &mut observation.inspection_errors,
+                Ok(None) => &mut observation.identity_misses,
+                Ok(Some(application)) if application.build > installed_build => {
+                    &mut observation.newer
+                }
+                Ok(Some(_)) => &mut observation.not_newer,
+            };
+            *counter = counter.saturating_add(1);
+        }
         if let Ok(Some(application)) = result
             && application.build > installed_build
         {
@@ -403,6 +476,8 @@ async fn latest_macos_staged_build(root: &Path, installed_build: u64) -> Option<
             }));
         }
     }
+    #[cfg(test)]
+    observation.finish(latest);
     latest
 }
 

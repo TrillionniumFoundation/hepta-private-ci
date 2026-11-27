@@ -70,6 +70,41 @@ pub(crate) struct RelayConnection {
     relay_task: AbortOnDropHandle<Result<()>>,
 }
 
+impl std::fmt::Debug for RelayConnection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        const MAX_SAMPLED_FRAMES: usize = 64;
+
+        let mut state = f.debug_struct("RelayConnection");
+        state.field(
+            "relay_task_finished",
+            &self.relay_task.abort_handle().is_finished(),
+        );
+        match self.captured_frames.try_lock() {
+            Ok(frames) => {
+                let sampled_tail_frames = frames.len().min(MAX_SAMPLED_FRAMES);
+                let sampled_tail_bytes = frames
+                    .iter()
+                    .rev()
+                    .take(MAX_SAMPLED_FRAMES)
+                    .map(Vec::len)
+                    .fold(/*init*/ 0usize, usize::saturating_add);
+                state
+                    .field("capture", &"ready")
+                    .field("captured_frames", &frames.len())
+                    .field("sampled_tail_frames", &sampled_tail_frames)
+                    .field("sampled_tail_bytes", &sampled_tail_bytes);
+            }
+            Err(std::sync::TryLockError::WouldBlock) => {
+                state.field("capture", &"busy");
+            }
+            Err(std::sync::TryLockError::Poisoned(_)) => {
+                state.field("capture", &"poisoned");
+            }
+        }
+        state.finish_non_exhaustive()
+    }
+}
+
 impl RelayTest {
     pub(crate) async fn new() -> Result<Self> {
         let listener = TcpListener::bind("127.0.0.1:0").await?;

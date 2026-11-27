@@ -476,6 +476,7 @@ unsafe fn create_token_with_caps_from(
     extra_restricting_sids: &[*mut c_void],
     restricting_identity: RestrictingIdentity,
 ) -> Result<HANDLE> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
     }

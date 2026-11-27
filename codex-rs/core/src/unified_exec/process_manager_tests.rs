@@ -454,6 +454,7 @@ async fn failed_initial_end_for_unstored_process_uses_fallback_output() {
         "PRE_DENIAL_MARKER".to_string(),
         "Network access denied".to_string(),
         Duration::from_millis(7),
+        /*approval_terminal*/ None,
     )
     .await;
 

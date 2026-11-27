@@ -52,31 +52,34 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
-/// Select the only backend that can enforce the requested filesystem policy.
-///
-/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting
-/// SIDs, but Windows can authorize deletion through a parent directory's
-/// `FILE_DELETE_CHILD` right. That alternate authorization path means the
-/// restricted-token backend cannot prove that deletion stays inside the
-/// declared writable roots. Explicit filesystem overrides have the same
-/// problem because their effective parent ACLs are not part of the token.
-///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
-fn select_windows_sandbox_backend(
+/// Validate only the supplied network fields, without resolving permissions,
+/// paths, environment variables, or backend availability.
+fn validate_windows_sandbox_network_request(
     request: &WindowsSandboxSessionRequest<'_>,
-) -> Result<WindowsSandboxBackend> {
+) -> Result<()> {
     if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
-        return Ok(WindowsSandboxBackend::Elevated);
+        return Ok(());
     }
     if request.proxy_enforced {
         bail!("managed networking requires the elevated Windows sandbox backend");
     }
     if request.network_proxy_restricting_sid.is_some() {
         bail!("network proxy restricting SID requires the elevated Windows sandbox backend");
+    }
+    Ok(())
+}
+
+/// Describe the requested backend without preparing or launching a process.
+///
+/// This is a routing decision, not a claim that either backend is available or
+/// enforces the filesystem policy. The public dispatcher checks availability
+/// before calling this helper, and both backend entry points check it again.
+fn select_windows_sandbox_backend(
+    request: &WindowsSandboxSessionRequest<'_>,
+) -> Result<WindowsSandboxBackend> {
+    validate_windows_sandbox_network_request(request)?;
+    if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
+        return Ok(WindowsSandboxBackend::Elevated);
     }
 
     let permissions =
@@ -101,6 +104,8 @@ fn select_windows_sandbox_backend(
 pub async fn spawn_windows_sandbox_session_for_level(
     request: WindowsSandboxSessionRequest<'_>,
 ) -> Result<SpawnedProcess> {
+    validate_windows_sandbox_network_request(&request)?;
+    crate::ensure_windows_managed_filesystem_isolation()?;
     match select_windows_sandbox_backend(&request)? {
         WindowsSandboxBackend::Elevated => {
             backends::elevated::spawn_windows_sandbox_session_elevated_for_permission_profile(

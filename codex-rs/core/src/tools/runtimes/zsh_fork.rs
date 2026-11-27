@@ -35,16 +35,23 @@ mod unix_escalation;
 mod imp {
     use super::*;
     use crate::tools::runtimes::zsh_fork::unix_escalation;
+    use crate::unified_exec::ExecApprovalTerminal;
     use crate::unified_exec::SpawnLifecycle;
     use codex_shell_escalation::ESCALATE_SOCKET_ENV_VAR;
     use codex_shell_escalation::EscalationSession;
+    use std::sync::Arc;
 
     #[derive(Debug)]
     struct ZshForkSpawnLifecycle {
         escalation_session: EscalationSession,
+        approval_terminal: Arc<ExecApprovalTerminal>,
     }
 
     impl SpawnLifecycle for ZshForkSpawnLifecycle {
+        fn approval_terminal(&self) -> Option<Arc<ExecApprovalTerminal>> {
+            Some(Arc::clone(&self.approval_terminal))
+        }
+
         fn inherited_fds(&self) -> Vec<i32> {
             self.escalation_session
                 .env()
@@ -83,6 +90,7 @@ mod imp {
             exec_request: prepared.exec_request,
             spawn_lifecycle: Box::new(ZshForkSpawnLifecycle {
                 escalation_session: prepared.escalation_session,
+                approval_terminal: prepared.approval_terminal,
             }),
         }))
     }

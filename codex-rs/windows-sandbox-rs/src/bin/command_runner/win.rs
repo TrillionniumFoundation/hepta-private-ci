@@ -232,6 +232,7 @@ fn effective_cwd(req_cwd: &Path, log_dir: Option<&Path>) -> PathBuf {
 }
 
 fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
+    codex_windows_sandbox::ensure_windows_managed_filesystem_isolation()?;
     let log_dir = req.codex_home.clone();
     hide_current_user_profile_dir(req.codex_home.as_path());
     let token_mode = token_mode_for_permission_profile(

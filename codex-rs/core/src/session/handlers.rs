@@ -199,7 +199,7 @@ pub async fn exec_approval(
     turn_id: Option<String>,
     decision: ReviewDecision,
 ) {
-    let event_turn_id = turn_id.unwrap_or_else(|| approval_id.clone());
+    let event_turn_id = turn_id.clone().unwrap_or_else(|| approval_id.clone());
     if let ReviewDecision::ApprovedExecpolicyAmendment {
         proposed_execpolicy_amendment,
     } = &decision
@@ -218,6 +218,8 @@ pub async fn exec_approval(
     }
     match decision {
         ReviewDecision::Abort => {
+            sess.mark_explicit_exec_approval_cancelled(&approval_id, turn_id.as_deref())
+                .await;
             sess.interrupt_task().await;
         }
         other => sess.notify_approval(&approval_id, other).await,

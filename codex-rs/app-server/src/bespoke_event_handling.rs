@@ -363,6 +363,7 @@ pub(crate) async fn apply_bespoke_event_handling(
                     completion_status,
                     &outgoing,
                     &thread_state,
+                    /*subcommand_approval_id*/ None,
                 )
                 .await;
             }
@@ -1425,13 +1426,19 @@ async fn complete_command_execution_item(
     status: CommandExecutionStatus,
     outgoing: &ThreadScopedOutgoingMessageSender,
     thread_state: &Arc<Mutex<ThreadState>>,
+    subcommand_approval_id: Option<&str>,
 ) {
-    let should_emit = thread_state
-        .lock()
-        .await
-        .turn_summary
-        .command_execution_started
-        .remove(&item_id);
+    let should_emit = {
+        let mut state = thread_state.lock().await;
+        let started = &mut state.turn_summary.command_execution_started;
+        // Keep the existing subcommand-parent suppression and remove decision
+        // in one lock. A parent cannot start between those two observations.
+        if subcommand_approval_id.is_some() && started.contains(&item_id) {
+            false
+        } else {
+            started.remove(&item_id)
+        }
+    };
     if !should_emit {
         return;
     }
@@ -2065,23 +2072,7 @@ async fn on_command_execution_request_approval_response(
         }
     };
 
-    let suppress_subcommand_completion_item = {
-        // For regular shell/unified_exec approvals, approval_id is null.
-        // For zsh-fork subcommand approvals, approval_id is present and
-        // item_id points to the parent command item.
-        if approval_id.is_some() {
-            let state = thread_state.lock().await;
-            state
-                .turn_summary
-                .command_execution_started
-                .contains(&item_id)
-        } else {
-            false
-        }
-    };
-
     if let Some(status) = completion_status
-        && !suppress_subcommand_completion_item
         && let Some(completion_item) = completion_item
     {
         complete_command_execution_item(
@@ -2094,6 +2085,7 @@ async fn on_command_execution_request_approval_response(
             status,
             &outgoing,
             &thread_state,
+            approval_id.as_deref(),
         )
         .await;
     }
@@ -2664,12 +2656,39 @@ mod tests {
             &conversation_id,
             "turn-1".to_string(),
             "cmd-1".to_string(),
+            command_execution_completion_item("printf hi"),
+            /*process_id*/ None,
+            CommandExecutionSource::Agent,
+            CommandExecutionStatus::Declined,
+            &outgoing,
+            &thread_state,
+            Some("subcommand-approval-1"),
+        )
+        .await;
+        assert!(
+            rx.try_recv().is_err(),
+            "subcommand approval must not synthesize a parent end"
+        );
+        assert!(
+            thread_state
+                .lock()
+                .await
+                .turn_summary
+                .command_execution_started
+                .contains("cmd-1")
+        );
+
+        complete_command_execution_item(
+            &conversation_id,
+            "turn-1".to_string(),
+            "cmd-1".to_string(),
             completion_item,
             /*process_id*/ None,
             CommandExecutionSource::Agent,
             CommandExecutionStatus::Declined,
             &outgoing,
             &thread_state,
+            /*subcommand_approval_id*/ None,
         )
         .await;
 
@@ -2704,6 +2723,7 @@ mod tests {
             CommandExecutionStatus::Declined,
             &outgoing,
             &thread_state,
+            /*subcommand_approval_id*/ None,
         )
         .await;
         assert!(

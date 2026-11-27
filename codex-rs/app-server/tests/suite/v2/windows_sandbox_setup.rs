@@ -17,6 +17,9 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
+#[path = "windows_sandbox_availability_tests.rs"]
+mod availability_tests;
+
 #[tokio::test]
 async fn windows_sandbox_setup_start_emits_completion_notification() -> Result<()> {
     let responses = Vec::new();

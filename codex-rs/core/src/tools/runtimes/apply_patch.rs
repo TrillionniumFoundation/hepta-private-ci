@@ -202,6 +202,12 @@ impl ToolRuntime<ApplyPatchRequest, ApplyPatchRuntimeOutput> for ApplyPatchRunti
             Ok(delta) => delta,
             Err(failure) => {
                 let (error, delta) = failure.into_parts();
+                let mapped_io_error = std::iter::successors(
+                    Some(&error as &(dyn std::error::Error + 'static)),
+                    |error| error.source(),
+                )
+                .take(/*n*/ 8)
+                .find_map(|error| error.downcast_ref::<std::io::Error>());
                 if tracing::enabled!(tracing::Level::WARN) {
                     // Keep the mapped cause visible without changing tool output or error routing.
                     let mut buffer = [0_u8; 2_048];
@@ -210,12 +216,6 @@ impl ToolRuntime<ApplyPatchRequest, ApplyPatchRuntimeOutput> for ApplyPatchRunti
                         std::io::Write::write_fmt(&mut remaining, format_args!("{error}")).is_ok();
                     let cause_bytes = 2_048 - remaining.len();
                     let cause_prefix = String::from_utf8_lossy(&buffer[..cause_bytes]);
-                    let mapped_io_error = std::iter::successors(
-                        Some(&error as &(dyn std::error::Error + 'static)),
-                        |error| error.source(),
-                    )
-                    .take(/*n*/ 8)
-                    .find_map(|error| error.downcast_ref::<std::io::Error>());
                     tracing::warn!(
                         stage = "apply_patch_after_filesystem_error_mapping",
                         cause_format_complete,
@@ -226,6 +226,15 @@ impl ToolRuntime<ApplyPatchRequest, ApplyPatchRuntimeOutput> for ApplyPatchRunti
                         mapped_raw_os_error = ?mapped_io_error.and_then(std::io::Error::raw_os_error),
                         "apply_patch failed before output classification"
                     );
+                }
+                if mapped_io_error
+                    .is_some_and(|error| error.kind() == std::io::ErrorKind::Unsupported)
+                {
+                    self.committed_delta.append(delta);
+                    // Unavailable execution must not enter policy-denial escalation.
+                    return Err(ToolError::Codex(CodexErr::UnsupportedOperation(
+                        error.to_string(),
+                    )));
                 }
                 delta
             }

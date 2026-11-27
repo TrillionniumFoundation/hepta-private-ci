@@ -23,6 +23,8 @@ use tokio::process::Command;
 
 use crate::ExecServerRuntimePaths;
 use crate::FileSystemSandboxContext;
+#[cfg(windows)]
+use crate::file_system_error::map_fs_error;
 use crate::fs_helper::CODEX_FS_HELPER_ARG1;
 use crate::fs_helper::FsHelperPayload;
 use crate::fs_helper::FsHelperRequest;
@@ -107,6 +109,14 @@ impl FileSystemSandboxRunner {
             &file_system_policy,
             network_policy,
         );
+        // Preserve the launch error before the helper wrapper can flatten it into stderr.
+        #[cfg(windows)]
+        if sandbox.windows_sandbox_level
+            != codex_protocol::config_types::WindowsSandboxLevel::Disabled
+        {
+            codex_sandboxing::ensure_windows_managed_filesystem_isolation()
+                .map_err(map_fs_error)?;
+        }
         self.sandbox_exec_request(&permission_profile, &cwd, workspace_roots, sandbox)
     }
 

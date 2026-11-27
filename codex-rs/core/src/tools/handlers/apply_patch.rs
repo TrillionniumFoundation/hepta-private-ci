@@ -45,6 +45,8 @@ use codex_exec_server::ExecutorFileSystem;
 use codex_features::Feature;
 use codex_protocol::models::AdditionalPermissionProfile;
 use codex_protocol::models::FileSystemPermissions;
+use codex_protocol::models::PermissionProfile;
+use codex_protocol::permissions::FileSystemSandboxKind;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::FileChange;
 use codex_protocol::protocol::PatchApplyUpdatedEvent;
@@ -330,13 +332,25 @@ async fn effective_patch_permissions(
 
 fn patch_permissions_without_path_matching(
     action: &ApplyPatchAction,
+    permission_profile: &PermissionProfile,
 ) -> (
     Vec<PathUri>,
     crate::tools::handlers::EffectiveAdditionalPermissions,
     codex_protocol::permissions::FileSystemSandboxPolicy,
 ) {
-    // TODO(anp): Make permission matching operate on PathUri. Until then, foreign paths skip
-    // permission matching; a managed turn still fails closed at the platform sandbox boundary.
+    let file_system_sandbox_policy = permission_profile.file_system_sandbox_policy();
+    let foreign_read_only = action.cwd.to_abs_path().is_err()
+        && matches!(
+            file_system_sandbox_policy.kind,
+            FileSystemSandboxKind::Restricted
+        )
+        && !file_system_sandbox_policy
+            .entries
+            .iter()
+            .any(|entry| entry.access.can_write());
+    // TODO(anp): Make permission matching operate on PathUri. A foreign policy without any
+    // declared write access must still require approval. Policies with declared writes retain
+    // executor-first approval; execution uses the original environment policy, not this fallback.
     (
         file_paths_for_action(action),
         crate::tools::handlers::EffectiveAdditionalPermissions {
@@ -344,7 +358,11 @@ fn patch_permissions_without_path_matching(
             additional_permissions: None,
             permissions_preapproved: false,
         },
-        codex_protocol::permissions::FileSystemSandboxPolicy::unrestricted(),
+        if foreign_read_only {
+            file_system_sandbox_policy
+        } else {
+            codex_protocol::permissions::FileSystemSandboxPolicy::unrestricted()
+        },
     )
 }
 
@@ -564,7 +582,12 @@ async fn execute_verified_patch(
     let (file_paths, effective_additional_permissions, file_system_sandbox_policy) =
         effective_patch_permissions(tool_ctx.session.as_ref(), &turn_environment, &action, cwd)
             .await
-            .unwrap_or_else(|_| patch_permissions_without_path_matching(&action));
+            .unwrap_or_else(|_| {
+                patch_permissions_without_path_matching(
+                    &action,
+                    turn_environment.permission_profile(),
+                )
+            });
     let apply = apply_patch::prepare_apply_patch(
         tool_ctx.step_context.turn.as_ref(),
         turn_environment.permission_profile(),

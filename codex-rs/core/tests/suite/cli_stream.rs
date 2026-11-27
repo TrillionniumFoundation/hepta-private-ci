@@ -24,6 +24,10 @@ use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
 
+#[cfg(windows)]
+#[path = "cli_stream_timeout_observation.rs"]
+mod timeout_observation;
+
 const PERSONAL_ACCESS_TOKEN: &str = "at-cli-test";
 const PERSONAL_ACCESS_TOKEN_AUTHORIZATION: &str = "Bearer at-cli-test";
 const PERSONAL_ACCESS_TOKEN_ACCOUNT_ID: &str = "account-pat";
@@ -117,6 +121,22 @@ impl Drop for ChildProcessCleanupGuard {
 // can spawn shell/Python grandchildren, so the timeout path must reap the whole
 // process group instead of only the direct CLI child.
 fn run_cli_command(command: &mut Command) -> io::Result<Output> {
+    run_cli_command_with_timeout_observation(command, CliTimeoutObservation::Disabled)
+}
+
+enum CliTimeoutObservation {
+    Disabled,
+    InitialSession,
+    ResumeSession,
+}
+
+fn run_cli_command_with_timeout_observation(
+    command: &mut Command,
+    observation: CliTimeoutObservation,
+) -> io::Result<Output> {
+    #[cfg(not(windows))]
+    let _ = observation;
+
     #[cfg(unix)]
     command.process_group(0);
 
@@ -126,6 +146,15 @@ fn run_cli_command(command: &mut Command) -> io::Result<Output> {
         .stderr(Stdio::piped());
 
     let child = command.spawn()?;
+    // Retain the same process object before the waiter takes ownership. Declaring
+    // this before _cleanup keeps the duplicate alive through the original cleanup.
+    #[cfg(windows)]
+    let timeout_observer = match &observation {
+        CliTimeoutObservation::Disabled => None,
+        CliTimeoutObservation::InitialSession | CliTimeoutObservation::ResumeSession => {
+            Some(codex_utils_pty::ProcessExitObserver::try_from_child(&child))
+        }
+    };
     let _cleanup = ChildProcessCleanupGuard(child.id());
     let (sender, receiver) = mpsc::sync_channel(1);
     let _waiter = thread::spawn(move || {
@@ -135,6 +164,10 @@ fn run_cli_command(command: &mut Command) -> io::Result<Output> {
     match receiver.recv_timeout(CLI_TIMEOUT) {
         Ok(output) => output,
         Err(mpsc::RecvTimeoutError::Timeout) => {
+            #[cfg(windows)]
+            if let Some(observer) = &timeout_observer {
+                timeout_observation::report(&observation, observer);
+            }
             Err(io::Error::new(io::ErrorKind::TimedOut, "process timed out"))
         }
         Err(mpsc::RecvTimeoutError::Disconnected) => {
@@ -493,7 +526,9 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     cmd.env("CODEX_HOME", home.path())
         .env(CODEX_API_KEY_ENV_VAR, "dummy");
 
-    let output = run_cli_command(&mut cmd).unwrap();
+    let output =
+        run_cli_command_with_timeout_observation(&mut cmd, CliTimeoutObservation::InitialSession)
+            .unwrap();
     assert!(
         output.status.success(),
         "codex-cli exec failed: {}",
@@ -611,7 +646,9 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     cmd2.env("CODEX_HOME", home.path())
         .env("OPENAI_API_KEY", "dummy");
 
-    let output2 = run_cli_command(&mut cmd2).unwrap();
+    let output2 =
+        run_cli_command_with_timeout_observation(&mut cmd2, CliTimeoutObservation::ResumeSession)
+            .unwrap();
     assert!(output2.status.success(), "resume codex-cli run failed");
     assert_eq!(resp_mock.requests().len(), 2);
 

@@ -58,6 +58,9 @@ codex_rust_crate(
         "//conditions:default": 0,
     }),
     unit_test_timeout = "long",
+    wine_test_launcher_tags = {
+        "core-all-wine-exec-test": ["no-remote-exec"],
+    },
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

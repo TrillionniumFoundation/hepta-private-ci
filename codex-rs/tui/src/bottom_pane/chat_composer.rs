@@ -150,6 +150,9 @@
 //! Shift, or Windows AltGr) into
 //! [`PasteBurst`](super::paste_burst::PasteBurst), which buffers bursts and later flushes them
 //! through [`ChatComposer::handle_paste`].
+//! Input and flush timing use an instance-owned `InputClock`: it reads the real
+//! clock in production, while a fixture can share controlled time with its
+//! startup newline owner without changing terminal rendering or other clocks.
 //!
 //! The burst detector intentionally treats ASCII and non-ASCII differently:
 //!
@@ -261,6 +264,7 @@ use super::slash_commands::ServiceTierCommand;
 use super::slash_commands::SlashCommandItem;
 use crate::bottom_pane::paste_burst::FlushResult;
 use crate::history_cell::sanitize_user_text;
+use crate::input_clock::InputClock;
 use crate::key_hint::KeyBindingListExt;
 use crate::keymap::EditorKeymap;
 use crate::keymap::KeymapContext;
@@ -478,6 +482,7 @@ impl ChatComposerConfig {
 
 pub(crate) struct ChatComposer {
     draft: DraftState,
+    input_clock: InputClock,
     popups: PopupState,
     app_event_tx: AppEventSender,
     history: ChatComposerHistory,
@@ -618,6 +623,7 @@ impl ChatComposer {
 
         let mut this = Self {
             draft: DraftState::new(),
+            input_clock: InputClock::default(),
             popups: PopupState::default(),
             app_event_tx,
             history: ChatComposerHistory::new(),
@@ -1826,7 +1832,12 @@ impl ChatComposer {
     /// This also allows a single "held" ASCII char to render even when it turns out not to be part
     /// of a paste burst.
     pub(crate) fn flush_paste_burst_if_due(&mut self) -> bool {
-        self.handle_paste_burst_flush(Instant::now())
+        self.handle_paste_burst_flush(self.input_clock.now())
+    }
+
+    #[cfg(test)]
+    pub(super) fn set_input_clock_for_test(&mut self, clock: InputClock) {
+        self.input_clock = clock;
     }
 
     /// Returns whether the composer is currently in any paste-burst related transient state.
@@ -3081,7 +3092,7 @@ impl ChatComposer {
     /// Common logic for handling message submission/queuing.
     /// Returns the appropriate InputResult based on `should_queue`.
     fn handle_submission(&mut self, should_queue: bool) -> (InputResult, bool) {
-        let result = self.handle_submission_with_time(should_queue, Instant::now());
+        let result = self.handle_submission_with_time(should_queue, self.input_clock.now());
         self.reset_vim_mode_after_successful_dispatch(&result.0);
         result
     }
@@ -3605,7 +3616,7 @@ impl ChatComposer {
             return (InputResult::None, false);
         }
 
-        self.handle_input_basic_with_time(input, Instant::now())
+        self.handle_input_basic_with_time(input, self.input_clock.now())
     }
 
     fn handle_input_basic_with_time(

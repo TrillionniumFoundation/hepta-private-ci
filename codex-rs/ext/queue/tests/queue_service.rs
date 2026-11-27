@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicI64;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -282,10 +283,32 @@ struct FailDeleteOnceQueueStore {
     allow_blocked_complete: AtomicBool,
     complete_attempts: AtomicUsize,
     short_dispatch_lease: bool,
+    dispatch_clock: Option<Arc<AtomicI64>>,
     release_count: AtomicUsize,
 }
 
 impl FailDeleteOnceQueueStore {
+    fn with_dispatch_clock(mut self, clock: Arc<AtomicI64>) -> Self {
+        self.dispatch_clock = Some(clock);
+        self
+    }
+
+    fn dispatch_time_window(&self, now_ms: i64, lease_expires_at_ms: i64) -> (i64, i64) {
+        let Some(clock) = &self.dispatch_clock else {
+            return (now_ms, lease_expires_at_ms);
+        };
+        // Only the selected fixtures use logical time. Keep the caller's
+        // requested window width; the original short-lease override follows.
+        let duration_ms = lease_expires_at_ms
+            .checked_sub(now_ms)
+            .expect("test dispatch window duration must fit");
+        let now_ms = clock.load(Ordering::SeqCst);
+        let lease_expires_at_ms = now_ms
+            .checked_add(duration_ms)
+            .expect("test dispatch window timestamp must fit");
+        (now_ms, lease_expires_at_ms)
+    }
+
     fn new(inner: LocalQueueStore) -> Self {
         Self {
             inner,
@@ -296,6 +319,7 @@ impl FailDeleteOnceQueueStore {
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: false,
+            dispatch_clock: None,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -310,6 +334,7 @@ impl FailDeleteOnceQueueStore {
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
+            dispatch_clock: None,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -324,6 +349,7 @@ impl FailDeleteOnceQueueStore {
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
+            dispatch_clock: None,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -338,6 +364,7 @@ impl FailDeleteOnceQueueStore {
             allow_blocked_complete: AtomicBool::new(false),
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
+            dispatch_clock: None,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -443,6 +470,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
+        let (now_ms, lease_expires_at_ms) = self.dispatch_time_window(now_ms, lease_expires_at_ms);
         let lease_expires_at_ms = if self.short_dispatch_lease {
             now_ms + 250
         } else {
@@ -464,6 +492,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchLease> {
+        let (now_ms, lease_expires_at_ms) = self.dispatch_time_window(now_ms, lease_expires_at_ms);
         let lease_expires_at_ms = if self.short_dispatch_lease {
             now_ms + 250
         } else {
@@ -486,6 +515,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
+        let (now_ms, lease_expires_at_ms) = self.dispatch_time_window(now_ms, lease_expires_at_ms);
         self.inner.recover_expired_client_dispatch(
             process_lock,
             expired,
@@ -866,11 +896,19 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
         "test-provider".to_string(),
     )
     .await?;
-    let owner_queue: Arc<dyn QueueStore> =
-        Arc::new(FailDeleteOnceQueueStore::with_short_dispatch_lease(
-            LocalQueueStore::new(Arc::clone(&primary_runtime)),
-        ));
-    let competing_queue: Arc<dyn QueueStore> = Arc::new(LocalQueueStore::new(competing_runtime));
+    let dispatch_clock = Arc::new(AtomicI64::new(1_000));
+    let owner_queue: Arc<dyn QueueStore> = Arc::new(
+        FailDeleteOnceQueueStore::with_short_dispatch_lease(LocalQueueStore::new(Arc::clone(
+            &primary_runtime,
+        )))
+        .with_dispatch_clock(Arc::clone(&dispatch_clock)),
+    );
+    let competing_store = FailDeleteOnceQueueStore {
+        fail_next_delete: AtomicBool::new(false),
+        ..FailDeleteOnceQueueStore::new(LocalQueueStore::new(competing_runtime))
+    }
+    .with_dispatch_clock(Arc::clone(&dispatch_clock));
+    let competing_queue: Arc<dyn QueueStore> = Arc::new(competing_store);
     let owner = Arc::new(QueuedItemService::new(
         Arc::clone(&owner_queue),
         Arc::downgrade(&test.thread_manager),
@@ -915,7 +953,14 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    if let Err(error) = wait_for_path(&entered).await {
+        let owner_state = if owner_start.is_finished() {
+            format!("completed with {:?}", owner_start.await)
+        } else {
+            "not completed at hook wait failure".to_string()
+        };
+        return Err(error.context(format!("queue owner_start: {owner_state}")));
+    }
     owner_start.abort();
     let aborted = owner_start
         .await
@@ -923,6 +968,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     assert!(aborted.is_cancelled());
 
     tokio::time::sleep(Duration::from_millis(400)).await;
+    dispatch_clock.fetch_add(/*val*/ 400, Ordering::SeqCst);
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
         .await
@@ -1248,10 +1294,13 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
         .await?;
     let thread_id = test.session_configured.thread_id;
     let runtime = test.codex.state_db().context("state runtime unavailable")?;
-    let crash_queue: Arc<dyn QueueStore> =
-        Arc::new(FailDeleteOnceQueueStore::crash_after_rollout_flush(
-            LocalQueueStore::new(Arc::clone(&runtime)),
-        ));
+    let dispatch_clock = Arc::new(AtomicI64::new(1_000));
+    let crash_queue: Arc<dyn QueueStore> = Arc::new(
+        FailDeleteOnceQueueStore::crash_after_rollout_flush(LocalQueueStore::new(Arc::clone(
+            &runtime,
+        )))
+        .with_dispatch_clock(Arc::clone(&dispatch_clock)),
+    );
     let crashing = QueuedItemService::new(
         crash_queue,
         Arc::downgrade(&test.thread_manager),
@@ -1294,11 +1343,28 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
 
     let restarted_runtime =
         StateRuntime::init(runtime.sqlite().clone(), "test-provider".to_string()).await?;
+    let restarted_queue = FailDeleteOnceQueueStore {
+        fail_next_delete: AtomicBool::new(false),
+        ..FailDeleteOnceQueueStore::new(LocalQueueStore::new(restarted_runtime))
+    }
+    .with_dispatch_clock(Arc::clone(&dispatch_clock));
     let restarted = QueuedItemService::new(
-        Arc::new(LocalQueueStore::new(restarted_runtime)),
+        Arc::new(restarted_queue),
         Arc::downgrade(&test.thread_manager),
         Arc::new(NoopExtensionEventSink),
     );
+    let before_expiry = restarted
+        .start(test.codex.as_ref(), Some(item.id.clone()), None)
+        .await
+        .expect_err("an unexpired dispatch must not enter rollout recovery");
+    assert!(matches!(
+        before_expiry,
+        QueueServiceError::DispatchInProgress { client_id }
+            if client_id == "stable-client-message"
+    ));
+    assert_eq!(1, restarted.list(thread_id).await?.len());
+    assert_eq!(1, response.requests().len());
+    dispatch_clock.fetch_add(/*val*/ 300, Ordering::SeqCst);
     let recovered = restarted
         .start(test.codex.as_ref(), Some(item.id), None)
         .await?;
@@ -1309,6 +1375,80 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
         1,
         persisted_client_message_count(test.codex.as_ref(), "stable-client-message").await?
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn logical_dispatch_clock_preserves_the_exact_authorization_expiry_boundary()
+-> anyhow::Result<()> {
+    for (authorization_time_ms, should_authorize) in [(1_249, true), (1_250, false)] {
+        let home = tempfile::tempdir()?;
+        let sqlite = SqliteConfig::new_for_testing(home.path().abs());
+        let runtime = StateRuntime::init(sqlite, "test-provider".to_string()).await?;
+        let clock = Arc::new(AtomicI64::new(1_000));
+        let queue = Arc::new(
+            FailDeleteOnceQueueStore::with_short_dispatch_lease(LocalQueueStore::new(runtime))
+                .with_dispatch_clock(Arc::clone(&clock)),
+        );
+        let service =
+            QueuedItemService::new(queue.clone(), Weak::new(), Arc::new(NoopExtensionEventSink));
+        let thread_id = ThreadId::new();
+        let input = structured_user_input("exact dispatch expiry boundary");
+        let TurnInput::UserInput { content, .. } = &input else {
+            unreachable!("test input is user input");
+        };
+        let digest = user_input_payload_sha256(content)?;
+        let admitted = service
+            .reconcile(
+                thread_id,
+                None,
+                input,
+                digest.clone(),
+                QueueReconcileMode::AllowIfAbsent,
+            )
+            .await?;
+        let QueueReconcileOutcome::Queued { item, .. } = admitted.outcome else {
+            anyhow::bail!("clock control input was not queued");
+        };
+        let process_lock = queue
+            .try_acquire_client_dispatch_lock(
+                thread_id,
+                "stable-client-message".to_string(),
+                digest,
+            )?
+            .context("clock control must acquire the real process lock")?;
+        let QueuedClientDispatchClaimOutcome::Acquired(lease) = queue
+            .claim_client_binding_dispatch(
+                &process_lock,
+                item.id,
+                "clock-boundary-owner".to_string(),
+                /*now_ms*/ 50_000,
+                /*lease_expires_at_ms*/ 80_000,
+            )
+            .await?
+        else {
+            anyhow::bail!("clock control must acquire a real dispatch lease");
+        };
+        clock.store(authorization_time_ms, Ordering::SeqCst);
+        let authorization = queue
+            .authorize_client_binding_dispatch(
+                &process_lock,
+                lease,
+                /*now_ms*/ 60_000,
+                /*lease_expires_at_ms*/ 90_000,
+            )
+            .await;
+        if should_authorize {
+            authorization.context("logical 1249 must authorize before the 1250 expiry")?;
+        } else {
+            let error = authorization.expect_err("logical 1250 must retain the exact expiry guard");
+            assert!(
+                matches!(error, ThreadStoreError::Conflict { ref message }
+                    if message == "client message id `stable-client-message` dispatch owner or revision changed before submit"),
+                "unexpected authorization boundary error: {error:?}"
+            );
+        }
+    }
     Ok(())
 }
 

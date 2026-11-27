@@ -48,6 +48,8 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+use self::drain::query_agent_drain_once;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
@@ -615,90 +617,6 @@ fn query_agent_health_once(
     })
 }
 
-fn read_agent_drain_frame(
-    identity: &AgentHealthProbeIdentity,
-    request: &[u8],
-) -> std::io::Result<Vec<u8>> {
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(request)?;
-    stream.shutdown(Shutdown::Write)?;
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response = Vec::new();
-    reader.read_until(b'\n', &mut response)?;
-    Ok(response)
-}
-
-fn query_agent_drain_once(
-    identity: &AgentHealthProbeIdentity,
-    request_id: u64,
-) -> Result<bool, ProcessDriverError> {
-    let request = AgentdRequest::drain(request_id, identity.spawn_generation);
-    let mut bytes = serde_json::to_vec(&request)?;
-    bytes.push(b'\n');
-    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-        return Err(ProcessDriverError::new(
-            "Agentd drain request exceeded the bounded control frame",
-        ));
-    }
-    let response_bytes = match read_agent_drain_frame(identity, &bytes) {
-        Ok(response) => response,
-        Err(error)
-            if matches!(
-                error.kind(),
-                std::io::ErrorKind::NotFound
-                    | std::io::ErrorKind::ConnectionRefused
-                    | std::io::ErrorKind::ConnectionReset
-                    | std::io::ErrorKind::ConnectionAborted
-                    | std::io::ErrorKind::BrokenPipe
-                    | std::io::ErrorKind::TimedOut
-                    | std::io::ErrorKind::WouldBlock
-                    | std::io::ErrorKind::UnexpectedEof
-                    | std::io::ErrorKind::Interrupted
-            ) =>
-        {
-            // Shutdown can remove the control socket before waitpid sees exit.
-            // No response is NOT a drain acknowledgement. Preserve the existing
-            // deadline/escalation path instead of aborting lifecycle observation.
-            return Ok(false);
-        }
-        Err(error) => return Err(error.into()),
-    };
-    if response_bytes.is_empty() {
-        return Ok(false);
-    }
-    if response_bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
-        return Err(ProcessDriverError::new(
-            "Agentd drain response was not a bounded complete frame",
-        ));
-    }
-    let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
-    let exact_envelope = response.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
-        && response.request_id == request_id
-        && response.agent_id == identity.agent_id
-        && response.spawn_generation == identity.spawn_generation
-        && identity
-            .spawn_generation
-            .checked_add(2)
-            .is_some_and(|generation| response.current_generation == generation);
-    let AgentdPayload::Drain(snapshot) = response.payload else {
-        return Err(ProcessDriverError::new(
-            "Agentd drain request did not return a drain acknowledgement",
-        ));
-    };
-    if !exact_envelope
-        || snapshot.lifecycle != AgentLifecycle::Draining
-        || snapshot.fenced
-        || !snapshot.admission_closed
-    {
-        return Err(ProcessDriverError::new(
-            "Agentd drain acknowledgement did not bind the current draining generation",
-        ));
-    }
-    Ok(snapshot.drained && snapshot.running_turns == 0)
-}
-
 fn query_matrix_health_once(
     identity: &MatrixHealthProbeIdentity,
     request_id: u64,
@@ -864,6 +782,5 @@ fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessD
 #[path = "unix_tests.rs"]
 mod tests;
 
-#[cfg(test)]
-#[path = "unix_drain_tests.rs"]
-mod drain_tests;
+#[path = "unix_drain.rs"]
+mod drain;

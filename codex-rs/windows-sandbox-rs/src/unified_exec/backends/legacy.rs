@@ -318,6 +318,7 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let common = prepare_legacy_spawn_context(
         permission_profile,
         workspace_roots,

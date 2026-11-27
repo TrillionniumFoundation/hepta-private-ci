@@ -2,6 +2,7 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
 use std::os::unix::net::UnixListener;
+use std::os::unix::net::UnixStream;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
@@ -9,9 +10,14 @@ use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use pretty_assertions::assert_eq;
 
 use super::AgentHealthProbeIdentity;
+use super::DrainIoError;
+use super::decode_agent_drain_response;
+use super::drain_io_error;
 use super::query_agent_drain_once;
+use super::read_agent_drain_response;
 use crate::ProcessDriverError;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -112,5 +118,68 @@ fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult 
         snapshot.fenced = true;
     }
     assert!(exchange(&identity, frame(&fenced)?)?.is_err());
+    Ok(())
+}
+
+// The response is fully written and the peer is already closed before the
+// client reads. No thread timing, sleep, retry or half-close is needed to reach
+// the transport state in which a valid reply must still be consumed.
+fn closed_peer_response(bytes: &[u8]) -> TestResult<Vec<u8>> {
+    let (client, mut peer) = UnixStream::pair()?;
+    peer.write_all(bytes)?;
+    drop(peer);
+    Ok(read_agent_drain_response(client)?)
+}
+
+#[test]
+fn completed_reply_survives_peer_close_before_response_read() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    let expected = frame(&acknowledgement(&identity))?;
+    let observed = closed_peer_response(&expected)?;
+    assert_eq!(observed, expected);
+    assert!(decode_agent_drain_response(
+        &identity, /*request_id*/ 17, &observed
+    )?);
+    Ok(())
+}
+
+#[test]
+fn closed_peer_does_not_bypass_frame_or_generation_validation() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    let empty = closed_peer_response(b"")?;
+    assert!(!decode_agent_drain_response(
+        &identity, /*request_id*/ 17, &empty
+    )?);
+    for bytes in [b"not-json\n".as_slice(), b"{}".as_slice()] {
+        let observed = closed_peer_response(bytes)?;
+        assert!(decode_agent_drain_response(&identity, /*request_id*/ 17, &observed).is_err());
+    }
+    let mut wrong = acknowledgement(&identity);
+    wrong.current_generation = 8;
+    let observed = closed_peer_response(&frame(&wrong)?)?;
+    assert!(decode_agent_drain_response(&identity, /*request_id*/ 17, &observed).is_err());
+    Ok(())
+}
+
+#[test]
+fn transport_context_retains_error_kind_and_original_errno() -> TestResult {
+    for code in [libc::EACCES, libc::ENOTCONN, libc::ECONNRESET] {
+        let original = std::io::Error::from_raw_os_error(code);
+        let original_kind = original.kind();
+        let original_text = original.to_string();
+        let error = drain_io_error("read_response", original);
+        assert_eq!(error.kind(), original_kind);
+        assert_eq!(
+            error.to_string(),
+            format!("Agentd drain read_response: {original_text}")
+        );
+        let source = error
+            .get_ref()
+            .and_then(|value| value.downcast_ref::<DrainIoError>())
+            .ok_or_else(|| std::io::Error::other("missing original drain error"))?;
+        assert_eq!(source.source.raw_os_error(), Some(code));
+    }
     Ok(())
 }

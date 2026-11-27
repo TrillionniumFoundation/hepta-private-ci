@@ -1637,6 +1637,14 @@ Because audio is intentionally separate from `ThreadItem`, clients can opt out o
 
 - `windowsSandbox/setupCompleted` — `{ mode, success, error }` after a `windowsSandbox/setupStart` request finishes.
 
+`windowsSandbox/readiness` preserves `notConfigured` for disabled modes and
+non-Windows hosts. On Windows, a configured mode whose managed filesystem
+execution is unavailable returns a JSON-RPC error (`-32603`) with the reason,
+instead of claiming `ready` based on an old setup marker. The readiness enum is
+unchanged. Setup still acknowledges `started: true` and reports the refusal in
+`setupCompleted` with `success: false`; it does not persist an enabled mode when
+the execution mechanism is unavailable.
+
 ### MCP server startup events
 
 - `mcpServer/startupStatus/updated` — `{ threadId, name, status, error, failureReason }` when app-server observes an MCP server startup transition. `threadId` identifies the owning thread when startup is thread-scoped and is `null` when startup is app-scoped. `status` is one of `starting`, `ready`, `failed`, or `cancelled`. `error` and `failureReason` are `null` except for `failed`; `failureReason` is `reauthenticationRequired` when stored OAuth credentials have expired and cannot be refreshed, so clients can prompt the user to reconnect the named server.

@@ -22,6 +22,8 @@ const DETACHED_SESSION_TTL: Duration = Duration::from_secs(30);
 pub(crate) struct SessionRegistry {
     sessions: Mutex<HashMap<String, Arc<SessionEntry>>>,
     telemetry: ExecServerTelemetry,
+    #[cfg(test)]
+    fixed_now: Option<tokio::time::Instant>,
 }
 
 struct SessionEntry {
@@ -57,7 +59,26 @@ impl SessionRegistry {
         Arc::new(Self {
             sessions: Mutex::new(HashMap::new()),
             telemetry,
+            #[cfg(test)]
+            fixed_now: None,
         })
+    }
+
+    #[cfg(test)]
+    pub(crate) fn new_with_frozen_time(telemetry: ExecServerTelemetry) -> Arc<Self> {
+        Arc::new(Self {
+            sessions: Mutex::new(HashMap::new()),
+            telemetry,
+            fixed_now: Some(tokio::time::Instant::now()),
+        })
+    }
+
+    fn now(&self) -> tokio::time::Instant {
+        #[cfg(test)]
+        if let Some(now) = self.fixed_now {
+            return now;
+        }
+        tokio::time::Instant::now()
     }
 
     pub(crate) async fn attach(
@@ -82,7 +103,7 @@ impl SessionRegistry {
                     .get(&session_id)
                     .cloned()
                     .ok_or_else(|| invalid_request(format!("unknown session id {session_id}")))?;
-                if entry.is_expired(tokio::time::Instant::now()) {
+                if entry.is_expired(self.now()) {
                     let entry = sessions.remove(&session_id).ok_or_else(|| {
                         invalid_request(format!("unknown session id {session_id}"))
                     })?;
@@ -137,7 +158,7 @@ impl SessionRegistry {
             let Some(entry) = sessions.get(&session_id) else {
                 return;
             };
-            if !entry.is_detached_connection_expired(connection_id, tokio::time::Instant::now()) {
+            if !entry.is_detached_connection_expired(connection_id, self.now()) {
                 return;
             }
             sessions.remove(&session_id)
@@ -154,6 +175,8 @@ impl Default for SessionRegistry {
         Self {
             sessions: Mutex::new(HashMap::new()),
             telemetry: ExecServerTelemetry::default(),
+            #[cfg(test)]
+            fixed_now: None,
         }
     }
 }
@@ -181,7 +204,11 @@ impl SessionEntry {
         attachment.detached_expires_at = None;
     }
 
-    fn detach(&self, connection_id: ConnectionId) -> bool {
+    fn detach(
+        &self,
+        connection_id: ConnectionId,
+        now: impl FnOnce() -> tokio::time::Instant,
+    ) -> bool {
         let mut attachment = self
             .attachment
             .lock()
@@ -193,7 +220,7 @@ impl SessionEntry {
         self.process.set_notification_sender(/*notifications*/ None);
         attachment.current_connection_id = None;
         attachment.detached_connection_id = Some(connection_id);
-        attachment.detached_expires_at = Some(tokio::time::Instant::now() + DETACHED_SESSION_TTL);
+        attachment.detached_expires_at = Some(now() + DETACHED_SESSION_TTL);
         true
     }
 
@@ -256,7 +283,10 @@ impl SessionHandle {
     }
 
     pub(crate) async fn detach(&self) {
-        if !self.entry.detach(self.connection_id) {
+        if !self
+            .entry
+            .detach(self.connection_id, || self.registry.now())
+        {
             return;
         }
 
@@ -268,3 +298,7 @@ impl SessionHandle {
         });
     }
 }
+
+#[cfg(test)]
+#[path = "session_registry_tests.rs"]
+mod tests;
