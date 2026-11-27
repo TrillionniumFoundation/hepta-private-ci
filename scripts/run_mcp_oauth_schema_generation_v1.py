@@ -20,7 +20,7 @@ import time
 from datetime import datetime, timezone
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-BRANCH = "fix/hepta-sdk-oauth-schema-generation-20261126-7c9e"
+BRANCH = "fix/hepta-sdk-oauth-schema-first-generator-20261127-7c9e"
 INPUT_PATH = "scripts/hepta_mcp_oauth_schema_generation_inputs_v1.json"
 SOURCE_PATHS = (
     "scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json",
@@ -28,7 +28,8 @@ SOURCE_PATHS = (
 )
 OWNER_PATH = "scripts/run_mcp_oauth_schema_generation_v1.py"
 WORKFLOW_PATH = ".github/workflows/hepta-mcp-oauth-schema-generation-v1.yml"
-PUBLICATION = {INPUT_PATH, *SOURCE_PATHS, OWNER_PATH, WORKFLOW_PATH}
+PUBLICATION = {INPUT_PATH, OWNER_PATH, WORKFLOW_PATH}
+RETAINED_SOURCE_PATHS = PUBLICATION | set(SOURCE_PATHS)
 RUNTIME_PATH = "scripts/run_chrono_hooks_cli_lock_scope_v1.py"
 EXEC_PATH = "scripts/hepta_ci_exec.py"
 RUNTIME_SHA = "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2"
@@ -393,6 +394,84 @@ def phase(scope, record, name, stop):
     return Phase()
 
 
+def original_unexecuted_scope(spec):
+    prior = spec.get("prior_validation_failure")
+    require(
+        isinstance(prior, dict)
+        and prior.get("original_scope_admission_sha256")
+        == "5ef0b042e65e042f6b2a80f72fbec495ff2b0c5b5e47e7095c15df0b51951f9f"
+        and prior.get("original_caps") == CAPS
+        and prior.get("original_phase_caps") == PHASE_CAPS
+        and prior.get("maximum_original_generator_invocations") == 1
+        and spec["root_admission"].get("prior_validation_failure") == prior,
+        "continuation is not bound to the original unspent schema scope",
+    )
+    originals = {}
+    for label, size, expected in (
+        (
+            "run",
+            15006,
+            "e9e0bd3f28ecbb98af62601ec2e38c45923ccb98d401079ebf47ce83253e781d",
+        ),
+        (
+            "jobs",
+            27,
+            "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6",
+        ),
+    ):
+        row = prior[label]
+        require(
+            isinstance(row, dict)
+            and set(row) == {"bytes", "sha256", "content"}
+            and row["bytes"] == size
+            and row["sha256"] == expected
+            and isinstance(row["content"], str),
+            "original validation-failure evidence pin differs",
+        )
+        raw = row["content"].encode("utf-8")
+        require(
+            len(raw) == size and digest(raw) == expected,
+            "original failure bytes differ",
+        )
+        originals[label] = unique_json(raw)
+    run = originals["run"]
+    require(
+        run["id"] == 45926082464
+        and run["run_attempt"] == 1
+        and run["workflow_id"] == 432261066
+        and run["repository"]["full_name"] == REPOSITORY
+        and run["head_sha"] == "3ab4e1dc379be6f1a19a35c7ba17200eb93b8b48"
+        and run["path"] == WORKFLOW_PATH
+        and run["event"] == "push"
+        and run["status"] == "completed"
+        and run["conclusion"] == "failure"
+        and originals["jobs"] == {"total_count": 0, "jobs": []}
+        and spec["parent"]
+        == {
+            "head": "3ab4e1dc379be6f1a19a35c7ba17200eb93b8b48",
+            "tree": "9fd93745d55aa89b9a40f61c530fe9291bdced72",
+        },
+        "prior run was not the observed zero-job failure at the exact current parent",
+    )
+    return {
+        "original_scope_admission_sha256": prior["original_scope_admission_sha256"],
+        "prior_run": run["id"],
+        "prior_attempt": run["run_attempt"],
+        "prior_conclusion": "failure",
+        "prior_jobs": 0,
+        "prior_source_job_clocks_started": 0,
+        "prior_generator_commands": 0,
+        "original_caps": CAPS,
+        "remaining_caps": CAPS,
+        "original_phase_caps": PHASE_CAPS,
+        "remaining_phase_caps": PHASE_CAPS,
+        "maximum_original_generator_invocations": 1,
+        "new_budget_created": False,
+        "old_failure_reclassified_as_success": False,
+        "validation_control_plane_CPU_and_subsecond_cost_unknown": True,
+    }
+
+
 def load_inputs(root):
     raw = regular(root / INPUT_PATH, 256 * 1024)
     spec = unique_json(raw)
@@ -426,7 +505,8 @@ def load_inputs(root):
     require(
         spec.get("maximum_original_attempts") == 1
         and spec.get("first_open_only") is True
-        and spec.get("publication_paths") == sorted(PUBLICATION),
+        and spec.get("publication_paths") == sorted(PUBLICATION)
+        and spec.get("retained_source_paths") == sorted(RETAINED_SOURCE_PATHS),
         "first-open publication scope differs",
     )
     require(
@@ -474,6 +554,7 @@ def load_inputs(root):
                 "caps",
                 "phase_caps",
                 "publication_paths",
+                "retained_source_paths",
                 "source_paths",
             )
         ),
@@ -519,7 +600,8 @@ def load_inputs(root):
     pins = spec.get("reviewed_sources")
     require(
         isinstance(pins, dict)
-        and set(pins) == (PUBLICATION - {INPUT_PATH}) | {RUNTIME_PATH, EXEC_PATH},
+        and set(pins)
+        == (RETAINED_SOURCE_PATHS - {INPUT_PATH}) | {RUNTIME_PATH, EXEC_PATH},
         "reviewed source pin paths differ",
     )
     retained = {INPUT_PATH: raw}
@@ -532,7 +614,7 @@ def load_inputs(root):
             and pin["git_blob"] == blob(raw_source),
             f"reviewed source changed: {path}",
         )
-        if path in PUBLICATION:
+        if path in RETAINED_SOURCE_PATHS:
             retained[path] = raw_source
     merged = {}
     for number, path in enumerate(SOURCE_PATHS, start=1):
@@ -556,7 +638,8 @@ def load_inputs(root):
     require(
         set(merged) == set(spec["source_paths"]), "combined source capsule paths differ"
     )
-    return spec, {"sources": merged}, pull, digest(raw), retained
+    origin = original_unexecuted_scope(spec)
+    return spec, {"sources": merged}, pull, digest(raw), retained, origin
 
 
 def create_candidate(runtime, scope, spec, capsule, root, record, state):
@@ -808,7 +891,7 @@ def run_generation(
     record["input_sha256"] = spec_sha
     record["root_admission"] = spec["root_admission"]
     record["retained_inputs"] = {}
-    for relative in sorted(PUBLICATION):
+    for relative in sorted(RETAINED_SOURCE_PATHS):
         raw = retained[relative]
         destination = scope.evidence / ("input-" + Path(relative).name)
         with destination.open("xb") as stream:
@@ -882,7 +965,7 @@ def capture_source_inputs(root, evidence, record, label):
     rows = {}
     directory = evidence / ("source-inputs-" + label)
     directory.mkdir(mode=0o700)
-    for relative in sorted(PUBLICATION | {RUNTIME_PATH, EXEC_PATH}):
+    for relative in sorted(RETAINED_SOURCE_PATHS | {RUNTIME_PATH, EXEC_PATH}):
         row = {"path": relative, "complete": False}
         rows[relative] = row
         try:
@@ -1274,7 +1357,8 @@ def main():
                 "PYTHONDONTWRITEBYTECODE": "1",
             }
         )
-        spec, capsule, pull, spec_sha, retained = load_inputs(root)
+        spec, capsule, pull, spec_sha, retained, origin = load_inputs(root)
+        record["original_unexecuted_scope"] = origin
         cancellation.check()
         state["contexts"]["generation"] = {
             "root": root,
@@ -1335,7 +1419,7 @@ def main():
                 before = record.get("source_inputs_before", {})
                 record["reviewed_source_inputs_unchanged"] = set(before) == set(
                     after
-                ) == PUBLICATION | {RUNTIME_PATH, EXEC_PATH} and all(
+                ) == RETAINED_SOURCE_PATHS | {RUNTIME_PATH, EXEC_PATH} and all(
                     before[path].get("complete") is True
                     and after[path].get("complete") is True
                     and all(

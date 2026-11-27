@@ -24,16 +24,17 @@ jobs:
       github.event.pull_request.user.login == 'ProfHepta' &&
       github.event.pull_request.draft == true &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'fix/hepta-sdk-oauth-schema-generation-20261126-7c9e'
+      github.event.pull_request.head.ref == 'fix/hepta-sdk-oauth-schema-first-generator-20261127-7c9e'
     runs-on: ubuntu-24.04
     timeout-minutes: 32
     env:
-      SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
       RUSTUP_TOOLCHAIN: 1.96.0
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Record the original scope start
         shell: bash
+        env:
+          SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -67,6 +68,8 @@ jobs:
       - name: Generate and retain one real schema candidate
         id: original_generation
         shell: bash
+        env:
+          SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           set -euo pipefail
           python3 scripts/run_mcp_oauth_schema_generation_v1.py --stage "$SCHEMA_STAGE"
@@ -75,9 +78,10 @@ jobs:
         if: always()
         shell: bash
         env:
+          SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
           SCHEMA_CHECKOUT_OUTCOME: ${{ steps.original_checkout.outcome }}
           SCHEMA_GENERATION_OUTCOME: ${{ steps.original_generation.outcome }}
-          SCHEMA_WORKFLOW_CANCELLED: ${{ cancelled() }}
+          SCHEMA_WORKFLOW_CANCELLED: ${{ job.status == 'cancelled' }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -174,8 +178,8 @@ jobs:
         with:
           name: hepta-oauth-schema-original-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ env.SCHEMA_STAGE }}/original-start.json
-            ${{ env.SCHEMA_STAGE }}/evidence/
+            ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}/original-start.json
+            ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}/evidence/
           if-no-files-found: error
           retention-days: 30
           compression-level: 1
@@ -183,8 +187,9 @@ jobs:
       - name: Check the original whole scope after retention
         if: always()
         env:
+          SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
           SCHEMA_UPLOAD_OUTCOME: ${{ steps.original_upload.outcome }}
-          SCHEMA_WORKFLOW_CANCELLED: ${{ cancelled() }}
+          SCHEMA_WORKFLOW_CANCELLED: ${{ job.status == 'cancelled' }}
         shell: bash
         run: |
           set -euo pipefail
