@@ -1,0 +1,35 @@
+{
+  "verified_all_result_and_diagnostic_fields": true,
+  "steps": [
+    {
+      "cmd": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "restore.py",
+        "."
+      ],
+      "return": 0,
+      "stdout": "74 logical payloads restored and verified\n",
+      "stderr": ""
+    },
+    {
+      "cmd": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "replay.py",
+        "score"
+      ],
+      "return": 0,
+      "stdout": "KEEP [('fsdd', 0.0), ('arabic', 0.0), ('gsc', 0.0)] [False, False, False]\nfull [('fsdd', 0.1), ('arabic', 0.06), ('gsc', 0.05)] [False, False, False]\north [('fsdd', -0.0), ('arabic', -0.02), ('gsc', -0.11)] [False, False, False]\nnoanchor [('fsdd', 0.3), ('arabic', 0.05), ('gsc', 0.08)] [False, False, False]\nshuffled [('fsdd', -0.07), ('arabic', 0.06), ('gsc', 0.03)] [False, False, False]\nfeedback [('fsdd', 1.37), ('arabic', -0.67), ('gsc', 1.11)] [False, False, False]\nAdam [('fsdd', 3.77), ('arabic', -0.82), ('gsc', 1.28)] [False, False, True]\nLoRA [('fsdd', -0.67), ('arabic', -0.77), ('gsc', 0.6)] [False, False, False]\n",
+      "stderr": ""
+    },
+    {
+      "cmd": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "replay.py",
+        "diagnose"
+      ],
+      "return": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

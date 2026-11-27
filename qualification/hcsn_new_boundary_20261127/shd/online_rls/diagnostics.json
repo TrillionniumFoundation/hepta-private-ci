@@ -1,0 +1,401 @@
+{
+  "409": {
+    "unconstrained_per_record_target_mean_norm": 0.6583200775102878,
+    "unconstrained_mean_true_probability_gain": 0.06950843035447178,
+    "sampled_new_train": 30,
+    "terminal": {
+      "full": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.11979114264249802,
+        "latent_pre_drive_rms": 0.025091495364904404,
+        "terminal_logit_rms": 0.05224262923002243,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 1.1456113835350834e-14,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.2794762220000848
+        }
+      },
+      "orth": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.0226129200309515,
+        "latent_pre_drive_rms": 0.001755773089826107,
+        "terminal_logit_rms": 0.0030752867460250854,
+        "selection_stats": {
+          "relative_old_key_energy": 0.0031413052932721254,
+          "orthogonality": 8.881784197001252e-16,
+          "online_vs_batch_coordinate_max": 5.898059818321144e-17,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 16,
+          "stream_s": 0.3414709019998554
+        }
+      },
+      "noanchor": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.15602503716945648,
+        "latent_pre_drive_rms": 0.07532381266355515,
+        "terminal_logit_rms": 0.15276046097278595,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 1.715294573045867e-14,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.3564951320004184
+        }
+      },
+      "shuffled": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.04289580136537552,
+        "latent_pre_drive_rms": 0.03645547106862068,
+        "terminal_logit_rms": 0.07656246423721313,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 1.8214596497756474e-15,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.28512698999838904
+        }
+      },
+      "feedback": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.11699632555246353,
+        "latent_pre_drive_rms": 0.20421184599399567,
+        "terminal_logit_rms": 0.4064115285873413,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.3070993370056385
+        }
+      },
+      "Adam": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.2643636167049408,
+        "latent_pre_drive_rms": 0.35414960980415344,
+        "terminal_logit_rms": 0.5238772034645081,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.32752173399785534
+        }
+      },
+      "LoRA": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.0821547582745552,
+        "latent_pre_drive_rms": 0.11991416662931442,
+        "terminal_logit_rms": 0.22760331630706787,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.37969710899778875
+        }
+      }
+    }
+  },
+  "571": {
+    "unconstrained_per_record_target_mean_norm": 0.4631292838921295,
+    "unconstrained_mean_true_probability_gain": 0.061298641332238425,
+    "sampled_new_train": 30,
+    "terminal": {
+      "full": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.018364761024713516,
+        "latent_pre_drive_rms": 0.017896262928843498,
+        "terminal_logit_rms": 0.05373339727520943,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 8.552186736565659e-16,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.28781427400099346
+        }
+      },
+      "orth": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.0611996166408062,
+        "latent_pre_drive_rms": 0.005060459952801466,
+        "terminal_logit_rms": 0.014271482825279236,
+        "selection_stats": {
+          "relative_old_key_energy": 0.00271766233704295,
+          "orthogonality": 2.4424906541753444e-15,
+          "online_vs_batch_coordinate_max": 1.249000902703301e-16,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 16,
+          "stream_s": 0.2775673680007458
+        }
+      },
+      "noanchor": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.07777923345565796,
+        "latent_pre_drive_rms": 0.064847931265831,
+        "terminal_logit_rms": 0.1675712615251541,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 9.076073226310655e-15,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.31864149500324856
+        }
+      },
+      "shuffled": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.07120384275913239,
+        "latent_pre_drive_rms": 0.026002708822488785,
+        "terminal_logit_rms": 0.09068107604980469,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 8.28503932126523e-15,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.3017078400007449
+        }
+      },
+      "feedback": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.07564995437860489,
+        "latent_pre_drive_rms": 0.16736149787902832,
+        "terminal_logit_rms": 0.6047054529190063,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.3010323709968361
+        }
+      },
+      "Adam": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.11310252547264099,
+        "latent_pre_drive_rms": 0.24488620460033417,
+        "terminal_logit_rms": 0.9254608154296875,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.3208129499980714
+        }
+      },
+      "LoRA": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.20389853417873383,
+        "latent_pre_drive_rms": 0.278362900018692,
+        "terminal_logit_rms": 0.6327847838401794,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.4966176669986453
+        }
+      }
+    }
+  },
+  "647": {
+    "unconstrained_per_record_target_mean_norm": 0.5738714705280792,
+    "unconstrained_mean_true_probability_gain": 0.10236848324129824,
+    "sampled_new_train": 30,
+    "terminal": {
+      "full": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.02360505796968937,
+        "latent_pre_drive_rms": 0.009479790925979614,
+        "terminal_logit_rms": 0.02090323157608509,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 9.957312752106873e-16,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.29229681900324067
+        }
+      },
+      "orth": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.07563024014234543,
+        "latent_pre_drive_rms": 0.004394754767417908,
+        "terminal_logit_rms": 0.009210838004946709,
+        "selection_stats": {
+          "relative_old_key_energy": 0.0010969578583244328,
+          "orthogonality": 6.549592124721614e-16,
+          "online_vs_batch_coordinate_max": 1.3877787807814457e-16,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 8,
+          "stream_s": 0.30767373200069414
+        }
+      },
+      "noanchor": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.010151060298085213,
+        "latent_pre_drive_rms": 0.008536402136087418,
+        "terminal_logit_rms": 0.018416613340377808,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 2.747368305078268e-16,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.3237416620031581
+        }
+      },
+      "shuffled": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.03313322737812996,
+        "latent_pre_drive_rms": 0.02037312462925911,
+        "terminal_logit_rms": 0.04495718702673912,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 1.2281842209915794e-15,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 32,
+          "stream_s": 0.41820944199571386
+        }
+      },
+      "feedback": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.15073761343955994,
+        "latent_pre_drive_rms": 0.26853251457214355,
+        "terminal_logit_rms": 0.6224938035011292,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 0,
+          "new_backward_examples": 0,
+          "forward_latent_trajectories": 6240,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.36500980100390734
+        }
+      },
+      "Adam": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.263735830783844,
+        "latent_pre_drive_rms": 0.3398784101009369,
+        "terminal_logit_rms": 0.6217357516288757,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.4803306650064769
+        }
+      },
+      "LoRA": {
+        "weights_changed": 512,
+        "relative_matrix_change": 0.25842979550361633,
+        "latent_pre_drive_rms": 0.3806297183036804,
+        "terminal_logit_rms": 0.868635356426239,
+        "selection_stats": {
+          "relative_old_key_energy": 1.0,
+          "orthogonality": 0.0,
+          "online_vs_batch_coordinate_max": 0.0,
+          "new_recordings": 480,
+          "old_anchor_record_exposures": 960,
+          "old_gradient_exposures": 960,
+          "new_backward_examples": 480,
+          "forward_latent_trajectories": 0,
+          "working_rls_matrix_dim": 0,
+          "stream_s": 0.4108287260023644
+        }
+      }
+    }
+  }
+}
