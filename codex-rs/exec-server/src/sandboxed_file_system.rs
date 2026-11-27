@@ -24,6 +24,7 @@ use crate::RemoveOptions;
 use crate::WalkOptions;
 use crate::WalkOutcome;
 use crate::WriteFileOptions;
+use crate::file_system_error::file_system_error_kind;
 use crate::fs_helper::FsHelperPayload;
 use crate::fs_helper::FsHelperRequest;
 use crate::fs_sandbox::FileSystemSandboxRunner;
@@ -454,11 +455,7 @@ fn require_platform_sandbox(
 }
 
 fn map_sandbox_error(error: JSONRPCErrorError) -> io::Error {
-    match error.code {
-        -32004 => io::Error::new(io::ErrorKind::NotFound, error.message),
-        -32600 => io::Error::new(io::ErrorKind::InvalidInput, error.message),
-        _ => io::Error::other(error.message),
-    }
+    io::Error::new(file_system_error_kind(error.code), error.message)
 }
 
 #[cfg(all(test, any(unix, windows)))]

@@ -3,7 +3,6 @@ use base64::engine::general_purpose::STANDARD;
 use codex_exec_server_protocol::JSONRPCErrorError;
 use serde::Deserialize;
 use serde::Serialize;
-use tokio::io;
 
 use crate::CapabilityRootsDiscoverParams;
 use crate::CapabilityRootsDiscoverResponse;
@@ -14,6 +13,7 @@ use crate::GetMetadataOptions;
 use crate::ReadFileOptions;
 use crate::RemoveOptions;
 use crate::WriteFileOptions;
+pub(crate) use crate::file_system_error::map_fs_error;
 use crate::local_file_system::DirectFileSystem;
 use crate::protocol::CAPABILITY_ROOTS_DISCOVER_METHOD;
 use crate::protocol::FS_CANONICALIZE_METHOD;
@@ -47,7 +47,6 @@ use crate::protocol::FsWriteFileParams;
 use crate::protocol::FsWriteFileResponse;
 use crate::rpc::internal_error;
 use crate::rpc::invalid_request;
-use crate::rpc::not_found;
 
 pub const CODEX_FS_HELPER_ARG1: &str = "--codex-run-as-fs-helper";
 
@@ -383,16 +382,6 @@ pub(crate) async fn run_direct_request(
                 .map_err(map_fs_error)?;
             Ok(FsHelperPayload::Copy(FsCopyResponse {}))
         }
-    }
-}
-
-pub(crate) fn map_fs_error(err: io::Error) -> JSONRPCErrorError {
-    match err.kind() {
-        io::ErrorKind::NotFound => not_found(err.to_string()),
-        io::ErrorKind::InvalidInput | io::ErrorKind::PermissionDenied => {
-            invalid_request(err.to_string())
-        }
-        _ => internal_error(err.to_string()),
     }
 }
 

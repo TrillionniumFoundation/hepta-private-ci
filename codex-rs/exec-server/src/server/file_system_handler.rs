@@ -1,5 +1,3 @@
-use std::io;
-
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use codex_exec_server_protocol::JSONRPCErrorError;
@@ -16,6 +14,7 @@ use crate::ReadFileOptions;
 use crate::RemoveOptions;
 use crate::WriteFileOptions;
 use crate::file_read::FileReadHandleManager;
+use crate::file_system_error::map_fs_error;
 use crate::local_file_system::LocalFileSystem;
 use crate::protocol::FS_READ_DIRECTORY_METHOD;
 use crate::protocol::FS_WRITE_FILE_METHOD;
@@ -47,7 +46,6 @@ use crate::protocol::FsWriteFileParams;
 use crate::protocol::FsWriteFileResponse;
 use crate::rpc::internal_error;
 use crate::rpc::invalid_request;
-use crate::rpc::not_found;
 
 const MAX_FILE_READ_HANDLE_ID_BYTES: usize = 32;
 // Each read-directory entry needs four JSON values. Keep same-version
@@ -373,16 +371,6 @@ fn validate_file_read_handle_id(handle_id: &str) -> Result<(), JSONRPCErrorError
         )));
     }
     Ok(())
-}
-
-fn map_fs_error(err: io::Error) -> JSONRPCErrorError {
-    match err.kind() {
-        io::ErrorKind::NotFound => not_found(err.to_string()),
-        io::ErrorKind::InvalidInput | io::ErrorKind::PermissionDenied => {
-            invalid_request(err.to_string())
-        }
-        _ => internal_error(err.to_string()),
-    }
 }
 
 #[cfg(test)]

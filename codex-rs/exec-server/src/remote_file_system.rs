@@ -26,6 +26,8 @@ use crate::WalkOptions;
 use crate::WalkOutcome;
 use crate::WriteFileOptions;
 use crate::client::LazyRemoteExecServerClient;
+use crate::file_system_error::UNSUPPORTED_FILE_SYSTEM_ERROR_CODE;
+use crate::file_system_error::file_system_error_kind;
 use crate::protocol::FsCanonicalizeParams;
 use crate::protocol::FsCopyParams;
 use crate::protocol::FsCreateDirectoryParams;
@@ -482,13 +484,9 @@ fn remote_sandbox_context(
 
 fn map_remote_error(error: ExecServerError) -> io::Error {
     match error {
-        ExecServerError::Server { code, message } if code == NOT_FOUND_ERROR_CODE => {
-            io::Error::new(io::ErrorKind::NotFound, message)
+        ExecServerError::Server { code, message } => {
+            io::Error::new(file_system_error_kind(code), message)
         }
-        ExecServerError::Server { code, message } if code == INVALID_REQUEST_ERROR_CODE => {
-            io::Error::new(io::ErrorKind::InvalidInput, message)
-        }
-        ExecServerError::Server { message, .. } => io::Error::other(message),
         ExecServerError::Closed | ExecServerError::Disconnected(_) => {
             io::Error::new(io::ErrorKind::BrokenPipe, "exec-server transport closed")
         }
@@ -516,6 +514,13 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
+        ExecServerError::Server {
+            code: UNSUPPORTED_FILE_SYSTEM_ERROR_CODE,
+            ..
+        } => io::Error::new(
+            io::ErrorKind::Unsupported,
+            "remote authorized file read is unsupported",
+        ),
         // Preserve only known, path-free error contracts. Arbitrary server
         // messages still go through the redacted fallbacks below.
         ExecServerError::Server {
@@ -551,6 +556,10 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
 #[cfg(test)]
 #[path = "remote_file_system_authorized_read_tests.rs"]
 mod authorized_read_tests;
+
+#[cfg(test)]
+#[path = "remote_file_system_error_tests.rs"]
+mod error_tests;
 
 #[cfg(all(test, any(unix, windows)))]
 #[path = "remote_file_system_path_uri_tests.rs"]
