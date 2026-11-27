@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.setup7.first_native_input.v1",
+  "scope_id": "hepta-setup7-first-bin-20261127-7c9e",
+  "root_execution_authorized": true,
+  "root_budget_accepted": true,
+  "root_first_native_clearance": true,
+  "root_admission_sha256": "0482778c62abd85d1cf69e808fff7060ff15b4cfa6471f3b6da6d3b8d692da13",
+  "first_native_clearance_sha256": "93f07c2aecdf047e22802dc01b8e1c6fa22fab02fa33eecf61babfec459fa852",
+  "root_source_review_sha256": "d90e81a9b9a9e777945372f3cfd5faf23e0d6c208a1e17b22b0ed5bcfff0b99d",
+  "parent": {
+    "head": "1b2ae899a8956ee96201956bced828f0824ea5f3",
+    "tree": "4944b2a7d5b8ef27f0f0b5c76a717b9127268493"
+  },
+  "source_sha256": {
+    "scripts/hepta_setup7_windows_owner_v1.py": "be255914609d2b8b420357af6992c494b08523109616bb9e5d7d5436c9971be5",
+    "scripts/hepta_setup7_collector_v1.py": "840ca1ce4770295e05564cfb55749373a60d5bbc0f86098b39acfa09ec59fd72",
+    "scripts/run_hepta_setup7_first_bin_v1.py": "65ecb29c5ce3f47cf2176265771e9bd5d1b0bb695f4d45d2cd940b52df7a4de7"
+  },
+  "attributes_sha256": {
+    ".gitattributes": "182d9c13a747806ee4eeab7d9a49f368e09eabaf174f393be09ce14519f83396",
+    "codex-rs/apply-patch/tests/fixtures/scenarios/.gitattributes": "ef13f8bdcd38dc117a6b547edffe61c437da4e821443528705e85e9fc900f15b",
+    "codex-rs/third_party/accesskit-0.17.1/.gitattributes": "3155c30be14bb4afdeb2852e5d05ccea7ca947230b256d5cf86d5aeeda6abcaf",
+    "third_party/makepad-patches/.gitattributes": "fb25a78a6381f5646d71aacea4486f6aeeeb03c4d71740227011024be0d20a8f"
+  },
+  "exact_tests": [
+    "win::setup_completion::tests::full_setup_commits_only_after_success",
+    "win::setup_completion::tests::refresh_success_does_not_rewrite_existing_marker",
+    "win::setup_completion::tests::full_setup_acl_failures_keep_marker_unready",
+    "win::setup_completion::tests::refresh_acl_failures_do_not_commit_marker",
+    "win::setup_completion::tests::collected_acl_errors_survive_later_setup_failure",
+    "win::setup_completion::tests::collected_acl_errors_survive_failed_error_log",
+    "win::setup_completion::tests::setup_failure_without_collected_acl_errors_is_preserved"
+  ],
+  "budget": {
+    "whole_seconds": 1200,
+    "work_seconds": 1000,
+    "retention_seconds": 200,
+    "platform_upload_reserve_seconds": 60,
+    "phase_seconds": [60, 800, 60, 80]
+  },
+  "owner_limits": {
+    "processes": 8192,
+    "debug_events": 250000,
+    "event_log_bytes": 33554432,
+    "stream_bytes": 67108864
+  },
+  "tool_capture_policy": "root-approved-first-observation-no-hermetic-reuse",
+  "frozen": {
+    "E2_updates": "16/16 exhausted = two students 8+8; not sixteen commands",
+    "E6_remaining_seconds": 1.9960488015785813,
+    "transferred_budget": 0,
+    "old_windows_167_replay_authorized": false,
+    "global_frozen_roster_complete_claim": false
+  },
+  "references": {
+    "original7162_two_helper_build_seconds": 478.735,
+    "new_single_bin_measurement_available": false,
+    "prior_design": "HEPTA7164_SETUP7_FIRST_BIN_SCOPE_DESIGN_SOURCE_ONLY_V1",
+    "scope_body_count": 7,
+    "source_marker_cases": 14
+  },
+  "publication": {
+    "future_source_head": null,
+    "future_source_tree": null,
+    "fixed_first_open_base": "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e",
+    "fixed_first_open_head": "fix/hepta-setup7-first-bin-controls-20261127-7c9e",
+    "source_paths": [
+      "scripts/hepta_setup7_windows_owner_v1.py",
+      "scripts/hepta_setup7_collector_v1.py",
+      "scripts/run_hepta_setup7_first_bin_v1.py",
+      "scripts/hepta_setup7_first_bin_inputs_v1.json",
+      ".github/workflows/hepta-setup7-first-bin-v1.yml"
+    ],
+    "activation": "Root must review all sources, first-native clearance and unchanged budget before removing the single workflow false gate and filling the three receipt hashes."
+  },
+  "limitations": [
+    "New ordinary engineering scope, not E1-E6 acceptance or proof of useful work.",
+    "A successful native observation remains provisional until original whole-job <=1200s and artifact upload are independently verified.",
+    "Host termination, hard kill, unavailable descendant handle or incomplete output remains FAIL_OR_UNKNOWN.",
+    "The observed runner/tool environment is not admitted for future source-only native-result reuse."
+  ]
+}
