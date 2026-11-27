@@ -1,0 +1,29 @@
+{
+ "drift_sign_crossing": {
+  "negative_rate": "1/(delay+reset_distance/abs(mu))",
+  "positive_drift": "finite geometric count, zero asymptotic rate",
+  "zero_drift": "infinitely many hits almost surely, infinite mean interarrival and zero asymptotic rate"
+ },
+ "mu": 0.033549999999999996,
+ "native": [
+  {
+   "expected_live_time_steps_from_reset": 95.07922830205231,
+   "native_atoms": 8,
+   "per_unit_time": 0.04163230773903455,
+   "stationary_direct_agreement": 5.551115123125783e-17,
+   "stationary_flow_per_tick": 0.010408076934758637
+  },
+  {
+   "expected_live_time_steps_from_reset": 114.6958269997482,
+   "native_atoms": 12,
+   "per_unit_time": 0.03457341637748702,
+   "stationary_direct_agreement": 0.0,
+   "stationary_flow_per_tick": 0.008643354094371756
+  }
+ ],
+ "nominal_dt": 0.25,
+ "reset": 0.3,
+ "sigma": 0.23,
+ "unbounded_expected_lifetime_count": 2.159553037487035,
+ "unbounded_positive_drift_eventual_hit": 0.6834995367587327
+}
