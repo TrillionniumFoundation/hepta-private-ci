@@ -1,0 +1,5 @@
+# Product retrieval and physical channel audit
+
+The archive contains 109 files, including exact per-query image-to-title and title-to-image ranks for the selected catalog models, product split/group metadata, FordA cell probabilities and weights, and reproducing sources. Original product images and externally pretrained weights are fetched separately by the documented source code. Each piece and each restored file is SHA-256 verified.
+
+Run `python restore.py restored`. For a cold catalog rank check from that tree run `cd restored/paired_catalog && ln -s data paired_catalog && python audit_ranks.py` in a clean extraction. The catalog result uses 4,320 held-out product IDs. Direct analytical hidden layers attained 5.46% top-1 on the strict bidirectional metric, ahead of short-budget conventional training and below the fully trained conventional model at 7.39%. Group-bootstrap uncertainty does not distinguish the literal financial law from the matched mild nonlinearity or linear CCA. See the study's results and pre-registration for the selection protocol, duplicate-equivalent titles and timing boundaries.
