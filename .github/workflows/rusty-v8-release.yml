@@ -278,10 +278,12 @@ jobs:
 
           (
             cd codex-rs
+            # Keep registry crates' own toolchain files from switching rustc mid-build.
+            workspace_toolchain="$(rustup show active-toolchain)"
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo "${cargo_args[@]}"
+            rustup run "${workspace_toolchain%% *}" cargo "${cargo_args[@]}"
           )
 
       - name: Upload staged artifacts
