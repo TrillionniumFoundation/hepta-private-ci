@@ -13,11 +13,16 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import sys
+import zlib
 
 MANIFEST = ".github/codespell-custody.json"
 SCHEMA = "hepta.codespell-custody.v1"
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
+FSDD_README = "experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md"
+FSDD_README_VIEW_SHA256 = (
+    "f59207b4ee0ec917162a23a7d5471dc9341c92ad17f95373996f93d438ac686c"
+)
 BINARY_ARCHIVE_PATHS = frozenset(
     {
         "qualification/memory-cell-mem6/run-001/raw-transfer/"
@@ -102,9 +107,7 @@ QUALIFICATION_SOURCE_SHA256 = {
         "AUDIT/2026-10-20-agent-continuation/p5_inventory/organ/source/libs/os-control/"
         "API_CONTRACT.md"
     ): "68689e929de4a7709d7107a2991704e3c6e268d5855d48962c290f2acc0d0f54",
-    (
-        "experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md"
-    ): "eb948c7b23e0c77bb82ce34d692e7f132aa4dfd4abcdb22013fcb73bb49dc55a",
+    FSDD_README: "eb948c7b23e0c77bb82ce34d692e7f132aa4dfd4abcdb22013fcb73bb49dc55a",
     (
         "qa/repository-consolidation/20261119/round-02/rust-conflict-decisions.json"
     ): "28d1905aeacdaf0403c9231c171a48a3377827a063ede3a88dae8522ff073f94",
@@ -498,7 +501,21 @@ def parse_manifest(raw):
 def verified_skip(root):
     entries = parse_manifest(read_regular(root, MANIFEST, MAX_MANIFEST_BYTES))
     for path, expected in entries.items():
-        actual = hashlib.sha256(read_regular(root, path, MAX_SOURCE_BYTES)).hexdigest()
+        source = read_regular(root, path, MAX_SOURCE_BYTES)
+        if path == FSDD_README:
+            if hashlib.sha256(source).hexdigest() != FSDD_README_VIEW_SHA256:
+                raise ValueError(f"archived source display digest mismatch: {path}")
+            compressed = read_regular(root, path + ".evidence.gz", MAX_SOURCE_BYTES)
+            decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            source = decoder.decompress(compressed, MAX_SOURCE_BYTES + 1)
+            if (
+                len(source) > MAX_SOURCE_BYTES
+                or not decoder.eof
+                or decoder.unused_data
+                or decoder.unconsumed_tail
+            ):
+                raise ValueError(f"invalid original archive: {path}")
+        actual = hashlib.sha256(source).hexdigest()
         if actual != expected:
             raise ValueError(f"archived source digest mismatch: {path}")
     return ",".join(f"./{path}" for path in sorted(entries))
@@ -514,7 +531,7 @@ def main(argv=None):
         if args.github_output is not None:
             with args.github_output.open("a", encoding="utf-8") as output:
                 output.write(f"skip={exclusions}\n")
-    except (OSError, UnicodeError, ValueError) as error:
+    except (OSError, UnicodeError, ValueError, zlib.error) as error:
         print(f"Codespell custody validation failed: {error}", file=sys.stderr)
         return 1
     print(

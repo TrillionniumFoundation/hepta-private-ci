@@ -1,3 +1,4 @@
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -80,6 +81,40 @@ class CodespellCustodyTests(unittest.TestCase):
         (self.root / self.path).write_bytes(self.payload + b"Changed.\n")
         with self.assertRaisesRegex(ValueError, "digest mismatch"):
             codespell_custody.verified_skip(self.root)
+
+    def test_upstream_attribution_requires_original_and_display_to_match_their_pins(
+        self,
+    ):
+        relative = codespell_custody.FSDD_README
+        display_path = self.root / relative
+        display_path.parent.mkdir(parents=True)
+        original = b"Upstream attribution. \n\n"
+        display = b"Upstream attribution.\n"
+        archive_path = self.root / (relative + ".evidence.gz")
+        display_path.write_bytes(display)
+        archive_path.write_bytes(gzip.compress(original))
+        self.manifest["files"] = {relative: hashlib.sha256(original).hexdigest()}
+        self.write_manifest()
+        with (
+            patch.dict(
+                codespell_custody.QUALIFICATION_SOURCE_SHA256, self.manifest["files"]
+            ),
+            patch.object(
+                codespell_custody,
+                "FSDD_README_VIEW_SHA256",
+                hashlib.sha256(display).hexdigest(),
+            ),
+        ):
+            self.assertEqual(
+                codespell_custody.verified_skip(self.root), f"./{relative}"
+            )
+            display_path.write_bytes(display + b"Altered.\n")
+            with self.assertRaisesRegex(ValueError, "display digest mismatch"):
+                codespell_custody.verified_skip(self.root)
+            display_path.write_bytes(display)
+            archive_path.write_bytes(gzip.compress(b"Altered original."))
+            with self.assertRaisesRegex(ValueError, "archived source digest mismatch"):
+                codespell_custody.verified_skip(self.root)
 
     def test_consolidation_binary_names_do_not_exempt_sources_or_neighbor_shards(self):
         prefix = "qa/repository-consolidation/20261118/round-03/"
