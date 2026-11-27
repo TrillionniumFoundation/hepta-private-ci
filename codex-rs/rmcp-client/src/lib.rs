@@ -10,6 +10,7 @@ mod local_stdio_transport;
 mod logging_client_handler;
 mod mrtr;
 mod oauth;
+mod oauth_authorization_http_client;
 mod oauth_client_registration;
 #[cfg(test)]
 #[path = "../tests/oauth_fixture_capability/mod.rs"]
@@ -44,6 +45,9 @@ pub use oauth::delete_oauth_tokens;
 pub use oauth::save_oauth_tokens;
 pub use oauth::stored_oauth_credential_snapshot;
 pub use oauth::stored_oauth_credentials;
+pub use oauth_authorization_http_client::OAuthAuthorizationRevocation;
+pub use oauth_authorization_http_client::with_oauth_authorization_origins;
+pub use oauth_authorization_http_client::with_revocable_oauth_authorization_origins;
 pub use oauth_client_registration::McpOAuthClientRegistration;
 pub use perform_oauth_login::OAuthProviderError;
 pub use perform_oauth_login::OauthLoginHandle;

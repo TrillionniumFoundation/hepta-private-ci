@@ -158,6 +158,10 @@ fn serialize_mcp_server_table(config: &McpServerConfig) -> TomlTable {
         if let Some(callback_port) = oauth.callback_port {
             oauth_table["callback_port"] = value(i64::from(callback_port));
         }
+        if !oauth.authorization_origins.is_empty() {
+            oauth_table["authorization_origins"] =
+                array_from_iter(oauth.authorization_origins.as_slice().iter().cloned());
+        }
         if !oauth_table.is_empty() {
             entry["oauth"] = TomlItem::Table(oauth_table);
         }
@@ -326,3 +330,7 @@ where
     }
     TomlItem::Table(table)
 }
+
+#[cfg(test)]
+#[path = "document_helpers_tests.rs"]
+mod tests;

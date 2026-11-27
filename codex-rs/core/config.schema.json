@@ -1904,6 +1904,13 @@
       "additionalProperties": false,
       "description": "OAuth client settings used when Codex launches an MCP OAuth flow.",
       "properties": {
+        "authorization_origins": {
+          "description": "Exact canonical OAuth authorization origins explicitly granted by the owner. Metadata and plugins cannot add origins; DNS names remain public-address-only.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "callback_port": {
           "description": "Fixed callback port that takes precedence over Codex's global OAuth callback port.",
           "format": "uint16",

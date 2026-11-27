@@ -425,6 +425,7 @@ async fn run_add(config_overrides: &CliConfigOverrides, add_args: AddArgs) -> Re
             .map(|client_id| McpServerOAuthConfig {
                 client_id: Some(client_id),
                 callback_port: None,
+                authorization_origins: Default::default(),
             }),
         oauth_resource: oauth_resource.clone(),
         tools: HashMap::new(),
@@ -562,6 +563,11 @@ async fn run_login(config: &Config, login_args: LoginArgs) -> Result<()> {
     );
     let http_client = apply_http_headers_helper(http_client, server, config.cwd.to_path_buf())
         .map_err(anyhow::Error::msg)?;
+    let http_client = codex_rmcp_client::with_oauth_authorization_origins(
+        http_client,
+        &url,
+        server.oauth_authorization_origins(),
+    )?;
     let explicit_scopes = (!scopes.is_empty()).then_some(scopes);
     let discovered_scopes = if explicit_scopes.is_none() && server.scopes.is_none() {
         discover_supported_scopes(

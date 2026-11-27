@@ -2,6 +2,8 @@ use super::*;
 
 #[path = "binding_hook_tests.rs"]
 mod configured_hook_binding_tests;
+#[path = "oauth_authorization_reconciliation_tests.rs"]
+mod oauth_authorization_reconciliation_tests;
 #[path = "binding_retained_tests.rs"]
 mod retained_binding_tests;
 use crate::McpBinding;
@@ -114,6 +116,7 @@ impl McpConnectionSet {
                 /*lifecycle*/ None,
                 ElicitationRequestRouter::default(),
             ),
+            pending_elicitation_authority: None,
         }
     }
 

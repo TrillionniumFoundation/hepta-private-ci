@@ -168,6 +168,14 @@ impl ExecServerTransportParams {
 /// use it when they need environment-owned network requests but should not
 /// depend on the concrete connection type or how that connection is established.
 pub trait HttpClient: Send + Sync {
+    /// A local owner may retire the explicit authorization context while an
+    /// OAuth operation is reading a response. Consumers must then drop that
+    /// operation, including its original streamed body. This token conveys no
+    /// destination authority and does not replace restricted transport checks.
+    fn restricted_request_cancellation(&self) -> Option<tokio_util::sync::CancellationToken> {
+        None
+    }
+
     /// Enforces the original configured resource's address capability on the
     /// actual connector and every redirect, with request-scoped cancellation.
     /// An implementation that lacks this capability rejects before HTTP I/O;

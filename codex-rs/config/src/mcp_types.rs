@@ -149,6 +149,15 @@ pub struct McpServerOAuthConfig {
     /// Fixed callback port that takes precedence over Codex's global OAuth callback port.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub callback_port: Option<u16>,
+
+    /// Exact canonical OAuth authorization origins explicitly granted by the owner.
+    /// Metadata and plugins cannot add origins; DNS names remain public-address-only.
+    #[serde(
+        default,
+        skip_serializing_if = "codex_protocol::OAuthAuthorizationOrigins::is_empty"
+    )]
+    #[schemars(with = "Vec<String>")]
+    pub authorization_origins: codex_protocol::OAuthAuthorizationOrigins,
 }
 
 /// Authentication flow Codex attempts after resolving an HTTP MCP server's
@@ -275,6 +284,13 @@ impl McpServerConfig {
         self.oauth
             .as_ref()
             .and_then(|oauth| oauth.client_id.as_deref())
+    }
+
+    pub fn oauth_authorization_origins(&self) -> codex_protocol::OAuthAuthorizationOrigins {
+        self.oauth
+            .as_ref()
+            .map(|oauth| oauth.authorization_origins.clone())
+            .unwrap_or_default()
     }
 
     pub fn oauth_callback_port(&self, global_callback_port: Option<u16>) -> Option<u16> {
@@ -574,3 +590,7 @@ mod option_duration_secs {
 #[cfg(test)]
 #[path = "mcp_types_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "mcp_oauth_authorization_origins_tests.rs"]
+mod oauth_authorization_origins_tests;

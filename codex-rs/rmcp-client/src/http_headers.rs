@@ -219,6 +219,10 @@ impl HttpHeadersClient {
 }
 
 impl HttpClient for HttpHeadersClient {
+    fn restricted_request_cancellation(&self) -> Option<tokio_util::sync::CancellationToken> {
+        self.inner.restricted_request_cancellation()
+    }
+
     fn http_request_stream_restricted(
         &self,
         params: HttpRequestRestrictedParams,
