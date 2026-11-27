@@ -3,6 +3,7 @@ use crate::session::session::Session;
 use crate::session::turn_context::TurnContext;
 use crate::tools::context::SharedTurnDiffTracker;
 use crate::tools::sandboxing::ToolError;
+use crate::unified_exec::ExecApprovalTerminal;
 use codex_analytics::ArtifactOperation;
 use codex_analytics::ArtifactOperationLifecycle;
 use codex_analytics::build_track_events_context;
@@ -30,6 +31,7 @@ use codex_utils_path_uri::PathUri;
 use codex_utils_string::truncate_middle_with_token_budget;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use super::format_exec_output_str;
@@ -191,6 +193,7 @@ pub(crate) enum ToolEmitter {
         parsed_cmd: Vec<ParsedCommand>,
         process_id: Option<String>,
         plugin_attribution: Option<PluginCommandAttribution>,
+        approval_terminal: Option<Arc<ExecApprovalTerminal>>,
     },
 }
 
@@ -222,7 +225,21 @@ impl ToolEmitter {
             parsed_cmd,
             process_id,
             plugin_attribution,
+            approval_terminal: None,
         }
+    }
+
+    pub(crate) fn with_approval_terminal(
+        mut self,
+        terminal: Option<Arc<ExecApprovalTerminal>>,
+    ) -> Self {
+        if let Self::UnifiedExec {
+            approval_terminal, ..
+        } = &mut self
+        {
+            *approval_terminal = terminal;
+        }
+        self
     }
 
     pub async fn emit(&self, ctx: ToolEventCtx<'_>, stage: ToolEventStage<'_>) {
@@ -343,20 +360,24 @@ impl ToolEmitter {
                     parsed_cmd,
                     process_id,
                     plugin_attribution,
+                    approval_terminal,
                 },
                 stage,
             ) => {
                 emit_exec_stage(
                     ctx,
-                    ExecCommandInput::new(
-                        command,
-                        cwd,
-                        parsed_cmd,
-                        *source,
-                        /*interaction_input*/ None,
-                        process_id.as_deref(),
-                        plugin_attribution.as_ref(),
-                    ),
+                    ExecCommandInput {
+                        approval_terminal: approval_terminal.as_deref(),
+                        ..ExecCommandInput::new(
+                            command,
+                            cwd,
+                            parsed_cmd,
+                            *source,
+                            /*interaction_input*/ None,
+                            process_id.as_deref(),
+                            plugin_attribution.as_ref(),
+                        )
+                    },
                     stage,
                 )
                 .await;
@@ -468,6 +489,7 @@ struct ExecCommandInput<'a> {
     interaction_input: Option<&'a str>,
     process_id: Option<&'a str>,
     plugin_attribution: Option<&'a PluginCommandAttribution>,
+    approval_terminal: Option<&'a ExecApprovalTerminal>,
 }
 
 impl<'a> ExecCommandInput<'a> {
@@ -488,6 +510,7 @@ impl<'a> ExecCommandInput<'a> {
             interaction_input,
             process_id,
             plugin_attribution,
+            approval_terminal: None,
         }
     }
 }
@@ -566,6 +589,14 @@ async fn emit_exec_end(
     exec_result: ExecCommandResult,
 ) {
     let (plugin_id, script_path) = plugin_attribution_fields(exec_input.plugin_attribution);
+    let status = if exec_input
+        .approval_terminal
+        .is_some_and(|terminal| terminal.cancelled_at_completion(&ctx.turn.sub_id, ctx.call_id))
+    {
+        CommandExecutionStatus::Declined
+    } else {
+        exec_result.status.into()
+    };
     ctx.session
         .emit_turn_item_completed(
             ctx.turn,
@@ -579,7 +610,7 @@ async fn emit_exec_end(
                 parsed_cmd: exec_input.parsed_cmd.to_vec(),
                 source: exec_input.source,
                 interaction_input: exec_input.interaction_input.map(str::to_owned),
-                status: exec_result.status.into(),
+                status,
                 stdout: Some(exec_result.stdout),
                 stderr: Some(exec_result.stderr),
                 aggregated_output: Some(exec_result.aggregated_output),

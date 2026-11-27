@@ -50,6 +50,7 @@ use crate::unified_exec::UnifiedExecError;
 use crate::unified_exec::UnifiedExecProcessManager;
 use crate::unified_exec::WriteStdinInteractionEvent;
 use crate::unified_exec::WriteStdinRequest;
+use crate::unified_exec::approval_terminal::ExecApprovalTerminal;
 use crate::unified_exec::async_watcher::emit_exec_end_for_unified_exec;
 use crate::unified_exec::async_watcher::emit_failed_exec_end_for_unified_exec;
 use crate::unified_exec::async_watcher::spawn_exit_watcher;
@@ -383,6 +384,7 @@ async fn emit_failed_initial_exec_end_if_unstored(
     fallback_output: String,
     message: String,
     wall_time: Duration,
+    approval_terminal: Option<Arc<ExecApprovalTerminal>>,
 ) {
     if process_started_alive {
         return;
@@ -400,6 +402,7 @@ async fn emit_failed_initial_exec_end_if_unstored(
         fallback_output,
         message,
         wall_time,
+        approval_terminal,
     )
     .await;
 }
@@ -605,6 +608,7 @@ impl UnifiedExecProcessManager {
                 text.clone(),
                 message.clone(),
                 wall_time,
+                process.approval_terminal(),
             )
             .await;
             self.release_process_id(request.process_id).await;
@@ -626,6 +630,7 @@ impl UnifiedExecProcessManager {
                 text.clone(),
                 message.clone(),
                 wall_time,
+                process.approval_terminal(),
             )
             .await;
             self.release_process_id(request.process_id).await;
@@ -698,6 +703,7 @@ impl UnifiedExecProcessManager {
                     text.clone(),
                     message.clone(),
                     wall_time,
+                    process.approval_terminal(),
                 )
                 .await;
                 self.release_process_id(request.process_id).await;
@@ -720,6 +726,7 @@ impl UnifiedExecProcessManager {
                 text.clone(),
                 exit,
                 wall_time,
+                process.approval_terminal(),
             )
             .await;
 

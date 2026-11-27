@@ -217,6 +217,7 @@ use codex_protocol::exec_output::StreamOutput;
 mod code_mode_warning;
 pub(crate) mod context_window;
 mod environment;
+mod exec_approval;
 pub(crate) mod extension_metrics;
 mod handlers;
 mod inject;
@@ -314,6 +315,8 @@ use crate::tools::sandboxing::ApprovalAction;
 use crate::tools::sandboxing::ApprovalStore;
 use crate::turn_timing::TurnTimingState;
 use crate::turn_timing::record_turn_ttfm_metric;
+use crate::unified_exec::ExecApprovalTerminal;
+use crate::unified_exec::PendingExecApprovalCancellation;
 use crate::unified_exec::UnifiedExecProcessManager;
 use crate::windows_sandbox::WindowsSandboxLevelExt;
 use codex_core_plugins::PluginCommandAttribution;
@@ -2683,10 +2686,6 @@ impl Session {
     /// be used to derive the available decisions via
     /// [ExecApprovalRequestEvent::default_available_decisions].
     #[allow(clippy::too_many_arguments)]
-    #[expect(
-        clippy::await_holding_invalid_type,
-        reason = "active turn checks and turn state updates must remain atomic"
-    )]
     pub async fn request_command_approval(
         &self,
         turn_context: &TurnContext,
@@ -2701,6 +2700,45 @@ impl Session {
         additional_permissions: Option<AdditionalPermissionProfile>,
         available_decisions: Option<Vec<ReviewDecision>>,
         plugin_attribution_override: Option<PluginCommandAttribution>,
+    ) -> ReviewDecision {
+        self.request_command_approval_with_terminal(
+            turn_context,
+            call_id,
+            approval_id,
+            environment_id,
+            command,
+            cwd,
+            reason,
+            network_approval_context,
+            proposed_execpolicy_amendment,
+            additional_permissions,
+            available_decisions,
+            plugin_attribution_override,
+            /*exec_terminal*/ None,
+        )
+        .await
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "active turn checks and turn state updates must remain atomic"
+    )]
+    pub(crate) async fn request_command_approval_with_terminal(
+        &self,
+        turn_context: &TurnContext,
+        call_id: String,
+        approval_id: Option<String>,
+        environment_id: Option<String>,
+        command: Vec<String>,
+        cwd: AbsolutePathBuf,
+        reason: Option<String>,
+        network_approval_context: Option<NetworkApprovalContext>,
+        proposed_execpolicy_amendment: Option<ExecPolicyAmendment>,
+        additional_permissions: Option<AdditionalPermissionProfile>,
+        available_decisions: Option<Vec<ReviewDecision>>,
+        plugin_attribution_override: Option<PluginCommandAttribution>,
+        exec_terminal: Option<Arc<ExecApprovalTerminal>>,
     ) -> ReviewDecision {
         let _elicitation = self.services.elicitations.register();
         //  command-level approvals use `call_id`.
@@ -2719,7 +2757,20 @@ impl Session {
                         return ReviewDecision::Abort;
                     }
                     let mut ts = at.turn_state.lock().await;
-                    ts.insert_pending_approval(effective_approval_id.clone(), tx_approve)
+                    let exec_cancellation = exec_terminal
+                        .filter(|_| approval_id.is_some())
+                        .and_then(|terminal| {
+                            PendingExecApprovalCancellation::new(
+                                turn_context.sub_id.clone(),
+                                &call_id,
+                                terminal,
+                            )
+                        });
+                    ts.insert_pending_approval_with_exec_cancellation(
+                        effective_approval_id.clone(),
+                        tx_approve,
+                        exec_cancellation,
+                    )
                 }
                 None => return ReviewDecision::Abort,
             }

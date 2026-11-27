@@ -24,6 +24,7 @@ use crate::mcp_tool_call::McpToolApprovalMetadata;
 use crate::session::TurnInputQueue;
 use crate::session::turn_context::TurnContext;
 use crate::tasks::AnySessionTask;
+use crate::unified_exec::PendingExecApprovalCancellation;
 use codex_protocol::models::AdditionalPermissionProfile;
 use codex_protocol::protocol::McpInvocation;
 use codex_protocol::protocol::ReviewDecision;
@@ -391,7 +392,7 @@ impl TurnRecoveryAuthority {
 /// Mutable state for a single turn.
 #[derive(Default)]
 pub(crate) struct TurnState {
-    pending_approvals: HashMap<String, oneshot::Sender<ReviewDecision>>,
+    pending_approvals: HashMap<String, PendingApproval>,
     pending_request_permissions: HashMap<String, PendingRequestPermissions>,
     pending_user_input: HashMap<String, oneshot::Sender<RequestUserInputResponse>>,
     pending_elicitations: HashMap<(String, RequestId), oneshot::Sender<ElicitationResponse>>,
@@ -406,6 +407,11 @@ pub(crate) struct TurnState {
     pub(crate) token_usage_at_turn_start: TokenUsage,
 }
 
+struct PendingApproval {
+    sender: oneshot::Sender<ReviewDecision>,
+    exec_cancellation: Option<PendingExecApprovalCancellation>,
+}
+
 pub(crate) struct PendingRequestPermissions {
     pub(crate) tx_response: oneshot::Sender<RequestPermissionsResponse>,
     pub(crate) requested_permissions: RequestPermissionProfile,
@@ -418,14 +424,48 @@ impl TurnState {
         key: String,
         tx: oneshot::Sender<ReviewDecision>,
     ) -> Option<oneshot::Sender<ReviewDecision>> {
-        self.pending_approvals.insert(key, tx)
+        self.insert_pending_approval_with_exec_cancellation(
+            key, tx, /*exec_cancellation*/ None,
+        )
+    }
+
+    pub(crate) fn insert_pending_approval_with_exec_cancellation(
+        &mut self,
+        key: String,
+        sender: oneshot::Sender<ReviewDecision>,
+        exec_cancellation: Option<PendingExecApprovalCancellation>,
+    ) -> Option<oneshot::Sender<ReviewDecision>> {
+        self.pending_approvals
+            .insert(
+                key,
+                PendingApproval {
+                    sender,
+                    exec_cancellation,
+                },
+            )
+            .map(|previous| previous.sender)
+    }
+
+    pub(crate) fn mark_pending_exec_approval_cancelled(
+        &self,
+        approval_id: &str,
+        supplied_turn_id: Option<&str>,
+    ) {
+        if let Some(pending) = self.pending_approvals.get(approval_id)
+            && !pending.sender.is_closed()
+            && let Some(cancellation) = &pending.exec_cancellation
+        {
+            cancellation.mark_explicit_abort(supplied_turn_id);
+        }
     }
 
     pub(crate) fn remove_pending_approval(
         &mut self,
         key: &str,
     ) -> Option<oneshot::Sender<ReviewDecision>> {
-        self.pending_approvals.remove(key)
+        self.pending_approvals
+            .remove(key)
+            .map(|pending| pending.sender)
     }
 
     pub(crate) fn clear_pending_waiters(&mut self) {
