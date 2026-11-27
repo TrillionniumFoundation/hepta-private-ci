@@ -299,3 +299,205 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     Ok(())
 }
+
+/// Measure the two independent Windows deletion grants with actual file objects.
+/// This is diagnostic evidence, not a replacement for the original refusal tests.
+#[test]
+fn record_native_write_restricted_delete_routes() -> Result<()> {
+    use std::os::windows::fs::OpenOptionsExt;
+
+    fn result<T>(value: std::io::Result<T>) -> serde_json::Value {
+        match value {
+            Ok(_) => serde_json::json!({"allowed": true, "error": null}),
+            Err(error) => serde_json::json!({
+                "allowed": false,
+                "error": error.raw_os_error(),
+                "kind": format!("{:?}", error.kind()),
+            }),
+        }
+    }
+
+    unsafe fn replace_dacl(path: &std::path::Path, grants: &[(*mut c_void, u32)]) -> Result<()> {
+        let entries: Vec<EXPLICIT_ACCESS_W> = grants
+            .iter()
+            .map(|(sid, mask)| EXPLICIT_ACCESS_W {
+                grfAccessPermissions: *mask,
+                grfAccessMode: GRANT_ACCESS,
+                grfInheritance: 0,
+                Trustee: TRUSTEE_W {
+                    pMultipleTrustee: std::ptr::null_mut(),
+                    MultipleTrusteeOperation: 0,
+                    TrusteeForm: TRUSTEE_IS_SID,
+                    TrusteeType: TRUSTEE_IS_UNKNOWN,
+                    ptstrName: sid.cast(),
+                },
+            })
+            .collect();
+        let mut acl = std::ptr::null_mut();
+        let code = SetEntriesInAclW(
+            entries.len() as u32,
+            entries.as_ptr(),
+            std::ptr::null_mut(),
+            &mut acl,
+        );
+        anyhow::ensure!(code == ERROR_SUCCESS, "create diagnostic DACL: {code}");
+        let code = SetNamedSecurityInfoW(
+            to_wide(path).as_ptr() as *mut u16,
+            SE_FILE_OBJECT,
+            DACL_SECURITY_INFORMATION
+                | windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            acl,
+            std::ptr::null_mut(),
+        );
+        if !acl.is_null() {
+            LocalFree(acl as HLOCAL);
+        }
+        anyhow::ensure!(code == ERROR_SUCCESS, "set diagnostic DACL: {code}");
+        Ok(())
+    }
+
+    let fixture = tempfile::tempdir()?;
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let capability = LocalSid::from_string("S-1-5-21-151-252-353-454")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    let write_restricted = OwnedToken(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
+    });
+    let full_restricted = OwnedToken(unsafe {
+        let mut token = 0;
+        let entry = SID_AND_ATTRIBUTES {
+            Sid: capability.as_ptr(),
+            Attributes: 0,
+        };
+        let ok = CreateRestrictedToken(
+            base.0,
+            DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
+            0,
+            std::ptr::null(),
+            0,
+            std::ptr::null(),
+            1,
+            &entry,
+            &mut token,
+        );
+        anyhow::ensure!(
+            ok != 0,
+            "create all-access restricted control: {}",
+            GetLastError()
+        );
+        token
+    });
+    for token in [write_restricted.0, full_restricted.0] {
+        assert!(unsafe { token_has_restricting_sid(token, capability.as_ptr())? });
+        assert!(!unsafe { token_has_restricting_sid(token, everyone.as_ptr())? });
+    }
+
+    let read_mask = windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ
+        | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
+    let capability_mask =
+        read_mask | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE | DELETE;
+    let delete_child = windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+    let mut observations = Vec::new();
+    for (mode, token) in [
+        ("actual-production-write-restricted", write_restricted.0),
+        (
+            "independent-control-all-access-restricted",
+            full_restricted.0,
+        ),
+    ] {
+        for (label, child_delete, parent_delete, cap_grant) in [
+            ("file-delete-only", true, false, false),
+            ("parent-delete-child-only", false, true, false),
+            ("neither-delete-grant", false, false, false),
+            ("explicit-workspace-capability", true, false, true),
+        ] {
+            let parent = fixture.path().join(format!("{mode}-{label}"));
+            std::fs::create_dir(&parent)?;
+            let file = parent.join("file.txt");
+            let directory = parent.join("empty-directory");
+            std::fs::write(&file, "original")?;
+            std::fs::create_dir(&directory)?;
+            let parent_mask = read_mask | if parent_delete { delete_child } else { 0 };
+            let child_mask = read_mask | if child_delete { DELETE } else { 0 };
+            let parent_grants = if cap_grant {
+                vec![
+                    (everyone.as_ptr(), FILE_ALL_ACCESS),
+                    (capability.as_ptr(), capability_mask),
+                ]
+            } else {
+                vec![(everyone.as_ptr(), parent_mask)]
+            };
+            let child_grants = if cap_grant {
+                vec![
+                    (everyone.as_ptr(), FILE_ALL_ACCESS),
+                    (capability.as_ptr(), capability_mask),
+                ]
+            } else {
+                vec![(everyone.as_ptr(), child_mask)]
+            };
+            unsafe {
+                replace_dacl(&parent, &parent_grants)?;
+                replace_dacl(&file, &child_grants)?;
+                replace_dacl(&directory, &child_grants)?;
+            }
+            let mut observation = {
+                let _impersonation = unsafe { Impersonation::enter(token)? };
+                let probe = |path: &std::path::Path, mask| {
+                    result(
+                        std::fs::OpenOptions::new()
+                            .access_mode(mask)
+                            .share_mode(7)
+                            .custom_flags(
+                                windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS,
+                            )
+                            .open(path),
+                    )
+                };
+                serde_json::json!({
+                    "mode": mode,
+                    "case": label,
+                    "parent_everyone_mask": parent_grants[0].1,
+                    "child_everyone_mask": child_grants[0].1,
+                    "capability_granted": cap_grant,
+                    "read": result(std::fs::read(&file)),
+                    "write": result(std::fs::write(&file, "rewritten")),
+                    "file_delete_handle": probe(&file, DELETE),
+                    "parent_delete_child_handle": probe(&parent, delete_child),
+                    "write_dac_handle": probe(
+                        &file, windows_sys::Win32::Storage::FileSystem::WRITE_DAC),
+                    "write_owner_handle": probe(
+                        &file, windows_sys::Win32::Storage::FileSystem::WRITE_OWNER),
+                    "remove_file": result(std::fs::remove_file(&file)),
+                    "remove_directory": result(std::fs::remove_dir(&directory)),
+                })
+            };
+            observation["file_exists_after"] = file.exists().into();
+            observation["directory_exists_after"] = directory.exists().into();
+            // Restore only this test's own surviving objects after impersonation.
+            // Their creator remains owner and can restore their original cleanup access.
+            unsafe {
+                replace_dacl(&parent, &[(everyone.as_ptr(), FILE_ALL_ACCESS)])?;
+                for path in [&file, &directory] {
+                    if path.exists() {
+                        replace_dacl(path, &[(everyone.as_ptr(), FILE_ALL_ACCESS)])?;
+                    }
+                }
+            }
+            observations.push(observation);
+        }
+    }
+    assert_eq!(observations.len(), 8);
+    eprintln!(
+        "HIA_WINDOWS_DELETE_DIAGNOSTIC {}",
+        serde_json::json!({
+            "schema": "hia.windows-restricted-token-delete-diagnostic.v1",
+            "diagnostic_only": true,
+            "production_qualification": false,
+            "original_refusal_tests_unchanged": true,
+            "observations": observations,
+        }),
+    );
+    Ok(())
+}

@@ -1,0 +1,58 @@
+{
+  "base": "827a77079cb5937ea9236381491163896cf16ed6",
+  "diagnostic_only": true,
+  "native_format_commands": [
+    {
+      "bytes": 0,
+      "command": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "name": "fmt",
+      "returncode": 0,
+      "seconds": 0.23400941700674593,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "command": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "name": "diffcheck",
+      "returncode": 0,
+      "seconds": 0.016088624950498343,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_test_bytes_unchanged": true,
+  "original_windows_target_pending": true,
+  "production_qualification": false,
+  "source_pins": {
+    ".github/workflows/hia-windows-token-delete.yml": {
+      "bytes": 2694,
+      "sha256": "bea7fe9feed1e7cc789aecf77703e7c59c60a567a19980c4cbbe2e5505bc3b9b"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1742739,
+      "sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423450,
+      "sha256": "3f314e2537b62aee2e303ff51f4ac29bb88afd3b73d05c6f175a35916559ef85"
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "bytes": 2483,
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe"
+    },
+    "codex-rs/windows-sandbox-rs/src/token.rs": {
+      "bytes": 18359,
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
+      "bytes": 19675,
+      "sha256": "9c745871698dfd0d34b54afb03ec8209228c788b9c2443ab5f4d53aed0b26b92"
+    }
+  }
+}
