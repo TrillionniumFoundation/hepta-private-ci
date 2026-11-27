@@ -13,11 +13,12 @@ def checksum(b):return hashlib.sha256(b).hexdigest()
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('destination',type=Path)
+    parser.add_argument('--manifest',default='evidence_manifest.json',choices=('evidence_manifest.json','reserve_manifest.json'))
     args=parser.parse_args()
     dest=args.destination.resolve()
     if dest.exists() and any(dest.iterdir()):raise FileExistsError('choose an empty directory')
     src=Path(__file__).resolve().parent
-    info=json.loads((src/'evidence_manifest.json').read_bytes())
+    info=json.loads((src/args.manifest).read_bytes())
     chunks=[]
     for row in info['parts']:
         b=(src/row['file']).read_bytes()

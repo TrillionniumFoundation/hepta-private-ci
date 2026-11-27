@@ -35,3 +35,13 @@ Fits use measured process-time limits. Different hardware can complete different
 The direct solver builds input directions from target and parent calibration records. It estimates a downstream Jacobian by paired forward evaluations, solves a ridge problem and tests finite steps through the actual nonlinear cell. The first-order baseline differentiates the complete same-site chain, including the recurrent mean and price feedback, by an exact reverse pass on each bilinear interpolation region. Low-rank Adam trains two rank-three factors in that site. Parent construction fits a supervised ridge readout over random physical hidden features. Every transfer arm keeps this readout fixed.
 
 Scores are retained at full precision for each recording and class. Old and new bootstrap comparisons pair the predictions by speaker and by parent, using the same resampled speakers for every arm. Initiation, feature extraction, parent construction, fitting and test costs have separate clocks. Any ratio of cold times must specify which common preparation and evaluation costs it includes.
+
+The separate 40-speaker reserve is prespecified in RESERVE_PROTOCOL.md. The original primary scoring files and untouched reserve can be recounted independently.
+
+```bash
+python restore_evidence.py /tmp/audio-reserve --manifest reserve_manifest.json
+python reserve_recount.py /tmp/audio-reserve evidence/RESULTS.json /tmp/audio-reserve-recount.json
+cmp RESERVE_CHECK.json /tmp/audio-reserve-recount.json
+```
+
+The reserve’s speaker-only intervals match the primary bootstrap convention. Its separate two-way interval draws speaker and model-seed indices independently while retaining the paired method predictions at their intersection. Three seeds support only descriptive estimates of training variability. Audio files come from the repositories and exact revisions in PROTOCOL.md. The released score matrices and per-speaker identities support checking the retention and transfer claims without downloading either corpus.
