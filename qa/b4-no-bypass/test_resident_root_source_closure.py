@@ -351,7 +351,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.rejects(filename, "fn require_fresh_admission_channel(",
                      "channel\n            .as_ref()\n            .is_none_or(|channel| channel.execution_requested)")
         self.rejects(filename, "fn recover_original_root_stream(",
-                     "ClientOriginV3::Readback(authorization)", "ClientOriginV3::Fresh")
+                     "ClientOriginV3::Readback(Box::new(authorization))", "ClientOriginV3::Fresh")
 
     def test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires(self):
         filename = "resident_learning_delivery.rs"

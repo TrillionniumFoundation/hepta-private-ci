@@ -1,0 +1,45 @@
+{
+  "device": "NVIDIA GeForce RTX 4060",
+  "frontend_source": "1b788346be5fa769ff5b25d81c0e2b5eb28134e0f6cd13cebc03c1110e85f49b",
+  "frozen_parameters": true,
+  "generated_runner": "8e112df5ec3b79e970fb8fd885cc1c291ca0de31d371220ac68a821ae11a11c1",
+  "import_hash_load_decode_wall": 21.481135030044243,
+  "input_hashes": {
+    "dev": "099d6580639f03e16c72daca506eda6b8745fd9fd4e54deb83f103a199002d58",
+    "retain": "9590a7d57fec843d18fe44ff61d0d49f8c35dffccf4320043158dd844c9a5fed",
+    "test": "750526a732c93c27079a42ef9aea113e876661c4e0b3f5e6237e81c9ec268085",
+    "train": "b708c4fbc0018aa0cac928d9de10b22663fe2479904e6c7491e6c3dd90190acd"
+  },
+  "missing_weights": [],
+  "model": "facebook/wav2vec2-base-960h",
+  "model_parameters": 94395552,
+  "original_runner": "7591f5b81322e5b68b1de5d28d7213421bc63d0cf4df5b9a012f2ac1abc122fa",
+  "output_hashes": {
+    "dev": "9a92ea8876f800b6d2d4c65f994777d6e4356da6561e6ad2cdc952288c260e53",
+    "retain": "b4b714f22e1ddab2807131f9df6b682e3c20f4b60997a32037eb9f0f19cc0de3",
+    "test": "0fa02aad737aac1a38d90a73425627cb3a70dc9207c05f9616303ac08adf9472",
+    "train": "e49ab7f29980168425db6f5596ad0b4d82da183efde3660cfa12c3290742611e"
+  },
+  "prefix_inference_wall": 4.457219487987459,
+  "prefix_samples": [
+    7680,
+    15360,
+    23040,
+    30720,
+    38400,
+    46080
+  ],
+  "revision": "22aad52d435eb6dbaf354bdad9b0da84ce7d6156",
+  "scales": [
+    0.12083430588245392,
+    0.08617836087492198
+  ],
+  "source_manifest_sha256": "a6b1f4bd99d4ac2983083cb6422232ece66941edec310e82ef48b38bbf0ac453",
+  "source_recording_count": 192,
+  "torch": "2.10.0+cu130",
+  "total_wall": 26.160180253908038,
+  "weight_hashes": {
+    "config.json": "d3ec255c063d9f95057b553b19c20135b259875834a4fe9deb218a6be25b4cf3",
+    "model.safetensors": "8aa76ab2243c81747a1f832954586bc566090c83a0ac167df6f31f0fa917d74a"
+  }
+}

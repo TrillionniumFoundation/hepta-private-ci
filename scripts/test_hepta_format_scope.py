@@ -50,6 +50,82 @@ class FormatterScopeTests(unittest.TestCase):
         path.write_text(content)
         return path
 
+    def test_daemon_maintenance_selects_the_six_live_owners_before_resolving_manifests(
+        self,
+    ):
+        import json
+
+        spec = importlib.util.spec_from_file_location(
+            "daemon_format_tests_target",
+            Path(__file__).with_name("hepta_daemon_learning_format.py"),
+        )
+        lane = importlib.util.module_from_spec(spec)
+        with patch.dict(sys.modules, {"format": FMT}):
+            spec.loader.exec_module(lane)
+        owners = (
+            "hepta-agentd",
+            "hepta-learning-artifacts",
+            "hepta-intelligence-eval",
+            "hepta-contracts",
+            "hepta-neuron",
+            "hepta-learning-ledger",
+        )
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        expected = []
+        for owner in owners:
+            self.write(
+                f"codex-rs/{owner}/Cargo.toml",
+                f'[package]\nname="codex-{owner}"\nedition.workspace=true\n',
+            )
+            path = f"codex-rs/{owner}/src/lib.rs"
+            self.write(path, "fn live() {}\n")
+            expected.append(path)
+        self.git("add", ".")
+        self.git("commit", "-qm", "live owners")
+        base = self.git("rev-parse", "HEAD").strip()
+
+        self.write("codex-rs/rustfmt.toml", "max_width=90\n")
+        new_test = "codex-rs/hepta-agentd/tests/new test.rs"
+        self.write(new_test, "fn new_case() {}\n")
+        removed = expected.pop()
+        (self.root / removed).unlink()
+        ledger = "codex-rs/hepta-learning-ledger/examples/live.rs"
+        self.write(ledger, "fn live_example() {}\n")
+        self.git("add", ledger)
+        neighbor = "codex-rs/hepta-agentd-copy/src/lib.rs"
+        self.write(neighbor, "fn neighbor() {}\n")
+        archive = "AUDIT/source/codex-rs/hepta-agentd/src/lib.rs"
+        self.write(archive, "fn original() {}\n")
+        self.write(
+            "AUDIT/source/codex-rs/hepta-agentd/Cargo.toml",
+            '[package]\nname="archived"\nedition.workspace=true\n',
+        )
+        inventory = self.root / "scope.json"
+        with patch.object(
+            FMT, "run_formatter_group", return_value=FMT.FormatterResult("Rust", "", 0)
+        ) as run:
+            self.assertEqual(
+                lane.main(["--base", base, "--inventory", str(inventory)]), 0
+            )
+        record = json.loads(inventory.read_text())
+        self.assertEqual(record["base"], base)
+        self.assertEqual(record["selected"], sorted([*expected, ledger, new_test]))
+        self.assertEqual(
+            record["outside_maintenance_owners"], sorted([archive, neighbor])
+        )
+        group = run.call_args.args[0]
+        self.assertEqual(
+            [
+                Path(command.args[-1]).relative_to(self.root).as_posix()
+                for command in group.commands
+            ],
+            record["selected"],
+        )
+        for command in group.commands:
+            self.assertEqual(command.args[command.args.index("--edition") + 1], "2024")
+        with self.assertRaisesRegex(ValueError, "owning Rust workspace missing"):
+            FMT.scoped_formatter_groups(FMT.changed_paths(base), check=False, base=base)
+
     def test_real_staged_unstaged_new_and_deleted_paths(self):
         self.write("scripts/first.py")
         self.write("scripts/staged.py")

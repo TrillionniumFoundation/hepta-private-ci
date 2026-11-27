@@ -79,7 +79,7 @@ mod source;
 pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
     journal: LockedFileProductEvaluationExecutionStoreV1,
     witness: W,
-    plan: CellQ24SingleHeadTrainingPlanV1,
+    plan: Box<CellQ24SingleHeadTrainingPlanV1>,
     batch: CellQ24TrainingBatchV1,
     rule: CellQ24SgdRuleV1,
     key: ProductEvaluationExecutionKeyV1,

@@ -257,6 +257,7 @@ pub enum CellSplitObservationV1 {
 /// - fence_predecessor durably forbids old-generation writers.
 /// - cutover_with_final_use must consume an independently issued signed
 ///   Final-use grant AT the effect boundary and CAS the actual CNS route.
+///
 /// The executor never manufactures evaluation, selection or authority evidence.
 pub trait CellSplitExecutionPortsV1 {
     fn observe(

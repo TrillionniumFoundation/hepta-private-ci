@@ -13,6 +13,7 @@ use super::task_data::OriginalHistoricalSourceCellReadV1;
 use super::*;
 use crate::authority_host_runtime::RootInitialRunStartFilesV1;
 use crate::authority_host_service::generation_initial::historical_source_handoff::RootHistoricalSourceHandoffV1;
+use crate::authority_host_service::generation_initial::run_start_retention::RootOriginalRunStartPublisherV1;
 use crate::authority_host_service::generation_initial::run_start_retention::RootOriginalRunStartReadV1;
 use crate::authority_host_service::generation_initial::run_start_retention::RootRetainedRunStartDataV1;
 use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
@@ -178,8 +179,10 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             self.run_start,
             source.source.original_identity(),
             &self.original.target,
-            &pin.publisher,
-            pin.publisher_epoch,
+            RootOriginalRunStartPublisherV1 {
+                publisher: &pin.publisher,
+                publisher_epoch: pin.publisher_epoch,
+            },
             &pin.initial_profile,
             &pin.writer,
             &pin.target_files,

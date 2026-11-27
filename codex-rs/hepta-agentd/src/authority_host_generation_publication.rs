@@ -69,6 +69,7 @@ mod completed;
 mod completed_files;
 pub(crate) use completed::OriginalCompletedPublicationDataV1;
 pub(crate) use completed::OriginalCompletedPublicationModeV1;
+pub(crate) use completed::OriginalCompletedPublicationReadInputs;
 pub(crate) use completed::OriginalCompletedPublicationReadV1;
 pub(crate) use completed::with_original_publication_history;
 pub(crate) use completed_files::OriginalControlRecord;

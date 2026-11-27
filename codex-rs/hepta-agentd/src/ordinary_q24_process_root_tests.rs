@@ -179,12 +179,13 @@ impl OriginalRootInputs {
         &self,
         identity: &crate::AgentdIdentity,
         deployment: &HostGenerationInitialDeploymentV1,
-        target: &codex_hepta_neuron::CellGenerationObserverConfigV1,
-        target_paths: [&Path; 2],
+        (target, target_paths): (
+            &codex_hepta_neuron::CellGenerationObserverConfigV1,
+            [&Path; 2],
+        ),
         transfer: &Value,
         artifacts: &RootArtifactPublicationInputsV1,
-        data_directory: &Path,
-        learning_trust: &Path,
+        (data_directory, learning_trust): (&Path, &Path),
     ) -> anyhow::Result<Value> {
         let withdrawal = codex_hepta_learning_artifacts::write_dataset_withdrawal_snapshot_beneath(
             data_directory,

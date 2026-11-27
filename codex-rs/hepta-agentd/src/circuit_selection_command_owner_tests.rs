@@ -366,23 +366,25 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     drop(unused);
     let (stream, unused) = UnixStream::pair()?;
     assert!(
-        OriginalCircuitSelectionCommandClientV1::recover_from_original_stream(
-            stream,
-            crate::LearningIterationEvidencePeerV1 {
-                pid: peer.pid,
-                uid,
-                boot_id: peer.boot_id,
-                process_start_ticks: peer.process_start_ticks,
-                actor_id: f.config.decision.owners.selector.clone(),
+        OriginalCircuitSelectionCommandClientV1::recover_from_original_peer_stream(
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer: crate::LearningIterationEvidencePeerV1 {
+                    pid: peer.pid,
+                    uid,
+                    boot_id: peer.boot_id,
+                    process_start_ticks: peer.process_start_ticks,
+                    actor_id: f.config.decision.owners.selector.clone(),
+                },
+                original_owner_pidfd: command::pidfd()?,
+                timeout: Duration::from_secs(30),
+                lifetime: Duration::from_secs(300)
             },
-            command::pidfd()?,
             f.config.decision.clone(),
             f.config.scope.clone(),
             f.config.verifier.clone(),
             f.config.training_evidence.clone(),
             None,
-            Duration::from_secs(30),
-            Duration::from_secs(300),
         )
         .is_err()
     );

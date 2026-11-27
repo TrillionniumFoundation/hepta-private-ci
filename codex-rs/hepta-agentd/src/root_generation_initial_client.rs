@@ -165,7 +165,7 @@ impl RootGenerationInitialClient {
         let command = Command::Publish {
             expected: head_digest(&Some(expected.clone()))?,
             intent: self.profile.intent.clone(),
-            signed,
+            signed: Box::new(signed),
             witness,
         };
         if self.exchange(command)?.as_ref() != Some(next) {

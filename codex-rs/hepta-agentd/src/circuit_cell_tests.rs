@@ -31,6 +31,8 @@ mod causal_tests;
 mod clock_tests;
 #[path = "circuit_credit_tests.rs"]
 mod credit_tests;
+#[path = "circuit_credit_ledger_test_support.rs"]
+pub(crate) mod ledger_support;
 #[path = "circuit_cell_ports_tests.rs"]
 mod ports_tests;
 

@@ -74,10 +74,10 @@ enum EffectProvider {
 #[derive(Deserialize)]
 #[serde(untagged)]
 enum AutomationEffectHostFile {
-    Http(AutomationEffectHostFileV1),
-    Hcsn(hcsn::HcsnHostFileV2),
+    Http(Box<AutomationEffectHostFileV1>),
+    Hcsn(Box<hcsn::HcsnHostFileV2>),
     #[cfg(target_os = "linux")]
-    HcsnPq(hcsn_pq::HcsnPqHostFileV3),
+    HcsnPq(Box<hcsn_pq::HcsnPqHostFileV3>),
 }
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
@@ -145,11 +145,11 @@ struct AutomationEffectHostFileV1 {
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
         let config = match read_host_file(path)? {
-            AutomationEffectHostFile::Http(config) => config,
-            AutomationEffectHostFile::Hcsn(config) => return Self::open_hcsn(identity, config),
+            AutomationEffectHostFile::Http(config) => *config,
+            AutomationEffectHostFile::Hcsn(config) => return Self::open_hcsn(identity, *config),
             #[cfg(target_os = "linux")]
             AutomationEffectHostFile::HcsnPq(config) => {
-                return Self::open_hcsn_pq(identity, config);
+                return Self::open_hcsn_pq(identity, *config);
             }
         };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {

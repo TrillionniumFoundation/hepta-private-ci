@@ -124,7 +124,7 @@ impl OriginalCellQ24SourceCompletionV1 {
 pub struct OriginalCellQ24SourceReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
     prepared: Arc<CellQ24PreparedLearningV1>,
-    config: OriginalCellQ24SourceSigningConfigV1,
+    config: Box<OriginalCellQ24SourceSigningConfigV1>,
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
 }

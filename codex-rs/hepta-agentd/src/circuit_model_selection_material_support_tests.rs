@@ -70,13 +70,6 @@ pub(super) fn sign(
     Ok(evidence)
 }
 
-pub(super) fn ledger(
-    root: &std::path::Path,
-    objective: Digest32,
-) -> anyhow::Result<(LedgerWriter, Credentials)> {
-    ledger_at(root, objective, now()?, d("explicit-positive-ledger"))
-}
-
 pub(super) fn ledger_at(
     root: &std::path::Path,
     objective: Digest32,
@@ -266,37 +259,14 @@ pub(super) struct Material {
     pub(super) frozen: DatasetSnapshotReceiptV3,
 }
 
-pub(super) fn material(
-    root: &std::path::Path,
-    writer: &mut LedgerWriter,
-    credentials: &Credentials,
-    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
-    identity: &crate::AgentdIdentity,
-    baseline: &LoadedCellQ24ModelV1,
-    bundle: &CellCompatibilityBundleV1,
-    publication: &CircuitTaskSourcePublicationV1,
-) -> anyhow::Result<Material> {
-    material_with_profile(
-        root,
-        writer,
-        credentials,
-        source,
-        identity,
-        baseline,
-        bundle,
-        publication,
-        d("explicit-positive-independent-evaluation-profile"),
-    )
-}
-
 pub(super) fn unstarted_material_with_profile(
-    _root: &std::path::Path,
     writer: &mut LedgerWriter,
     credentials: &Credentials,
-    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
-    identity: &crate::AgentdIdentity,
-    baseline: &LoadedCellQ24ModelV1,
-    bundle: &CellCompatibilityBundleV1,
+    (source, identity): (
+        &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+        &crate::AgentdIdentity,
+    ),
+    (baseline, bundle): (&LoadedCellQ24ModelV1, &CellCompatibilityBundleV1),
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
     next_use_observer: StableId,
@@ -391,11 +361,11 @@ pub(super) fn unstarted_material_with_profile(
         update_rule,
     )?;
     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
-        initial: initial.clone(),
-        scope: scope.clone(),
+        initial,
+        scope,
         rule,
-        freeze_plan: freeze_plan.clone(),
-        freeze_evidence: freeze_evidence.clone(),
+        freeze_plan,
+        freeze_evidence,
         experience_signer: credentials.experience.clone(),
         dataset_signer: credentials.dataset.clone(),
         verifier: writer.verifier().clone(),
@@ -408,21 +378,19 @@ pub(super) fn material_with_profile(
     root: &std::path::Path,
     writer: &mut LedgerWriter,
     credentials: &Credentials,
-    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
-    identity: &crate::AgentdIdentity,
-    baseline: &LoadedCellQ24ModelV1,
-    bundle: &CellCompatibilityBundleV1,
+    (source, identity): (
+        &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+        &crate::AgentdIdentity,
+    ),
+    (baseline, bundle): (&LoadedCellQ24ModelV1, &CellCompatibilityBundleV1),
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
 ) -> anyhow::Result<Material> {
     let (config, optimizer) = unstarted_material_with_profile(
-        root,
         writer,
         credentials,
-        source,
-        identity,
-        baseline,
-        bundle,
+        (source, identity),
+        (baseline, bundle),
         publication,
         evaluation_profile,
         id("unused-positive-next-use-role")?,

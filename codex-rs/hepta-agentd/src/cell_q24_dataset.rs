@@ -100,6 +100,11 @@ impl CellQ24DatasetRuleV1 {
     }
 }
 
+struct DatasetReadInputs<'a> {
+    initial: &'a LearningIterationSnapshotV1,
+    baseline: &'a LoadedCellQ24ModelV1,
+}
+
 /// Borrow original owners. Construction creates no claim, file or authority.
 pub struct CellQ24DatasetReaderV1<'a, W: AnchorWitnessStore> {
     source: &'a CircuitTaskSourceReadbackV1<W>,
@@ -155,12 +160,11 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         freeze_evidence: &SignedLearningEvidenceV1,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
         self.read_current_at_clock(
-            initial,
-            baseline,
+            DatasetReadInputs { initial, baseline },
             rule,
             plan,
             freeze_evidence,
-            false,
+            /*require_work_deadline*/ false,
             || {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -182,19 +186,26 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         freeze_evidence: &SignedLearningEvidenceV1,
         clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
-        self.read_current_at_clock(initial, baseline, rule, plan, freeze_evidence, true, clock)
+        self.read_current_at_clock(
+            DatasetReadInputs { initial, baseline },
+            rule,
+            plan,
+            freeze_evidence,
+            /*require_work_deadline*/ true,
+            clock,
+        )
     }
 
     fn read_current_at_clock(
         &mut self,
-        initial: &LearningIterationSnapshotV1,
-        baseline: &LoadedCellQ24ModelV1,
+        inputs: DatasetReadInputs<'_>,
         rule: CellQ24DatasetRuleV1,
         plan: DatasetFreezePlanV2,
         freeze_evidence: &SignedLearningEvidenceV1,
         require_work_deadline: bool,
         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+        let DatasetReadInputs { initial, baseline } = inputs;
         let started_at = clock()?;
         let policy = rule.inclusion_policy_digest(initial)?;
         let request = &initial.request;

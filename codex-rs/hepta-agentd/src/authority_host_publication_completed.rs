@@ -26,6 +26,12 @@ pub(crate) enum OriginalCompletedPublicationModeV1 {
     ReadFinalized,
 }
 
+/// Requested read mode and the existing deadline; the reader retains all checks.
+pub(crate) struct OriginalCompletedPublicationReadInputs {
+    pub(crate) mode: OriginalCompletedPublicationModeV1,
+    pub(crate) end: Instant,
+}
+
 /// Exact read-only DATA. Only the enclosing completed-history lane can attest
 /// its final admission, after this reader and the original refusal finish.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -38,7 +44,7 @@ pub(crate) struct OriginalCompletedPublicationDataV1 {
 enum ReadPhase {
     AwaitingContext,
     Failed,
-    Observed(OriginalCompletedPublicationDataV1),
+    Observed(Box<OriginalCompletedPublicationDataV1>),
 }
 
 pub(crate) struct OriginalCompletedPublicationReadV1<'a> {
@@ -138,7 +144,7 @@ impl OriginalCompletedPublicationReadV1<'_> {
                 .map_err(io::Error::other)?,
             successor,
         };
-        self.phase = ReadPhase::Observed(data.clone());
+        self.phase = ReadPhase::Observed(Box::new(data.clone()));
         Ok(data)
     }
 

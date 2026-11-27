@@ -217,7 +217,7 @@ fn ordinary_cold_snapshot_rejects_missing_duplicate_and_linked_files() -> anyhow
     assert!(OriginalBusinessSnapshot::capture(&[path.clone(), path.clone()]).is_err());
     let link = directory.path().join("alias");
     std::os::unix::fs::symlink(&path, &link)?;
-    assert!(OriginalBusinessSnapshot::capture(&[link.clone()]).is_err());
+    assert!(OriginalBusinessSnapshot::capture(std::slice::from_ref(&link)).is_err());
     std::fs::remove_file(&link)?;
     std::fs::hard_link(&path, &link)?;
     assert!(before.require_unchanged(&paths).is_err());

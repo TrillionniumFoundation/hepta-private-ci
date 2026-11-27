@@ -211,7 +211,7 @@ class OriginalCGrantRootSourceTests(unittest.TestCase):
         self.check(STORE, "finish", (
             "self.mode != RootGenerationPublicationModeV1::Reserve",
             "!self.attempted.load(Ordering::Acquire)", "self.require_binding(signed)?",
-            "before.state != (GrantPhase::Attempted {})", "signed: signed.clone()",
+            "before.state != (GrantPhase::Attempted {})", "signed: Box::new(signed.clone())",
             "compare_and_set(&self.owner, &before, &issued)", "self.load_original()? != issued",
         ))
         self.reject(STORE, "require_exact", "GrantPhase::Attempted {} => Err(")

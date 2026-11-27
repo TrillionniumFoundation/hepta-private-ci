@@ -136,7 +136,7 @@ impl Response {
 pub(super) enum CommandResult {
     Completed {
         snapshot: String,
-        evidence: evidence_wire::Evidence,
+        evidence: Box<evidence_wire::Evidence>,
     },
     Missing,
     Pending,
@@ -157,7 +157,9 @@ pub(super) fn encode_completed(
     let encoded = encode_original_owner_snapshot_v1(&original.snapshot)?;
     Ok(CommandResult::Completed {
         snapshot: STANDARD_NO_PAD.encode(encoded),
-        evidence: evidence_wire::Evidence::from_original(&original.attestation),
+        evidence: Box::new(evidence_wire::Evidence::from_original(
+            &original.attestation,
+        )),
     })
 }
 

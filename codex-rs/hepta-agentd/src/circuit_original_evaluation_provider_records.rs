@@ -26,11 +26,19 @@ use codex_hepta_types::StableId;
 use super::Error;
 use super::OriginalCircuitEvaluationCohortConfigV1;
 use super::OriginalCircuitEvaluationEpisodeV1;
+use super::OriginalCircuitEvaluationSourceOwnersV1;
 use super::OriginalCircuitEvaluationSourceV1;
 use super::Publications;
 use crate::CircuitTaskSourcePublicationV1;
 use crate::circuit_learning_run_id_v1;
 use crate::circuit_task::CircuitTaskPolicyProjectionV1;
+
+/// Read-only lookup inputs; the original episode authentication follows unchanged.
+struct EpisodeRecords<'lookup, 'data> {
+    decisions: &'lookup BTreeMap<StableId, &'data AuthenticatedDecisionRecordV2>,
+    outcomes: &'lookup BTreeMap<StableId, (&'data AuthenticatedOutcomeRecordV2, Digest32)>,
+    publications: &'data Publications,
+}
 
 struct Episode<'a> {
     decision: &'a AuthenticatedDecisionRecordV2,
@@ -47,14 +55,14 @@ struct Episode<'a> {
 
 pub(super) fn assemble(
     config: &OriginalCircuitEvaluationCohortConfigV1,
-    ledger: &LedgerWriter,
+    OriginalCircuitEvaluationSourceOwnersV1 { ledger, sources }: &OriginalCircuitEvaluationSourceOwnersV1,
     dataset: &DatasetSnapshotReceiptV3,
     records: &[LedgerRecord],
     publications: &Publications,
-    sources: &[OriginalCircuitEvaluationSourceV1],
     training_binding: &super::binding::CandidateBinding,
     current: u64,
 ) -> Result<TemporalComparisonInputsV1, Error> {
+    let sources = sources.as_slice();
     let rule = &config.rule;
     let expected: BTreeSet<_> = rule
         .history
@@ -123,9 +131,11 @@ pub(super) fn assemble(
             config,
             ledger,
             requested,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -161,9 +171,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.episode,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -228,13 +240,16 @@ impl<'a> Episode<'a> {
         config: &OriginalCircuitEvaluationCohortConfigV1,
         ledger: &LedgerWriter,
         requested: &OriginalCircuitEvaluationEpisodeV1,
-        decisions: &BTreeMap<StableId, &'a AuthenticatedDecisionRecordV2>,
-        outcomes: &BTreeMap<StableId, (&'a AuthenticatedOutcomeRecordV2, Digest32)>,
-        publications: &'a Publications,
+        records: EpisodeRecords<'_, 'a>,
         sources: &[OriginalCircuitEvaluationSourceV1],
         training: &super::binding::CandidateBinding,
         current: u64,
     ) -> Result<Episode<'a>, Error> {
+        let EpisodeRecords {
+            decisions,
+            outcomes,
+            publications,
+        } = records;
         let decision = *decisions
             .get(&requested.episode_id)
             .ok_or(Error::Binding("original Decision"))?;

@@ -3,7 +3,6 @@
 
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 use codex_hepta_types::AuthorityPosture;
 
@@ -18,13 +17,16 @@ impl OriginalBExecution {
         &mut self,
         files: &OriginalBInputs,
         enrollment: &mut OriginalBEnrollment,
-        training: &LearningIterationSnapshotV1,
-        training_attestation: &SignedLearningEvidenceV1,
-        protocol: &OriginalBProtocolData,
-        authorities: &OriginalBAuthorities,
+        inputs: OriginalBExecutionInputs<'_>,
         clock: &dyn Fn() -> io::Result<u64>,
         mode: OriginalBResultMode,
     ) -> io::Result<OriginalBCompleted> {
+        let OriginalBExecutionInputs {
+            training,
+            training_attestation,
+            protocol,
+            authorities,
+        } = inputs;
         let original_training = training
             .receipts
             .last()
@@ -106,9 +108,8 @@ impl OriginalBExecution {
                     files,
                     authorities,
                     &self.plan,
-                    Digest32::from_array(enrollment.namespace),
-                    protocol.unit_profile(),
-                    enrollment.registered_at_seconds,
+                    enrollment,
+                    protocol,
                     clock,
                     admitted,
                 );

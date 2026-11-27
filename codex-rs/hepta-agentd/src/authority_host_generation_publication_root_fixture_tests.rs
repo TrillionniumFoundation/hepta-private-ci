@@ -365,7 +365,7 @@ impl Fixture {
         let profile_file = protected.path().join("learning.json");
         support::write_json(&profile_file, &profile)?;
         let (offer, receive) = UnixDatagram::pair()?;
-        let child = support::ChildOwner::spawn(receive, &state, terminal)?;
+        let child = support::ChildOwner::spawn(receive, &state, terminal, CHILD_TEST)?;
         let pin = support::pidfd(child.pid()?)?;
         let end = Instant::now() + Duration::from_secs(2);
         while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)

@@ -159,10 +159,10 @@ pub(crate) fn evidence_for_original(
     )?;
     let owner = LearningIterationEvidenceClientV1 {
         command: None,
-        channel: Mutex::new(Some(EvidenceChannel {
+        channel: Mutex::new(Some(Box::new(EvidenceChannel {
             transport,
             next_request_id: 1,
-        })),
+        }))),
         initial: config.initial.clone(),
         actor_id: config.initial.owners.owner(role.stage()).clone(),
         verifier: config.verifier.clone(),

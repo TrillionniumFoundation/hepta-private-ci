@@ -44,6 +44,10 @@ pub struct OriginalCellEvaluationModelMaterialConnectionV1 {
 }
 
 impl OriginalCellEvaluationModelMaterialConnectionV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -55,6 +59,36 @@ impl OriginalCellEvaluationModelMaterialConnectionV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        Self::from_original_peer_stream(
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
+            initial,
+            scope,
+            registration,
+            verifier,
+        )
+    }
+
+    /// Bind the material reader to the original evaluator peer and registered panel.
+    pub fn from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        registration: OriginalCellEvaluationPanelRegistrationV1,
+        verifier: LearningEvidenceVerifierV1,
+    ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let empty =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;

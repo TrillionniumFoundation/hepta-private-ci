@@ -4,14 +4,20 @@
 use super::*;
 use crate::AgentdIdentity;
 
+/// The original publisher identity and its epoch; neither field is authority.
+pub(crate) struct RootOriginalRunStartPublisherV1<'a> {
+    pub(crate) publisher: &'a CognitiveCheckpointPeerLifetime,
+    pub(crate) publisher_epoch: u64,
+}
+
 enum ReadState {
     AwaitingBinding,
-    Bound(AgentdIdentity),
+    Bound(Box<AgentdIdentity>),
     Verifying,
     Complete {
         files: Arc<RootInitialRunStartFilesV1>,
-        identity: AgentdIdentity,
-        frame: RunStartReadOnlyFrameV1,
+        identity: Box<AgentdIdentity>,
+        frame: Box<RunStartReadOnlyFrameV1>,
     },
 }
 
@@ -53,12 +59,15 @@ impl RootOriginalRunStartReadV1<'_> {
         &self,
         identity: &AgentdIdentity,
         target: &CellGenerationOwnerBindingV1,
-        publisher: &CognitiveCheckpointPeerLifetime,
-        publisher_epoch: u64,
+        publisher: RootOriginalRunStartPublisherV1<'_>,
         initial_profile: &str,
         writer: &str,
         target_files: &str,
     ) -> io::Result<()> {
+        let RootOriginalRunStartPublisherV1 {
+            publisher,
+            publisher_epoch,
+        } = publisher;
         let mut state = self.state.try_lock().map_err(|_| {
             self.failed.store(true, Ordering::Release);
             io::Error::other("original RunStart join busy")
@@ -92,7 +101,7 @@ impl RootOriginalRunStartReadV1<'_> {
                 "original RunStart retained publisher differs",
             ));
         }
-        *state = ReadState::Bound(identity.clone());
+        *state = ReadState::Bound(Box::new(identity.clone()));
         Ok(())
     }
 
@@ -111,7 +120,7 @@ impl RootOriginalRunStartReadV1<'_> {
                 "one bound RunStart physical read required",
             ));
         };
-        if &bound_identity != identity {
+        if bound_identity.as_ref() != identity {
             return Err(io::Error::other("original RunStart read identity differs"));
         }
         require_end(self.end)?;
@@ -124,7 +133,7 @@ impl RootOriginalRunStartReadV1<'_> {
         *state = ReadState::Complete {
             files,
             identity: bound_identity,
-            frame: frame.clone(),
+            frame: Box::new(frame.clone()),
         };
         Ok(frame)
     }
@@ -165,7 +174,7 @@ impl RootOriginalRunStartReadV1<'_> {
             self.retained,
             &files,
             &identity,
-        )? != frame
+        )? != *frame
         {
             return Err(io::Error::other(
                 "historical RunStart changed across recipient context",

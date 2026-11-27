@@ -192,7 +192,7 @@ impl PendingSuccessorOwner {
             .require_current_successor_publication()
             .await?;
         let issued = match requested {
-            OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed)),
+            OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, *signed)),
             OriginalSuccessorGrant::OriginalRoot => {
                 OriginalCellQ24PreparedPublicationV1::issue_original_successor_final_use(
                     original.prepared,

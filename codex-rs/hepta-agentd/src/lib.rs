@@ -259,6 +259,8 @@ pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_EXECUTE_V3;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_READBACK_V3;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningConnectionV3;
+#[cfg(target_os = "linux")]
 pub(crate) use authority_host_service::resident::RootResidentLearningEffectGateV3;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::RootResidentLearningHandleV3;
@@ -1197,6 +1199,8 @@ pub use circuit_feature_current::OriginalCircuitRetainedPublicationInputsV1;
 pub use circuit_feature_current::OriginalCircuitRetainedPublicationRecoveryV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedPublicationSelectionV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitRetainedPublicationTaskV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedTaskInputsV1;
 #[cfg(target_os = "linux")]

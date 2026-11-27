@@ -27,11 +27,9 @@ pub(super) struct OriginalProtocol {
 }
 
 pub(super) fn prepare(
-    objective: [u8; 32],
-    unit: [u8; 32],
+    (objective, unit): ([u8; 32], [u8; 32]),
     input: &[u8],
-    training: &[TrainingRow],
-    cohort: &[CohortRow],
+    (training, cohort): (&[TrainingRow], &[CohortRow]),
     candidate_declaration: ArmData,
     control: FixedControlData,
     directory: &Path,

@@ -56,6 +56,7 @@ mod cohort_custody;
 mod episode;
 #[path = "circuit_on_policy_evaluation_protocol.rs"]
 mod protocol;
+pub(crate) use cohort_custody::CohortMemberInputs;
 pub(crate) use cohort_custody::OriginalCellEvaluationCohortCurrentV1;
 pub use cohort_custody::OriginalCellEvaluationCohortCustodyV1;
 

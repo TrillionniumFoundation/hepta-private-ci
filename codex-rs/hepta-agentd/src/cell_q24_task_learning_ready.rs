@@ -11,6 +11,10 @@ use crate::CircuitTaskLearningReadinessV1;
 
 pub struct OriginalCellQ24TaskLearningReadyV1 {
     producer: Arc<OriginalCellQ24TaskLedgerProducerV1>,
+    cut: Box<OriginalTaskLearningCut>,
+}
+
+struct OriginalTaskLearningCut {
     record: RunStartRecordV1,
     trace: Sha256Digest,
     publication: Digest32,
@@ -91,13 +95,15 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         self.require_source(&captured)?;
         Ok(Some(OriginalCellQ24TaskLearningReadyV1 {
             producer: Arc::clone(self),
-            record: record.clone(),
-            trace: trace.history_digest().clone(),
-            publication: captured.publication.publication_digest(),
-            ledger_head: cut.head_digest,
-            ledger_records: cut.records().len(),
-            decision,
-            outcome,
+            cut: Box::new(OriginalTaskLearningCut {
+                record: record.clone(),
+                trace: trace.history_digest().clone(),
+                publication: captured.publication.publication_digest(),
+                ledger_head: cut.head_digest,
+                ledger_records: cut.records().len(),
+                decision,
+                outcome,
+            }),
         }))
     }
 }
@@ -123,7 +129,7 @@ impl OriginalCellQ24TaskLearningReadyV1 {
         record: &RunStartRecordV1,
         trace: &CircuitCommittedTraceV2,
     ) -> Result<(), Error> {
-        if record != &self.record || trace.history_digest() != &self.trace {
+        if record != &self.cut.record || trace.history_digest() != &self.cut.trace {
             return Err(Error::Binding("original learning RunStart or trace"));
         }
         let mut state = self
@@ -133,7 +139,7 @@ impl OriginalCellQ24TaskLearningReadyV1 {
             .map_err(|_| Error::Binding("producer lock"))?;
         let captured = self.producer.capture(&mut state)?;
         require_task(&self.producer, &captured, identity, record, trace)?;
-        if captured.publication.publication_digest() != self.publication {
+        if captured.publication.publication_digest() != self.cut.publication {
             return Err(Error::Binding("original learning publication"));
         }
         let ledger = self
@@ -143,11 +149,12 @@ impl OriginalCellQ24TaskLearningReadyV1 {
             .map_err(|_| Error::Binding("ledger lock"))?;
         match self.producer.status(&mut state, &ledger, &captured)? {
             OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome }
-                if decision == self.decision && outcome == self.outcome => {}
+                if decision == self.cut.decision && outcome == self.cut.outcome => {}
             _ => return Err(Error::PendingOutcome),
         }
         let cut = witnessed_snapshot(&ledger)?;
-        if cut.head_digest != self.ledger_head || cut.records().len() != self.ledger_records {
+        if cut.head_digest != self.cut.ledger_head || cut.records().len() != self.cut.ledger_records
+        {
             return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
         }
         self.producer.require_source(&captured)

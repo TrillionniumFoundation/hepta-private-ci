@@ -1,6 +1,7 @@
 //! Late original enrollment and one initial connection share the exact
 //! lifetime of the original Root listeners, not a detached replacement service.
 
+use crate::authority_host_config::HostAuthorityPeerTransport;
 use std::net::Shutdown;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
@@ -190,11 +191,13 @@ pub(in super::super) fn serve_optional(
                     let policy = context.peer_policy()?;
                     let result = service.serve_generation_initial(
                         &slot,
-                        config,
-                        registration,
-                        stream,
-                        policy,
-                        owner.try_clone()?,
+                        HostAuthorityPeerTransport {
+                            config,
+                            registration,
+                            stream,
+                            policy,
+                            owner: owner.try_clone()?,
+                        },
                         Some(&initial.runtime.peer_source_capture),
                         end,
                         run_start.as_ref(),

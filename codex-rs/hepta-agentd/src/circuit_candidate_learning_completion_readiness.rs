@@ -67,7 +67,7 @@ pub(super) struct Response {
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Readiness {
     NotReady,
-    Ready { read: original::OriginalRead },
+    Ready { read: Box<original::OriginalRead> },
 }
 
 /// Only the concrete ordinary assembly receives this read-only capability.

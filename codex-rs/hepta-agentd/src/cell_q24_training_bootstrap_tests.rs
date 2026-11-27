@@ -515,22 +515,24 @@ async fn deferred_training_attenuation_and_prebound_transport_preserve_original_
     let original_peer = transport::identity()?;
     let (stream, _server) = std::os::unix::net::UnixStream::pair()?;
     assert!(matches!(
-        OriginalCellQ24MaterialSourceConnectionV1::from_original_stream(
-            stream,
-            crate::LearningIterationEvidencePeerV1 {
-                pid: original_peer.pid,
-                // SAFETY: explicit test rejection of its own process custody.
-                uid: unsafe { libc::geteuid() },
-                boot_id: original_peer.boot_id,
-                process_start_ticks: original_peer.process_start_ticks,
-                actor_id: fixture.config.initial.owners.dataset.clone(),
+        OriginalCellQ24MaterialSourceConnectionV1::from_original_peer_stream(
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer: crate::LearningIterationEvidencePeerV1 {
+                    pid: original_peer.pid,
+                    // SAFETY: explicit test rejection of its own process custody.
+                    uid: unsafe { libc::geteuid() },
+                    boot_id: original_peer.boot_id,
+                    process_start_ticks: original_peer.process_start_ticks,
+                    actor_id: fixture.config.initial.owners.dataset.clone(),
+                },
+                original_owner_pidfd: transport::pidfd()?,
+                timeout: Duration::from_millis(500),
+                lifetime: Duration::from_secs(300)
             },
-            transport::pidfd()?,
             fixture.config.initial.clone(),
             fixture.config.scope.clone(),
             fixture.training_baseline(),
-            Duration::from_millis(500),
-            Duration::from_secs(300),
         ),
         Err(SourceError::Binding(
             "original Material connection and empty Root cut"

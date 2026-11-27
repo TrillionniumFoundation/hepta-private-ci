@@ -28,6 +28,25 @@ mod codec;
 pub(crate) use codec::decode_original_bundle_data;
 pub(crate) use codec::encode_original_bundle_data;
 
+/// Let the original-byte fixture call the same private codec as the checkpoint owner.
+#[cfg(test)]
+pub(crate) mod readback_fixture_codec {
+    use super::LearningIterationCheckpointErrorV1;
+    use super::LearningIterationSnapshotV1;
+
+    pub(crate) fn encode(
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<Vec<u8>, LearningIterationCheckpointErrorV1> {
+        super::codec::encode(snapshot)
+    }
+
+    pub(crate) fn decode(
+        bytes: &[u8],
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationCheckpointErrorV1> {
+        super::codec::decode(bytes)
+    }
+}
+
 #[path = "learning_iteration_checkpoint_ports.rs"]
 mod ports;
 #[cfg(target_os = "linux")]
@@ -138,26 +157,6 @@ impl LearningIterationCheckpointOwnerV1 {
     #[cfg(target_os = "linux")]
     pub(crate) fn registered_agent_id(&self) -> &str {
         self.initial.request.agent_id.as_str()
-    }
-
-    /// An isolated research test's file owner, never a production Root grant.
-    #[cfg(test)]
-    pub(crate) fn from_research_store(
-        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
-        original_owner_id: String,
-        request: LearningIterationRequestV1,
-        owners: LearningIterationOwnersV1,
-    ) -> Result<Self, Error> {
-        let initial =
-            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
-        let owner = Self {
-            owner_id: original_owner_id,
-            store: Store::Test(store),
-            initial: initial.snapshot().clone(),
-            scope: None,
-        };
-        owner.load()?;
-        Ok(owner)
     }
 
     /// Load the already registered original owner and verify its current data.

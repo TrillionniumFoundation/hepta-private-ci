@@ -31,7 +31,7 @@ class PostAPhysicalPreparationSourceTests(unittest.TestCase):
             "(PublicationVersion::LegacyV1, None) => serde_json::to_vec(route)",
             "(PublicationVersion::DurableV2, Some(prepared))", "schema: 2,", "return Err("))
         self.check_markers(CODEC, "fn decode_original_publication_bootstrap(", (
-            "== PublicationVersion::LegacyV1", "Ok((route, None))", "value.schema == 2",
+            "== PublicationVersion::LegacyV1", "Ok((*route, None))", "value.schema == 2",
             "== PublicationVersion::DurableV2", "Ok((value.route, Some(value.prepared)))", "_ => Err("))
 
     def test_route_is_from_the_actual_sealed_offer_and_same_learning_cut(self):

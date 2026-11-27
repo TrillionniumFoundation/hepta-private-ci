@@ -24,25 +24,19 @@ use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
-use std::fs::File;
 use std::io;
 use std::io::Read;
 use std::io::Seek;
-use std::io::Write;
-use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
-use std::os::fd::OwnedFd;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixStream;
-use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::Instant;
 
-#[path = "authority_host_learning_service_root_support.rs"]
-mod support;
+use crate::authority_host_learning_service_root_tests::support;
 
 const CHILD_TEST: &str = "authority_host_q24_model_service_root_tests::root_q24_model_factory_service_dedicated_uid_child";
 const FACTORY_OWNER: &str = "root-q24-model-proposal-factory-v1";
@@ -199,7 +193,7 @@ fn root_q24_factory_registers_transfers_binds_and_recovers_original_custody() ->
     let profile_file = protected.path().join("learning-profile.json");
     support::write_json(&profile_file, &profile)?;
     let (offer, receive) = UnixDatagram::pair()?;
-    let mut child = support::ChildOwner::spawn(receive, &state)?;
+    let mut child = support::ChildOwner::spawn(receive, &state, CHILD_TEST)?;
     let child_pin = support::pidfd(child.pid()?)?;
     let credential_deadline = Instant::now() + Duration::from_secs(2);
     while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)
@@ -502,7 +496,9 @@ fn root_q24_model_factory_service_dedicated_uid_child() -> anyhow::Result<()> {
     let mut observation = UnixStream::connect(runtime.join("observation.sock"))?;
     let issuer = UnixStream::connect(runtime.join("issuer.sock"))?;
     let checkpoint = UnixStream::connect(runtime.join("checkpoint.sock"))?;
-    support::observation(&mut observation)?;
+    crate::authority_host_learning_service_root_tests::read_authority_observation(
+        &mut observation,
+    )?;
     drop((observation, issuer, checkpoint));
     println!(
         "ROOT_Q24_FACTORY_SERVICE actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={original_root} registered_writer=true registry_epoch=2 model_owner_created=false ordinary_chain=false",

@@ -127,7 +127,7 @@ enum Origin {
 }
 
 enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
-    Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+    Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
     Starting,
     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
     Fenced,
@@ -261,7 +261,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             config,
             panel,
             dataset: Arc::new(dataset),
-            state: Mutex::new(State::Awaiting(custody)),
+            state: Mutex::new(State::Awaiting(Box::new(custody))),
             origin,
             cancellation,
             runtime: Handle::current(),

@@ -2,8 +2,10 @@
 //! learning backend is the same Arc captured from actual registration. A wire
 //! signature is only data until verified against that backend's Training cut.
 
+use super::super::execution::OriginalBExecutionInputs;
 use super::super::outputs::OriginalBResultMode;
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::learning_owner_evidence;
 
 enum Operation<'a> {
@@ -18,23 +20,30 @@ enum Operation<'a> {
 impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(crate) fn complete_from_original_training<T>(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
-        frame_end: Instant,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
         plan_attestation: &SignedLearningEvidenceV1,
         source_admission: &crate::root_independent_b_source_ready::SourceReadyData,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
-        self.with_operation(
+        let HostAuthorityCallInputs {
             service,
             config,
             registration,
             owner,
-            frame_end,
+            end: frame_end,
+        } = call_inputs;
+
+        self.with_operation(
+            HostAuthorityCallInputs {
+                service,
+                config,
+                registration,
+                owner,
+                end: frame_end,
+            },
             training_head,
             Operation::Complete {
                 training: attestation,
@@ -47,20 +56,27 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
 
     pub(crate) fn with_original_completed_evaluation<T>(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
-        frame_end: Instant,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         training_head: Digest32,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
-        self.with_operation(
+        let HostAuthorityCallInputs {
             service,
             config,
             registration,
             owner,
-            frame_end,
+            end: frame_end,
+        } = call_inputs;
+
+        self.with_operation(
+            HostAuthorityCallInputs {
+                service,
+                config,
+                registration,
+                owner,
+                end: frame_end,
+            },
             training_head,
             Operation::Readback,
             action,
@@ -69,15 +85,20 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
 
     fn with_operation<T>(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
-        frame_end: Instant,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         training_head: Digest32,
         operation: Operation<'_>,
         action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>,
     ) -> io::Result<T> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: frame_end,
+        } = call_inputs;
+
         let end = self.end.min(frame_end);
         let mut cell_locks = None;
         OriginalBRecord::inspect(&self.record, end, |enrollment| {
@@ -209,10 +230,12 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let completed = native.perform(
                         files,
                         enrollment,
-                        &training,
-                        &attestation,
-                        &protocol,
-                        &authorities,
+                        OriginalBExecutionInputs {
+                            training: &training,
+                            training_attestation: &attestation,
+                            protocol: &protocol,
+                            authorities: &authorities,
+                        },
                         &clock,
                         mode,
                     )?;
@@ -228,10 +251,12 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let after = native.perform(
                         files,
                         enrollment,
-                        &training,
-                        &attestation,
-                        &protocol,
-                        &authorities,
+                        OriginalBExecutionInputs {
+                            training: &training,
+                            training_attestation: &attestation,
+                            protocol: &protocol,
+                            authorities: &authorities,
+                        },
                         &clock,
                         OriginalBResultMode::Readback,
                     )?;

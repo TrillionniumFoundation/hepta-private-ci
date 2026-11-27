@@ -262,6 +262,7 @@ impl PreparedModelProviderPolicy {
 /// outside the encoded request body, including routing-hint header presence and
 /// value. Authentication, attestation, trace, timing, and request-ID material
 /// must remain excluded.
+#[cfg(test)]
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn prepare_model_provider_policy<L: Serialize, W: Serialize>(
     context: &ModelProviderPolicyContext<'_>,

@@ -21,7 +21,7 @@ enum Store {
     #[cfg(target_os = "linux")]
     RootInitial(Arc<crate::root_generation_initial_client::RootGenerationInitialClient>),
     #[cfg(target_os = "linux")]
-    Root(crate::root_generation_current_client::RootGenerationCurrentClient),
+    Root(Box<crate::root_generation_current_client::RootGenerationCurrentClient>),
     Host(HostAuthorityFrontierStore<CurrentHead>),
     #[cfg(test)]
     Test {
@@ -100,7 +100,7 @@ impl CurrentStore {
     ) -> Result<Self, AgentdError> {
         Ok(Self {
             owner_id: owner_id(original.scope())?,
-            store: Store::Root(original),
+            store: Store::Root(Box::new(original)),
         })
     }
 
@@ -197,7 +197,7 @@ impl CurrentStore {
         if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
-        head.current.digest().map_err(invalid)?;
+        head.current.validate().map_err(invalid)?;
         head.validate_initial()?;
         Ok(head)
     }

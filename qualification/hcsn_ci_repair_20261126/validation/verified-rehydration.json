@@ -1,0 +1,98 @@
+{
+  "pinnedActionBundleSha256": "5591c3b579e3a6f4d947c3c1df80a219a1e061719368d4c4d6eb98f856f6d5e8",
+  "producers": {
+    "exact": {
+      "rootRelativeToCheckout": ".hepta-evidence/learning-operator",
+      "files": [
+        {
+          "original": ".hepta-evidence/learning-operator/coverage.json",
+          "member": "coverage.json",
+          "bytes": 1647442,
+          "sha256": "fc57250cae5731109a3aa7a83e44ad4668c89dd42b7eac0dc51e9583bca378e3"
+        },
+        {
+          "original": ".hepta-evidence/learning-operator/implementation-map-exact.json",
+          "member": "implementation-map-exact.json",
+          "bytes": 25547,
+          "sha256": "ba56d4685d7cd72f725f9992f1e053ca5f55285fb9e48623c55e0b329ed2ba51"
+        },
+        {
+          "original": ".hepta-evidence/learning-operator/performance.json",
+          "member": "performance.json",
+          "bytes": 1356,
+          "sha256": "bbd060a6152b22d12df11bc32c1946bbb45d4ac1b8d3b482d55566879763fe60"
+        }
+      ]
+    },
+    "merge": {
+      "rootRelativeToCheckout": ".hepta-evidence/learning-operator",
+      "files": [
+        {
+          "original": ".hepta-evidence/learning-operator/implementation-map-merge.json",
+          "member": "implementation-map-merge.json",
+          "bytes": 25629,
+          "sha256": "a17f11f9e0128abab51f45be1c7ae6fa3057b31de6001881855bd236ef2508f8"
+        }
+      ]
+    }
+  },
+  "test_scope": "Actual locally-produced coverage, performance and both validated maps, with filename coverage.llvm.json remapped to the workflow's coverage.json; no absent mutation, test log, receipt or acceptance result was synthesized.",
+  "rehydration": {
+    "original": {
+      "coverage.json": {
+        "available": false,
+        "error": "missing qualification output: .hepta-evidence/learning-operator/coverage.json"
+      },
+      "implementation-map-exact.json": {
+        "available": false,
+        "error": "missing qualification output: .hepta-evidence/learning-operator/implementation-map-exact.json"
+      },
+      "implementation-map-merge.json": {
+        "available": false,
+        "error": "missing qualification output: .hepta-evidence/learning-operator/implementation-map-merge.json"
+      },
+      "performance.json": {
+        "available": false,
+        "error": "missing qualification output: .hepta-evidence/learning-operator/performance.json"
+      }
+    },
+    "corrected": {
+      "coverage.json": {
+        "available": true,
+        "shaAndBytesMatchProducer": true,
+        "observation": {
+          "path": ".hepta-evidence/learning-operator/coverage.json",
+          "sha256": "fc57250cae5731109a3aa7a83e44ad4668c89dd42b7eac0dc51e9583bca378e3",
+          "bytes": 1647442
+        }
+      },
+      "implementation-map-exact.json": {
+        "available": true,
+        "shaAndBytesMatchProducer": true,
+        "observation": {
+          "path": ".hepta-evidence/learning-operator/implementation-map-exact.json",
+          "sha256": "ba56d4685d7cd72f725f9992f1e053ca5f55285fb9e48623c55e0b329ed2ba51",
+          "bytes": 25547
+        }
+      },
+      "implementation-map-merge.json": {
+        "available": true,
+        "shaAndBytesMatchProducer": true,
+        "observation": {
+          "path": ".hepta-evidence/learning-operator/implementation-map-merge.json",
+          "sha256": "a17f11f9e0128abab51f45be1c7ae6fa3057b31de6001881855bd236ef2508f8",
+          "bytes": 25629
+        }
+      },
+      "performance.json": {
+        "available": true,
+        "shaAndBytesMatchProducer": true,
+        "observation": {
+          "path": ".hepta-evidence/learning-operator/performance.json",
+          "sha256": "bbd060a6152b22d12df11bc32c1946bbb45d4ac1b8d3b482d55566879763fe60",
+          "bytes": 1356
+        }
+      }
+    }
+  }
+}

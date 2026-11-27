@@ -1,0 +1,59 @@
+{
+  "previousTree": "5bbc71b0e3ba25a80bcf9eaf00aec4a8954ab60b",
+  "sourceTree": "92cb79dbb41cc576d9674670626c281aa9c97aab",
+  "upstreamHead": "469670e8e5a88432e5ff2ddd5355bde5238e98de",
+  "rustTree": "c5872ad2f23781351da7f549ed0e870880592ddf",
+  "delta": {
+    "path": "codex-rs/ext/queue/tests/queue_service.rs",
+    "before": "0d6e68fdd869f594087a52c9d90b480b8a7f8fe0",
+    "after": "3227800d2a866bc45bdb6b00653d65de9403250b"
+  },
+  "unchangedSources": {
+    "operatorInputCount": 41,
+    "operatorInputSha256": "9bb63ae88c96647fda32fc3bb8b3505a3c1cbec613710f736e5ecb403e277467",
+    "sixFixedDigests": {
+      "cargoLockSha256": "3ff30a8bf0b869fbefd59242d09cc5c2edf68b778d6117202af6a0315f2b1f90",
+      "implementationMapSha256": "5779da673fe643a43100cc257b0a041deacf069557d137c546120f4e82e381f0",
+      "technicalGuideSha256": "8787c61757bb4805d919a6dfd1f3d321387f9b862ce4a9c19941b78c9984a671",
+      "nativeMappingSha256": "7cb34e4e3597349ce2e854e503dd39c6ab8f00d90c840e4d03b66db788e9162c",
+      "traceabilitySha256": "06e833c82270edef2d624ac1ccd7afe97aa0af6b177c4ea3f5d643f0f9df1b1e",
+      "workflowSha256": "6f2643bc16df9840420bd81c18c8c37de90e40fe6ae75d8452e412bce1ef4cc3"
+    },
+    "callerManifestExplicitlyExcludesQueueTests": true,
+    "sameTypedFieldsAndAliasesForReceiverTypes": 350,
+    "originalScanCount": 9148,
+    "originalClosedCallerCount": 1652,
+    "protectedPathCount": 826
+  },
+  "fixtureChecks": {
+    "oldAssertions": 156,
+    "newAssertions": 158,
+    "oldAssertionLosses": 0,
+    "oldTests": 40,
+    "newTests": 41,
+    "added": [
+      "rejecting_queue_hook_runs_with_real_windows_powershell"
+    ],
+    "originalTwoDurabilityTestBodiesByteIdentical": true,
+    "tenSecondTimeoutOccurrencesBefore": 10,
+    "tenSecondTimeoutOccurrencesAfter": 10
+  },
+  "orderedBase": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "exact": {
+    "candidate": "04f2fb84f2c0e226988d96b914c6245bde53c80e",
+    "emitExit": 0,
+    "verifyExit": 0,
+    "operationsWithSource": 20,
+    "objects": 7,
+    "sha256": "18d288429feedb262c87b74f0efcf636948444558a31262b75e9521a69366b07"
+  },
+  "merge": {
+    "candidate": "c30e8b114ceca1e705cd61d4a861ad71f5411be7",
+    "emitExit": 0,
+    "verifyExit": 0,
+    "operationsWithSource": 20,
+    "objects": 7,
+    "sha256": "d5149c8dc828577e38aef335e4bead745ad8afc2d41ad99c0dc016ee89b366a9"
+  },
+  "scope": "Existing strict and coverage receipts identify the earlier verified Rust tree. This delta changes one cross-platform test fixture in a disjoint package. Native Windows pass is determined by the hosted run."
+}

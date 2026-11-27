@@ -1,6 +1,7 @@
 //! One fixed listener in the original Root serve scope. It accepts no second
 //! peer, preserves the absolute end, and closes the real stream before joining.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
 use std::net::Shutdown;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
@@ -183,13 +184,15 @@ pub(in super::super) fn serve_optional(
                                 bound
                                     .runtime
                                     .observe_complete_task(
-                                        service,
-                                        config,
-                                        registration,
-                                        owner,
+                                        HostAuthorityCallInputs {
+                                            service,
+                                            config,
+                                            registration,
+                                            owner,
+                                            end: request_end,
+                                        },
                                         operation,
                                         request.request_id,
-                                        request_end,
                                     )
                                     .map_err(|_| HostIssuerTransportError::Unavailable)
                             })

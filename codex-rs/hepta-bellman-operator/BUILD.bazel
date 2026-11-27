@@ -3,6 +3,9 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-bellman-operator",
     crate_name = "codex_hepta_bellman_operator",
+    integration_test_extra_srcs = {
+        "tests/final_use_v3.rs": ["tests/final_use_v3/memory_training.rs"],
+    },
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
     },

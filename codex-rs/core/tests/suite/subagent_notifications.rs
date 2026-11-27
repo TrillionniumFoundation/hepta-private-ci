@@ -1850,7 +1850,12 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
     .await;
     let child_request_log = mount_sse_once_match(
         &server,
-        |req: &wiremock::Request| request_has_input_type(req, "agent_message"),
+        |req: &wiremock::Request| {
+            req.headers
+                .get("x-openai-subagent")
+                .is_some_and(|role| role == "collab_spawn")
+                && request_has_input_type(req, "agent_message")
+        },
         sse(vec![
             ev_response_created("resp-child-1"),
             ev_completed("resp-child-1"),
@@ -1860,7 +1865,8 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
     let parent_request_log = mount_sse_once_match(
         &server,
         |req: &wiremock::Request| {
-            body_contains(req, SPAWN_CALL_ID) && !request_has_input_type(req, "agent_message")
+            // A fast child may already have sent a completion message to the parent.
+            body_contains(req, SPAWN_CALL_ID) && !req.headers.contains_key("x-openai-subagent")
         },
         sse(vec![
             ev_response_created("resp-parent-2"),

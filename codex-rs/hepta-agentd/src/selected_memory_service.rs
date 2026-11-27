@@ -63,7 +63,7 @@ enum Invocation {
     ),
     Execute(
         MemoryServingQueryV1,
-        VerifiedUseToken,
+        Box<VerifiedUseToken>,
         oneshot::Sender<Result<MemoryServingResultV1, String>>,
     ),
 }
@@ -92,7 +92,7 @@ impl MemoryServingHandleV1 {
     ) -> Result<MemoryServingResultV1, String> {
         let (send, receive) = oneshot::channel();
         self.sender
-            .try_send(Invocation::Execute(query, token, send))
+            .try_send(Invocation::Execute(query, Box::new(token), send))
             .map_err(|_| "memory serving ingress unavailable or full")?;
         receive
             .await
@@ -220,7 +220,7 @@ impl SelectedMemoryServiceV1 {
                     let request_stop = stop.child_token();
                     let mut response = Some(response);
                     let result = self
-                        .execute(query, token, &request_stop, &mut response)
+                        .execute(query, *token, &request_stop, &mut response)
                         .await;
                     let failed = result.is_err();
                     if let Some(response) = response {

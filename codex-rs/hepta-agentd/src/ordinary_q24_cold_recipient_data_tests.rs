@@ -39,7 +39,8 @@ pub(super) struct OriginalColdRecipientData {
 impl OriginalColdRecipientData {
     pub(super) fn observe(plan: &OriginalColdPlan<'_>) -> anyhow::Result<Self> {
         let initial = plan.profile.original_initial_data()?;
-        let metadata_pin = OriginalBusinessSnapshot::capture(&[plan.historical.clone()])?;
+        let metadata_pin =
+            OriginalBusinessSnapshot::capture(std::slice::from_ref(&plan.historical))?;
         let metadata_bytes = read_private(&plan.historical, /*bound*/ 65_536)?;
         let metadata: serde_json::Value = serde_json::from_slice(&metadata_bytes)?;
         anyhow::ensure!(
@@ -57,7 +58,7 @@ impl OriginalColdRecipientData {
                 .as_str()
                 .ok_or_else(|| anyhow::anyhow!("original recipient trust mapping absent"))?,
         );
-        let mapping_pin = OriginalBusinessSnapshot::capture(&[mapping_path.clone()])?;
+        let mapping_pin = OriginalBusinessSnapshot::capture(std::slice::from_ref(&mapping_path))?;
         let mapping_bytes = read_private(&mapping_path, /*bound*/ 65_536)?;
         let mapping: TrustMapping = serde_json::from_slice(&mapping_bytes)?;
         let files = vec![
@@ -67,8 +68,8 @@ impl OriginalColdRecipientData {
             mapping.signed_payload.clone(),
         ];
         let unchanged = OriginalBusinessSnapshot::capture(&files)?;
-        metadata_pin.require_unchanged(&[plan.historical.clone()])?;
-        mapping_pin.require_unchanged(&[mapping_path.clone()])?;
+        metadata_pin.require_unchanged(std::slice::from_ref(&plan.historical))?;
+        mapping_pin.require_unchanged(std::slice::from_ref(&mapping_path))?;
         let result = (|| {
             anyhow::ensure!(
                 mapping.schema == 1
@@ -138,7 +139,7 @@ impl OriginalColdRecipientData {
             Ok::<_, anyhow::Error>(profile)
         })();
         unchanged.require_unchanged(&files)?;
-        metadata_pin.require_unchanged(&[plan.historical.clone()])?;
+        metadata_pin.require_unchanged(std::slice::from_ref(&plan.historical))?;
         mapping_pin.require_unchanged(&[mapping_path])?;
         Ok(Self {
             profile: result?,

@@ -1,6 +1,7 @@
 //! Fixed zero-payload completion operations. Replies escape only after the
 //! original terminal, task, B and publication attempts have all reached Ready.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
 use codex_hepta_agent_protocol::OriginalQ24CompletedHistoryDataV1;
 
 use super::completed_deployment::CompletedLearningRuntime;
@@ -15,14 +16,19 @@ use crate::root_historical_task_read_protocol::CompletedLearningHistoryResponseV
 impl HistoricalTaskReadRuntime {
     pub(super) fn completed_learning_operation(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         operation: HistoricalReadOperationV1,
         request_id: u64,
-        end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
+
         require_end(end)?;
         let fixed: &CompletedLearningRuntime = self
             .completed
@@ -71,15 +77,17 @@ impl HistoricalTaskReadRuntime {
                         fixed.require_original()?;
                         self.metadata.require_metadata_unchanged()?;
                         let checked = self.observe_completed_learning(
-                            service,
-                            config,
-                            registration,
-                            owner,
+                            HostAuthorityCallInputs {
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                end,
+                            },
                             fixed,
                             files,
                             None,
                             mode,
-                            end,
                         )?;
                         fixed.require_original()?;
                         self.metadata.require_metadata_unchanged()?;
@@ -109,15 +117,17 @@ impl HistoricalTaskReadRuntime {
                             initial.request.envelope.objective_digest,
                         )?;
                         let result = self.observe_completed_learning(
-                            service,
-                            config,
-                            registration,
-                            owner,
+                            HostAuthorityCallInputs {
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                end,
+                            },
                             fixed,
                             &files,
                             Some(fact),
                             mode,
-                            end,
                         );
                         fixed.require_original()?;
                         self.metadata.require_metadata_unchanged()?;

@@ -19,9 +19,7 @@ use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::Write;
-use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
-use std::os::fd::OwnedFd;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixDatagram;
@@ -40,8 +38,7 @@ mod consumer;
 mod fixture;
 #[path = "authority_host_q24_model_cold_phase_tests.rs"]
 mod phase;
-#[path = "authority_host_learning_service_root_support.rs"]
-mod support;
+use crate::authority_host_learning_service_root_tests::support;
 
 const CHILD_TEST: &str = "authority_host_runtime::session::q24_model::cold_root_tests::consumer::root_q24_factory_v2_dedicated_uid_child";
 const ROOT_TEST: &str = "authority_host_runtime::session::q24_model::cold_root_tests::phase::root_q24_factory_v2_dedicated_root_phase";

@@ -48,6 +48,10 @@ pub struct OriginalCellEvaluationCommandConnectionV1 {
 }
 
 impl OriginalCellEvaluationCommandConnectionV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -60,19 +64,46 @@ impl OriginalCellEvaluationCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_initial(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             initial,
             scope,
             registration,
             verifier,
-            timeout,
-            lifetime,
             Origin::Fresh,
         )
     }
 
+    /// Bind the original evaluator peer for a fresh Evaluation connection.
+    pub fn from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        registration: OriginalCellEvaluationPanelRegistrationV1,
+        verifier: LearningEvidenceVerifierV1,
+    ) -> Result<Self, Error> {
+        Self::from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            initial,
+            scope,
+            registration,
+            verifier,
+            input.timeout,
+            input.lifetime,
+        )
+    }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn recover_from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -85,31 +116,60 @@ impl OriginalCellEvaluationCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_initial(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             initial,
             scope,
             registration,
             verifier,
-            timeout,
-            lifetime,
             Origin::ReadbackOnly,
         )
     }
 
-    fn bind_initial(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+    /// Recover the original evaluator peer for a read-only Evaluation connection.
+    pub fn recover_from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         verifier: LearningEvidenceVerifierV1,
-        timeout: Duration,
-        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::recover_from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            initial,
+            scope,
+            registration,
+            verifier,
+            input.timeout,
+            input.lifetime,
+        )
+    }
+
+    fn bind_initial(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        registration: OriginalCellEvaluationPanelRegistrationV1,
+        verifier: LearningEvidenceVerifierV1,
+
         origin: Origin,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
+
         let started_at = now()?;
         let expected =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;

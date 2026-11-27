@@ -37,6 +37,11 @@ mod data;
 mod request;
 pub(super) use data::ArtifactFilesData;
 
+pub(super) struct OriginalArtifactReadInputs<'a> {
+    pub(super) files: &'a mut OriginalFiles,
+    pub(super) cancelled: &'a CancellationToken,
+}
+
 pub(super) struct OriginalArtifactPlan {
     lease: OriginalLateInput,
     head: OriginalLateInput,
@@ -91,9 +96,9 @@ impl OriginalArtifactPlan {
         snapshot: LearningIterationSnapshotV1,
         final_use: Arc<FinalUseAuthority>,
         clock: Arc<dyn AuthorityClock>,
-        files: &mut OriginalFiles,
-        cancelled: &CancellationToken,
+        reads: OriginalArtifactReadInputs<'_>,
     ) -> Result<OriginalSelectedArtifacts, AgentdError> {
+        let OriginalArtifactReadInputs { files, cancelled } = reads;
         route.require_current()?;
         let lease = self.lease.wait_original_value(cancelled).await?;
         let writer_lease = OriginalLateValue::with_original_bytes(&lease, |bytes| {

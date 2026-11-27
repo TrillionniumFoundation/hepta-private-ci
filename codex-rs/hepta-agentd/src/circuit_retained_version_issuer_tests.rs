@@ -16,7 +16,7 @@ async fn retained_version_issuer_uses_actual_prepared_binding_and_installs_disti
     let peer = root_reply(
         fixture.root_peer.take().context("original Root peer")?,
         binding,
-        RetainedIssuerReplyV1::Signed(grant),
+        RetainedIssuerReplyV1::Signed(Box::new(grant)),
     );
     OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()
@@ -154,7 +154,7 @@ async fn retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose() -
     let peer = root_reply(
         fixture.root_peer.take().context("original Root peer")?,
         binding.clone(),
-        RetainedIssuerReplyV1::Signed(grant),
+        RetainedIssuerReplyV1::Signed(Box::new(grant)),
     );
     OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()

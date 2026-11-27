@@ -2,19 +2,26 @@
 //! the refusal namespace. The first actual proof and primary I/O are armed.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 
 impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(crate) fn register_original_b(
         path: &Path,
         initial: &LearningIterationSnapshotV1,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         learning: &RegisteredHostLearningCheckpointV1,
-        request_end: Instant,
+
         session_end: Instant,
     ) -> io::Result<Arc<Self>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: request_end,
+        } = call_inputs;
+
         if request_end > session_end {
             return Err(io::Error::other(
                 "original B registration exceeds its session",
@@ -123,14 +130,20 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(crate) fn reopen_original_b(
         path: &Path,
         initial: &LearningIterationSnapshotV1,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         learning: &RegisteredHostLearningCheckpointV1,
-        request_end: Instant,
+
         session_end: Instant,
     ) -> io::Result<Arc<Self>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: request_end,
+        } = call_inputs;
+
         if request_end > session_end {
             return Err(io::Error::other("original B reopen exceeds its session"));
         }

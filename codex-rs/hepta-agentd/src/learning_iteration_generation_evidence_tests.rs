@@ -28,10 +28,7 @@ use crate::neuron_generation_update_bootstrap::learning_test_decision;
 use crate::neuron_generation_update_bootstrap::learning_test_receipt;
 use crate::*;
 
-#[path = "neuron_generation_runtime_test_support.rs"]
-// This reused fixture also defines helpers for the broader runtime suite.
-#[allow(dead_code)]
-mod host;
+use crate::neuron_generation_runtime::test_support as host;
 
 #[derive(Clone, Copy)]
 enum Profile {

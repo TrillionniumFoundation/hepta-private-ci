@@ -12,7 +12,7 @@ pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error:
         stream,
         &request(1, "read_head", serde_json::Value::Null),
         32 * 1024,
-    ))?;
+    )?)?;
     assert_eq!(read.status, CognitiveCheckpointStatus::Ack);
     let current = read.head.as_ref().ok_or("missing actual Current head")?;
     assert_eq!(current.phase, CognitiveCheckpointPhase::Current);
@@ -20,27 +20,27 @@ pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error:
     let original_cut = current.last_current.clone();
     let begin = request(2, "begin_writes", serde_json::to_value(read.token)?);
     let dirty: CognitiveCheckpointResponse =
-        serde_json::from_value(exchange(stream, &begin, 32 * 1024))?;
+        serde_json::from_value(exchange(stream, &begin, 32 * 1024)?)?;
     assert_eq!(dirty.status, CognitiveCheckpointStatus::Ack);
     assert_eq!(
         dirty.head.as_ref().ok_or("missing Dirty")?.phase,
         CognitiveCheckpointPhase::Dirty
     );
     let duplicate: CognitiveCheckpointResponse =
-        serde_json::from_value(exchange(stream, &begin, 32 * 1024))?;
+        serde_json::from_value(exchange(stream, &begin, 32 * 1024)?)?;
     assert_eq!(duplicate, dirty);
     // A fresh request cannot reuse the previous full-head token.
     let stale: CognitiveCheckpointResponse = serde_json::from_value(exchange(
         stream,
         &request(3, "fence_publisher", begin["expected"].clone()),
         32 * 1024,
-    ))?;
+    )?)?;
     assert_eq!(stale.status, CognitiveCheckpointStatus::Refused);
     let fenced: CognitiveCheckpointResponse = serde_json::from_value(exchange(
         stream,
         &request(4, "fence_publisher", serde_json::to_value(dirty.token)?),
         32 * 1024,
-    ))?;
+    )?)?;
     assert_eq!(fenced.status, CognitiveCheckpointStatus::Ack);
     let head = fenced.head.as_ref().ok_or("missing Fenced")?;
     assert_eq!(head.phase, CognitiveCheckpointPhase::Fenced);
@@ -50,7 +50,7 @@ pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error:
         stream,
         &request(5, "begin_writes", serde_json::to_value(fenced.token)?),
         32 * 1024,
-    ))?;
+    )?)?;
     assert_eq!(refused.status, CognitiveCheckpointStatus::Refused);
     println!(
         "{}",

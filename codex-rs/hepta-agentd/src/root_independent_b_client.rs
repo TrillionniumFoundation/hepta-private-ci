@@ -69,14 +69,17 @@ impl OriginalRootIndependentBEvaluationReadbackV1 {
     pub(crate) fn manifest(&self) -> &CellBackendManifestV2 {
         &self.data.manifest
     }
-    pub(crate) fn comparison_digest(&self) -> Result<Digest32, Error> {
-        digest(&self.data.comparison_digest).map_err(unavailable)
-    }
     pub(crate) fn original_binding(&self) -> Digest32 {
         self.binding
     }
     pub(crate) fn same_original_observation(&self, other: &Self) -> bool {
         self.binding == other.binding && self.data == other.data
+    }
+}
+
+impl CompletedData {
+    fn comparison_digest(&self) -> Result<Digest32, Error> {
+        digest(&self.comparison_digest).map_err(unavailable)
     }
 }
 
@@ -143,7 +146,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                         .map_err(unavailable)?,
                     plan_attestation: learning_owner_evidence::encode(plan.as_array(), statement)
                         .map_err(unavailable)?,
-                    source_admission: Box::new(source),
+                    source_admission: source,
                 },
                 TrainingMode::Readback => Command::Readback {
                     training_head: snapshot.head_digest.to_string(),
@@ -166,7 +169,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
             {
                 return Err(Error::WrongScope);
             }
-            digest(&data.comparison_digest).map_err(unavailable)?;
+            data.comparison_digest()?;
             digest(&data.plan_digest).map_err(unavailable)?;
             digest(&data.execution_digest).map_err(unavailable)?;
             scope.validate_observation(&receipt.observation)?;
@@ -225,7 +228,7 @@ enum TrainingMode<'a> {
     Complete {
         plan: Digest32,
         statement: &'a SignedLearningEvidenceV1,
-        source: SourceReadyData,
+        source: Box<SourceReadyData>,
     },
     Readback,
 }

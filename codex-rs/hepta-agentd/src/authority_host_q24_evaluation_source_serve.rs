@@ -2,6 +2,7 @@
 //! The absence of a source connection never turns NoUpdate into an execution.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_independent_b_source_protocol::FRAME_BOUND;
 use crate::root_independent_b_source_protocol::PURPOSE;
 use crate::root_independent_b_source_protocol::SourceAcknowledgement;
@@ -90,12 +91,8 @@ pub(super) fn serve_until(
                         .map_err(|_| HostIssuerTransportError::Unavailable)?;
                     let response = OriginalRootIndependentBEvaluationFilesV1::retain_original_signed_source(
                         &bound.runtime.host,
-                        service,
-                        config,
-                        registration,
-                        owner,
+                        HostAuthorityCallInputs {service, config, registration, owner, end: frame_end},
                         peer,
-                        frame_end,
                         &request,
                     )
                     .map_err(|_| HostIssuerTransportError::Unavailable)?;

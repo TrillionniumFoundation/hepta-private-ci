@@ -1,0 +1,40 @@
+{
+  "authors": [
+    "M. Bedda",
+    "N. Hammami"
+  ],
+  "data": {
+    "Test_Arabic_Digit.txt": "de40eac66ce18fca8924bad592002ee7ef646fc84d48b065ce21ac9f88946922",
+    "Train_Arabic_Digit.txt": "cecd3ee9951658e5391f0342e9b6467ba7c0e7ecff5c9012b9c1ed9f81b97bc6"
+  },
+  "data_base": "https://raw.githubusercontent.com/ty-fel/Predicting-Spoken-Digits/803a283180e41b46d16eea2dca97b9048f45b4da/Data",
+  "data_doi": "10.24432/C52C9Q",
+  "encoder_modules": {
+    "qualification/hcsn_adaptive/batched_flow.py": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification/hcsn_adaptive/finite_control.py": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification/hcsn_adaptive/flow_semantics.py": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification/hcsn_adaptive/impulse_execution.py": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification/hcsn_adaptive/uniformized_flow.py": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification/hcsn_closure_20261124/baselines.py": "5d553d59de68068dbd737dd78e5247a018c721df35d317345b2e50d09c17c891",
+    "qualification/hcsn_closure_20261124/boundary_fix.py": "9abb2d7f624a1beacb8a6fddccb42a3e39600c8e8ceb7461af592ee91e2d2b92",
+    "qualification/hcsn_closure_20261124/communication.py": "b80113495c6caf9b6dd07eae292ce1e6301141a3ce8399423150dd118d9da420",
+    "qualification/hcsn_closure_20261124/data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+    "qualification/hcsn_closure_20261124/fast_kernel.py": "a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3",
+    "qualification/hcsn_closure_20261124/joint_run.py": "07fc5b9e96dbbdc50b99716329f8e9498ac23eb75137c07f6de90123c9f0dc0e",
+    "qualification/hcsn_closure_20261124/models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+    "qualification/hcsn_closure_20261124/provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+    "qualification/hcsn_closure_20261124/runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+    "qualification/hcsn_smallnet_20261124/cost.py": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification/hcsn_smallnet_20261124/data.py": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification/hcsn_smallnet_20261124/model.py": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification/hcsn_smallnet_20261124/train.py": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification/hcsn_training/population_generator.py": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "git_blob_sha1": {
+    "Test_Arabic_Digit.txt": "c1a4b714dc9473b9986d80cf06d8a1f1c57ae646",
+    "Train_Arabic_Digit.txt": "254dbaf108b00c27c254e4755ae18b4e19aa78b8"
+  },
+  "independent_mirror_blob_match": "https://github.com/benmatz/spoken-arabic-digits/tree/cf1e819fc6ed421eb2f153c7c4de39209bd28cd6/Data",
+  "model_commit": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "official_documentation": "https://archive.ics.uci.edu/ml/machine-learning-databases/00195/documentation.html"
+}

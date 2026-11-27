@@ -6,6 +6,7 @@ use super::Error;
 use super::OriginalCircuitOnPolicyCohortConfigV1;
 use super::Publications;
 use super::episode::Episode;
+use super::episode::EpisodeRecords;
 use crate::OriginalCircuitEvaluationSourceV1;
 use crate::circuit_task::CircuitTaskPolicyProjectionV1;
 use codex_hepta_intelligence_eval::ClusterAssignment;
@@ -25,17 +26,27 @@ use codex_hepta_types::StableId;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+/// Borrowed original read inputs; assembly still verifies every record and join.
+pub(super) struct CohortReadInputs<'a> {
+    pub(super) dataset: &'a DatasetSnapshotReceiptV3,
+    pub(super) records: &'a [LedgerRecord],
+    pub(super) publications: &'a Publications,
+}
+
 pub(super) fn assemble(
     config: &OriginalCircuitOnPolicyCohortConfigV1,
     ledger: &LedgerWriter,
-    dataset: &DatasetSnapshotReceiptV3,
-    records: &[LedgerRecord],
-    publications: &Publications,
+    inputs: CohortReadInputs<'_>,
     sources: &[OriginalCircuitEvaluationSourceV1],
     training_binding: &super::binding::CandidateBinding,
     pairing: &OnPolicyPairingContractV1,
     current: u64,
 ) -> Result<OnPolicyTemporalComparisonInputsV1, Error> {
+    let CohortReadInputs {
+        dataset,
+        records,
+        publications,
+    } = inputs;
     let rule = &config.rule;
     let expected: BTreeSet<_> = rule
         .history
@@ -105,9 +116,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.episode,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -154,9 +167,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.candidate,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -165,9 +180,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.baseline,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,

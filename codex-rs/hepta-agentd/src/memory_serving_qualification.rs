@@ -15,8 +15,8 @@ use super::SharedMemoryTrainingError;
 
 #[derive(Clone, Debug)]
 enum Decision {
-    Selected(VerifiedSelfEvolutionSelectionV1),
-    Rollback(VerifiedSelfEvolutionRollbackV1),
+    Selected(Box<VerifiedSelfEvolutionSelectionV1>),
+    Rollback(Box<VerifiedSelfEvolutionRollbackV1>),
 }
 
 /// No unchecked enum variant, Default or deserialization can bypass the census.
@@ -40,7 +40,7 @@ impl MemoryServingQualificationV1 {
             ));
         }
         Ok(Self {
-            decision: Decision::Selected(selection),
+            decision: Decision::Selected(Box::new(selection)),
             citations,
         })
     }
@@ -58,7 +58,7 @@ impl MemoryServingQualificationV1 {
             ));
         }
         Ok(Self {
-            decision: Decision::Rollback(rollback),
+            decision: Decision::Rollback(Box::new(rollback)),
             citations: predecessor_citations,
         })
     }

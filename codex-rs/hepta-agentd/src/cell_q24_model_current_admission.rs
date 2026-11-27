@@ -20,8 +20,7 @@ use crate::OriginalCellEvaluationModelMaterialV1;
 pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
     trainer: &mut CellQ24TrainingOwnerV1<T>,
     dataset_cut: &LearningIterationSnapshotV1,
-    scope: Digest32,
-    owner_binding: Digest32,
+    (scope, owner_binding): (Digest32, Digest32),
     training_cut: &LearningIterationSnapshotV1,
     training_attestation: &SignedLearningEvidenceV1,
     material: &OriginalCellEvaluationModelMaterialV1,

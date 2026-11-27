@@ -1,5 +1,7 @@
 //! Bounded one-operation registry CAS under the actual retained Root writer.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
+use crate::authority_host_config::HostAuthorityPeerTransport;
 use std::os::unix::net::UnixStream;
 use std::time::Instant;
 
@@ -73,11 +75,13 @@ impl HostAuthorityService {
     ) -> io::Result<()> {
         self.serve_q24_model_factory_with_end(
             factory,
-            config,
-            registration,
-            stream,
-            policy,
-            owner_pidfd,
+            HostAuthorityPeerTransport {
+                config,
+                registration,
+                stream,
+                policy,
+                owner: owner_pidfd,
+            },
             /*original_end*/ None,
         )
     }
@@ -85,20 +89,24 @@ impl HostAuthorityService {
     pub(crate) fn serve_q24_model_factory_until(
         &self,
         factory: &RegisteredQ24ModelFactory,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner_pidfd: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
         end: Instant,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner_pidfd: OwnedFd = transport.owner;
+
         self.serve_q24_model_factory_with_end(
             factory,
-            config,
-            registration,
-            stream,
-            policy,
-            owner_pidfd,
+            HostAuthorityPeerTransport {
+                config,
+                registration,
+                stream,
+                policy,
+                owner: owner_pidfd,
+            },
             Some(end),
         )
     }
@@ -106,13 +114,15 @@ impl HostAuthorityService {
     fn serve_q24_model_factory_with_end(
         &self,
         factory: &RegisteredQ24ModelFactory,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner_pidfd: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
         original_end: Option<Instant>,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner_pidfd: OwnedFd = transport.owner;
+
         let mut next_request_id = 1;
         let pin = owner_pidfd.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
@@ -131,14 +141,16 @@ impl HostAuthorityService {
                     == Some(crate::root_q24_model_b_protocol::PURPOSE)
                 {
                     return original_b::serve_original_b_model_request(
-                        self,
+                        HostAuthorityCallInputs {
+                            service: self,
+                            config,
+                            registration,
+                            owner: &pin,
+                            end: frame_end,
+                        },
                         factory,
-                        config,
-                        registration,
-                        &pin,
                         bytes,
                         &mut next_request_id,
-                        frame_end,
                     )
                     .map_err(|_| HostIssuerTransportError::Unavailable);
                 }

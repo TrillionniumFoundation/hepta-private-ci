@@ -14,6 +14,7 @@ use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_types::Generation;
 
+use super::profile::ModelFilePins;
 use super::*;
 use crate::authority_host_config::read_root_json;
 
@@ -97,8 +98,10 @@ impl HostAuthorityService {
                     &proof,
                     &initial,
                     &scope,
-                    FilePin::capture(&journal)?,
-                    FilePin::capture(&witness)?,
+                    ModelFilePins {
+                        journal: FilePin::capture(&journal)?,
+                        witness: FilePin::capture(&witness)?,
+                    },
                     domain,
                     policy_digest(reservation)?,
                 )?;
@@ -184,8 +187,10 @@ impl HostAuthorityService {
                     &proof,
                     &initial,
                     &scope,
-                    FilePin::capture(&journal)?,
-                    FilePin::capture(&witness)?,
+                    ModelFilePins {
+                        journal: FilePin::capture(&journal)?,
+                        witness: FilePin::capture(&witness)?,
+                    },
                     domain,
                     policy_digest(&reservation)?,
                 )?;

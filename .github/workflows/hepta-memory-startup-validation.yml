@@ -13,7 +13,7 @@ jobs:
   startup-and-owner-regressions:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -42,6 +42,16 @@ jobs:
           cd codex-rs
           just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/memory-startup-validation/process.log
           just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/memory-startup-validation/fleet.log
+      - name: Build and verify the Cargo test helpers
+        if: always() && !cancelled()
+        run: |
+          set -euo pipefail
+          helpers=(--output-dir "$RUNNER_TEMP/memory-startup-helpers"
+                   --package codex-hepta-infer-worker-host --package codex-cli)
+          python3 scripts/hepta_cell_test_helpers.py "${helpers[@]}" --github-env "$GITHUB_ENV"
+          mkdir -p /tmp/memory-startup-validation
+          python3 scripts/hepta_cell_test_helpers.py "${helpers[@]}" --verify-only \
+            > /tmp/memory-startup-validation/test-binaries.json
       - name: Run the entire affected Agentd unit suite without weakening filters
         if: always() && !cancelled()
         run: |

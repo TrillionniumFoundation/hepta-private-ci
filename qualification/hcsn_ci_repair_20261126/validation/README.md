@@ -1,0 +1,52 @@
+# 全仓资格验证记录
+
+这份记录对应研究分支在 `469670e8e5a88432e5ff2ddd5355bde5238e98de` 时已取得的回执。后续候选的结论按文件中记录的源树和可执行文件分别读取。PR 的当前总体状态以当次 GitHub Checks 为准。
+
+| 检查 | 原始运行结果 |
+|---|---|
+| Rust 1.96.0 原三包严格检查 | 全目标 Clippy 两次成功，第二次使用 CI 原命令。普通全目标检查和三包格式检查成功。6 个外部测试目标共 8 项通过，另外 14 项运行时、3 项面板和 8 项在 UID 0 下执行的资格测试通过。 |
+| 调用约束 | 原验证程序扫描 9,146 个 Rust 文件，1,652 条调用边界及 826 条源码保护全部通过。160 个相关模块的 1,352 个既有用例通过。增加两个 Rust 测试文件后，另一次原全仓检查扫描 9,148 个文件，三包严格检查再次通过。[冻结候选的逐项验证摘要](frozen-source-guard-and-strict.json) |
+| ARM 原生复核 | 独立 Apple Silicon 机器检出 469670e8。原启动包装器 68/68，原平台路径 10/10，零跳过。 |
+| Windows 队列 | 上个提交在托管 Windows 分片中两个就绪文件均超时。候选沿仓库已有 Python 解释器走原钩子路径。在 GNU 上按 Bazel 原 8 MiB 测试栈，基线 3/3、候选 4/4。GNU 默认栈下，两版的 caller abort 用例都触发栈溢出。469670e8 的 Windows 分片随后还记录两项持久化拒绝用例超时。最终候选沿仓库原有的 Python fixture 检验四项队列生命周期，同时用独立的 Windows 测试保留实际 PowerShell 钩子的行为覆盖。在仓库原 8 MiB 测试栈配置下，四项生命周期用例和两个钩子用例在 GNU 宿主实际 6/6 通过。[原测试断言、时限和源文件绑定](queue-and-operator-bindings.json) |
+| 独立受保护进程 | 四个原本须显式选择的测试都实际启动了独立子进程。在基线 musl 和 469670e8 GNU 两个构建上，学习注册和 Q24 冷恢复均成功。发布随后连接已退役会话、受控确认丢失后的初始恢复均失败。不同目标的两份回执分别保存。 |
+| 500 毫秒原时限 | 相同读取流程的 16 KiB 缓冲实验中，基线 0/6，候选 0/6。另一次独立实验在两个丢弃计算结果的调用点执行同一组结构验证，真实使用摘要的调用照常计算摘要。该实验的基线 0/6，候选 5/6。保留失败的全过程和原时限。 |
+
+`validation-source-receipts.zip` 含三包严格编译、原调用约束、队列、ARM 与 musl 分阶段计时的机器可读原始证据。每个子包列出了自己的源码或 ELF 标识。`PROTECTED_RUNTIME.json` 和 `protected_runtime_receipts.zip` 保存两目标四用例的原日志和退出码。12 次缓冲对照保存在相邻的 [next_use](../next_use/)。
+
+
+在同一原始 musl 测试的两轮分阶段计数中，每个完整证据请求都完成 600 次 CurrentStore 加载及绑定摘要、300 次成功的选择验签及 300 次最终用途验签。CurrentStore 此处走原测试的 Store::Test 分支，不能将次数解释为生产主机后端的读盘数。基线与结构候选处理未截断常规请求的中位时长分别为 550.094 和 502.826 毫秒。[四个 crate 的完整原始计数](multi-crate-native-evidence.zip)
+
+## Bellman 算子覆盖率和性能
+
+在 469670e8，原 CI 的 37 个用例全部通过，行覆盖率为 2,122/2,902（73.12%），原 85% 检查退出 1。候选补测覆盖了真实签名账本上的记忆训练、终止状态的冻结与修订，以及传感器几何和工作量上限。同一命令运行 45 个测试，全部通过，执行了 2,632/2,902 行（90.70%）。三个模块分别覆盖 161/164、179/200、276/293 行。七项原发布构建性能测量均达标，百万样本拟合的 p99 为 5,227 毫秒，限值 300,000 毫秒。
+
+[完整覆盖率 JSON、性能结果和映射回执](learning-operator-frozen-source-evidence.zip) 绑定到包内指明的本地源树与有序双亲合并。随后调整汇合作业的工件下载目录，逐文件重算 41 个资格输入的摘要，并在两个提交模式重新生成和验证全部 20 个算子映射。[目录修复后的原始映射](qualification-download-path-maps.zip)用工作流固定版本的归档程序复核，旧下载目录的原校验程序找到 0/4 个实际测试产物，修正后找到 4/4 个，长度和摘要相符。[下载和校验的逐项原始结果](verified-rehydration.json)
+
+GitHub 对带有证据附件的最终提交独立产生回执。
+
+[已发布修复](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/469670e8e5a88432e5ff2ddd5355bde5238e98de) · [对应的完整托管运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45917805750) · [上一提交已通过的原 musl 作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45914954824/job/140232518511)
+
+## 7a0e8667 的托管结果与后续修复
+
+[原 blocking-ci](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45923077801) 已完成 learning.operator 的精确源码、确定性合并和汇总三个资格作业。最终归档 ID 为 15167494270，文件 768 字节，SHA-256 为 `55254a6c562bfdff6c4d60dd6303d8a5441f8208ada5d160eea29c6c1892aa61`。独立使用原合并程序核验两份上游归档得到相同的源、树、工件和资格内容，两个生成时间字段随运行变化。[Daemon 原归档](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45923077654/artifacts/15167497589) 的 JUnit 含 2,852 个普通用例及声明的全部 68 个 Root 父用例，均零失败、零跳过。
+
+| 原作业的观察 | 后续变更及核验 |
+|---|---|
+| 原生 Windows 队列从上轮 35/39 改善到 40/41。Python 和 PowerShell 的真实钩子均通过，尚余一项拒绝持久化。 | 跟踪真实阻止事件的 turn ID 和同一项的完成事件，随后由独立队列客户端验证后续消息的既有记录。原 10 秒期限、外部模型请求数、钩子内容和持久 FIFO 均保留。GNU 完整 39/39。 |
+| 先前的父子通知测试将含有子完成消息的父回放错误路由至 404。 | 用真实发送方标头区分子请求，同时继续核对父回放与子消息内容。相同原生程序和同一真实事件顺序下，旧路由退出 101，新路由退出 0。原通知与标头组 32/32。 |
+| MemoryCell 的全量 Agentd 作业在选中 1,554 项中有六项找不到两个真实辅助程序。 | 复用仓库的 hepta_cell_test_helpers.py，按 Cargo 编译器记录准备两个真实二进制，复核来源和哈希后传给原 nextest。最初的同 ELF 诊断在缺少位置时 0/4、提供真实程序后 4/4。独立比对同提交的 Daemon 托管回执，正式 helper 在干净源上构建这两个包，六个对应原测试按名各运行一次且全部通过。这与新提交的 MemoryCell 整项资格分别记录。原五条测试命令保持原样。作业总预算从 30 改为 45 分钟以容纳新增构建，单项功能时限不变。 |
+| MEM 原 JUnit 十一项全过，旧汇总只接受七个名字。 | 严格集合纳入原七项和新增的四项，并由集合确定项数。复用托管原 JUnit 验证旧汇总退出 1、新汇总退出 0。21 个不合格输入全部被拒收，后续原 protocol 组也已 30/30 通过。 |
+| Daemon 普通及 Root 资格已通过，随后格式维护在归档中的孤立 Cargo manifest 失败。 | 沿原历史基线选取维护流程允许写入的六个现行 Rust 包，继续使用仓库已有的格式规则、版本识别及后像核验。在 4,243 份现存变更 Rust 源中，格式化 1,604 份；另 2,632 份按所属包记入清单，7 份签名归档逐份复核。原后像审计还原了唯一一份换行差异。 |
+| Linux GNU 和 macOS ARM 的 control-plane 原单测均为 184/185。相同冷重开读取报告 WriterUnavailable。 | 按原 NDU 原生验收的运行方式，让同一个 Bazel 单测目标在 Linux 和 macOS 内部串行。保留 185 项原测试及冷重开的 32 轮，Windows 参数按原配置。Linux 同一 ELF 的串行全组 20/20、默认并行全组 40/40、八线程全组 20/20 均成功，本机未观察到托管失败。 |
+
+[可下载的原生结果和核验资料](positive-runtime-and-ci-receipts.zip)的归档 SHA-256 为 `7ab323ef4275308ebe4898fcf1527db1134c0e715047c84bca2081038bab95fb`。固定源的独立测量还记录了 CPU 编译选项与存储差异。相同 500 毫秒用例中，只调三个本仓包为 5/6，同轮默认配置为 2/6；调五包为 6/6，同轮默认为 3/6。五包在首块持久盘的四项 Root 资格为 1/4。该机当前默认产品在首块和第二块 ext4 持久盘分别为 2/4 与 4/4，tmpfs 为 4/4。以上编译选项仅作为测量对照。原受保护 Windows 正向资格继续以其产品入口和独立托管结果为准。
+
+## Native package ownership and follow-up functional receipts
+
+The a55d9802 daemon source audit raised one original named assertion out of 1,223. The formatter and postimage scanner already selected six Rust owners. The workflow now derives an equivalent Cargo option list from those directories and checks it against the original six package arguments. It also enforces the resident neuron's existing ownership condition before maintenance. The original failing test fails on the parent and passes on the candidate. Four deliberately incomplete or mismatched owner inputs are rejected. The [hosted parent job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45931613506/job/140285300338) ran 1,223 in 285.169 seconds and reported precisely that one failure. All 1,223 original cases in 155 modules pass in six independent groups on the corrected source (310.660 seconds elapsed). A separate, single-process trial on the busy ROG machine reached the unmodified 600-second limit with supervisor exit 124 after 1,032 output lines and no final suite count. Its outcome remains distinct from the grouped validation. The 36 formatting and 16 observer/postimage cases pass. The original six-package cargo binary check exits successfully; inventory after formatting and after checking bins agrees at SHA-256 `1f6078cbb7d867e82a1d1af12dcff83a3f01f07a6364c52c2fc63a90bb78c0a8`.
+
+The archive also provides four successful native MemoryCell processes using the existing pinned Cargo helper, the MEM protocol's 30/30 and all four original source maintenance invocations with a clean final diff. Hosted Windows queue_service on a55d9802 ran in 53.7 seconds, succeeded, and [its whole shard passed](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45931613556/job/140285973378). The original [macOS ARM target](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45931613556/job/140285973396) also passed in 10.8 seconds after its previous 184/185. The [protected Windows shard](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45931613556/job/140285973434) records three persisting positive product failures under elevated admission. A separate CLI process timed out in one internal attempt.
+
+The two complete before/after inventories are available as [four bounded parts](inventory-parts). In this directory, reconstruct both original compressed files with `cat inventory-parts/owners.tar.xz.part* | tar -xJ`. The primary archive records the SHA-256 and size of both originals, their combined archive, and every part.
+
+[Raw records and manifest](workflow-owner-and-runtime-receipts.zip) · 45 ZIP entries · 129834 bytes · SHA-256 `085437e26d5fe80a9bfe5f5f3cd8674c7432bf60a27c015af99f229b41457272`.

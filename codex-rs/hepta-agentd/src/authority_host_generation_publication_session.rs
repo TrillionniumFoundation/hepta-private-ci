@@ -1,6 +1,7 @@
 //! One-shot late enrollment in the same retained Root session. The capability
 //! never reaches the daemon; only trusted Root can supply original capabilities.
 
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -164,9 +165,11 @@ impl PreparedHostAuthoritySession {
             .ok_or_else(|| io::Error::other("original scoped learning owner required"))?;
         let (runtime, capability, offer) = prepare_original_publication_route(
             &self.service,
-            &self.config,
-            &self.registration,
-            &self.owner_pidfd,
+            HostAuthorityRegistrationInputs {
+                config: &self.config,
+                registration: &self.registration,
+                owner: &self.owner_pidfd,
+            },
             learning,
             None,
             PublicationVersion::LegacyV1,

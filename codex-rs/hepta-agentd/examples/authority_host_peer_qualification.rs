@@ -46,7 +46,7 @@ mod qualification {
         resources: ResourceBudget,
     }
 
-    fn connect(path: &Path, root_pid: u32) -> UnixStream {
+    fn connect(path: &Path, root_pid: u32) -> std::io::Result<UnixStream> {
         let deadline = Instant::now() + Duration::from_secs(15);
         loop {
             match UnixStream::connect(path) {
@@ -71,13 +71,9 @@ mod qualification {
                     assert_eq!(result, 0);
                     assert_eq!(length as usize, std::mem::size_of::<libc::ucred>());
                     assert_eq!((peer.uid, peer.pid), (0, root_pid as i32));
-                    stream
-                        .set_read_timeout(Some(Duration::from_secs(10)))
-                        .unwrap();
-                    stream
-                        .set_write_timeout(Some(Duration::from_secs(10)))
-                        .unwrap();
-                    return stream;
+                    stream.set_read_timeout(Some(Duration::from_secs(10)))?;
+                    stream.set_write_timeout(Some(Duration::from_secs(10)))?;
+                    return Ok(stream);
                 }
                 Err(_) => {
                     assert!(Instant::now() < deadline, "root listener deadline");
@@ -91,19 +87,27 @@ mod qualification {
         stream: &mut UnixStream,
         request: &serde_json::Value,
         bound: usize,
-    ) -> serde_json::Value {
-        let bytes = serde_json::to_vec(request).unwrap();
-        stream
-            .write_all(&(bytes.len() as u32).to_be_bytes())
-            .unwrap();
-        stream.write_all(&bytes).unwrap();
+    ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let bytes = serde_json::to_vec(request)?;
+        stream.write_all(&(bytes.len() as u32).to_be_bytes())?;
+        stream.write_all(&bytes)?;
         let mut length = [0; 4];
-        stream.read_exact(&mut length).unwrap();
+        stream.read_exact(&mut length)?;
         let length = u32::from_be_bytes(length) as usize;
         assert!((1..=bound).contains(&length));
         let mut bytes = vec![0; length];
-        stream.read_exact(&mut bytes).unwrap();
-        serde_json::from_slice(&bytes).unwrap()
+        stream.read_exact(&mut bytes)?;
+        Ok(serde_json::from_slice(&bytes)?)
+    }
+
+    fn signature_bytes(hex: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        hex.as_bytes()
+            .chunks_exact(2)
+            .map(|chunk| {
+                let pair = std::str::from_utf8(chunk)?;
+                Ok(u8::from_str_radix(pair, 16)?)
+            })
+            .collect()
     }
 
     fn objective_body(spawn_generation: u64) -> AuthBusObjectiveBody {
@@ -138,7 +142,10 @@ mod qualification {
         }
         let state = std::env::var_os("HEPTA_SERVICE_STATE").ok_or("missing fixture state path")?;
         assert_eq!(
-            std::fs::read_dir(state).unwrap_err().kind(),
+            std::fs::read_dir(state)
+                .err()
+                .ok_or("fixture state directory must deny access")?
+                .kind(),
             std::io::ErrorKind::PermissionDenied
         );
         let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
@@ -163,13 +170,13 @@ mod qualification {
             std::env::var_os("HEPTA_SERVICE_RUNTIME").ok_or("missing fixture runtime")?,
         );
         let root_pid: u32 = std::env::var("HEPTA_SERVICE_PID")?.parse()?;
-        let mut observation = connect(&runtime.join("observation.sock"), root_pid);
-        let mut issuer = connect(&runtime.join("issuer.sock"), root_pid);
-        let mut checkpoint = connect(&runtime.join("checkpoint.sock"), root_pid);
+        let mut observation = connect(&runtime.join("observation.sock"), root_pid)?;
+        let mut issuer = connect(&runtime.join("issuer.sock"), root_pid)?;
+        let mut checkpoint = connect(&runtime.join("checkpoint.sock"), root_pid)?;
         let mut consumer_streams = if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
             Some((
-                connect(&runtime.join("device-frontier.sock"), root_pid),
-                connect(&runtime.join("notes-frontier.sock"), root_pid),
+                connect(&runtime.join("device-frontier.sock"), root_pid)?,
+                connect(&runtime.join("notes-frontier.sock"), root_pid)?,
             ))
         } else {
             None
@@ -284,17 +291,11 @@ mod qualification {
                 &mut observation,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
                 16 * 1024,
-            ))?;
+            )?)?;
             let public: [u8; 32] =
                 serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
             let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
-            let signature = read
-                .proof
-                .signature_hex
-                .as_bytes()
-                .chunks_exact(2)
-                .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
-                .collect::<Vec<_>>();
+            let signature = signature_bytes(&read.proof.signature_hex)?;
             key.verify(
                 &read.proof.claims.signing_bytes()?,
                 &ed25519_dalek::Signature::from_slice(&signature)?,
@@ -306,7 +307,7 @@ mod qualification {
                 &mut observation,
                 &serde_json::json!({"schema_version":2,"operation":"runtime.authority.observation.v2"}),
                 16 * 1024,
-            ))?;
+            )?)?;
             let fresh_ms = before.elapsed().as_millis();
             assert!(before.elapsed() <= Duration::from_millis(500));
             assert_eq!(
@@ -332,7 +333,7 @@ mod qualification {
                 &mut observation,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
                 16 * 1024,
-            ))?;
+            )?)?;
             assert_eq!(again, read);
             println!(
                 "{}",
@@ -344,7 +345,7 @@ mod qualification {
             &mut observation,
             &serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"}),
             16 * 1024,
-        );
+        )?;
         let feed_ms = start.elapsed().as_millis();
         assert!(
             start.elapsed() <= Duration::from_millis(500),
@@ -400,17 +401,12 @@ mod qualification {
                 &mut issuer,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
                 64 * 1024,
-            );
+            )?;
             let ingress: AuthBusObjectiveIngress =
                 serde_json::from_value(signed["ingress"].clone())?;
             assert_eq!(ingress.sequence, 2);
             assert_eq!(ingress.expires_at_ms, expected_expiry);
-            let signature: Vec<u8> = ingress
-                .signature_hex
-                .as_bytes()
-                .chunks_exact(2)
-                .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
-                .collect();
+            let signature = signature_bytes(&ingress.signature_hex)?;
             key.verify(
                 &authbus_objective_claims(&identity, &ingress)?.signing_bytes(),
                 &ed25519_dalek::Signature::from_slice(&signature)?,

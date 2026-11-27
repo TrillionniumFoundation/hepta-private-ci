@@ -1,14 +1,18 @@
 //! Root-only, open-only service configuration. Ordinary peer data is never
 //! parsed as registration or administrative bootstrap.
 
+use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io;
 use std::io::Read;
+use std::os::fd::OwnedFd;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
+use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::RootAuthorityDirectory;
@@ -18,6 +22,34 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::AgentdIdentity;
+use crate::HostAuthorityService;
+
+/// Ordinary borrowed call inputs. Consumers retain every authentication,
+/// owner-liveness and deadline check; constructing this group grants no authority.
+pub(crate) struct HostAuthorityCallInputs<'a> {
+    pub(crate) service: &'a HostAuthorityService,
+    pub(crate) config: &'a HostAuthorityServiceConfig,
+    pub(crate) registration: &'a HostAuthorityRegistration,
+    pub(crate) owner: &'a OwnedFd,
+    pub(crate) end: Instant,
+}
+
+/// Ordinary registration borrows; each consumer keeps its original identity
+/// and owner checks. No deadline is sampled and no authority is granted here.
+pub(crate) struct HostAuthorityRegistrationInputs<'a> {
+    pub(crate) config: &'a HostAuthorityServiceConfig,
+    pub(crate) registration: &'a HostAuthorityRegistration,
+    pub(crate) owner: &'a OwnedFd,
+}
+
+/// The original socket, peer policy and owner descriptor for one authority connection.
+pub(crate) struct HostAuthorityPeerTransport<'a> {
+    pub(crate) config: &'a HostAuthorityServiceConfig,
+    pub(crate) registration: &'a HostAuthorityRegistration,
+    pub(crate) stream: UnixStream,
+    pub(crate) policy: HostAuthorityPeerPolicy,
+    pub(crate) owner: OwnedFd,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

@@ -1,6 +1,8 @@
 //! Late original enrollment and one publication connection share the exact
 //! lifetime of the original Root listeners, not a detached replacement service.
 
+use crate::authority_host_config::HostAuthorityPeerTransport;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::net::Shutdown;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
@@ -83,9 +85,11 @@ pub(in super::super) fn serve_optional(
         publication,
         learning,
         service,
-        config,
-        registration,
-        owner,
+        HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        },
         /*original_end*/ None,
         original,
     )
@@ -95,20 +99,26 @@ pub(in super::super) fn serve_optional_until(
     publication: Option<&BoundPublication>,
     learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
     service: &HostAuthorityService,
-    config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner: &OwnedFd,
+    peer_inputs: HostAuthorityRegistrationInputs<'_>,
     end: Instant,
     original: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
+    let HostAuthorityRegistrationInputs {
+        config,
+        registration,
+        owner,
+    } = peer_inputs;
+
     owner_alive(owner, end)?;
     let result = serve_optional_with_end(
         publication,
         learning,
         service,
-        config,
-        registration,
-        owner,
+        HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        },
         Some(end),
         original,
     );
@@ -120,12 +130,16 @@ fn serve_optional_with_end(
     publication: Option<&BoundPublication>,
     learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1,
     service: &HostAuthorityService,
-    config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner: &OwnedFd,
+    peer_inputs: HostAuthorityRegistrationInputs<'_>,
     original_end: Option<Instant>,
     original: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
+    let HostAuthorityRegistrationInputs {
+        config,
+        registration,
+        owner,
+    } = peer_inputs;
+
     let Some(publication) = publication else {
         return original();
     };
@@ -159,9 +173,11 @@ fn serve_optional_with_end(
             let operation_end = end.min(submission.end);
             owner_alive(owner, operation_end)?;
             let slot = service.enroll_generation_publication(
-                config,
-                registration,
-                owner,
+                HostAuthorityRegistrationInputs {
+                    config,
+                    registration,
+                    owner,
+                },
                 learning,
                 submission.inputs,
                 publication.runtime.version,
@@ -237,21 +253,25 @@ fn serve_optional_with_end(
                 Some(end) => service.serve_generation_publication_until(
                     &slot,
                     learning,
-                    config,
-                    registration,
-                    stream,
-                    policy,
-                    owner.try_clone()?,
+                    HostAuthorityPeerTransport {
+                        config,
+                        registration,
+                        stream,
+                        policy,
+                        owner: owner.try_clone()?,
+                    },
                     end,
                 ),
                 None => service.serve_generation_publication(
                     &slot,
                     learning,
-                    config,
-                    registration,
-                    stream,
-                    policy,
-                    owner.try_clone()?,
+                    HostAuthorityPeerTransport {
+                        config,
+                        registration,
+                        stream,
+                        policy,
+                        owner: owner.try_clone()?,
+                    },
                 ),
             };
             if stopping.load(Ordering::Acquire) {

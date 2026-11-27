@@ -68,6 +68,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
     /// Original deployment entry: serve this purpose and, only after separate
     /// successful FinalUse, enter the existing ordinary C runtime. No protocol
     /// frame starts C or supplies its RunStart/deployment permission.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The published positional API remains available to existing callers."
+    )]
     pub async fn serve_original_ordinary(
         self: Arc<Self>,
         stream: UnixStream,
@@ -91,6 +95,24 @@ impl OriginalCircuitRetainedVersionHostV1 {
             OriginalCircuitRetainedVersionHostV1::serve_original_final_use(Arc::clone(&self)),
         )?;
         Ok(served)
+    }
+
+    /// Accepts the original peer transport as a single value.
+    pub async fn serve_original_ordinary_task_stream(
+        self: Arc<Self>,
+        channel: crate::OriginalCellQ24NoUpdateTaskStreamV1,
+        arg0_paths: codex_arg0::Arg0DispatchPaths,
+    ) -> Result<u64, Error> {
+        self.serve_original_ordinary(
+            channel.stream,
+            channel.peer,
+            channel.uid,
+            channel.original_task_pidfd,
+            channel.timeout,
+            channel.lifetime,
+            arg0_paths,
+        )
+        .await
     }
 
     /// Selection's already delivered original read socket is held from now,

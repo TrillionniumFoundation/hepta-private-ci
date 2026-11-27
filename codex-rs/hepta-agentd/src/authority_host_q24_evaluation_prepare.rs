@@ -5,6 +5,7 @@
 use super::super::admission::OriginalBAuthorities;
 use super::super::benchmark;
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::learning_owner_evidence;
 use crate::neuron_cell_evaluation::OriginalCellEvaluationObserversV1;
 use crate::root_independent_b_candidate_notice::CandidateNotice;
@@ -15,16 +16,21 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(in super::super) fn prepare_original_candidate<T>(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
-        frame_end: Instant,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         training_head: Digest32,
         attestation: &SignedLearningEvidenceV1,
         training_work: &crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1,
         action: impl FnOnce(PreparedPlanData) -> io::Result<T>,
     ) -> io::Result<(T, CandidateNotice)> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: frame_end,
+        } = call_inputs;
+
         let end = self.end.min(frame_end);
         // Keep both real SH locks through the durable Ready CAS, not just the
         // inner Root callback. No native borrow can release these descriptors.

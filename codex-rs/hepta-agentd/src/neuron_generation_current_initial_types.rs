@@ -31,7 +31,7 @@ pub(crate) struct InitialIntent {
 impl InitialIntent {
     pub(super) fn validate(&self) -> Result<(), AgentdError> {
         StableId::new(&self.operation_id).map_err(invalid)?;
-        self.target.digest().map_err(invalid)?;
+        self.target.validate().map_err(invalid)?;
         if self.genesis_checkpoint != self.target.genesis_checkpoint().into_array()
             || self.selection == [0; 32]
             || self.supersedes == Some([0; 32])

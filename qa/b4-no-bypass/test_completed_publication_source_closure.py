@@ -161,7 +161,7 @@ class CompletedPublicationSourceClosure(unittest.TestCase):
         for marker in ("!matches!(self.phase, ReadPhase::AwaitingContext)",
                        "self.require_terminal_selection(context)?;", "self.require_original_next_use(context, data)?;",
                        "context.terminal().request != context.initial().request", "context.terminal().owners != context.initial().owners",
-                       "self.phase = ReadPhase::Observed(data.clone());"):
+                       "self.phase = ReadPhase::Observed(Box::new(data.clone()));"):
             with self.subTest(marker=marker): self.reject(READ, marker, function="observe")
         self.reject(READ, "std::mem::replace(&mut self.phase, ReadPhase::Failed)", function="finish")
         self.reject(READ, "RegisteredSuccessorData::finish_observed(held, &data.cut)?;", function="finish")

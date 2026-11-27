@@ -3,6 +3,7 @@
 //! selection, physical target and FinalUse read-side checks.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityPeerTransport;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use std::os::unix::net::UnixStream;
@@ -49,7 +50,7 @@ pub(crate) enum Command {
     Publish {
         expected: String,
         intent: String,
-        signed: SignedFinalUseGrant,
+        signed: Box<SignedFinalUseGrant>,
         witness: VerifiedUseTokenWitnessV1,
     },
 }
@@ -69,15 +70,17 @@ impl HostAuthorityService {
     pub(crate) fn serve_generation_initial(
         &self,
         slot: &RegisteredGenerationInitial,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
         source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>,
         session_end: Instant,
         retained_run_start: Option<&RegisteredInitialRunStartRetentionV1>,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner: OwnedFd = transport.owner;
+
         let mut sequence = 1_u64;
         let pin = owner.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
@@ -192,6 +195,7 @@ impl HostAuthorityService {
                                 signed,
                                 witness,
                             } => {
+                                let signed = signed.as_ref();
                                 if slot.mode != RootGenerationInitialModeV1::Reserve
                                     || before.as_ref() != Some(&slot.profile.prepared)
                                     || *expected != head_digest(&before)?

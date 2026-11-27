@@ -23,6 +23,10 @@ pub(super) enum Status {
     Completed = 1,
     Missing = 2,
     Pending = 3,
+    #[expect(
+        dead_code,
+        reason = "Wire value 4 remains a receive-only refusal status"
+    )]
     Unavailable = 4,
     ReadbackRequired = 5,
 }

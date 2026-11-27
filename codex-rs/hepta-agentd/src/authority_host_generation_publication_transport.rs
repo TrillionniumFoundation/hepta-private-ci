@@ -1,6 +1,8 @@
 //! The actual original Root dispatch. Only derived preparation and the
 //! original one-operation publication may mutate CURRENT. Readback never does.
 
+use crate::authority_host_config::HostAuthorityPeerTransport;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::os::unix::net::UnixStream;
 use std::time::Instant;
 
@@ -37,7 +39,7 @@ pub(crate) enum Command {
     Publish {
         expected: String,
         intent: String,
-        signed: SignedFinalUseGrant,
+        signed: Box<SignedFinalUseGrant>,
         witness: VerifiedUseTokenWitnessV1,
     },
 }
@@ -61,20 +63,24 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner: OwnedFd = transport.owner;
+
         self.serve_generation_publication_with_end(
             slot,
             learning,
-            config,
-            registration,
-            stream,
-            policy,
-            owner,
+            HostAuthorityPeerTransport {
+                config,
+                registration,
+                stream,
+                policy,
+                owner,
+            },
             /*original_end*/ None,
         )
     }
@@ -83,21 +89,25 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
         end: Instant,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner: OwnedFd = transport.owner;
+
         self.serve_generation_publication_with_end(
             slot,
             learning,
-            config,
-            registration,
-            stream,
-            policy,
-            owner,
+            HostAuthorityPeerTransport {
+                config,
+                registration,
+                stream,
+                policy,
+                owner,
+            },
             Some(end),
         )
     }
@@ -106,13 +116,15 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: HostAuthorityPeerTransport<'_>,
         original_end: Option<Instant>,
     ) -> io::Result<()> {
+        let config: &HostAuthorityServiceConfig = transport.config;
+        let registration: &HostAuthorityRegistration = transport.registration;
+        let stream: UnixStream = transport.stream;
+        let policy: HostAuthorityPeerPolicy = transport.policy;
+        let owner: OwnedFd = transport.owner;
+
         let version = PublicationVersion::from_purpose(&slot.profile.purpose)?;
         let mut sequence = 1;
         let pin = owner.try_clone()?;
@@ -128,7 +140,7 @@ impl HostAuthorityService {
                     let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
                         return HostAuthorityService::issue_generation_publication_grant(
-                            self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
+                            self, slot, learning, HostAuthorityRegistrationInputs { config, registration, owner: &pin },   &request, &mut sequence, end,
                         ).map(|raw| (raw, None));
                     }
                     let mut successor_observed = None;
@@ -260,6 +272,7 @@ impl HostAuthorityService {
                                 signed,
                                 witness,
                             } => {
+                                let signed = signed.as_ref();
                                 if *expected != head_digest(&before)?
                                     || *requested != original_digest
                                 {

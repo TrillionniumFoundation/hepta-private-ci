@@ -230,7 +230,7 @@ impl Owners {
                 wire::Action::Execute => {
                     OriginalCellEvaluationReceiptOwnerV1::attest_with_training(
                         &mut self.evaluator,
-                        sources.into(),
+                        sources,
                         training,
                     )
                     .await?
@@ -238,7 +238,7 @@ impl Owners {
                 wire::Action::Readback => {
                     OriginalCellEvaluationReceiptOwnerV1::readback_with_training(
                         &mut self.evaluator,
-                        sources.into(),
+                        sources,
                         training,
                     )
                     .await?

@@ -1,6 +1,7 @@
 //! One purpose connection, owned by the original Root serving scope. Stop
 //! closes that stream and joins the actual worker; no detached B task survives.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
 use std::net::Shutdown;
 use std::os::unix::net::UnixStream;
 use std::sync::atomic::AtomicBool;
@@ -142,11 +143,7 @@ fn serve_evaluation_until(
                                 crate::learning_owner_evidence::decode(&training_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             let (response, candidate) = OriginalRootIndependentBEvaluationFilesV1::prepare_original_candidate(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {service, config, registration, owner, end: frame_end},
                                     head,
                                     &signed,
                                     &training_work,
@@ -189,11 +186,7 @@ fn serve_evaluation_until(
                                 crate::learning_owner_evidence::decode(&plan_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             OriginalRootIndependentBEvaluationFilesV1::complete_from_original_training(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {service, config, registration, owner, end: frame_end},
                                     head,
                                     &signed,
                                     &plan_signed,
@@ -212,11 +205,7 @@ fn serve_evaluation_until(
                             let head = digest(&training_head)
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             OriginalRootIndependentBEvaluationFilesV1::with_original_completed_evaluation(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {service, config, registration, owner, end: frame_end},
                                     head,
                                     |actual| {
                                         encode_response(

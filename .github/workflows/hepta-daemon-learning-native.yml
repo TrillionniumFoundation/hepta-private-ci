@@ -20,6 +20,9 @@ on:
       - "scripts/hepta_ci_junit.py"
       - "scripts/hepta_c_observer_coverage.py"
       - "scripts/test_hepta_c_observer_coverage.py"
+      - "scripts/format.py"
+      - "scripts/hepta_daemon_learning_format.py"
+      - "scripts/test_hepta_format_scope.py"
   workflow_dispatch:
 
 permissions:
@@ -74,6 +77,7 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
+          from hepta_daemon_learning_format import RUST_OWNERS
           from hepta_c_observer_coverage import assess_retained_original_observer_coverage
 
           parents = [
@@ -149,6 +153,10 @@ jobs:
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
                       "-p", "codex-hepta-neuron", "-p", "codex-hepta-learning-ledger"]
+          maintenance_packages = [argument for owner in RUST_OWNERS
+                                  for argument in ("-p", "codex-" + Path(owner).name)]
+          if packages != maintenance_packages or "codex-rs/hepta-neuron/" not in RUST_OWNERS:
+              raise RuntimeError("daemon Rust owners must match native packages and include hepta-neuron")
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--package", "codex-cli",
                      "--output-dir", str(records / "helpers")]
@@ -251,6 +259,8 @@ jobs:
                   raise RuntimeError(name + " failed; retained execution and fresh JUnit observations")
 
           def postimages(complete):
+              from hepta_daemon_learning_format import is_owned_rust
+
               (records / "maintenance.patch").write_bytes(git("diff", "--binary", "HEAD", "--"))
               changed = git("diff", "--name-only", "--no-renames", "-z", "HEAD", "--")
               if git("ls-files", "--others", "--exclude-standard", "-z"):
@@ -260,10 +270,7 @@ jobs:
                   if not raw:
                       continue
                   path = os.fsdecode(raw)
-                  if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/", "codex-rs/hepta-contracts/",
-                           "codex-rs/hepta-neuron/", "codex-rs/hepta-learning-ledger/")):
+                  if not is_owned_rust(path):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -322,7 +329,9 @@ jobs:
               assert before == after, "source changed during tests"
               maintenance_started = True
               stage("fix", ["just", "fix", "--locked", "--offline", *packages])
-              stage("fmt", ["just", "fmt", "--base", os.environ["FORMAT_BASE_SHA"]], 600)
+              stage("fmt", ["python3", "scripts/hepta_daemon_learning_format.py",
+                            "--base", os.environ["FORMAT_BASE_SHA"],
+                            "--inventory", str(records / "maintenance-format-inputs.json")], 600)
               maintenance_complete = True
               maintained = snapshot("after-maintenance")
               # No behavior tests after fix/fmt; this is compile-only binary validation.
@@ -360,6 +369,8 @@ jobs:
             -- python3 -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v
       - name: Check exact learning owner evidence parser controls
         run: python3 -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py
+      - name: Check reviewed Rust formatter scope
+        run: python3 -m unittest discover -s scripts -p test_hepta_format_scope.py
       - name: Install native prerequisites
         run: |
           sudo apt-get update

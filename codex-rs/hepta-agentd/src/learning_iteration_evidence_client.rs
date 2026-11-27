@@ -139,7 +139,7 @@ struct Channel {
 /// A signed reply authenticates its assertion, not the underlying experiment.
 /// Trust/controller separation is still checked by the iteration worker.
 pub struct LearningIterationEvidenceClientV1 {
-    channel: Mutex<Option<Channel>>,
+    channel: Mutex<Option<Box<Channel>>>,
     command: Option<Mutex<Option<command_evidence::OriginalCommandEvidenceV1>>>,
     initial: LearningIterationSnapshotV1,
     actor_id: StableId,
@@ -195,10 +195,10 @@ impl LearningIterationEvidenceClientV1 {
         )
         .map_err(|_| unavailable())?;
         Ok(Self {
-            channel: Mutex::new(Some(Channel {
+            channel: Mutex::new(Some(Box::new(Channel {
                 transport,
                 next_request_id: 1,
-            })),
+            }))),
             command: None,
             initial,
             actor_id: peer.actor_id,
