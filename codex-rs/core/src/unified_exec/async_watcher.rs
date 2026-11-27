@@ -7,6 +7,7 @@ use tokio::time::Duration;
 use tokio::time::Instant;
 use tokio::time::Sleep;
 
+use super::ExecApprovalTerminal;
 use super::SharedPluginMetricsSidecar;
 use super::UnifiedExecContext;
 use super::process::OutputHandles;
@@ -203,6 +204,7 @@ pub(crate) fn spawn_exit_watcher(
                 String::new(),
                 message,
                 duration,
+                process.approval_terminal(),
             )
             .await;
         } else {
@@ -227,6 +229,7 @@ pub(crate) fn spawn_exit_watcher(
                 String::new(),
                 exit_code,
                 duration,
+                process.approval_terminal(),
             )
             .await;
         }
@@ -331,6 +334,7 @@ pub(crate) async fn emit_exec_end_for_unified_exec(
     fallback_output: String,
     exit_code: i32,
     duration: Duration,
+    approval_terminal: Option<Arc<ExecApprovalTerminal>>,
 ) {
     let aggregated_output = resolve_aggregated_output(&transcript, fallback_output).await;
     let output = ExecToolCallOutput {
@@ -353,7 +357,8 @@ pub(crate) async fn emit_exec_end_for_unified_exec(
         ExecCommandSource::UnifiedExecStartup,
         process_id,
         plugin_attribution,
-    );
+    )
+    .with_approval_terminal(approval_terminal);
     emitter
         .emit(
             event_ctx,
@@ -378,6 +383,7 @@ pub(crate) async fn emit_failed_exec_end_for_unified_exec(
     fallback_output: String,
     message: String,
     duration: Duration,
+    approval_terminal: Option<Arc<ExecApprovalTerminal>>,
 ) {
     let stdout = if fallback_output.is_empty() {
         resolve_aggregated_output(&transcript, fallback_output).await
@@ -409,7 +415,8 @@ pub(crate) async fn emit_failed_exec_end_for_unified_exec(
         ExecCommandSource::UnifiedExecStartup,
         process_id,
         plugin_attribution,
-    );
+    )
+    .with_approval_terminal(approval_terminal);
     emitter
         .emit(
             event_ctx,
