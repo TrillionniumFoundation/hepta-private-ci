@@ -60,6 +60,7 @@ use core_test_support::streaming_sse::start_streaming_sse_server;
 use core_test_support::test_codex::test_codex;
 use core_test_support::test_codex::turn_permission_fields;
 use core_test_support::test_target_os;
+use core_test_support::wait_for_completed_turn;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
@@ -2040,11 +2041,8 @@ async fn compact_session_start_hook_records_additional_context_for_next_turn() -
     let test = builder.build(&server).await?;
 
     test.submit_turn("hello before compact").await?;
-    test.codex.submit(Op::Compact).await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
-    })
-    .await;
+    let compact_turn_id = test.codex.submit(Op::Compact).await?;
+    wait_for_completed_turn(&test.codex, Some(&compact_turn_id), Duration::from_secs(10)).await;
     test.submit_turn("hello after compact").await?;
 
     let requests = request_log.requests();
