@@ -1993,7 +1993,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-http-client",
  "codex-protocol",
  "crypto_box",
@@ -2005,6 +2004,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "time",
 ]
 
 [[package]]
@@ -3359,7 +3359,6 @@ name = "codex-git-utils"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-file-system",
  "codex-protocol",
  "codex-utils-absolute-path",
@@ -4714,7 +4713,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-utils-absolute-path",
  "codex-utils-home-dir",
