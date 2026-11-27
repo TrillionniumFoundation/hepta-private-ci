@@ -2520,18 +2520,18 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
     .await;
 
     let (GuardianReviewOutcome::Completed(first_assessment), first_metadata) = first_outcome else {
-        panic!("expected first guardian assessment");
+        panic!("expected first guardian assessment, observed {first_outcome:?}");
     };
     let (GuardianReviewOutcome::Completed(second_assessment), second_metadata) = second_outcome
     else {
-        panic!("expected second guardian assessment");
+        panic!("expected second guardian assessment, observed {second_outcome:?}");
     };
     let (GuardianReviewOutcome::Completed(third_assessment), third_metadata) = third_outcome else {
-        panic!("expected third guardian assessment");
+        panic!("expected third guardian assessment, observed {third_outcome:?}");
     };
     let (GuardianReviewOutcome::Completed(fourth_assessment), fourth_metadata) = fourth_outcome
     else {
-        panic!("expected fourth guardian assessment");
+        panic!("expected fourth guardian assessment, observed {fourth_outcome:?}");
     };
     assert_eq!(first_assessment.outcome, GuardianAssessmentOutcome::Allow);
     assert_eq!(second_assessment.outcome, GuardianAssessmentOutcome::Allow);

@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "source": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/fixture-format-candidate-5c",
+  "commands": [
+    {
+      "label": "clone",
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/candidate",
+        "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/fixture-format-candidate-5c"
+      ],
+      "exit_code": 0,
+      "started": 1795788929.0682433,
+      "finished": 1795788929.0976803,
+      "log_sha256": "6f6551b931e30f2194499f5799fb1ab2744436d9910c7e1be17cb8977faf2f16"
+    },
+    {
+      "label": "sparse",
+      "argv": [
+        "/usr/bin/git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "started": 1795788929.0978298,
+      "finished": 1795788929.1001766,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "checkout",
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "5c630034a0b638673e9dd410abf2e223cf6d4307"
+      ],
+      "exit_code": 0,
+      "started": 1795788929.100214,
+      "finished": 1795788929.2202322,
+      "log_sha256": "511d88fed64a3952e81cfcfecfd79402cb0de57c9af5ae0a100799f51a4da46b"
+    },
+    {
+      "label": "just-fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "started": 1795788929.232759,
+      "finished": 1795788929.488767,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "formatted_sources": {
+    "codex-rs/core/src/agent/control_tests.rs": "82cb11c9842a1782a45c33b7759ac02ac098925963808a3efed62a10f8c61f88",
+    "codex-rs/core/src/guardian/tests.rs": "e613133fe390029cc68ee022ea7046c68e051f4848bd070c58ce0d30206a936c",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation_workspace.rs": "bbd80874ad13cc5a8d44622571fb41be2b9811b575f0beb0c2b8153ac1dedfe9",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation_workspace_tests.rs": "d6e9dd7a6ca76db0989fbcc7f8fa9503d8d266b5961f22e844bc66b98b5608aa"
+  }
+}

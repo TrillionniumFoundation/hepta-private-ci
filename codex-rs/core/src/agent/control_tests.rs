@@ -387,6 +387,48 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // Abort intentionally returns without taking over an existing start or
+    // terminalization owner. Wait for those exact completion witnesses before
+    // recording the fixture, without retrying rejected context or relaxing the
+    // production injection fence. Publication holds active_turn, so capture
+    // the registries under the same lock and release every lock before waiting.
+    timeout(Duration::from_secs(10), async {
+        loop {
+            let completions = {
+                let active = thread.session.active_turn.lock().await;
+                let mut completions = thread
+                    .session
+                    .pending_start_transition_completions
+                    .lock()
+                    .expect("start completion registry")
+                    .iter()
+                    .map(|(_, completion, _)| Arc::clone(completion))
+                    .collect::<Vec<_>>();
+                completions.extend(
+                    thread
+                        .session
+                        .pending_task_terminalization_completions
+                        .lock()
+                        .expect("task completion registry")
+                        .iter()
+                        .map(|(_, completion, _, _, _, _)| Arc::clone(completion)),
+                );
+                if active.is_none() && completions.is_empty() {
+                    break;
+                }
+                assert!(
+                    !completions.is_empty(),
+                    "aborted fixture still has an active turn without a completion owner"
+                );
+                completions
+            };
+            for completion in completions {
+                completion.wait().await;
+            }
+        }
+    })
+    .await
+    .expect("aborted fixture should finish its exact terminalization owners");
     thread
         .inject_response_items(vec![user_message(message)])
         .await
