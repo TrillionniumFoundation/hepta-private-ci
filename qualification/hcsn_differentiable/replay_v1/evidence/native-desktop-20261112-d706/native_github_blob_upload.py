@@ -58,4 +58,3 @@ if response.get("sha") != expected_blob:
     raise ValueError("GitHub blob response differs from actual bytes")
 save({**intent, "status": "succeeded", "upload_attempted": True,
       "blob_sha": response["sha"], "blob_url": response["url"], "wall_seconds": time.monotonic() - started})
-
