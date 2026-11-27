@@ -1,0 +1,121 @@
+name: HCSN affine cache copy-load controls 20261127
+
+"on":
+  push:
+    branches: [research/hcsn-affine-cache-20261127]
+    paths:
+      - qualification/hcsn_continuous_20261127/core/affine_ports.py
+      - qualification/hcsn_continuous_20261127/core/affine_cache_*.py
+      - qualification/hcsn_continuous_20261127/core/AFFINE_CACHE_*
+      - .github/workflows/hcsn-affine-cache-copy-load.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-affine-cache-20261127-once
+  cancel-in-progress: false
+
+jobs:
+  fixed-synthetic-controls:
+    if: github.run_attempt == 1 && github.run_number == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      CUDA_VISIBLE_DEVICES: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_continuous_20261127/core
+            .github/workflows/hcsn-affine-cache-copy-load.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12.3'
+      - name: Verify the exact source-only repair before installing Torch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          base = 'b3fdc981568ab9ce122d2fb569372651e0b4b314'
+          if subprocess.check_output(['git','rev-parse','HEAD^'],text=True).strip() != base:
+              raise SystemExit('EXACT_REVIEWED_PARENT_REQUIRED')
+          core = 'qualification/hcsn_continuous_20261127/core/'
+          expected = {core+'affine_ports.py':'M', **{core+n:'A' for n in (
+              'affine_cache_controls.py','affine_cache_execute_once.py','affine_cache_fixture_b3fd.py',
+              'AFFINE_CACHE_PROTOCOL.json','AFFINE_CACHE_REPAIR.md')},
+              '.github/workflows/hcsn-affine-cache-copy-load.yml':'A'}
+          changes = subprocess.check_output(['git','diff','--name-status',base,'HEAD'],text=True).splitlines()
+          actual = {line.split('\t')[1]:line.split('\t')[0] for line in changes}
+          if actual != expected or len(changes) != 7:
+              raise SystemExit('EXACT_SEVEN_FILE_CHANGE_REQUIRED')
+          raw = pathlib.Path(core+'AFFINE_CACHE_PROTOCOL.json').read_bytes()
+          if hashlib.sha256(raw).hexdigest() != 'e3c16eeae8cd75dfaa359e3925f8e506802bb1a00454bc69467c76fffbd9f931':
+              raise SystemExit('PROTOCOL_MISMATCH')
+          for row in json.loads(raw)['source_bindings']:
+              body = pathlib.Path(core+row['path']).read_bytes()
+              if len(body) != row['bytes'] or hashlib.sha256(body).hexdigest() != row['sha256']:
+                  raise SystemExit('SOURCE_MISMATCH:'+row['path'])
+          out = pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-affine-cache-output'
+          out.mkdir(exist_ok=False)
+          (out/'PUBLICATION.json').write_text(json.dumps(dict(base=base,head=os.environ['GITHUB_SHA'],
+              run_id=os.environ['GITHUB_RUN_ID'],run_attempt=os.environ['GITHUB_RUN_ATTEMPT'],
+              run_number=os.environ['GITHUB_RUN_NUMBER'],changes=changes),indent=2)+'\n')
+          PY
+      - name: Install fixed CPU wheels in an isolated environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          export AFFINE_SETUP_START=$(date +%s)
+          python -m venv "$RUNNER_TEMP/hcsn-affine-cache-venv"
+          PYTHON="$RUNNER_TEMP/hcsn-affine-cache-venv/bin/python"
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 \
+            --report "$RUNNER_TEMP/hcsn-affine-cache-output/TORCH_INSTALL.json" \
+            torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 \
+            --report "$RUNNER_TEMP/hcsn-affine-cache-output/NUMPY_INSTALL.json" numpy==2.3.5
+          "$PYTHON" -m pip freeze --all > "$RUNNER_TEMP/hcsn-affine-cache-output/packages.txt"
+          "$PYTHON" - <<'PY'
+          import importlib.metadata,json,os,pathlib,sys,time
+          output=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-affine-cache-output/SETUP.json'
+          output.write_text(json.dumps(dict(wall_seconds=time.time()-int(os.environ['AFFINE_SETUP_START']),
+              python=sys.version,versions={k:importlib.metadata.version(k) for k in ('torch','numpy')},
+              transitive_wheels_prelocked=False,installed_wheel_hashes_retained=True,
+              torch_imported=False),indent=2)+'\n')
+          PY
+      - name: Execute one bounded synthetic copy-load qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHON="$RUNNER_TEMP/hcsn-affine-cache-venv/bin/python"
+          sudo -n systemd-run --wait --pipe --collect --unit="hcsn-affine-cache-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --property="User=$(id -un)" --property="Group=$(id -gn)" --property="WorkingDirectory=$GITHUB_WORKSPACE" \
+            --property=MemoryMax=1073741824 --property=MemorySwapMax=0 --property=CPUQuota=100% --property=TasksMax=64 \
+            --property=RuntimeMaxSec=55 --property=KillMode=control-group \
+            --setenv=OMP_NUM_THREADS=1 --setenv=OPENBLAS_NUM_THREADS=1 --setenv=MKL_NUM_THREADS=1 \
+            --setenv=CUDA_VISIBLE_DEVICES= --setenv=PYTHONDONTWRITEBYTECODE=1 --setenv=PYTHONUNBUFFERED=1 \
+            --setenv="LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" \
+            "$PYTHON" "$GITHUB_WORKSPACE/qualification/hcsn_continuous_20261127/core/affine_cache_execute_once.py" \
+            --protocol-sha256 e3c16eeae8cd75dfaa359e3925f8e506802bb1a00454bc69467c76fffbd9f931 \
+            --output "$RUNNER_TEMP/hcsn-affine-cache-output/actual_v1"
+      - name: Require unchanged tracked source
+        if: always()
+        shell: bash
+        run: git diff --exit-code && git diff --cached --exit-code
+      - name: Preserve the completed or failed attempt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-affine-cache-copy-load-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-affine-cache-output
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.affine-cache-copy-load-protocol.v1",
+  "status": "FROZEN_FOR_REVIEW_NOT_EXECUTED",
+  "created_utc": "2026-11-27T22:17:31.452628+00:00",
+  "reference_commit": "b3fdc981568ab9ce122d2fb569372651e0b4b314",
+  "reference_repository": "TrillionniumFoundation/hepta-private-ci",
+  "torch_version": "2.10.0+cpu",
+  "source_bindings": [
+    {
+      "path": "affine_ports.py",
+      "bytes": 2141,
+      "sha256": "1dd789b579022e4d242ece80862f199185b939dea05792078a37263a4f182113"
+    },
+    {
+      "path": "affine_cache_fixture_b3fd.py",
+      "bytes": 1201,
+      "sha256": "9df6ea77123b1f8f4c747294a0e01addc6938617ff1da009eecc9ac6947e28de"
+    },
+    {
+      "path": "affine_cache_controls.py",
+      "bytes": 14732,
+      "sha256": "70133356096270aa6e5c2c1a67f31ae992a48bfeca030889eb6c211c7545ad78"
+    },
+    {
+      "path": "affine_cache_execute_once.py",
+      "bytes": 5910,
+      "sha256": "c54edaf28a0c3361688491f5cc25561c29175496da29b008bf3a2c2b0056cde9"
+    },
+    {
+      "path": "population.py",
+      "bytes": 5407,
+      "sha256": "238c8cd9e9f1932bbe9d64ee6915fdbdd654bb0b63a2e2a45b5a89cd1bbcbe46"
+    },
+    {
+      "path": "he_xiong.py",
+      "bytes": 6280,
+      "sha256": "f5d944a8d9929a7d37001a451168dda43e3f7de6b6e5ac1c2010df5f5f31bfa7"
+    }
+  ],
+  "constructor_rng_seed": 6503,
+  "principal_ratios": [
+    [
+      0.72,
+      1.0,
+      1.28
+    ],
+    [
+      0.83,
+      1.13,
+      1.23
+    ]
+  ],
+  "nonuniform_grid": [
+    0.02,
+    0.11,
+    0.36,
+    0.7,
+    1.21
+  ],
+  "nondefault_law": {
+    "r": 0.07,
+    "payout": 0.025,
+    "sigma": 0.28,
+    "alpha": 0.55,
+    "tax": 0.22,
+    "C": 5.7,
+    "P0": 57.3,
+    "m": 0.8,
+    "premium": 0.012
+  },
+  "absolute_price_tolerance": 2e-11,
+  "legacy_failure_minimum": 1e-05,
+  "call_caps": {
+    "population_constructors": 9,
+    "published_constructors": 10,
+    "constructor_value_calls": 10,
+    "constructor_autograd_grad_calls": 20,
+    "module_load_state_dict_calls": 10,
+    "literal_price_calls": 16,
+    "affine_price_calls": 10,
+    "fixed_cache_rebuilds": 9
+  },
+  "price_output_value_cap": 1200,
+  "case_order": [
+    "default_profile_unchanged",
+    "nondefault_complete_law",
+    "coherent_nonuniform_grid",
+    "parent_recursive_load_rebuilds_child_cache",
+    "same_key_serialized_cache_is_recomputed",
+    "deepcopied_hook_owner_uses_its_loaded_state"
+  ],
+  "resource_budget": {
+    "cpu_seconds": 20,
+    "child_wall_seconds": 40,
+    "cleanup_grace_seconds": 5,
+    "outer_systemd_runtime_seconds": 55,
+    "memory_max_bytes": 1073741824,
+    "memory_swap_max_bytes": 0,
+    "cpu_quota_percent": 100,
+    "pids_max": 64,
+    "output_file_max_bytes": 8388608,
+    "no_retry": true
+  },
+  "accounting": {
+    "population_objects_constructed_via_init": 9,
+    "population_objects_deepcopied_without_init": 2,
+    "standalone_priced_channels_evaluations": 14,
+    "internal_cache_literal_priced_channels_evaluations": 12,
+    "published_initialization_values_calls": 10,
+    "published_initialization_autograd_grad_calls": 20,
+    "full_population_or_network_rollouts": 0,
+    "task_loss_backward_calls": 0,
+    "optimizer_steps": 0,
+    "task_data_rows": 0,
+    "task_candidate_selections": 0,
+    "old_benchmark_replays": 0,
+    "setup_and_runtime_install_cost": "Separate from bounded worker; dependency install report/pip freeze and CI timings preserved, not counted as zero."
+  },
+  "semantics": {
+    "source_reference": "Exact b3fd BoundaryPopulation and Published implementation; legacy affine fixture matches exact original Gitblob.",
+    "law_profile": "Law is installed by Published(Law(...)); basis_y is checked against its scalar law constants. Nonuniform grid, cuts and reset_weights are coherent; reset mean .30 and mass1 within2e-14.",
+    "copy": "Complete reference.prices object deep-copied before final state load and cache rebuild; tensors must match reference and must not alias.",
+    "load": "Recursive target module post-hook rebuilds derived buffers from actual target Python law and fully loaded tensor state. Bare state_dict cannot transport omitted Python law; only same-law imports are qualified. Different laws require copy_reference with the complete coherent reference.",
+    "unsupported": "Arbitrary .data writes, dynamic Python-law reassignment, concurrent mutation, cross-device/dtype moves after cache creation, TorchScript/compile and gradient learning of fixed physical-law buffers are outside this repair qualification. Explicit rebuild after coherent installation or rejection remains required.",
+    "tolerance": "F64 absolute2e-11 original affine price gate reused; synthetic selected domain only, not proof of all law/grid values.",
+    "negative_controls": "Actual original affine implementation remains frozen and must pass default but fail nondefault law/grid and nested-grid parity by >=1e-5. Same-key poisoned cache is loaded and must be rebuilt, not trusted.",
+    "scientific_claim": "Cache state consistency only; no task quality, natural defect repair gain or training speedup claimed."
+  },
+  "failure_policy": {
+    "counts": "Started and returned counters recorded before/after each bounded primitive; partial failure counts lower bounds, not zero or refundable.",
+    "continuation": "Any numerical/source/runtime failure retains results and stops; no new input, tolerance or retry without independent explicit protocol.",
+    "wrapper": "Create-only output/LAUNCH_ONCE, exact protocol hash, only owned child process group, protected result parse and partial progress read; unknown remains unknown."
+  },
+  "current_execution": {
+    "torch_imported_by_preparer": false,
+    "controls_executed": false,
+    "models_or_numerical_controls_executed": 0
+  }
+}
