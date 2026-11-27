@@ -1,0 +1,9 @@
+{
+ "id":"HCSN-secondary-calibration-c889-20261127",
+ "status":"Follow-up proposed after observing primary fixed .5 collapse and AUROC. Never evidence of a fresh domain or a preregistered primary win.",
+ "sources":"All 48 published primary-sealed weights and splits; do not refit body. Fit calibrators only on original dev examples. Fix every calibrator as a single seal before replaying scores on the same test rows.",
+ "threshold":"Maximize dev balanced accuracy across distinct adjacent probability midpoints and outside endpoints, ties closest to .5 then lowest. Keep raw p for Brier; report classification-only impact.",
+ "platt":"Fit monotone logistic slope on standardized dev logits, bias free, soft labels absent; slope [0,30], bias [-30,30], fixed ridge on slope.",
+ "ridge":0.01,
+ "comparators":"Apply both interventions to every physical and conventional comparator using identical development windows. For each arm across seeds preserve raw/dev/holdout probabilities, chosen thresholds and affine calibrator."
+}
