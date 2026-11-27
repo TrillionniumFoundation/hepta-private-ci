@@ -1,0 +1,123 @@
+{
+  "candidate": "20d3a3c0353171132ac79527dcb092af1c26d821",
+  "scope": "Independent isolated source restoration only; product integration and numerical/provider qualification remain HOLD",
+  "native": {
+    "host": "rog",
+    "job_id": "1a21b6c1df8-ffbe-4f4a",
+    "python": "3.14.4",
+    "exit_code": 0,
+    "stdout_bytes": 5574,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "git_blobs_verified": 12,
+    "freeze_matches_before": 9,
+    "freeze_matches_after": 11,
+    "before": {
+      "exit": 1,
+      "stderr": "current source freeze mismatch: qualification/hcsn_currentstate_n256_fp64_rounding/README.md\n"
+    },
+    "after": {
+      "exit": 0,
+      "stdout": "PASS_N256_EXACT_RATIONAL_BINARY64_ROUNDING_SOURCE_ONLY\nPASS_N256_FP64_ROUNDING_CURRENT_SOURCE_V2\n",
+      "stderr": ""
+    },
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "fixture_calls": 0
+  },
+  "repair": {
+    "commit": "d0cf917d8472f33f7c1b66f1e04baefd25660516",
+    "branch": "repair/hcsn-n256-fp64-rounding-frozen-lf-20261127",
+    "ahead": 2,
+    "behind": 0,
+    "files": [
+      {
+        "path": "qualification/hcsn_currentstate_n256_fp64_rounding/README.md",
+        "bytes_before": 1122,
+        "bytes_after": 1123,
+        "sha256_before": "35540dd894e51bb933a6b62618481e310e8c98a0df8f355be550d77dcdd4ae4d",
+        "sha256_after": "2438a50b162d677ef06e4166d337e5aaa4e2467878c126450f72b7284ff53578",
+        "blob_after": "21890f3dab8a7eebc34b4f0faaa25d0da967f9c8",
+        "exact_readback": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py",
+        "bytes_before": 72,
+        "bytes_after": 73,
+        "sha256_before": "27e9f8f8fc656696bb719fefcd32513c7a2e986c077ca9a0237b185d09150990",
+        "sha256_after": "f97853b0bfcd16adc84bee9d70a6e80898cd4716c0687bba6d8184c8ed895394",
+        "blob_after": "16a70e23c428957015e77234b2ea187dca54a39d",
+        "exact_readback": true
+      }
+    ],
+    "other_nine_unchanged": true
+  },
+  "workflow_first_page": {
+    "queued": 53,
+    "pending": 6,
+    "skipped": 11,
+    "success": 14,
+    "cancelled": 1,
+    "failure": 4,
+    "in_progress": 11
+  },
+  "workflow_jobs": [
+    {
+      "run": 45942598381,
+      "job": 140320037477,
+      "conclusion": "failure",
+      "tests": 11,
+      "errors": 1,
+      "reason": "current source freeze mismatch: qualification/hcsn_currentstate_n256_fp64_rounding/README.md"
+    },
+    {
+      "run": 45942597632,
+      "job": 140320035109,
+      "conclusion": "failure",
+      "reason": "verify_retained.py line 23 SHA256 assertion"
+    },
+    {
+      "run": 45942597748,
+      "job": 140320035392,
+      "conclusion": "success",
+      "scope": "static admission only",
+      "artifact": 15174086137
+    },
+    {
+      "run": 45942598358,
+      "job": 140320037364,
+      "conclusion": "success",
+      "scope": "phase-only, 12 tests and exact oracle, clean source"
+    },
+    {
+      "run": 45942598555,
+      "job": 140320037859,
+      "conclusion": "success",
+      "scope": "normal and optimized 4 tests each, frozen source verification"
+    },
+    {
+      "run": 45942597876,
+      "job": 140320035571,
+      "conclusion": "success",
+      "scope": "source-only, six stdlib controls, SOURCE_FROZEN_HOLD_EXECUTION"
+    }
+  ],
+  "independent_roster_counts": {
+    "unique_operators": 4,
+    "transition_segments": 45,
+    "operator_nnz": 3058,
+    "unique_sparse_operator_bytes": 44912,
+    "emitted_templates": 71,
+    "request_blob": "50c6cbd629b1411502d01cb5cdaa6fb61e1c3cf9",
+    "operators_blob": "5d58c11ff1e834f6ffe8acfacf5ad3195f4c4b99",
+    "segments_blob": "26d750e522cc22c25799a603369dbfd7d8e51c62",
+    "matches_request": true,
+    "provider_admitted": false,
+    "numerical_execution_allowed": false,
+    "largegrid_qualification": false,
+    "all_closed": false,
+    "execution_key": null
+  }
+}
