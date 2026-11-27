@@ -1,5 +1,6 @@
 use pretty_assertions::assert_eq;
 use serde_json::json;
+use toml_edit::DocumentMut;
 
 use super::*;
 
@@ -26,7 +27,8 @@ fn mcp_server_table_and_inline_edit_preserve_exact_owner_oauth_grants() {
         "http://localhost:8383",
         "https://authorization.example",
     ]);
-    let table = serialize_mcp_server_table(&configured);
+    // Render nested tables through the document writer used by config edits.
+    let table = DocumentMut::from(serialize_mcp_server_table(&configured));
     let restored: McpServerConfig = toml::from_str(&table.to_string()).unwrap();
     assert_eq!(restored, configured);
     assert_eq!(
@@ -45,7 +47,7 @@ fn replacement_with_empty_grants_revokes_old_inline_and_table_authority() {
     assert_eq!(after, revoked);
     assert!(after.oauth_authorization_origins().is_empty());
     assert!(!inline.to_string().contains("authorization_origins"));
-    let table = serialize_mcp_server_table(&revoked);
+    let table = DocumentMut::from(serialize_mcp_server_table(&revoked));
     assert!(!table.to_string().contains("authorization_origins"));
     let restored: McpServerConfig = toml::from_str(&table.to_string()).unwrap();
     assert_eq!(restored, revoked);
