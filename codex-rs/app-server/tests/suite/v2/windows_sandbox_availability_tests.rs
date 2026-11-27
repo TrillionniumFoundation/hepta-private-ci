@@ -1,6 +1,7 @@
 use super::*;
 use codex_app_server_protocol::WindowsSandboxReadiness;
 use codex_app_server_protocol::WindowsSandboxReadinessResponse;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn disabled_readiness_preserves_the_response_and_config() -> Result<()> {
