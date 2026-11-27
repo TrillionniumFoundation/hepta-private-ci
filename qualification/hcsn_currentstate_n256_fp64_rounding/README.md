@@ -19,3 +19,4 @@ three-way comparison remain OPEN.
 
 Historical RED and UNKNOWN results are unchanged.  Global status remains
 `HOLD / all_closed=false`.
+
