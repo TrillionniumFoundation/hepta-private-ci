@@ -1,0 +1,85 @@
+[
+  {
+    "name": "rustc-version",
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.96.1-aarch64-apple-darwin/bin/rustc",
+      "--version",
+      "--verbose"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "tinyjson-build",
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.96.1-aarch64-apple-darwin/bin/rustc",
+      "--crate-name",
+      "tinyjson",
+      "--crate-type",
+      "rlib",
+      "--edition=2018",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/tinyjson-2.5.1/src/lib.rs",
+      "-o",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/libtinyjson.rlib"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "wrapper-build",
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.96.1-aarch64-apple-darwin/bin/rustc",
+      "--edition=2018",
+      "--cfg",
+      "windows",
+      "-Aexplicit_builtin_cfgs_in_flags",
+      "--extern",
+      "tinyjson=/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/libtinyjson.rlib",
+      "main.rs",
+      "-o",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/process_wrapper"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "wrapper-unit-build",
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.96.1-aarch64-apple-darwin/bin/rustc",
+      "--edition=2018",
+      "--cfg",
+      "windows",
+      "-Aexplicit_builtin_cfgs_in_flags",
+      "--extern",
+      "tinyjson=/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/libtinyjson.rlib",
+      "--test",
+      "main.rs",
+      "-o",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/wrapper_tests"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "wrapper-unit-tests",
+    "argv": [
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/wrapper_tests"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "candidate-portable-behaviors",
+    "argv": [
+      "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/run_portable_subset.py",
+      "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/process_wrapper",
+      "test_arguments_without_dependency_paths_stay_unchanged",
+      "test_direct_dependency_paths_preserve_first_directory_precedence",
+      "test_child_failure_keeps_its_status_and_cleans_dependency_directory",
+      "test_executable_products_are_excluded_without_requiring_a_lock"
+    ],
+    "exit_code": 1,
+    "expected_exit_code": 0
+  }
+]
