@@ -118,7 +118,29 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    #[cfg(windows)]
+    let file = {
+        use std::os::windows::fs::MetadataExt;
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // FlushFileBuffers requires a writable directory handle. Opening the
+        // reparse point itself keeps junctions from becoming directory aliases.
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000 | 0x0020_0000)
+            .open(path)?;
+        if file.metadata()?.file_attributes() & 0x0400 != 0 {
+            return Err(invalid("durable directory must not be a reparse point"));
+        }
+        file
+    };
+    #[cfg(not(windows))]
+    let file = File::open(path)?;
+    if !file.metadata()?.is_dir() {
+        return Err(invalid("directory durability requires a directory handle"));
+    }
+    file.sync_all()?;
     Ok(())
 }
 

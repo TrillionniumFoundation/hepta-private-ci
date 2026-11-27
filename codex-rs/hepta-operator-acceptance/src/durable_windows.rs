@@ -16,6 +16,25 @@ pub(super) fn configure_open(options: &mut OpenOptions) {
     options.custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
 }
 
+pub(super) fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags(0x0200_0000 | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(path)?;
+    let information = winapi_util::file::information(&file)?;
+    if information.file_attributes() & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT)
+        != FILE_ATTRIBUTE_DIRECTORY
+    {
+        return Err(invalid(
+            "durability requires a directory without reparse points",
+        ));
+    }
+    // Keep the actual writable handle through the flush and propagate errors.
+    file.sync_all()?;
+    Ok(())
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub(super) struct FileSnapshot {
     attributes: u64,

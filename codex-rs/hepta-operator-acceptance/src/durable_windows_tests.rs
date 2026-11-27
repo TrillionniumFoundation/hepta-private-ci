@@ -39,3 +39,32 @@ fn path_replacement_after_open_is_rejected() {
 
     assert!(verify_unchanged(&file, &artifact, &before, "artifact").is_err());
 }
+
+#[test]
+fn directory_flush_uses_a_writable_directory_handle() {
+    let temporary = tempfile::tempdir().expect("temporary directory");
+    let directory = temporary.path().join("durable");
+    std::fs::create_dir(&directory).expect("create directory");
+    let artifact = directory.join("artifact");
+    std::fs::write(&artifact, b"sealed").expect("write artifact");
+    super::sync_directory(&directory).expect("flush actual directory handle");
+    assert!(super::sync_directory(&artifact).is_err());
+    assert!(super::sync_directory(&directory.join("missing")).is_err());
+}
+
+#[test]
+fn directory_flush_rejects_junctions() {
+    let temporary = tempfile::tempdir().expect("temporary directory");
+    let directory = temporary.path().join("durable");
+    std::fs::create_dir(&directory).expect("create directory");
+    let alias = temporary.path().join("alias");
+    let status = std::process::Command::new("cmd.exe")
+        .args(["/d", "/c", "mklink", "/J"])
+        .arg(&alias)
+        .arg(&directory)
+        .status()
+        .expect("create junction");
+    assert!(status.success());
+    assert!(super::sync_directory(&alias).is_err());
+    super::sync_directory(&directory).expect("real directory remains usable");
+}

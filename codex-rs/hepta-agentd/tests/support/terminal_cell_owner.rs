@@ -195,6 +195,20 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            // Match the existing production-ledger fixture: a real writable
+            // Windows directory handle is required for durable synchronization.
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                .open(&self.root)
+                .unwrap()
+        }
+        #[cfg(not(windows))]
         File::open(&self.root).unwrap()
     }
 

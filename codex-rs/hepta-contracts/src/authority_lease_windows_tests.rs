@@ -95,15 +95,23 @@ fn windows_owner_lock_and_namespace_anchor_survive_root_rename()
         AuthorityLeaseRegistry::open_state_dir(&root, "security-authority".into(), initial),
         Err(AuthorityLeaseError::StateLocked)
     ));
-    std::fs::rename(&root, &moved)?;
-    let replacement = StateDirectory::open_or_create(&root)?;
+    // The live owner lock keeps a child handle open without delete sharing.
+    // Windows must refuse a root rename until that owner is released.
+    let error = std::fs::rename(&root, &moved).expect_err("live owner blocks root rename");
+    assert_eq!(error.kind(), std::io::ErrorKind::PermissionDenied);
+    assert!(root.is_dir());
+    assert!(!moved.exists());
     registry.put_lease(lease(), 0)?;
-    assert!(!replacement.entry_exists("authority-leases.json")?);
     let frontier = registry.frontier()?;
     let expected = registry
         .read_lease("lease-one")?
         .ok_or_else(|| std::io::Error::other("written lease is missing"))?;
+    let retained = StateDirectory::open_or_create(&root)?;
     drop(registry);
+    std::fs::rename(&root, &moved)?;
+    let replacement = StateDirectory::open_or_create(&root)?;
+    assert!(!replacement.entry_exists("authority-leases.json")?);
+    assert!(retained.entry_exists("authority-leases.json")?);
     let reopened =
         AuthorityLeaseRegistry::open_state_dir(&moved, "security-authority".into(), frontier)?;
     assert_eq!(reopened.frontier()?, frontier);
