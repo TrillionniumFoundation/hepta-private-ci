@@ -9,6 +9,8 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
+use std::fs::File;
+use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -30,13 +32,17 @@ pub struct CapSids {
     /// later workspace sandboxes.
     #[serde(default)]
     pub writable_root_by_path: HashMap<String, String>,
+    /// Read capabilities are selected by the current canonical read root. A SID
+    /// previously granted to another root must not broaden a later read policy.
+    #[serde(default)]
+    pub readable_root_by_path: HashMap<String, String>,
 }
 
 pub fn cap_sid_file(codex_home: &Path) -> PathBuf {
     codex_home.join("cap_sid")
 }
 
-fn make_random_cap_sid_string() -> String {
+pub(crate) fn make_random_cap_sid_string() -> String {
     let mut rng = SmallRng::from_entropy();
     let a = rng.next_u32();
     let b = rng.next_u32();
@@ -54,7 +60,32 @@ fn persist_caps(path: &Path, caps: &CapSids) -> Result<()> {
     Ok(())
 }
 
+// A separate file remains stable across cap_sid replacement. Fail closed on
+// contention rather than starting a second writer, adding a retry, or waiting
+// without a bound. Every reader/mutator below owns this same lock once.
+fn cap_state_lock(codex_home: &Path) -> Result<File> {
+    fs::create_dir_all(codex_home)
+        .with_context(|| format!("create cap sid dir {}", codex_home.display()))?;
+    let lock_path = codex_home.join("cap_sid.lock");
+    let lock = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .with_context(|| format!("open capability state lock {}", lock_path.display()))?;
+    lock.try_lock()
+        .map_err(std::io::Error::from)
+        .with_context(|| format!("acquire capability state lock {}", lock_path.display()))?;
+    Ok(lock)
+}
+
 pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
+    let _lock = cap_state_lock(codex_home)?;
+    load_or_create_cap_sids_locked(codex_home)
+}
+
+fn load_or_create_cap_sids_locked(codex_home: &Path) -> Result<CapSids> {
     let path = cap_sid_file(codex_home);
     if path.exists() {
         let txt = fs::read_to_string(&path)
@@ -70,6 +101,7 @@ pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
                 readonly: make_random_cap_sid_string(),
                 workspace_by_cwd: HashMap::new(),
                 writable_root_by_path: HashMap::new(),
+                readable_root_by_path: HashMap::new(),
             };
             persist_caps(&path, &caps)?;
             return Ok(caps);
@@ -80,6 +112,7 @@ pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
         readonly: make_random_cap_sid_string(),
         workspace_by_cwd: HashMap::new(),
         writable_root_by_path: HashMap::new(),
+        readable_root_by_path: HashMap::new(),
     };
     persist_caps(&path, &caps)?;
     Ok(caps)
@@ -87,8 +120,9 @@ pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
 
 /// Returns the workspace-specific capability SID for `cwd`, creating and persisting it if missing.
 pub fn workspace_cap_sid_for_cwd(codex_home: &Path, cwd: &Path) -> Result<String> {
+    let _lock = cap_state_lock(codex_home)?;
     let path = cap_sid_file(codex_home);
-    let mut caps = load_or_create_cap_sids(codex_home)?;
+    let mut caps = load_or_create_cap_sids_locked(codex_home)?;
     let key = canonical_path_key(cwd);
     if let Some(sid) = caps.workspace_by_cwd.get(&key) {
         return Ok(sid.clone());
@@ -101,14 +135,31 @@ pub fn workspace_cap_sid_for_cwd(codex_home: &Path, cwd: &Path) -> Result<String
 
 /// Returns the capability SID for an additional writable root, creating and persisting it if missing.
 pub fn writable_root_cap_sid_for_path(codex_home: &Path, root: &Path) -> Result<String> {
+    let _lock = cap_state_lock(codex_home)?;
     let path = cap_sid_file(codex_home);
-    let mut caps = load_or_create_cap_sids(codex_home)?;
+    let mut caps = load_or_create_cap_sids_locked(codex_home)?;
     let key = canonical_path_key(root);
     if let Some(sid) = caps.writable_root_by_path.get(&key) {
         return Ok(sid.clone());
     }
     let sid = make_random_cap_sid_string();
     caps.writable_root_by_path.insert(key, sid.clone());
+    persist_caps(&path, &caps)?;
+    Ok(sid)
+}
+
+/// Returns only the capability for this currently authorized read root.
+/// Its filesystem ACE grants read/execute, never write, DELETE or DELETE_CHILD.
+pub fn readable_root_cap_sid_for_path(codex_home: &Path, root: &Path) -> Result<String> {
+    let _lock = cap_state_lock(codex_home)?;
+    let path = cap_sid_file(codex_home);
+    let mut caps = load_or_create_cap_sids_locked(codex_home)?;
+    let key = canonical_path_key(root);
+    if let Some(sid) = caps.readable_root_by_path.get(&key) {
+        return Ok(sid.clone());
+    }
+    let sid = make_random_cap_sid_string();
+    caps.readable_root_by_path.insert(key, sid.clone());
     persist_caps(&path, &caps)?;
     Ok(sid)
 }

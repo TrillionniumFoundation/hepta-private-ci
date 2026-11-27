@@ -295,7 +295,11 @@ fn elevated_non_tty_cmd_emits_output() {
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
         let cwd = fixture.path().to_path_buf();
-        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
+        let mut codex_home = crate::hosted_credential_lifetime::HostedCredentialCase::new(
+            "unified_exec::tests::elevated_non_tty_cmd_emits_output",
+            fixture.path(),
+        )
+        .expect("join original owned credential run and case lease");
         println!("cmd codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
         let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
@@ -331,9 +335,12 @@ fn elevated_non_tty_cmd_emits_output() {
         assert_eq!(exit_code, 0, "stdout={stdout:?}");
         assert!(stdout.contains("LEGACY-NONTTY-CMD"), "stdout={stdout:?}");
         codex_home
-            .close()
-            .expect("remove owned elevated sandbox home");
+            .prepare_handoff()
+            .expect("prepare exact shared credential case handoff");
         fixture.close().expect("remove owned elevated fixture");
+        codex_home
+            .finish()
+            .expect("retain case completion awaiting original outer native terminal");
     });
 }
 
@@ -344,7 +351,11 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
         let cwd = fixture.path().to_path_buf();
-        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
+        let mut codex_home = crate::hosted_credential_lifetime::HostedCredentialCase::new(
+            "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+            fixture.path(),
+        )
+        .expect("join original owned credential run and case lease");
         let permission_profile = PermissionProfile::workspace_write();
         let env_map = HashMap::from([(
             "CODEX_ELEVATED_TEST".to_string(),
@@ -382,49 +393,93 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
         assert_eq!(exit_code, 23, "stdout={stdout:?}");
         assert!(stdout.contains("ELEVATED-ENV-OK"), "stdout={stdout:?}");
         codex_home
-            .close()
-            .expect("remove owned elevated sandbox home");
+            .prepare_handoff()
+            .expect("prepare exact shared credential case handoff");
         fixture.close().expect("remove owned elevated fixture");
+        codex_home
+            .finish()
+            .expect("retain case completion awaiting original outer native terminal");
     });
 }
 
 #[test]
-fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
-    let _guard = legacy_process_test_guard();
-    let runtime = current_thread_runtime();
-    runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-non-tty-deny-read");
-        let secret_path =
-            AbsolutePathBuf::from_absolute_path(cwd.join("legacy-non-tty-deny-read-secret.env"))
-                .expect("absolute deny-read fixture path");
-        let permission_profile = PermissionProfile::workspace_write();
-        let err = spawn_windows_sandbox_session_legacy(
-            &permission_profile,
-            workspace_roots_for(cwd.as_path()).as_slice(),
+fn elevated_non_tty_cmd_enforces_deny_read_overrides() {
+    let fixture = authorized_elevated_fixture();
+    let _guard = elevated_process_test_guard();
+    let mut codex_home = crate::hosted_credential_lifetime::HostedCredentialCase::new(
+        "unified_exec::tests::elevated_non_tty_cmd_enforces_deny_read_overrides",
+        fixture.path(),
+    )
+    .expect("join original owned credential run and case lease");
+    let cwd = fixture.path();
+    let secret = cwd.join("owned-secret.txt");
+    let readable = cwd.join("owned-readable.txt");
+    let leak = cwd.join("read-result.txt");
+    fs::write(&secret, "owned-secret-data").expect("seed owned secret");
+    fs::write(&readable, "public-readable\r\n").expect("seed readable neighbor");
+    assert_eq!(
+        fs::read_to_string(&secret).expect("host read positive"),
+        "owned-secret-data"
+    );
+    let denied = AbsolutePathBuf::from_absolute_path(&secret).expect("absolute denied file");
+    let profile = PermissionProfile::workspace_write();
+    current_thread_runtime().block_on(async {
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+            &profile,
+            &workspace_roots_for(cwd),
             codex_home.path(),
             vec![
                 "C:\\Windows\\System32\\cmd.exe".to_string(),
+                "/d".to_string(),
                 "/c".to_string(),
-                "echo deny-read".to_string(),
+                concat!(
+                    "type \"%READ_ALLOWED%\" && echo ALLOWED_READ_OK & ",
+                    "type \"%READ_DENIED%\" > \"%READ_RESULT%\" 2>nul & ",
+                    "if errorlevel 1 (echo DENY_READ_BLOCKED) else (echo DENY_READ_BYPASS) & exit /b 0"
+                ).to_string(),
             ],
-            cwd.as_path(),
-            HashMap::new(),
+            cwd,
+            HashMap::from([
+                ("TEMP".to_string(), cwd.display().to_string()),
+                ("TMP".to_string(), cwd.display().to_string()),
+                ("READ_ALLOWED".to_string(), readable.display().to_string()),
+                ("READ_DENIED".to_string(), secret.display().to_string()),
+                ("READ_RESULT".to_string(), leak.display().to_string()),
+            ]),
+            false,
+            None,
             Some(5_000),
-            std::slice::from_ref(&secret_path),
+            None,
+            false,
+            None,
+            std::slice::from_ref(&denied),
             &[],
-            /*tty*/ false,
-            /*stdin_open*/ false,
-            /*use_private_desktop*/ true,
-        )
-        .await
-        .expect_err("legacy deny-read should require the elevated backend");
-        assert!(
-            err.to_string()
-                .contains("deny-read overrides require the elevated Windows sandbox backend"),
-            "unexpected error: {err:#}"
-        );
+            false,
+            false,
+            true,
+        ).await.expect("spawn real elevated deny-read control");
+        let (stdout, exit_code) = collect_stdout_and_exit(
+            spawned, codex_home.path(), Duration::from_secs(10),
+        ).await;
+        assert_eq!(exit_code, 0);
+        assert_eq!(String::from_utf8_lossy(&stdout).lines().collect::<Vec<_>>(),
+            ["public-readable", "ALLOWED_READ_OK", "DENY_READ_BLOCKED"]);
     });
+    assert_eq!(
+        fs::read_to_string(&secret).expect("host read after child"),
+        "owned-secret-data"
+    );
+    assert_eq!(
+        fs::read(&leak).expect("inspect attempted read result"),
+        Vec::<u8>::new()
+    );
+    codex_home
+        .prepare_handoff()
+        .expect("prepare exact shared credential case handoff");
+    fixture.close().expect("close owned deny-read fixture");
+    codex_home
+        .finish()
+        .expect("retain case completion awaiting original outer native terminal");
 }
 
 #[test]
@@ -723,7 +778,11 @@ fn elevated_workspace_write_delete_is_limited_to_writable_roots() {
     let _guard = elevated_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
+        let mut codex_home = crate::hosted_credential_lifetime::HostedCredentialCase::new(
+            "unified_exec::tests::elevated_workspace_write_delete_is_limited_to_writable_roots",
+            test_root.path(),
+        )
+        .expect("join original owned credential run and case lease");
         let workspace = test_root.path().join("workspace");
         let temp_root = test_root.path().join("temp");
         let tmp_root = test_root.path().join("tmp");
@@ -869,9 +928,12 @@ fn elevated_workspace_write_delete_is_limited_to_writable_roots() {
             sandbox_log(codex_home.path())
         );
         codex_home
-            .close()
-            .expect("remove owned elevated sandbox home");
+            .prepare_handoff()
+            .expect("prepare exact shared credential case handoff");
         test_root.close().expect("remove owned elevated fixture");
+        codex_home
+            .finish()
+            .expect("retain case completion awaiting original outer native terminal");
     });
 }
 

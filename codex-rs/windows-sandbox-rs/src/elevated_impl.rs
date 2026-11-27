@@ -26,8 +26,6 @@ pub struct ElevatedSandboxProfileCaptureRequest<'a> {
 mod windows_impl {
     use super::ElevatedSandboxProfileCaptureRequest;
     use crate::acl::allow_null_device;
-    use crate::cap::load_or_create_cap_sids;
-    use crate::cap::workspace_write_cap_sid_for_root;
     use crate::env::ensure_non_interactive_pager;
     use crate::env::inherit_path_env;
     use crate::env::normalize_null_device_env;
@@ -45,7 +43,6 @@ mod windows_impl {
     use crate::runner_client::spawn_runner_transport;
     use crate::sandbox_utils::ensure_codex_home_exists;
     use crate::sandbox_utils::inject_git_safe_directory;
-    use crate::setup::effective_write_roots_for_permissions;
     use crate::token::LocalSid;
     use anyhow::Result;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -112,29 +109,18 @@ mod windows_impl {
             proxy_enforced,
             crate::WindowsSandboxProxySettingsMode::Reconcile,
         )?;
-        // Build capability SID for ACL grants.
-        let caps = load_or_create_cap_sids(codex_home)?;
-        let (sid_for_null, cap_sids) = if permissions.uses_write_capabilities_for_cwd(cwd, &env_map)
-        {
-            let write_roots = effective_write_roots_for_permissions(
-                &permissions,
-                cwd,
-                &env_map,
-                codex_home,
-                write_roots_override,
-            );
-            let cap_sids = write_roots
-                .iter()
-                .map(|root| workspace_write_cap_sid_for_root(codex_home, cwd, root))
-                .collect::<Result<Vec<_>>>()?;
-            if cap_sids.is_empty() {
-                anyhow::bail!("workspace-write sandbox has no writable root capability SIDs");
-            }
-            (LocalSid::from_string(&cap_sids[0])?, cap_sids)
-        } else {
-            let sid = LocalSid::from_string(&caps.readonly)?;
-            (sid, vec![caps.readonly])
-        };
+        // Use the same setup root projection for both session and capture.
+        let cap_sids = crate::setup::filesystem_capability_sids_for_permissions(
+            &permissions,
+            cwd,
+            &env_map,
+            codex_home,
+            read_roots_override,
+            read_roots_include_platform_defaults,
+            write_roots_override,
+            &deny_read_paths_override,
+        )?;
+        let sid_for_null = LocalSid::from_string(&cap_sids[0])?;
 
         unsafe {
             allow_null_device(sid_for_null.as_ptr());

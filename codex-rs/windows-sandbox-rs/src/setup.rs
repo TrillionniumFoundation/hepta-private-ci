@@ -345,7 +345,8 @@ fn run_setup_refresh_inner(
         proxy_ports: offline_proxy_settings.proxy_ports,
         allow_local_binding: offline_proxy_settings.allow_local_binding,
         otel: None,
-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
+        real_user: crate::credential_store::native_primary_user_name()
+            .context("bind setup payload to the original caller primary TokenUser")?,
         mode: SetupMode::Full,
         refresh_only: true,
     };
@@ -921,6 +922,8 @@ fn run_setup_exe_payload(
     use windows_sys::Win32::UI::Shell::SEE_MASK_NOCLOSEPROCESS;
     use windows_sys::Win32::UI::Shell::SHELLEXECUTEINFOW;
     use windows_sys::Win32::UI::Shell::ShellExecuteExW;
+    #[cfg(test)]
+    crate::hosted_credential_lifetime::require_owned_setup_route(needs_elevation)?;
     let exe = find_setup_exe();
     let cleared_report = match clear_setup_error_report(codex_home) {
         Ok(()) => true,
@@ -936,19 +939,44 @@ fn run_setup_exe_payload(
     };
 
     if !needs_elevation {
-        let status = Command::new(&exe)
+        let mut child = Command::new(&exe)
             .arg(payload_b64)
             .creation_flags(0x08000000) // CREATE_NO_WINDOW
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
-            .status()
+            .spawn()
             .map_err(|err| {
                 failure(
                     SetupErrorCode::OrchestratorHelperLaunchFailed,
                     format!("failed to launch setup helper (non-elevated): {err}"),
                 )
             })?;
+        #[cfg(test)]
+        let original_custody = {
+            use std::os::windows::io::AsRawHandle;
+            crate::hosted_credential_lifetime::record_original_setup_process(
+                child.as_raw_handle() as _
+            )
+        };
+        // Keep the existing single native child wait even when a test-only
+        // original-handle membership observation fails.
+        let waited = child.wait();
+        #[cfg(test)]
+        if let Err(custody) = original_custody {
+            return Err(failure(
+                SetupErrorCode::OrchestratorHelperLaunchFailed,
+                format!(
+                    "original setup helper custody failed: {custody:#}; original child wait: {waited:?}"
+                ),
+            ));
+        }
+        let status = waited.map_err(|err| {
+            failure(
+                SetupErrorCode::OrchestratorHelperLaunchFailed,
+                format!("failed to wait for original setup helper: {err}"),
+            )
+        })?;
         if !status.success() {
             return Err(report_helper_failure(
                 codex_home,
@@ -1068,7 +1096,8 @@ fn run_elevated_setup_inner(
         deny_write_paths,
         proxy_ports: offline_proxy_settings.proxy_ports,
         allow_local_binding: offline_proxy_settings.allow_local_binding,
-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
+        real_user: crate::credential_store::native_primary_user_name()
+            .context("bind setup payload to the original caller primary TokenUser")?,
         otel: codex_otel::global_statsig_metrics_settings(),
         mode: SetupMode::Full,
         refresh_only: false,
@@ -1087,6 +1116,9 @@ pub fn run_elevated_provisioning_setup(
     real_user: &str,
     settings: crate::WindowsSandboxProvisioningSettings,
 ) -> Result<()> {
+    crate::credential_store::require_primary_user_name(real_user)
+        .context("bind explicit provisioning user to the original caller primary TokenUser")?;
+    let real_user = crate::credential_store::native_primary_user_name()?;
     if !codex_home.is_absolute()
         || !matches!(
             codex_home.components().next(),
@@ -1200,6 +1232,61 @@ fn build_payload_roots(
             .any(|denied| Path::new(&root_key).starts_with(denied))
     });
     (read_roots, write_roots)
+}
+
+/// Select the exact capabilities for the same root projection used by setup.
+/// Read grants and token SIDs must agree even when an explicit read policy omits
+/// the legacy cwd or platform defaults. Old read-root grants are not selected.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn filesystem_capability_sids_for_permissions(
+    permissions: &ResolvedWindowsSandboxPermissions,
+    command_cwd: &Path,
+    env_map: &HashMap<String, String>,
+    codex_home: &Path,
+    read_roots_override: Option<&[PathBuf]>,
+    read_roots_include_platform_defaults: bool,
+    write_roots_override: Option<&[PathBuf]>,
+    deny_read_paths_override: &[PathBuf],
+) -> Result<Vec<String>> {
+    let request = SandboxSetupRequest {
+        permissions,
+        command_cwd,
+        env_map,
+        codex_home,
+        proxy_enforced: false,
+    };
+    let overrides = SetupRootOverrides {
+        read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+        read_roots_include_platform_defaults,
+        write_roots: write_roots_override.map(<[PathBuf]>::to_vec),
+        deny_read_paths: Some(deny_read_paths_override.to_vec()),
+        deny_write_paths: None,
+    };
+    let (read_roots, write_roots) = build_payload_roots(&request, &overrides);
+    let mut selected = Vec::new();
+    for root in read_roots {
+        selected.push(crate::cap::readable_root_cap_sid_for_path(
+            codex_home, &root,
+        )?);
+    }
+    if permissions.uses_write_capabilities_for_cwd(command_cwd, env_map) {
+        if write_roots.is_empty() {
+            anyhow::bail!("workspace-write sandbox has no writable root capability SIDs");
+        }
+        for root in write_roots {
+            selected.push(crate::cap::workspace_write_cap_sid_for_root(
+                codex_home,
+                command_cwd,
+                &root,
+            )?);
+        }
+    }
+    selected.sort();
+    selected.dedup();
+    if selected.is_empty() {
+        anyhow::bail!("elevated sandbox has no current filesystem capability SIDs");
+    }
+    Ok(selected)
 }
 
 fn build_payload_deny_write_paths(

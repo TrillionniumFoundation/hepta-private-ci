@@ -61,7 +61,6 @@ const INHERITED_ACE: u8 = 0x10;
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const GENERIC_READ_MASK: u32 = 0x8000_0000;
-const GENERIC_WRITE_MASK: u32 = 0x4000_0000;
 const DENY_ACCESS: i32 = 3;
 
 fn acl_api_result(path: &Path, operation: &str, code: u32) -> Result<()> {
@@ -603,13 +602,14 @@ impl DenyAceKind {
     fn mask(self) -> u32 {
         match self {
             Self::Read => FILE_GENERIC_READ | GENERIC_READ_MASK,
+            // SYNCHRONIZE is shared by ordinary read handles. Deny the
+            // specific mutation rights, not FILE_GENERIC_WRITE or GENERIC_WRITE,
+            // whose mapping also denies synchronization and therefore reads.
             Self::Write => {
-                FILE_GENERIC_WRITE
-                    | FILE_WRITE_DATA
+                FILE_WRITE_DATA
                     | FILE_APPEND_DATA
                     | FILE_WRITE_EA
                     | FILE_WRITE_ATTRIBUTES
-                    | GENERIC_WRITE_MASK
                     | DELETE
                     | FILE_DELETE_CHILD
             }

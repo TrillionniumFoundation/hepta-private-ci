@@ -1,15 +1,17 @@
+use anyhow::Context;
 use anyhow::Result;
+use anyhow::ensure;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use rand::RngCore;
-use rand::SeedableRng;
-use rand::rngs::SmallRng;
+use rand::rngs::OsRng;
 use serde::Serialize;
 use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::ptr;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
 use windows_sys::Win32::Foundation::GENERIC_WRITE;
@@ -17,16 +19,14 @@ use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::NetworkManagement::NetManagement::LOCALGROUP_INFO_1;
-use windows_sys::Win32::NetworkManagement::NetManagement::LOCALGROUP_MEMBERS_INFO_3;
+use windows_sys::Win32::NetworkManagement::NetManagement::LOCALGROUP_MEMBERS_INFO_0;
 use windows_sys::Win32::NetworkManagement::NetManagement::NERR_Success;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetLocalGroupAdd;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetLocalGroupAddMembers;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetUserAdd;
-use windows_sys::Win32::NetworkManagement::NetManagement::NetUserSetInfo;
 use windows_sys::Win32::NetworkManagement::NetManagement::UF_DONT_EXPIRE_PASSWD;
 use windows_sys::Win32::NetworkManagement::NetManagement::UF_SCRIPT;
 use windows_sys::Win32::NetworkManagement::NetManagement::USER_INFO_1;
-use windows_sys::Win32::NetworkManagement::NetManagement::USER_INFO_1003;
 use windows_sys::Win32::NetworkManagement::NetManagement::USER_PRIV_USER;
 use windows_sys::Win32::Security::Authorization::ConvertStringSecurityDescriptorToSecurityDescriptorW;
 use windows_sys::Win32::Security::Authorization::ConvertStringSidToSidW;
@@ -47,11 +47,14 @@ use codex_windows_sandbox::SetupErrorCode;
 use codex_windows_sandbox::SetupFailure;
 use codex_windows_sandbox::dpapi_protect;
 use codex_windows_sandbox::sandbox_dir;
-use codex_windows_sandbox::sandbox_secrets_dir;
 use codex_windows_sandbox::string_from_sid_bytes;
 use codex_windows_sandbox::to_wide;
 
-pub const SANDBOX_USERS_GROUP: &str = "CodexSandboxUsers";
+use codex_windows_sandbox::ProtectedCredentialFile;
+use codex_windows_sandbox::ProtectedCredentialState;
+use codex_windows_sandbox::SANDBOX_USERS_GROUP;
+use codex_windows_sandbox::prepare_protected_sandbox_credentials;
+use codex_windows_sandbox::require_private_accounts_absent;
 const SANDBOX_USERS_GROUP_COMMENT: &str = "Codex sandbox internal group (managed)";
 const SID_ADMINISTRATORS: &str = "S-1-5-32-544";
 const SID_USERS: &str = "S-1-5-32-545";
@@ -64,32 +67,72 @@ pub fn ensure_sandbox_users_group(log: &mut dyn Write) -> Result<()> {
 }
 
 pub fn resolve_sandbox_users_group_sid() -> Result<Vec<u8>> {
-    resolve_sid(SANDBOX_USERS_GROUP)
+    codex_windows_sandbox::local_private_sandbox_group_sid()
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ProvisioningOutcome {
+    Created,
+    Reused,
 }
 
 pub fn provision_sandbox_users(
     codex_home: &Path,
+    real_user: &str,
     offline_username: &str,
     online_username: &str,
     log: &mut dyn Write,
-) -> Result<()> {
-    ensure_sandbox_users_group(log)?;
-    super::log_line(
-        log,
-        &format!("ensuring sandbox users offline={offline_username} online={online_username}"),
-    )?;
-    let offline_password = random_password();
-    let online_password = random_password();
-    ensure_sandbox_user(offline_username, &offline_password, log)?;
-    ensure_sandbox_user(online_username, &online_password, log)?;
-    write_secrets(
-        codex_home,
-        offline_username,
-        &offline_password,
-        online_username,
-        &online_password,
-    )?;
-    Ok(())
+) -> Result<ProvisioningOutcome> {
+    ensure!(
+        offline_username == codex_windows_sandbox::OFFLINE_USERNAME
+            && online_username == codex_windows_sandbox::ONLINE_USERNAME,
+        "provisioning must name the two fixed local sandbox accounts"
+    );
+    let store = match prepare_protected_sandbox_credentials(codex_home, real_user)? {
+        ProtectedCredentialState::Existing(mut file) => {
+            file.verify_existing_accounts()
+                .context("existing protected sandbox credentials failed native identity verification; no reset attempted")?;
+            super::log_line(
+                log,
+                "reusing verified local sandbox identities; password and ciphertext are unchanged",
+            )?;
+            return Ok(ProvisioningOutcome::Reused);
+        }
+        ProtectedCredentialState::Vacant(store) => store,
+    };
+    // An account without this home's verified credentials is not ours to adopt.
+    // A race after this read remains a nonzero NetUserAdd failure, never a reset.
+    require_private_accounts_absent()?;
+    let mut file = store.create_users_file()?;
+    let offline_password = random_password()?;
+    let online_password = random_password()?;
+    let mut phase = "sandbox-group";
+    let result = (|| {
+        ensure_sandbox_users_group(log)?;
+        phase = "offline-account-create";
+        ensure_sandbox_user(offline_username, &offline_password.0, log)?;
+        phase = "online-account-create";
+        ensure_sandbox_user(online_username, &online_password.0, log)?;
+        phase = "same-handle-protected-store-write";
+        write_secrets(
+            &mut file,
+            offline_username,
+            &offline_password.0,
+            online_username,
+            &online_password.0,
+        )?;
+        phase = "native-credential-readback";
+        file.verify_existing_accounts()?;
+        Ok::<(), anyhow::Error>(())
+    })();
+    if let Err(error) = result {
+        // Keep partial accounts and the CREATE_NEW file as failure evidence.
+        // Neither cleanup nor a later retry rotates a password or deletes the file.
+        return Err(error).with_context(|| format!(
+            "sandbox provisioning stopped in {phase}; partial account/store state is retained and readiness is not committed"
+        ));
+    }
+    Ok(ProvisioningOutcome::Created)
 }
 
 pub fn ensure_sandbox_user(username: &str, password: &str, log: &mut dyn Write) -> Result<()> {
@@ -100,11 +143,11 @@ pub fn ensure_sandbox_user(username: &str, password: &str, log: &mut dyn Write) 
 
 pub fn ensure_local_user(name: &str, password: &str, log: &mut dyn Write) -> Result<()> {
     let name_w = to_wide(OsStr::new(name));
-    let pwd_w = to_wide(OsStr::new(password));
+    let pwd_w = PasswordWide(to_wide(OsStr::new(password)));
     unsafe {
         let info = USER_INFO_1 {
             usri1_name: name_w.as_ptr() as *mut u16,
-            usri1_password: pwd_w.as_ptr() as *mut u16,
+            usri1_password: pwd_w.0.as_ptr() as *mut u16,
             usri1_password_age: 0,
             usri1_priv: USER_PRIV_USER,
             usri1_home_dir: std::ptr::null_mut(),
@@ -119,45 +162,31 @@ pub fn ensure_local_user(name: &str, password: &str, log: &mut dyn Write) -> Res
             std::ptr::null_mut(),
         );
         if status != NERR_Success {
-            // Try update password via level 1003.
-            let pw_info = USER_INFO_1003 {
-                usri1003_password: pwd_w.as_ptr() as *mut u16,
-            };
-            let upd = NetUserSetInfo(
-                std::ptr::null(),
-                name_w.as_ptr(),
-                1003,
-                &pw_info as *const _ as *mut u8,
-                std::ptr::null_mut(),
+            let message = format!(
+                "create local sandbox user {name} failed: native status {status}; existing accounts are never adopted or reset"
             );
-            if upd != NERR_Success {
-                super::log_line(log, &format!("NetUserSetInfo failed for {name} code {upd}"))?;
-                return Err(anyhow::Error::new(SetupFailure::new(
-                    SetupErrorCode::HelperUserCreateOrUpdateFailed,
-                    format!("failed to create/update user {name}, code {status}/{upd}"),
-                )));
-            }
+            let log_error = super::log_line(log, &message).err();
+            let message = match log_error {
+                Some(error) => format!(
+                    "{message}; additionally the failure log could not be written: {error:#}"
+                ),
+                None => message,
+            };
+            return Err(anyhow::Error::new(SetupFailure::new(
+                SetupErrorCode::HelperUserCreateFailed,
+                message,
+            )));
         }
+        super::log_line(
+            log,
+            &format!("NetUserAdd created local sandbox user {name}"),
+        )?;
 
-        // Ensure the principal is a regular local user account.
-        if let Ok(group_name) = lookup_account_name_for_sid(SID_USERS) {
-            let group = to_wide(OsStr::new(&group_name));
-            let member = LOCALGROUP_MEMBERS_INFO_3 {
-                lgrmi3_domainandname: name_w.as_ptr() as *mut u16,
-            };
-            let _ = NetLocalGroupAddMembers(
-                std::ptr::null(),
-                group.as_ptr(),
-                3,
-                &member as *const _ as *mut u8,
-                1,
-            );
-        } else {
-            super::log_line(
-                log,
-                "LookupAccountSidW failed for Users SID; skipping Users group membership",
-            )?;
-        }
+        // A regular Users membership is required; an unexpected native error
+        // cannot be reported as successful provisioning.
+        let group_name = lookup_account_name_for_sid(SID_USERS)
+            .context("resolve local Users group for newly created sandbox account")?;
+        ensure_local_group_member(&group_name, name)?;
     }
     Ok(())
 }
@@ -195,21 +224,28 @@ pub fn ensure_local_group(name: &str, comment: &str, log: &mut dyn Write) -> Res
 }
 
 pub fn ensure_local_group_member(group_name: &str, member_name: &str) -> Result<()> {
-    // If the member is already in the group, NetLocalGroupAddMembers may
-    // return an error code. We don't care.
+    const ERROR_MEMBER_IN_ALIAS: u32 = 1378;
     let group_w = to_wide(OsStr::new(group_name));
-    let member_w = to_wide(OsStr::new(member_name));
-    unsafe {
-        let member = LOCALGROUP_MEMBERS_INFO_3 {
-            lgrmi3_domainandname: member_w.as_ptr() as *mut u16,
-        };
-        let _ = NetLocalGroupAddMembers(
+    let mut sid = codex_windows_sandbox::local_private_sandbox_account_sid(member_name)?;
+    let member = LOCALGROUP_MEMBERS_INFO_0 {
+        lgrmi0_sid: sid.as_mut_ptr().cast(),
+    };
+    let status = unsafe {
+        NetLocalGroupAddMembers(
             std::ptr::null(),
             group_w.as_ptr(),
-            3,
+            0,
             &member as *const _ as *mut u8,
             1,
-        );
+        )
+    };
+    if status != NERR_Success && status != ERROR_MEMBER_IN_ALIAS {
+        return Err(anyhow::Error::new(SetupFailure::new(
+            SetupErrorCode::HelperUserGroupMembershipFailed,
+            format!(
+                "add local sandbox user {member_name} to group {group_name} failed: native status {status}"
+            ),
+        )));
     }
     Ok(())
 }
@@ -363,18 +399,43 @@ pub fn sid_bytes_to_psid(sid: &[u8]) -> Result<*mut c_void> {
     Ok(psid)
 }
 
-fn random_password() -> String {
-    const CHARS: &[u8] =
-        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-    let mut rng = SmallRng::from_entropy();
-    let mut buf = [0u8; 24];
-    rng.fill_bytes(&mut buf);
-    buf.iter()
-        .map(|b| {
-            let idx = (*b as usize) % CHARS.len();
-            CHARS[idx] as char
-        })
-        .collect()
+struct GeneratedPassword(String);
+impl Drop for GeneratedPassword {
+    fn drop(&mut self) {
+        for byte in unsafe { self.0.as_bytes_mut() } {
+            unsafe { ptr::write_volatile(byte, 0) };
+        }
+    }
+}
+
+struct PasswordWide(Vec<u16>);
+impl Drop for PasswordWide {
+    fn drop(&mut self) {
+        for value in &mut self.0 {
+            unsafe { ptr::write_volatile(value, 0) };
+        }
+    }
+}
+
+fn random_password() -> Result<GeneratedPassword> {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut bytes = [0u8; 16];
+    OsRng.try_fill_bytes(&mut bytes).map_err(|error| {
+        anyhow::Error::new(SetupFailure::new(
+            SetupErrorCode::HelperCredentialRandomFailed,
+            format!("operating-system credential entropy failed: {error}"),
+        ))
+    })?;
+    // The four fixed characters satisfy the usual complexity classes; all
+    // account entropy comes from 128 bits supplied by the operating system.
+    let mut password = String::with_capacity(36);
+    password.push_str("Aa1!");
+    for byte in &mut bytes {
+        password.push(HEX[usize::from(*byte >> 4)] as char);
+        password.push(HEX[usize::from(*byte & 15)] as char);
+        unsafe { ptr::write_volatile(byte, 0) };
+    }
+    Ok(GeneratedPassword(password))
 }
 
 #[derive(Serialize)]
@@ -403,22 +464,12 @@ struct SetupMarker {
 }
 
 fn write_secrets(
-    codex_home: &Path,
+    file: &mut ProtectedCredentialFile,
     offline_user: &str,
     offline_pwd: &str,
     online_user: &str,
     online_pwd: &str,
 ) -> Result<()> {
-    let secrets_dir = sandbox_secrets_dir(codex_home);
-    std::fs::create_dir_all(&secrets_dir).map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperUsersFileWriteFailed,
-            format!(
-                "failed to create secrets dir {}: {err}",
-                secrets_dir.display()
-            ),
-        ))
-    })?;
     let offline_blob = dpapi_protect(offline_pwd.as_bytes()).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperDpapiProtectFailed,
@@ -442,20 +493,16 @@ fn write_secrets(
             password: BASE64.encode(online_blob),
         },
     };
-    let users_path = secrets_dir.join("sandbox_users.json");
     let users_json = serde_json::to_vec_pretty(&users).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
             format!("serialize sandbox users failed: {err}"),
         ))
     })?;
-    std::fs::write(&users_path, users_json).map_err(|err| {
+    file.write_new_users(&users_json).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
-            format!(
-                "write sandbox users file {} failed: {err}",
-                users_path.display()
-            ),
+            format!("write protected sandbox users through the original CREATE_NEW handle failed: {err:#}"),
         ))
     })?;
     Ok(())

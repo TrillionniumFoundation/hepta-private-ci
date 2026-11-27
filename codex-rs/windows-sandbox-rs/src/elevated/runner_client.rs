@@ -139,6 +139,29 @@ pub(crate) fn is_refreshable_sandbox_creds_error(err: &anyhow::Error, command: &
     })
 }
 
+#[derive(Debug)]
+struct RunnerCredentialRetryError {
+    original: anyhow::Error,
+    later: anyhow::Error,
+    stage: &'static str,
+}
+
+impl std::fmt::Display for RunnerCredentialRetryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "initial sandbox launch failed: {:#}; {} failed: {:#}",
+            self.original, self.stage, self.later
+        )
+    }
+}
+
+impl std::error::Error for RunnerCredentialRetryError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(self.original.as_ref())
+    }
+}
+
 pub(crate) fn retry_runner_spawn_once<T>(
     sandbox_creds: SandboxCreds,
     command: &[String],
@@ -147,8 +170,30 @@ pub(crate) fn retry_runner_spawn_once<T>(
 ) -> Result<T> {
     match spawn(sandbox_creds) {
         Ok(result) => Ok(result),
-        Err(err) if is_refreshable_sandbox_creds_error(&err, command) => spawn(refresh()?),
-        Err(err) => Err(err),
+        Err(original) if is_refreshable_sandbox_creds_error(&original, command) => {
+            let retained = match refresh() {
+                Ok(retained) => retained,
+                Err(later) => {
+                    return Err(RunnerCredentialRetryError {
+                        original,
+                        later,
+                        stage: "read-only credential revalidation",
+                    }
+                    .into());
+                }
+            };
+            // The existing single retry stays bounded. Both actual failures
+            // remain available if that one retry also fails.
+            spawn(retained).map_err(|later| {
+                RunnerCredentialRetryError {
+                    original,
+                    later,
+                    stage: "the single sandbox launch retry",
+                }
+                .into()
+            })
+        }
+        Err(error) => Err(error),
     }
 }
 
@@ -165,7 +210,11 @@ impl RunnerTransport {
     }
 
     pub(crate) fn read_spawn_ready(&mut self) -> Result<()> {
-        wait_for_complete_frame(&self.pipe_read, RUNNER_SPAWN_READY_TIMEOUT)?;
+        self.read_spawn_ready_before(Instant::now() + RUNNER_SPAWN_READY_TIMEOUT)
+    }
+
+    fn read_spawn_ready_before(&mut self, deadline: Instant) -> Result<()> {
+        wait_for_complete_frame(&self.pipe_read, deadline)?;
         let msg = read_frame(&mut self.pipe_read)?
             .ok_or_else(|| anyhow::anyhow!("runner pipe closed before spawn_ready"))?;
         match msg.message {
@@ -322,6 +371,13 @@ pub(crate) fn spawn_runner_transport(
     log_dir: Option<&Path>,
     spawn_request: SpawnRequest,
 ) -> Result<RunnerTransport> {
+    anyhow::ensure!(
+        !spawn_request
+            .env
+            .keys()
+            .any(|key| key.to_ascii_uppercase().starts_with("__HEPTA_NATIVE_")),
+        "caller-supplied reserved native observation environment is refused"
+    );
     let admission = process::admit_runner()?;
     let (pipe_in_name, pipe_out_name) = pipe_pair();
     let h_pipe_in =
@@ -392,6 +448,8 @@ pub(crate) fn spawn_runner_transport(
     );
 
     let connect_result = (|| -> Result<()> {
+        #[cfg(test)]
+        crate::hosted_credential_lifetime::record_original_runner_process(pi.hProcess)?;
         connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
         connect_pipe_with_timeout(h_pipe_out, expected_runner_pid, "pipe-out")?;
         Ok(())
@@ -424,8 +482,30 @@ pub(crate) fn spawn_runner_transport(
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.
         // That way, a later `send_spawn_request` or `spawn_ready` failure can still terminate the
         // runner instead of leaving a stray `codex-command-runner.exe` behind.
-        transport.send_spawn_request(spawn_request)?;
-        transport.read_spawn_ready()?;
+        #[cfg(test)]
+        {
+            let deadline = Instant::now() + RUNNER_SPAWN_READY_TIMEOUT;
+            let mut spawn_request = spawn_request;
+            let child_witness = crate::hosted_credential_lifetime::prepare_original_child_witness(
+                pi.hProcess,
+                &mut spawn_request,
+            )?;
+            transport.send_spawn_request(spawn_request)?;
+            if let Some(witness) = child_witness {
+                if let Err(original_witness) = witness.receive(deadline) {
+                    let original_ready = transport.read_spawn_ready_before(deadline);
+                    return Err(anyhow::anyhow!(
+                        "original child custody failed: {original_witness:#}; original SpawnReady result: {original_ready:?}"
+                    ));
+                }
+            }
+            transport.read_spawn_ready_before(deadline)?;
+        }
+        #[cfg(not(test))]
+        {
+            transport.send_spawn_request(spawn_request)?;
+            transport.read_spawn_ready()?;
+        }
         Ok(())
     })();
     if let Err(err) = startup_result {
@@ -439,12 +519,15 @@ pub(crate) fn spawn_runner_transport(
     Ok(transport)
 }
 
-fn wait_for_complete_frame(pipe_read: &File, timeout: Duration) -> Result<()> {
+fn wait_for_complete_frame(pipe_read: &File, deadline: Instant) -> Result<()> {
     let handle = pipe_read.as_raw_handle() as HANDLE;
-    let deadline = Instant::now() + timeout;
     let mut len_buf = [0u8; 4];
 
     loop {
+        anyhow::ensure!(
+            Instant::now() < deadline,
+            "original runner spawn_ready deadline exhausted"
+        );
         let mut bytes_read = 0u32;
         let mut total_available = 0u32;
         let ok = unsafe {
@@ -476,23 +559,29 @@ fn wait_for_complete_frame(pipe_read: &File, timeout: Duration) -> Result<()> {
 
         if Instant::now() >= deadline {
             return Err(anyhow::anyhow!(
-                "timed out after {}ms waiting for runner spawn_ready",
-                timeout.as_millis()
+                "original runner spawn_ready deadline exhausted"
             ));
         }
 
-        std::thread::sleep(RUNNER_SPAWN_READY_POLL_INTERVAL);
+        std::thread::sleep(std::cmp::min(
+            RUNNER_SPAWN_READY_POLL_INTERVAL,
+            deadline.saturating_duration_since(Instant::now()),
+        ));
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::RunnerCredentialRetryError;
     use super::RunnerLogonError;
     use super::RunnerStartupError;
     use super::is_refreshable_sandbox_creds_error;
+    use super::retry_runner_spawn_once;
+    use crate::identity::SandboxCreds;
     use crate::ipc_framed::ErrorPayload;
     use crate::ipc_framed::ErrorStage;
     use pretty_assertions::assert_eq;
+    use std::cell::Cell;
     use windows_sys::Win32::Foundation::ERROR_LOGON_FAILURE;
     use windows_sys::Win32::Foundation::ERROR_NO_SUCH_LOGON_SESSION;
     use windows_sys::Win32::Foundation::ERROR_NOT_FOUND;
@@ -549,6 +638,109 @@ mod tests {
                 is_refreshable_sandbox_creds_error(&err, &command)
             }),
             [false, false]
+        );
+    }
+    #[test]
+    fn rejected_revalidation_keeps_initial_native_failure_and_never_spawns_again() {
+        let spawn_count = Cell::new(0);
+        let refresh_count = Cell::new(0);
+        let error = retry_runner_spawn_once::<()>(
+            SandboxCreds {
+                username: "test-private-user".into(),
+                password: "test-only".into(),
+            },
+            &["cmd.exe".into()],
+            |_| {
+                spawn_count.set(spawn_count.get() + 1);
+                Err(RunnerLogonError {
+                    code: ERROR_LOGON_FAILURE,
+                }
+                .into())
+            },
+            || {
+                refresh_count.set(refresh_count.get() + 1);
+                Err(crate::setup_error::SetupFailure::new(
+                    crate::setup_error::SetupErrorCode::HelperCredentialStoreUnsafe,
+                    "native object validation refused; retained file unchanged",
+                )
+                .into())
+            },
+        )
+        .expect_err("rejected validation must fail");
+        let retained = error
+            .downcast_ref::<RunnerCredentialRetryError>()
+            .expect("both failures retained");
+        assert_eq!(spawn_count.get(), 1);
+        assert_eq!(refresh_count.get(), 1);
+        assert_eq!(
+            retained
+                .original
+                .downcast_ref::<RunnerLogonError>()
+                .expect("native cause")
+                .code,
+            ERROR_LOGON_FAILURE
+        );
+        assert_eq!(
+            retained
+                .later
+                .downcast_ref::<crate::setup_error::SetupFailure>()
+                .expect("validation cause")
+                .code,
+            crate::setup_error::SetupErrorCode::HelperCredentialStoreUnsafe
+        );
+    }
+
+    #[test]
+    fn failed_single_retry_keeps_both_native_failures_without_third_attempt() {
+        let spawn_count = Cell::new(0);
+        let refresh_count = Cell::new(0);
+        let error = retry_runner_spawn_once::<()>(
+            SandboxCreds {
+                username: "test-private-user".into(),
+                password: "test-only".into(),
+            },
+            &["cmd.exe".into()],
+            |_| {
+                let attempt = spawn_count.get() + 1;
+                spawn_count.set(attempt);
+                Err(RunnerLogonError {
+                    code: if attempt == 1 {
+                        ERROR_LOGON_FAILURE
+                    } else {
+                        ERROR_NOT_FOUND
+                    },
+                }
+                .into())
+            },
+            || {
+                refresh_count.set(refresh_count.get() + 1);
+                Ok(SandboxCreds {
+                    username: "test-private-user".into(),
+                    password: "test-only".into(),
+                })
+            },
+        )
+        .expect_err("both actual attempts failed");
+        let retained = error
+            .downcast_ref::<RunnerCredentialRetryError>()
+            .expect("both attempts retained");
+        assert_eq!(spawn_count.get(), 2);
+        assert_eq!(refresh_count.get(), 1);
+        assert_eq!(
+            retained
+                .original
+                .downcast_ref::<RunnerLogonError>()
+                .expect("first cause")
+                .code,
+            ERROR_LOGON_FAILURE
+        );
+        assert_eq!(
+            retained
+                .later
+                .downcast_ref::<RunnerLogonError>()
+                .expect("second cause")
+                .code,
+            ERROR_NOT_FOUND
         );
     }
 }

@@ -27,19 +27,25 @@ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
 }
 
 #[test]
-fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
-    let _guard = legacy_process_test_guard();
+fn elevated_delete_routes_require_workspace_capability_in_all_four_cells() {
+    let _guard = elevated_process_test_guard();
     current_thread_runtime().block_on(async {
-        let fixture = TempDir::new_in(sandbox_cwd()).expect("create delete matrix fixture");
-        let codex_home = sandbox_home("legacy-delete-matrix");
+        let fixture = authorized_elevated_fixture();
+        let mut codex_home = crate::hosted_credential_lifetime::HostedCredentialCase::new(
+            "unified_exec::tests::delete_permission_tests::elevated_delete_routes_require_workspace_capability_in_all_four_cells",
+            fixture.path(),
+        ).expect("join original owned credential run and case lease");
         let workspace = fixture.path().join("workspace");
         let temp_root = fixture.path().join("temp");
         let tmp_root = fixture.path().join("tmp");
         for path in [&workspace, &temp_root, &tmp_root] {
             fs::create_dir(path).expect("create allowed root");
         }
-        let host = DeleteMatrix::new(&fixture.path().join("host")).expect("host matrix");
-        let restricted = DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
+        let read_sid = crate::cap::readable_root_cap_sid_for_path(codex_home.path(), fixture.path())
+            .expect("select this fixture's current read capability");
+        let read_cap = crate::token::LocalSid::from_string(&read_sid).expect("read capability SID");
+        let host = DeleteMatrix::new_with_read_cap(&fixture.path().join("host"), &read_cap).expect("host matrix");
+        let restricted = DeleteMatrix::new_with_read_cap(&fixture.path().join("outside"), &read_cap).expect("outside matrix");
         host.assert_same_acls(&restricted);
         let (script, env) = matrix_script(&host);
         let host_script = workspace.join("host-matrix.cmd");
@@ -89,19 +95,22 @@ fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
             ("ALLOWED_DIRECTORY".to_owned(), allowed_directory.to_string_lossy().into_owned()),
         ]);
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let readable_roots = [fixture.path().to_path_buf()];
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
             vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(),
                 "/c".to_owned(), script_path.display().to_string()],
-            &workspace, env, /*timeout_ms*/ Some(5_000), &[], &[],
+            &workspace, env, /*proxy_enforced*/ false, /*network_proxy_restricting_sid*/ None,
+            /*timeout_ms*/ Some(5_000), Some(&readable_roots), /*platform defaults*/ true,
+            /*write_roots_override*/ None, &[], &[],
             /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
-        ).await.expect("spawn original legacy path");
+        ).await.expect("spawn actual elevated private-account path");
         let (stdout, exit_code) = collect_stdout_and_exit(
             spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10),
         ).await;
         let stdout = String::from_utf8_lossy(&stdout);
-        let outcomes = restricted.finish("legacy-child-done").expect("restricted physical readback");
-        eprintln!("delete_matrix legacy_exit={exit_code} stdout={stdout:?}");
+        let outcomes = restricted.finish("elevated-private-child-done").expect("restricted physical readback");
+        eprintln!("delete_matrix elevated_private_exit={exit_code} stdout={stdout:?}");
         assert_eq!(exit_code, 0);
         assert_eq!(stdout.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
             ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"]);
@@ -109,5 +118,8 @@ fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
         assert_eq!(fs::symlink_metadata(&allowed_directory).unwrap_err().kind(), std::io::ErrorKind::NotFound);
         assert_eq!(outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
             .map(|route| DeleteOutcome { route, file_deleted: false, directory_deleted: false }));
+        codex_home.prepare_handoff().expect("prepare exact shared credential case handoff");
+        fixture.close().expect("close owned native delete matrix fixture");
+        codex_home.finish().expect("retain case completion awaiting original outer native terminal");
     });
 }

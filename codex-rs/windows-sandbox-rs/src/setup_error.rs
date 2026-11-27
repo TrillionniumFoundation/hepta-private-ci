@@ -46,6 +46,18 @@ pub enum SetupErrorCode {
     HelperUsersGroupCreateFailed,
     /// Helper failed to create or update a sandbox user account.
     HelperUserCreateOrUpdateFailed,
+    /// Credential storage failed native object, owner or DACL validation.
+    HelperCredentialStoreUnsafe,
+    /// A fixed local account exists without this home's verified protected credentials.
+    HelperExistingAccountCredentialsMissing,
+    /// Retained credentials failed native local account/token validation.
+    HelperCredentialIdentityInvalid,
+    /// Creating a new local sandbox account failed; no update was attempted.
+    HelperUserCreateFailed,
+    /// A new private account could not join its required local group.
+    HelperUserGroupMembershipFailed,
+    /// Operating-system entropy for a new account password was unavailable.
+    HelperCredentialRandomFailed,
     /// Helper failed to protect user passwords with DPAPI.
     HelperDpapiProtectFailed,
     /// Helper failed to write the sandbox users secrets file.
@@ -92,6 +104,14 @@ impl SetupErrorCode {
             Self::HelperUserProvisionFailed => "helper_user_provision_failed",
             Self::HelperUsersGroupCreateFailed => "helper_users_group_create_failed",
             Self::HelperUserCreateOrUpdateFailed => "helper_user_create_or_update_failed",
+            Self::HelperCredentialStoreUnsafe => "helper_credential_store_unsafe",
+            Self::HelperExistingAccountCredentialsMissing => {
+                "helper_existing_account_credentials_missing"
+            }
+            Self::HelperCredentialIdentityInvalid => "helper_credential_identity_invalid",
+            Self::HelperUserCreateFailed => "helper_user_create_failed",
+            Self::HelperUserGroupMembershipFailed => "helper_user_group_membership_failed",
+            Self::HelperCredentialRandomFailed => "helper_credential_random_failed",
             Self::HelperDpapiProtectFailed => "helper_dpapi_protect_failed",
             Self::HelperUsersFileWriteFailed => "helper_users_file_write_failed",
             Self::HelperSetupMarkerWriteFailed => "helper_setup_marker_write_failed",

@@ -7,6 +7,7 @@ use anyhow::Result;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use codex_otel::StatsigMetricsSettings;
+use codex_windows_sandbox::LocalSid;
 use codex_windows_sandbox::SETUP_VERSION;
 use codex_windows_sandbox::SetupErrorCode;
 use codex_windows_sandbox::SetupErrorReport;
@@ -18,16 +19,18 @@ use codex_windows_sandbox::ensure_allow_write_aces;
 use codex_windows_sandbox::extract_setup_failure;
 use codex_windows_sandbox::hide_newly_created_users;
 use codex_windows_sandbox::install_wfp_filters;
+use codex_windows_sandbox::local_private_sandbox_account_sid;
 use codex_windows_sandbox::log_note;
 use codex_windows_sandbox::log_writer;
 use codex_windows_sandbox::path_mask_allows;
 use codex_windows_sandbox::path_write_aces_need_refresh;
+use codex_windows_sandbox::readable_root_cap_sid_for_path;
 use codex_windows_sandbox::sandbox_bin_dir;
 use codex_windows_sandbox::sandbox_dir;
-use codex_windows_sandbox::sandbox_secrets_dir;
 use codex_windows_sandbox::string_from_sid_bytes;
 use codex_windows_sandbox::sync_persistent_deny_read_acls;
 use codex_windows_sandbox::to_wide;
+use codex_windows_sandbox::verify_protected_sandbox_credentials;
 use codex_windows_sandbox::workspace_write_cap_sid_for_root;
 use codex_windows_sandbox::workspace_write_root_overlaps_path;
 use codex_windows_sandbox::write_setup_error_report;
@@ -38,11 +41,8 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::io::Write;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::mpsc;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -65,7 +65,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 
-const DENY_ACCESS: i32 = 3;
 #[cfg(test)]
 const WRITE_ROOT_ALLOW_MASK: u32 =
     FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE;
@@ -76,6 +75,7 @@ mod setup_runtime_bin;
 use no_reparse_dir::open_or_create_no_reparse;
 use read_acl_mutex::acquire_read_acl_mutex;
 use read_acl_mutex::read_acl_mutex_exists;
+use sandbox_users::ProvisioningOutcome;
 use sandbox_users::commit_setup_marker;
 use sandbox_users::prepare_setup_marker;
 use sandbox_users::provision_sandbox_users;
@@ -164,30 +164,13 @@ fn workspace_write_cap_sids_for_path(
     Ok(sid_strs)
 }
 
-fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> {
-    let mut read_payload = payload.clone();
-    read_payload.mode = SetupMode::ReadAclsOnly;
-    read_payload.refresh_only = true;
-    let payload_json = serde_json::to_vec(&read_payload)?;
-    let payload_b64 = BASE64.encode(payload_json);
-    let exe = std::env::current_exe().context("locate setup helper")?;
-    Command::new(&exe)
-        .arg(payload_b64)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .spawn()
-        .context("spawn read ACL helper")?;
-    Ok(())
-}
-
 struct ReadAclSubjects<'a> {
     sandbox_group_psid: *mut c_void,
     rx_psids: &'a [*mut c_void],
 }
 
 fn apply_read_acls(
+    codex_home: &Path,
     read_roots: &[PathBuf],
     subjects: &ReadAclSubjects<'_>,
     log: &mut dyn Write,
@@ -198,11 +181,32 @@ fn apply_read_acls(
 ) -> Result<()> {
     for root in read_roots {
         if !root.exists() {
-            log_line(
-                log,
-                &format!("{access_label} root {} missing; skipping", root.display()),
-            )?;
+            let message = format!(
+                "required {access_label} root {} disappeared",
+                root.display()
+            );
+            refresh_errors.push(message.clone());
+            log_line(log, &message)?;
             continue;
+        }
+        // Builtin or SandboxUsers read permission satisfies only the ordinary
+        // identity check. The full restricted-token check also requires this
+        // currently selected root capability, even when builtin read exists.
+        let read_cap = LocalSid::from_string(&readable_root_cap_sid_for_path(codex_home, root)?)?;
+        if let Err(error) = unsafe {
+            ensure_allow_mask_aces_with_inheritance(
+                root,
+                &[read_cap.as_ptr()],
+                access_mask,
+                inheritance,
+            )
+        } {
+            let message = format!(
+                "grant required {access_label} capability ACE failed on {}: {error}",
+                root.display()
+            );
+            refresh_errors.push(message.clone());
+            log_line(log, &message)?;
         }
         let builtin_has = read_mask_allows_or_log(
             root,
@@ -529,11 +533,13 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
 }
 
 fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
+    if read_acl_mutex_exists()? {
+        anyhow::bail!("read ACL preparation is already active; readiness is not established");
+    }
     let _read_acl_guard = match acquire_read_acl_mutex()? {
         Some(guard) => guard,
         None => {
-            log_line(log, "read ACL helper already running; skipping")?;
-            return Ok(());
+            anyhow::bail!("read ACL preparation is already active; readiness is not established");
         }
     };
     log_line(log, "read-acl-only mode: applying read ACLs")?;
@@ -553,6 +559,7 @@ fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
             rx_psids: &rx_psids,
         };
         apply_read_acls(
+            &payload.codex_home,
             &payload.read_roots,
             &subjects,
             log,
@@ -583,9 +590,7 @@ fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
             log,
             &format!("read ACL run completed with errors: {refresh_errors:?}"),
         )?;
-        if payload.refresh_only {
-            anyhow::bail!("read ACL run had errors");
-        }
+        anyhow::bail!("required read ACL preparation had errors: {refresh_errors:?}");
     }
     log_line(log, "read ACL run completed")?;
     Ok(())
@@ -596,26 +601,30 @@ fn provision_and_hide_sandbox_users(
     log: &mut dyn Write,
     sbx_dir: &Path,
 ) -> Result<()> {
-    let provision_result = provision_sandbox_users(
+    let outcome = provision_sandbox_users(
         &payload.codex_home,
+        &payload.real_user,
         &payload.offline_username,
         &payload.online_username,
         log,
-    );
-    if let Err(err) = provision_result {
-        if extract_setup_failure(&err).is_some() {
-            return Err(err);
+    )
+    .map_err(|error| {
+        if extract_setup_failure(&error).is_some() {
+            error
+        } else {
+            anyhow::Error::new(SetupFailure::new(
+                SetupErrorCode::HelperUserProvisionFailed,
+                format!("provision sandbox users failed: {error:#}"),
+            ))
         }
-        return Err(anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperUserProvisionFailed,
-            format!("provision sandbox users failed: {err}"),
-        )));
+    })?;
+    if outcome == ProvisioningOutcome::Created {
+        let users = vec![
+            payload.offline_username.clone(),
+            payload.online_username.clone(),
+        ];
+        hide_newly_created_users(&users, sbx_dir);
     }
-    let users = vec![
-        payload.offline_username.clone(),
-        payload.online_username.clone(),
-    ];
-    hide_newly_created_users(&users, sbx_dir);
     Ok(())
 }
 
@@ -679,28 +688,11 @@ fn lock_persistent_sandbox_dirs(payload: &Payload, sandbox_group_sid: &[u8]) -> 
             ),
         ))
     })?;
-    lock_sandbox_dir(
-        &sandbox_secrets_dir(&payload.codex_home),
-        &payload.real_user,
-        sandbox_group_sid,
-        DENY_ACCESS,
-        FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE,
-        FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE,
-        payload.mode,
-    )
-    .map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperSandboxLockFailed,
-            format!(
-                "lock sandbox secrets dir {} failed: {err}",
-                sandbox_secrets_dir(&payload.codex_home).display()
-            ),
-        ))
-    })?;
-    let legacy_users = sandbox_dir(&payload.codex_home).join("sandbox_users.json");
-    if legacy_users.exists() {
-        let _ = std::fs::remove_file(&legacy_users);
-    }
+    // Credentials were protected before their first byte was written. Do not
+    // replace their DACL after provisioning, reopen them for writing, or delete
+    // legacy evidence. Recheck the retained native objects and both real users.
+    verify_protected_sandbox_credentials(&payload.codex_home, &payload.real_user)
+        .context("verify already-protected immutable sandbox credentials")?;
     Ok(())
 }
 
@@ -727,15 +719,16 @@ fn lock_sandbox_bin_dir(payload: &Payload, sandbox_group_sid: &[u8]) -> Result<(
 
 fn run_provision_only(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
     provision_and_hide_sandbox_users(payload, log, sbx_dir)?;
-    let offline_sid = resolve_sid(&payload.offline_username).map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperSidResolveFailed,
-            format!(
-                "resolve SID for offline user {} failed: {err}",
-                payload.offline_username
-            ),
-        ))
-    })?;
+    let offline_sid =
+        local_private_sandbox_account_sid(&payload.offline_username).map_err(|err| {
+            anyhow::Error::new(SetupFailure::new(
+                SetupErrorCode::HelperSidResolveFailed,
+                format!(
+                    "resolve SID for offline user {} failed: {err}",
+                    payload.offline_username
+                ),
+            ))
+        })?;
     let offline_sid_str = string_from_sid_bytes(&offline_sid).map_err(anyhow::Error::msg)?;
 
     let sandbox_group_sid = resolve_sandbox_users_group_sid().map_err(|err| {
@@ -763,15 +756,16 @@ fn run_setup_acl_work(
     if !refresh_only {
         provision_and_hide_sandbox_users(payload, log, sbx_dir)?;
     }
-    let offline_sid = resolve_sid(&payload.offline_username).map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperSidResolveFailed,
-            format!(
-                "resolve SID for offline user {} failed: {err}",
-                payload.offline_username
-            ),
-        ))
-    })?;
+    let offline_sid =
+        local_private_sandbox_account_sid(&payload.offline_username).map_err(|err| {
+            anyhow::Error::new(SetupFailure::new(
+                SetupErrorCode::HelperSidResolveFailed,
+                format!(
+                    "resolve SID for offline user {} failed: {err}",
+                    payload.offline_username
+                ),
+            ))
+        })?;
     let offline_sid_str = string_from_sid_bytes(&offline_sid).map_err(anyhow::Error::msg)?;
 
     let sandbox_group_sid = resolve_sandbox_users_group_sid().map_err(|err| {
@@ -812,37 +806,9 @@ fn run_setup_acl_work(
         )?;
     }
 
-    if payload.read_roots.is_empty() {
-        log_line(log, "no read roots to grant; skipping read ACL helper")?;
-    } else {
-        match read_acl_mutex_exists() {
-            Ok(true) => {
-                log_line(log, "read ACL helper already running; skipping spawn")?;
-            }
-            Ok(false) => {
-                spawn_read_acl_helper(payload, log).map_err(|err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!("spawn read ACL helper failed: {err}"),
-                    ))
-                })?;
-            }
-            Err(err) => {
-                log_line(
-                    log,
-                    &format!("read ACL mutex check failed: {err}; spawning anyway"),
-                )?;
-                spawn_read_acl_helper(payload, log).map_err(|spawn_err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!(
-                            "spawn read ACL helper failed after mutex error {err}: {spawn_err}"
-                        ),
-                    ))
-                })?;
-            }
-        }
-    }
+    // Read capability grants are part of readiness. A detached helper or a
+    // skipped busy mutex cannot authorize the restricted child to start.
+    run_read_acl_only(payload, log).context("prepare required read capability ACLs")?;
 
     if refresh_only {
         setup_runtime_bin::ensure_codex_app_runtime_paths_readable(

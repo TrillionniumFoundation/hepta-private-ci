@@ -27,6 +27,113 @@ impl Drop for OwnedToken {
     }
 }
 
+#[path = "../../exec-server/tests/support/windows_elevated_fixture.rs"]
+mod hosted_elevated_fixture;
+
+// The native capability controls use the same provisioned private account as
+// the production runner. Authorization is checked before any account/setup API.
+struct PrivateTokenFixture {
+    root: hosted_elevated_fixture::AuthorizedReadOnlySandboxFixture,
+    home: crate::hosted_credential_lifetime::HostedCredentialCase,
+    base: OwnedToken,
+}
+
+impl PrivateTokenFixture {
+    fn new(test_name: &str) -> Result<Self> {
+        use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+        use codex_protocol::models::PermissionProfile;
+        use rand::RngCore;
+        use windows_sys::Win32::Security::LOGON32_LOGON_INTERACTIVE;
+        use windows_sys::Win32::Security::LOGON32_PROVIDER_DEFAULT;
+        use windows_sys::Win32::Security::LogonUserW;
+
+        let mut root_id = [0u8; 16];
+        rand::rngs::OsRng.try_fill_bytes(&mut root_id)?;
+        let root = hosted_elevated_fixture::AuthorizedReadOnlySandboxFixture::new(root_id)?;
+        let home =
+            crate::hosted_credential_lifetime::HostedCredentialCase::new(test_name, root.path())?;
+        let profile = PermissionProfile::read_only();
+        let permissions =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &profile,
+                &[],
+            )?;
+        let read_roots = [root.path().to_path_buf()];
+        let credentials = crate::identity::require_logon_sandbox_creds(
+            &permissions,
+            root.path(),
+            &std::collections::HashMap::new(),
+            home.path(),
+            Some(&read_roots),
+            false,
+            Some(&[]),
+            &[],
+            &[],
+            false,
+            crate::WindowsSandboxProxySettingsMode::Reconcile,
+        )?;
+        anyhow::ensure!(
+            credentials.username == crate::setup::OFFLINE_USERNAME
+                || credentials.username == crate::setup::ONLINE_USERNAME,
+            "fixture credentials must name a dedicated sandbox account"
+        );
+        let username = to_wide(&credentials.username);
+        let domain = to_wide(".");
+        let mut password = to_wide(&credentials.password);
+        let mut raw = 0;
+        let ok = unsafe {
+            LogonUserW(
+                username.as_ptr(),
+                domain.as_ptr(),
+                password.as_ptr(),
+                LOGON32_LOGON_INTERACTIVE,
+                LOGON32_PROVIDER_DEFAULT,
+                &mut raw,
+            )
+        };
+        let error = if ok == 0 {
+            Some(std::io::Error::last_os_error())
+        } else {
+            None
+        };
+        password.fill(0);
+        drop(credentials);
+        if let Some(error) = error {
+            return Err(error.into());
+        }
+        let base = OwnedToken(raw);
+        let host = OwnedToken(unsafe { get_current_token_for_restriction()? });
+        let mut host_user = unsafe { get_user_sid_bytes(host.0)? };
+        let mut private_user = unsafe { get_user_sid_bytes(base.0)? };
+        anyhow::ensure!(
+            unsafe {
+                EqualSid(
+                    host_user.as_mut_ptr().cast(),
+                    private_user.as_mut_ptr().cast(),
+                )
+            } == 0,
+            "native capability control must not reuse the host user token"
+        );
+        Ok(Self { root, home, base })
+    }
+
+    fn path(&self) -> &std::path::Path {
+        self.root.path()
+    }
+
+    fn finish(self) -> Result<()> {
+        let Self {
+            root,
+            mut home,
+            base,
+        } = self;
+        drop(base);
+        home.prepare_handoff()?;
+        root.close()?;
+        home.finish()
+    }
+}
+
 struct Impersonation;
 
 impl Impersonation {
@@ -346,11 +453,14 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
 
 #[test]
 fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() -> Result<()> {
-    let fixture = tempfile::tempdir()?;
-    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let fixture = PrivateTokenFixture::new(
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    )?;
+    let base = &fixture.base;
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
     // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
@@ -376,15 +486,40 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     let outside = fixture.path().join("outside");
     std::fs::create_dir(&outside)?;
-    // A stale capability for another root must not authorize this token either.
+    // A stale write capability must not authorize this token. The current read
+    // capability preserves the original outside-read positive without mutation rights.
     unsafe {
         ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+        ensure_allow_mask_aces(
+            &outside,
+            &[read_cap.as_ptr()],
+            windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ
+                | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE,
+        )?;
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
+        create_workspace_write_token_with_caps_and_user_from(
+            base.0,
+            &[cap_a.as_ptr(), cap_b.as_ptr(), read_cap.as_ptr()],
+            &[],
+        )?
     });
+    let mut private_user = unsafe { get_user_sid_bytes(base.0)? };
+    let membership = [
+        cap_a.as_ptr(),
+        cap_b.as_ptr(),
+        read_cap.as_ptr(),
+        other_cap.as_ptr(),
+        private_user.as_mut_ptr().cast(),
+        logon.as_mut_ptr().cast(),
+        everyone.as_mut_ptr().cast(),
+    ]
+    .into_iter()
+    .map(|sid| unsafe { token_has_restricting_sid(token.0, sid) })
+    .collect::<Result<Vec<_>>>()?;
+    assert_eq!(membership, [true, true, true, false, false, false, false]);
     let workspace_file = allowed[0].join("delete.txt");
     let temp_file = allowed[1].join("delete.txt");
     let outside_file = outside.join("keep.txt");
@@ -399,7 +534,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             ("outside-dir", outside.as_path()),
             ("outside-file", outside_file.as_path()),
         ],
-        &[&cap_a, &cap_b, &other_cap],
+        &[&cap_a, &cap_b, &other_cap, &read_cap],
     );
     eprintln!(
         "delete-native token-observation-complete={}",
@@ -471,7 +606,8 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             ("allowed".to_owned(), false, false)
         );
     }
-    Ok(())
+    drop(token);
+    fixture.finish()
 }
 
 #[test]
@@ -480,9 +616,13 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     use crate::delete_permission_matrix::DeleteOutcome;
     use crate::delete_permission_matrix::DeleteRoute;
 
-    let fixture = tempfile::tempdir()?;
-    let host = DeleteMatrix::new(&fixture.path().join("host"))?;
-    let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
+    let fixture = PrivateTokenFixture::new(
+        "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    )?;
+    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
+    let host = DeleteMatrix::new_with_read_cap(&fixture.path().join("host"), &read_cap)?;
+    let restricted =
+        DeleteMatrix::new_with_read_cap(&fixture.path().join("restricted"), &read_cap)?;
     host.assert_same_acls(&restricted);
     {
         let mut observations = Vec::with_capacity(/*capacity*/ 12);
@@ -535,19 +675,30 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
         })
     );
 
-    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let base = &fixture.base;
+    let mut private_user = unsafe { get_user_sid_bytes(base.0)? };
     let capability = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let second_capability = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let allowed = fixture.path().join("allowed");
     std::fs::create_dir(&allowed)?;
-    unsafe { ensure_allow_write_aces(&allowed, &[capability.as_ptr()])? };
+    unsafe {
+        ensure_allow_write_aces(
+            &allowed,
+            &[capability.as_ptr(), private_user.as_mut_ptr().cast()],
+        )?
+    };
     std::fs::write(allowed.join("file"), "allowed")?;
     std::fs::create_dir(allowed.join("directory"))?;
-    // This is the unchanged product constructor and flags, not a diagnostic token variant.
+    // Use the current elevated product constructor, including its full native checks.
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(
+        create_workspace_write_token_with_caps_and_user_from(
             base.0,
-            &[capability.as_ptr(), second_capability.as_ptr()],
+            &[
+                capability.as_ptr(),
+                second_capability.as_ptr(),
+                read_cap.as_ptr(),
+            ],
+            &[],
         )?
     });
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
@@ -616,5 +767,6 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
             directory_deleted: false
         })
     );
-    Ok(())
+    drop(token);
+    fixture.finish()
 }
