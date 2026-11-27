@@ -931,9 +931,19 @@ async fn check_v2_agent_reload(route: V2ReloadRoute) {
                 .turn_environments
                 .update_selections(std::slice::from_ref(&selection), &thread_config);
             parent_turn = parent_thread.session.new_default_turn().await;
+            // The spawned parent owns a real task. Finish its interrupt/terminal
+            // owner before making it eligible for residency eviction.
+            parent_thread
+                .session
+                .abort_all_tasks(TurnAbortReason::Interrupted)
+                .await;
+            parent_thread
+                .session
+                .drain_task_terminalizations_for_shutdown_except(/*excluded_identity*/ None)
+                .await;
+            assert!(parent_thread.session.active_turn.lock().await.is_none());
+            assert!(!parent_thread.session.has_pending_admission_fence());
             parent_thread.session.mark_interrupted();
-            // The fixture has no task runner to finish the turn or consume child results.
-            *parent_thread.session.active_turn.lock().await = None;
             let _ = parent_thread
                 .session
                 .input_queue
