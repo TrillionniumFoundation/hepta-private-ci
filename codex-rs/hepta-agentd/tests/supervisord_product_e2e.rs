@@ -46,6 +46,9 @@ const AGENT_IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
 
+#[path = "support/supervisord_failure.rs"]
+mod failure_diagnostics;
+
 /// The parent test spawns this integration-test executable as an isolated
 /// process so the exact product daemon implementation can itself own and
 /// survive independently from the test coordinator.
@@ -254,7 +257,8 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     ensure!(
         usize::from(left.is_ok()) + usize::from(right.is_ok()) == 1,
-        "two clients using one fence did not produce exactly one winner: left={left:?} right={right:?}"
+        "two clients using one fence did not produce exactly one winner: left={left:?} right={right:?}; {}",
+        failure_diagnostics::child_log_tail(&log_path)
     );
     let (concurrent_accepted, concurrent_rejected) = match (left, right) {
         (Ok(accepted), Err(rejected)) | (Err(rejected), Ok(accepted)) => (accepted, rejected),

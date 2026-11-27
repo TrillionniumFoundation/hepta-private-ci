@@ -68,6 +68,10 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 #[cfg(unix)]
+#[path = "daemon_mutation_diagnostic.rs"]
+mod mutation_diagnostic;
+
+#[cfg(unix)]
 use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
@@ -873,20 +877,43 @@ async fn handle_mutation<D: ProcessDriver>(
         PreparedMutation::Upgrade(target) => supervisor.upgrade(&agent_id, target, Instant::now()),
         PreparedMutation::Rollback => supervisor.rollback(&agent_id, Instant::now()),
     };
-    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-    if let Err(_error) = mutation {
+    let post = agent_status_locked(&state, &supervisor, &agent_id);
+    if let Err(error) = mutation {
+        drop(supervisor);
+        if operation == SupervisordMutation::Restart {
+            let _ = mutation_diagnostic::write_restart_failure(
+                &mut std::io::stderr().lock(),
+                &agent_id,
+                next_revision,
+                Some(&error),
+                post.as_ref().err(),
+            );
+        }
         return error_payload(
             "operation_indeterminate",
             "operation outcome is indeterminate; refresh before retry",
-            post,
+            post.ok(),
         );
     }
-    let Some(agent) = post else {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            /*actual*/ None,
-        );
+    let agent = match post {
+        Ok(agent) => agent,
+        Err(error) => {
+            drop(supervisor);
+            if operation == SupervisordMutation::Restart {
+                let _ = mutation_diagnostic::write_restart_failure(
+                    &mut std::io::stderr().lock(),
+                    &agent_id,
+                    next_revision,
+                    /*mutation_error*/ None,
+                    Some(&error),
+                );
+            }
+            return error_payload(
+                "operation_indeterminate",
+                "operation outcome is indeterminate; refresh before retry",
+                /*actual*/ None,
+            );
+        }
     };
     SupervisordPayload::MutationAccepted {
         operation,
