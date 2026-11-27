@@ -6,6 +6,7 @@ use super::*;
 
 use codex_config::McpServerOAuthConfig;
 use codex_protocol::OAuthAuthorizationOrigins;
+use pretty_assertions::assert_eq;
 use rmcp::model::CallToolRequestParams;
 use rmcp::model::CallToolResponse;
 use rmcp::model::CallToolResult as NativeCallToolResult;
