@@ -354,8 +354,10 @@ async fn transcript_preview_for_history_mode(
                 detail: None,
             }
         };
-        // A TurnCompleted notification can precede Core releasing its active-turn
-        // reservation. Retry only that transient rejection; other errors fail.
+        // TurnCompleted can precede release of the active-turn reservation and
+        // the separate terminalization fence. Retry only these two exact,
+        // observed transient rejections, within the bound below. All other
+        // protocol, transport and terminal errors still fail.
         let _: TurnStartResponse =
             tokio::time::timeout(std::time::Duration::from_secs(10), async {
                 let mut attempt = 0_u32;
@@ -375,7 +377,11 @@ async fn transcript_preview_for_history_mode(
                     match result {
                         Ok(response) => break response,
                         Err(TypedRequestError::Server { source, .. })
-                            if source.message == "failed to submit turn input: NotIdle" =>
+                            if matches!(
+                                source.message.as_str(),
+                                "failed to submit turn input: NotIdle"
+                                    | "failed to submit turn input: turn start is fenced while the session is terminalizing"
+                            ) =>
                         {
                             attempt += 1;
                             tokio::time::sleep(std::time::Duration::from_millis(10)).await;
