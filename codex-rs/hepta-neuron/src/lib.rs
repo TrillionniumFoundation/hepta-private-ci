@@ -45,6 +45,8 @@ mod cell_joint_protocol;
 mod cell_journal;
 mod cell_journal_codec;
 mod cell_owner;
+mod cell_population;
+mod cell_roles;
 mod cell_task_cost;
 #[cfg(test)]
 mod cell_test_support;
@@ -184,6 +186,18 @@ pub use cell_journal::CellOwnerJournalV1;
 #[cfg(target_os = "linux")]
 pub use cell_journal::observe_original_guarded_cell_v1;
 pub use cell_owner::CellPartitionOwnerV1;
+pub use cell_population::CellActiveInstanceV1;
+pub use cell_population::CellExpertVersionV1;
+pub use cell_population::CellInstanceDispositionV1;
+pub use cell_population::CellInstanceV1;
+pub use cell_population::CellPopulationCensusV1;
+pub use cell_population::CellPopulationErrorV1;
+pub use cell_population::CellPopulationLimitsV1;
+pub use cell_population::CellPopulationV1;
+pub use cell_roles::CellCapabilityContractV1;
+pub use cell_roles::CellCapabilityErrorV1;
+pub use cell_roles::CellFunctionalRoleV1;
+pub use cell_roles::DeterministicCellSupportV1;
 pub use cell_task_cost::CellCostAccountingV2;
 pub use cell_task_cost::CellCostEntryV2;
 pub use cell_task_cost::CellCostMetricsV2;

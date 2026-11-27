@@ -9,6 +9,12 @@
 #![forbid(unsafe_code)]
 
 mod cell_split;
+mod differentiation_demand;
+mod differentiation_observations;
+mod differentiation_plan;
+mod differentiation_study;
+mod differentiation_topology;
+mod differentiation_types;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -41,6 +47,37 @@ pub use cell_split::build_cell_split_plan_v1;
 pub use cell_split::cell_split_generator_signing_payload_v1;
 pub use cell_split::plan_cell_split_v1;
 pub use cell_split::verify_cell_split_v1;
+pub use differentiation_demand::DifferentiationDemandAssessmentV1;
+pub use differentiation_demand::DifferentiationDemandCaseV1;
+pub use differentiation_demand::DifferentiationDemandWindowV1;
+pub use differentiation_demand::assess_differentiation_demand_v1;
+pub use differentiation_observations::DifferentiationArmObservationV1;
+pub use differentiation_observations::DifferentiationCandidateV1;
+pub use differentiation_observations::DifferentiationCostReadingV1;
+pub use differentiation_observations::DifferentiationCostsV1;
+pub use differentiation_observations::DifferentiationMigrationObservationV1;
+pub use differentiation_observations::DifferentiationStudyObservationV1;
+pub use differentiation_observations::DifferentiationTaskObservationV1;
+pub use differentiation_observations::DifferentiationTaskStatusV1;
+pub use differentiation_plan::freeze_differentiation_plan_v1;
+pub use differentiation_study::DifferentiationStudyReceiptV1;
+pub use differentiation_study::evaluate_differentiation_study_v1;
+pub use differentiation_topology::propose_differentiation_topology_v1;
+pub use differentiation_topology::validate_differentiation_topology_binding_v1;
+pub use differentiation_types::DifferentiationActorV1;
+pub use differentiation_types::DifferentiationActorsV1;
+pub use differentiation_types::DifferentiationArmV1;
+pub use differentiation_types::DifferentiationConclusionV1;
+pub use differentiation_types::DifferentiationDemandPolicyV1;
+pub use differentiation_types::DifferentiationDiagnosisV1;
+pub use differentiation_types::DifferentiationErrorV1;
+pub use differentiation_types::DifferentiationHoldReasonV1;
+pub use differentiation_types::DifferentiationParentV1;
+pub use differentiation_types::DifferentiationPlanRequestV1;
+pub use differentiation_types::DifferentiationPlanV1;
+pub use differentiation_types::DifferentiationRetentionPanelV1;
+pub use differentiation_types::DifferentiationStudyPolicyV1;
+pub use differentiation_types::DifferentiationTriggerV1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
@@ -192,3 +229,6 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod differentiation_test_support;
