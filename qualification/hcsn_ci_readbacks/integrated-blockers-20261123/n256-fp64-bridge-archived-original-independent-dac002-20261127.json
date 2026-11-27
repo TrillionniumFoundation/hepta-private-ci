@@ -1,0 +1,183 @@
+{
+  "scope": "independent native read-only reconstruction of frozen FP64 input bridge at exact new integration head; not execution of current replay adapter or official CI; no new numerical work",
+  "candidate": "dac002470799d1da06cdc51dc3601ca93005ca7e",
+  "prior": "a845976041d14b4bc6a900aa4169c35abe30d903",
+  "archive_index": {
+    "path": "qa/repository-consolidation/20261126/n256-paired-source-seals/raw-evidence-storage.json",
+    "blob": "8f4bf3fb29f3cfeea3d21a656123aa766eb83c1a",
+    "sha256": "5ac0602fc4c063a2bb20e5dfb16948ec1cb2467743803434ceb83577c50d5f43"
+  },
+  "freeze_sha256": "9480748a23d20ba2e9b7d624f28abc4ab70c10c7630aa5e40f19896dd59bb56c",
+  "native_status": {
+    "at_unix_ms": 1795751537676,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a21b21be2b-ffbe-4e7b",
+    "launch_nonce": "4a563704ba99c5db393a10e5fcbf23c9",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3617,
+        "stored": 3617
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_readback": {
+    "audit_recorded": true,
+    "job_id": "1a21b21be2b-ffbe-4e7b",
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 3617,
+      "offset": 0,
+      "size": 3617,
+      "text": "{\"ref\": \"dac002470799d1da06cdc51dc3601ca93005ca7e\", \"python\": \"3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]\", \"rows\": [{\"path\": \".github/workflows/hcsn-currentstate-n256-uniformization-fp64-input-bridge.yml\", \"original_sha256\": \"2796f9be03f66a444766a977ab921aee4afc345a79dfa70a3d488d5ec9e049ba\", \"original_git_blob\": \"8321950dc64d0b27c2ab00560e6f655fb75bd5d4\", \"stored_git_blob\": \"8321950dc64d0b27c2ab00560e6f655fb75bd5d4\", \"stored_bytes\": 1228, \"original_bytes\": 1228, \"archived\": false}, {\"path\": \"qualification/hcsn_currentstate_n256_fp64_input_conversion/fp64_exact.py\", \"original_sha256\": \"cae195ae453100625da9d9fb75146a0257d417701435a832ce0aa8d563e5ece9\", \"original_git_blob\": \"8a426a14a031265853ac198e027abfb3ab27d5c1\", \"stored_git_blob\": \"095bc82e9e4ab7a9146ffc29e88136bcd2fcff09\", \"stored_bytes\": 1187, \"original_bytes\": 3550, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_primitive/uniformization.py\", \"original_sha256\": \"1a89ee6bb9e1ece948013bb98998424ef8f022078c6fa0a012a0ebec03927d35\", \"original_git_blob\": \"7b298245d1271570248f02cc52da0682624dea95\", \"stored_git_blob\": \"7b298245d1271570248f02cc52da0682624dea95\", \"stored_bytes\": 7511, \"original_bytes\": 7511, \"archived\": false}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/README.md\", \"original_sha256\": \"b1b50ee0ab41ef35f5aa65a125c17848078e57dce80f068ba229753d8e8cc65e\", \"original_git_blob\": \"67279c5ece9ac5a24de61dae913df071d7a81437\", \"stored_git_blob\": \"965ae3e78d5f4ff196cf8a18ea15e3444f8c52c6\", \"stored_bytes\": 675, \"original_bytes\": 1128, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/REQUEST.json\", \"original_sha256\": \"c3afa8568320dff2f5dcdd08df275997aaa4b6dd1e95e56726c62c3d55306284\", \"original_git_blob\": \"38bd3f6ddfd83edd2be8c32ab03160c5be053300\", \"stored_git_blob\": \"968f16404fe1852007879af3d7e4eaa98826bc88\", \"stored_bytes\": 371, \"original_bytes\": 766, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/__init__.py\", \"original_sha256\": \"1eaae42de7e88178d99b1b8441f45587aa6f5928cb83ef92f6e433942bbe4fa6\", \"original_git_blob\": \"6006602bd3a32725dc6fe32274cf8ed99d94c18b\", \"stored_git_blob\": \"f6a2d0023baea1f8a0596d4fc2d11f5cc629687d\", \"stored_bytes\": 97, \"original_bytes\": 85, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/bridge.py\", \"original_sha256\": \"8364cd8a93bee97a1fb026e163f08d661ea93b97101ccb69f738fe980ad677ef\", \"original_git_blob\": \"9f2428d3f94f9b49ce942c4f2a4e2f7aabae35d6\", \"stored_git_blob\": \"5f80dfe211258aec069eb91b62c01ccab918840b\", \"stored_bytes\": 1208, \"original_bytes\": 3789, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/test_bridge.py\", \"original_sha256\": \"47ca9320e00adad7a4c06df44e73fe007c4da66749981b2a0886d9a5abca0d30\", \"original_git_blob\": \"dc30f51d285e2b9b93d46617e920ac45a48c6195\", \"stored_git_blob\": \"80def24212db593a8dae7b4c71bbd815758b5f86\", \"stored_bytes\": 1221, \"original_bytes\": 4867, \"archived\": true}, {\"path\": \"qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/verify_source.py\", \"original_sha256\": \"224b9fb1f88a38c51442cd29d52ec19cb9bbf61064af16f3a25c62e417b54ec2\", \"original_git_blob\": \"1d2f90f40b3872dad3ab6654339f6e1ed6652809\", \"stored_git_blob\": \"9b4277864e277c9b103fff2e6d7c803b6db66ce5\", \"stored_bytes\": 1032, \"original_bytes\": 2347, \"archived\": true}], \"exit\": 0, \"stdout\": \"PASS_N256_UNIFORMIZATION_EXACT_FP64_INPUT_BRIDGE_SOURCE_ONLY\\n\", \"stderr\": \"\", \"model_calls\": 0, \"optimizer_calls\": 0}\n"
+    }
+  },
+  "result": {
+    "ref": "dac002470799d1da06cdc51dc3601ca93005ca7e",
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "rows": [
+      {
+        "path": ".github/workflows/hcsn-currentstate-n256-uniformization-fp64-input-bridge.yml",
+        "original_sha256": "2796f9be03f66a444766a977ab921aee4afc345a79dfa70a3d488d5ec9e049ba",
+        "original_git_blob": "8321950dc64d0b27c2ab00560e6f655fb75bd5d4",
+        "stored_git_blob": "8321950dc64d0b27c2ab00560e6f655fb75bd5d4",
+        "stored_bytes": 1228,
+        "original_bytes": 1228,
+        "archived": false
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_fp64_input_conversion/fp64_exact.py",
+        "original_sha256": "cae195ae453100625da9d9fb75146a0257d417701435a832ce0aa8d563e5ece9",
+        "original_git_blob": "8a426a14a031265853ac198e027abfb3ab27d5c1",
+        "stored_git_blob": "095bc82e9e4ab7a9146ffc29e88136bcd2fcff09",
+        "stored_bytes": 1187,
+        "original_bytes": 3550,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_primitive/uniformization.py",
+        "original_sha256": "1a89ee6bb9e1ece948013bb98998424ef8f022078c6fa0a012a0ebec03927d35",
+        "original_git_blob": "7b298245d1271570248f02cc52da0682624dea95",
+        "stored_git_blob": "7b298245d1271570248f02cc52da0682624dea95",
+        "stored_bytes": 7511,
+        "original_bytes": 7511,
+        "archived": false
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/README.md",
+        "original_sha256": "b1b50ee0ab41ef35f5aa65a125c17848078e57dce80f068ba229753d8e8cc65e",
+        "original_git_blob": "67279c5ece9ac5a24de61dae913df071d7a81437",
+        "stored_git_blob": "965ae3e78d5f4ff196cf8a18ea15e3444f8c52c6",
+        "stored_bytes": 675,
+        "original_bytes": 1128,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/REQUEST.json",
+        "original_sha256": "c3afa8568320dff2f5dcdd08df275997aaa4b6dd1e95e56726c62c3d55306284",
+        "original_git_blob": "38bd3f6ddfd83edd2be8c32ab03160c5be053300",
+        "stored_git_blob": "968f16404fe1852007879af3d7e4eaa98826bc88",
+        "stored_bytes": 371,
+        "original_bytes": 766,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/__init__.py",
+        "original_sha256": "1eaae42de7e88178d99b1b8441f45587aa6f5928cb83ef92f6e433942bbe4fa6",
+        "original_git_blob": "6006602bd3a32725dc6fe32274cf8ed99d94c18b",
+        "stored_git_blob": "f6a2d0023baea1f8a0596d4fc2d11f5cc629687d",
+        "stored_bytes": 97,
+        "original_bytes": 85,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/bridge.py",
+        "original_sha256": "8364cd8a93bee97a1fb026e163f08d661ea93b97101ccb69f738fe980ad677ef",
+        "original_git_blob": "9f2428d3f94f9b49ce942c4f2a4e2f7aabae35d6",
+        "stored_git_blob": "5f80dfe211258aec069eb91b62c01ccab918840b",
+        "stored_bytes": 1208,
+        "original_bytes": 3789,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/test_bridge.py",
+        "original_sha256": "47ca9320e00adad7a4c06df44e73fe007c4da66749981b2a0886d9a5abca0d30",
+        "original_git_blob": "dc30f51d285e2b9b93d46617e920ac45a48c6195",
+        "stored_git_blob": "80def24212db593a8dae7b4c71bbd815758b5f86",
+        "stored_bytes": 1221,
+        "original_bytes": 4867,
+        "archived": true
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/verify_source.py",
+        "original_sha256": "224b9fb1f88a38c51442cd29d52ec19cb9bbf61064af16f3a25c62e417b54ec2",
+        "original_git_blob": "1d2f90f40b3872dad3ab6654339f6e1ed6652809",
+        "stored_git_blob": "9b4277864e277c9b103fff2e6d7c803b6db66ce5",
+        "stored_bytes": 1032,
+        "original_bytes": 2347,
+        "archived": true
+      }
+    ],
+    "exit": 0,
+    "stdout": "PASS_N256_UNIFORMIZATION_EXACT_FP64_INPUT_BRIDGE_SOURCE_ONLY\n",
+    "stderr": "",
+    "model_calls": 0,
+    "optimizer_calls": 0
+  },
+  "previous_job": {
+    "run": 45930685601,
+    "job": 140282342647,
+    "conclusion": "failure",
+    "exact_error": "source freeze mismatch: qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/README.md"
+  },
+  "observed_workflows": {
+    "scope": "first page only",
+    "previous": {
+      "skipped": 14,
+      "success": 57,
+      "failure": 10,
+      "queued": 3,
+      "cancelled": 15,
+      "in_progress": 1
+    },
+    "candidate": {
+      "queued": 75,
+      "pending": 16,
+      "skipped": 7,
+      "in_progress": 2
+    }
+  },
+  "product_integration": "HOLD",
+  "all_closed": false
+}
