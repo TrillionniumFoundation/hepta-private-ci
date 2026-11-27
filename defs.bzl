@@ -213,7 +213,8 @@ def codex_rust_crate(
         unit_test_timeout = None,
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        wine_test_launcher_tags = {}):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -284,6 +285,9 @@ def codex_rust_crate(
         run_tests_with_wine_exec: Boolean, defaults to False. Whether to emit a
             Wine-exec variant for each integration test. Variants inherit the
             native test's timeout, tags, and shard count.
+        wine_test_launcher_tags: Extra tags keyed by generated Wine test target
+            name. Only the Wine workspace-root launcher inherits these tags;
+            Rust compile helpers, native tests, and Windows cross wrappers do not.
     """
     test_env = {
         # The launcher resolves an absolute workspace root at runtime so
@@ -688,7 +692,7 @@ def codex_rust_crate(
                 target_compatible_with = WINE_TEST_TARGET_COMPATIBLE_WITH,
                 # This wrapper has no Rust sources and transitions a data
                 # dependency to a Windows toolchain the lint does not register.
-                tags = test_tags + ["no-argument-comment-lint"],
+                tags = test_tags + ["no-argument-comment-lint"] + wine_test_launcher_tags.get(wine_test_name, []),
                 **wine_test_kwargs
             )
 

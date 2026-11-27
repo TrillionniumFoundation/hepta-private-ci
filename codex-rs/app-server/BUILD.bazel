@@ -31,6 +31,9 @@ codex_rust_crate(
         "@platforms//os:macos": 1,
         "//conditions:default": 0,
     }),
+    wine_test_launcher_tags = {
+        "app-server-all-wine-exec-test": ["no-remote-exec"],
+    },
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
