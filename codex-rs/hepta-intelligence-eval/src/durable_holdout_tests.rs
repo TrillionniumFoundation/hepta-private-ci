@@ -37,6 +37,15 @@ impl Directory {
             .open(self.path())
             .unwrap()
     }
+    fn recover(
+        &self,
+        binding: Digest32,
+        anchor: HoldoutAnchorV1,
+    ) -> Result<DurableFinalHoldoutJournalV1, DurableHoldoutError> {
+        crate::tests::recover_after_release(DurableHoldoutError::Busy, || {
+            DurableFinalHoldoutJournalV1::recover(self.file(), binding, anchor)
+        })
+    }
     fn create(&self) -> DurableFinalHoldoutJournalV1 {
         let file = OpenOptions::new()
             .create_new(true)
@@ -122,12 +131,15 @@ fn durable_reopen_prevents_holdout_reuse() {
             .unwrap();
         (owned.path(), store.anchor())
     };
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .unwrap();
-    let mut store = DurableFinalHoldoutJournalV1::recover(file, digest("binding"), anchor).unwrap();
+    let mut store = crate::tests::recover_after_release(DurableHoldoutError::Busy, || {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        DurableFinalHoldoutJournalV1::recover(file, digest("binding"), anchor)
+    })
+    .unwrap();
     assert_eq!(store.anchor(), anchor);
     assert_eq!(
         store.consume_single_host_trusted(anchor, &plan("plan-2")),
@@ -183,12 +195,12 @@ fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let current = fs::read(directory.path()).unwrap();
     fs::write(directory.path(), &old).unwrap();
     assert!(matches!(
-        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor),
+        directory.recover(digest("binding"), anchor),
         Err(DurableHoldoutError::MissingAcknowledgedHistory)
     ));
     fs::write(directory.path(), &current[..current.len() - 1]).unwrap();
     assert!(matches!(
-        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor),
+        directory.recover(digest("binding"), anchor),
         Err(DurableHoldoutError::Corrupt)
     ));
     assert_eq!(
@@ -226,7 +238,7 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
     let anchor = store.anchor();
     drop(store);
     assert!(matches!(
-        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("different-store"), anchor),
+        directory.recover(digest("different-store"), anchor),
         Err(DurableHoldoutError::Corrupt)
     ));
 }
@@ -249,7 +261,7 @@ fn idempotent_retry_does_not_append_and_byte_corruption_rejects() {
     bad[HEADER + 8] ^= 1;
     fs::write(directory.path(), bad).unwrap();
     assert!(matches!(
-        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor),
+        directory.recover(digest("binding"), anchor),
         Err(DurableHoldoutError::Corrupt)
     ));
 }
@@ -334,18 +346,14 @@ fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
         binding: digest("binding"),
         anchor: start,
     };
-    let mut primary =
-        DurableFinalHoldoutJournalV1::recover(primary_directory.file(), digest("binding"), start)
-            .unwrap();
+    let mut primary = primary_directory.recover(digest("binding"), start).unwrap();
     primary
         .consume_fenced(&mut authority, start, &plan("plan-1"))
         .unwrap();
     let committed = primary.anchor();
     assert_eq!(authority.anchor, committed);
 
-    let mut stale =
-        DurableFinalHoldoutJournalV1::recover(replica_directory.file(), digest("binding"), start)
-            .unwrap();
+    let mut stale = replica_directory.recover(digest("binding"), start).unwrap();
     let before = locked_bytes(&stale.file);
     for index in 0..128 {
         assert_eq!(
@@ -415,11 +423,13 @@ fn fenced_reservation_with_failed_local_write_is_fail_closed() {
         binding: digest("binding"),
         anchor: start,
     };
-    let mut read_only = DurableFinalHoldoutJournalV1::recover(
-        File::open(directory.path()).unwrap(),
-        digest("binding"),
-        start,
-    )
+    let mut read_only = crate::tests::recover_after_release(DurableHoldoutError::Busy, || {
+        DurableFinalHoldoutJournalV1::recover(
+            File::open(directory.path()).unwrap(),
+            digest("binding"),
+            start,
+        )
+    })
     .unwrap();
     assert_eq!(
         read_only.consume_fenced(&mut authority, start, &plan("plan-1")),
@@ -433,7 +443,7 @@ fn fenced_reservation_with_failed_local_write_is_fail_closed() {
     );
     drop(read_only);
     assert!(matches!(
-        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), advanced),
+        directory.recover(digest("binding"), advanced),
         Err(DurableHoldoutError::MissingAcknowledgedHistory)
     ));
 }
@@ -444,11 +454,13 @@ fn ambiguous_write_fences_the_handle() {
     let store = directory.create();
     let anchor = store.anchor();
     drop(store);
-    let mut store = DurableFinalHoldoutJournalV1::recover(
-        File::open(directory.path()).unwrap(),
-        digest("binding"),
-        anchor,
-    )
+    let mut store = crate::tests::recover_after_release(DurableHoldoutError::Busy, || {
+        DurableFinalHoldoutJournalV1::recover(
+            File::open(directory.path()).unwrap(),
+            digest("binding"),
+            anchor,
+        )
+    })
     .unwrap();
     assert_eq!(
         store.consume_single_host_trusted(anchor, &plan("plan-1")),
