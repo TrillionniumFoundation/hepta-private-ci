@@ -1,0 +1,33 @@
+{
+  "schema": "codex.hia.evidence-index-identity-correction.v1",
+  "prior_publication": "71f63262b2f8c291cc2f452d9ed045317f4dfdaf",
+  "prior_archive_index_sha256_claim": "baa457922b6a1f65a6cbfc8afcdb86e830a7462786d213b68bf8f709cf8f1c6e",
+  "prior_strict_index_gate": "failed",
+  "cause": "The source inventory hash was mislabeled as the archive member hash. The archive adds an archive_layout explanation before serialization.",
+  "observed": {
+    "archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+    "source_index": {
+      "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/index.json",
+      "bytes": 566179,
+      "sha256": "baa457922b6a1f65a6cbfc8afcdb86e830a7462786d213b68bf8f709cf8f1c6e"
+    },
+    "archive_index": {
+      "member": "evidence-index.json",
+      "bytes": 566380,
+      "sha256": "4f0e2d65bb386c9dfb98d462032e5d2542a19835c4a713d42e47719ef409aba6",
+      "unique": true
+    },
+    "structural_differences": [
+      {
+        "key": "archive_layout",
+        "source": null,
+        "archive": "Content addressed: sha256/<digest> contains exact full file bytes; records map every original relative path to that digest. Identical outputs are stored once without truncation."
+      }
+    ]
+  },
+  "inspection_job": "1a21eda3e9f-ffbe-5688",
+  "source_changed": false,
+  "archive_changed": false,
+  "owner_gates_rerun": false,
+  "prior_failure_preserved": true
+}
