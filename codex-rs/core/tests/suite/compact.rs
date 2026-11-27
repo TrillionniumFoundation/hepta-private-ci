@@ -45,6 +45,7 @@ use core_test_support::test_codex::local_selections;
 use core_test_support::test_codex::test_codex;
 use core_test_support::test_codex::turn_permission_fields;
 use core_test_support::test_path_buf;
+use core_test_support::wait_for_completed_turn;
 use core_test_support::wait_for_event;
 use core_test_support::wait_for_event_match;
 use std::path::PathBuf;
@@ -2914,9 +2915,11 @@ async fn pre_sampling_compact_skips_when_either_comp_hash_is_missing() {
         ))
         .await
         .expect("submit first user turn");
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
-    })
+    wait_for_completed_turn(
+        &test.codex,
+        /*expected_turn_id*/ None,
+        std::time::Duration::from_secs(1),
+    )
     .await;
 
     test.codex
@@ -2927,9 +2930,11 @@ async fn pre_sampling_compact_skips_when_either_comp_hash_is_missing() {
         ))
         .await
         .expect("submit second user turn");
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
-    })
+    wait_for_completed_turn(
+        &test.codex,
+        /*expected_turn_id*/ None,
+        std::time::Duration::from_secs(1),
+    )
     .await;
 
     test.codex
@@ -2940,9 +2945,11 @@ async fn pre_sampling_compact_skips_when_either_comp_hash_is_missing() {
         ))
         .await
         .expect("submit third user turn");
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
-    })
+    wait_for_completed_turn(
+        &test.codex,
+        /*expected_turn_id*/ None,
+        std::time::Duration::from_secs(1),
+    )
     .await;
 
     let requests = request_log.requests();

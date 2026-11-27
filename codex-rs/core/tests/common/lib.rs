@@ -336,6 +336,35 @@ where
     matcher(&ev).expect("EventMsg should match matcher predicate")
 }
 
+/// Waits for a normal terminal event and the lifecycle work owned by that exact turn.
+pub async fn wait_for_completed_turn(
+    codex: &CodexThread,
+    expected_turn_id: Option<&str>,
+    wait_time: tokio::time::Duration,
+) {
+    use codex_protocol::protocol::EventMsg;
+    use tokio::time::Duration;
+    use tokio::time::timeout;
+
+    let event = wait_for_event_with_timeout(
+        codex,
+        |event| {
+            matches!(event, EventMsg::TurnComplete(event)
+                if expected_turn_id.is_none_or(|expected_id| expected_id == event.turn_id))
+        },
+        wait_time,
+    )
+    .await;
+    let EventMsg::TurnComplete(event) = event else {
+        unreachable!("the predicate accepts only TurnComplete");
+    };
+    if let Some(finish) = codex.pending_normal_turn_finish_completion(&event.turn_id) {
+        timeout(wait_time.max(Duration::from_secs(10)), finish)
+            .await
+            .expect("timeout waiting for the completed turn's finish owner");
+    }
+}
+
 pub async fn wait_for_event_with_timeout<F>(
     codex: &CodexThread,
     mut predicate: F,
