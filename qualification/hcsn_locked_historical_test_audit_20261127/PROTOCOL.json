@@ -1,0 +1,178 @@
+{
+  "access_scope": {
+    "no_broker_orders": true,
+    "no_manual_rerun": true,
+    "no_native_owner_claim": true,
+    "no_production": true,
+    "public_only": true,
+    "root_is_unique_publisher_and_execution_owner": true
+  },
+  "accounting": {
+    "cold_model_initialization_and_qvi_cost_counted": true,
+    "conversational_agent_cost_not_measured": true,
+    "no_quality_matched_speedup_claim": true,
+    "original_hidden_edit_bp_qualification_control_failure_repair_costs_retained": true,
+    "partial_unknown_counts_not_zero": true,
+    "setup_download_preparation_reported_separately": true,
+    "started_and_completed_calls_separate": true,
+    "unavailable_wall_or_token_costs_reported_unknown_not_zero": true
+  },
+  "call_budget": {
+    "analytic_solves": 0,
+    "backwards": 0,
+    "body_ticks": 42,
+    "choice_rows": 672,
+    "forwards": 7,
+    "optimizer_steps": 0,
+    "paired_queries": 336,
+    "scalar_inverse_targets": 0,
+    "trace_linear_replays": 0
+  },
+  "classification": {
+    "confirmation_claim": false,
+    "current_hidden_edit_selection_consumed_test": false,
+    "entire_research_never_touched_test": false,
+    "fresh_holdout": false,
+    "historical_dataset": true,
+    "new_actor_recruitment": false
+  },
+  "evaluation": {
+    "actual_complete_checkpoint_reload": true,
+    "compile_trace": false,
+    "deduplicate_by": "Full sealed checkpoint SHA and actual 40 F32 parameter SHA within one parent; never 40 values across different parents.",
+    "existing_cpu_qualification_exact_source_reused": true,
+    "fail_policy": "Never retry a failed test evaluation or choose a different candidate/dose. Abort that parent and preserve valid prior completed cases plus UNKNOWN/unexecuted slots. Integrity/global resource failure stops subsequent parents; no historical scores fill missing results.",
+    "keep_calls_per_parent": 1,
+    "no_new_producer_qualification": true,
+    "one_fresh_process_per_parent": true,
+    "parent_call_caps": {
+      "137": 3,
+      "47": 2,
+      "83": 2
+    },
+    "parent_order": [
+      47,
+      83,
+      137
+    ],
+    "per_forward_return_gate_seconds": 20,
+    "physics_tolerance": 2e-09,
+    "protected_registered_tensor_value_bytes_and_aliases": true,
+    "pt_zip_container_byte_equivalence_not_claimed": true,
+    "quality_threshold_rejection_on_test": false,
+    "within_parent_order": [
+      "KEEP",
+      "selected METHOD if distinct from KEEP",
+      "selected BP if distinct from KEEP/METHOD"
+    ]
+  },
+  "method_strata": {
+    "137": {
+      "bp": "BP_TASK",
+      "bp_selected": "PENDING_ACTUAL_REPAIR_AND_ORIGINAL_FROZEN_SELECTOR",
+      "family": "BOUNDARY_PROGRAM",
+      "selected": "PENDING_ACTUAL_REPAIR_AND_ORIGINAL_FROZEN_SELECTOR",
+      "source_method": "RERUN_PROGRAM"
+    },
+    "47": {
+      "already_frozen_bp": "BP_TASK_16",
+      "already_frozen_selected": "KEEP",
+      "bp": "BP_TASK",
+      "family": "SENDER_ROLE",
+      "source_method": "ANALYTIC_ROLE"
+    },
+    "83": {
+      "already_frozen_bp": "BP_TASK_16",
+      "already_frozen_selected": "KEEP",
+      "bp": "BP_TASK",
+      "family": "BOUNDARY_PROGRAM",
+      "reason": "Scientific multiple-root ABSTAIN; KEEP is the original pre-test fallback.",
+      "source_method": "RERUN_PROGRAM"
+    }
+  },
+  "name": "LOCKED_HISTORICAL_TEST_AUDIT",
+  "parent_order": [
+    47,
+    83,
+    137
+  ],
+  "resources": {
+    "aggregate_active_wall_seconds": 180,
+    "aggregate_cpu_seconds": 90,
+    "cpu_threads": 1,
+    "memory_bytes": 1073741824,
+    "per_parent_cpu_seconds": 30,
+    "per_parent_wall_seconds": 60,
+    "scope_lifetime_with_cleanup_seconds": 210,
+    "setup_and_downloads_outside_active_window_reported_separately": true,
+    "tasks": 64
+  },
+  "schema": "hepta.locked-historical-test-audit-protocol.v1",
+  "selection": {
+    "complete_actual_pt_and_f32_parameter_shas_bound": true,
+    "execution_revalidates_lock_before_test_extraction": true,
+    "local_lock_before_publication": true,
+    "missing_slots_preserved": true,
+    "not_newly_rank_methods_or_parents": true,
+    "original137_implementation_failure_retained": true,
+    "repair_failure_policy": "If no complete repair selection exists, keep 137 METHOD/BP UNAVAILABLE. Do not choose a partial artifact or relabel the old implementation failure as scientific abstention.",
+    "rule": "Existing frozen static_support.choose: development correct descending, Brier ascending, realized norm ascending, KEEP wins full ties, then original declaration order. Retain no-correct-to-wrong and Brier<=KEEP+.01 gate unchanged.",
+    "source47_boundary_abstain_and_two_copy_slots_per_target_retained": true,
+    "test_decodes_before_selection_lock": 0
+  },
+  "statistics": {
+    "actor_order": [
+      5,
+      6,
+      11,
+      12,
+      21,
+      22
+    ],
+    "comparisons": "Per parent METHOD-KEEP, BP-KEEP, METHOD-BP; boundary83/137 pooled same3; BP47/83/137 pooled BP-KEEP. No mixed sender/boundary algorithm pool.",
+    "confirmatory_p_values": false,
+    "interval": "Exploratory deterministic actor cluster percentile bootstrap: all462 count multiplicities for6 draws from6 actor groups, multinomial weights sum46656, lower/upper weighted 2.5%/97.5% quantiles.",
+    "metric_dtype": "original helper F64 softmax/CE/Brier",
+    "metrics": [
+      "accuracy",
+      "brier",
+      "ce"
+    ],
+    "missing_comparison": "UNAVAILABLE with original parent denominator retained; no smaller available-parent pool.",
+    "multiplicity_correction_claim": false,
+    "new_generalization_claim": false,
+    "paired_unit": "actor",
+    "point_weights": "Equal actors; each actor has8 queries. Pooled comparisons first average fixed parent differences equally inside each same actor.",
+    "score_dtype": "actual model F32",
+    "total_contrasts": 13,
+    "within_actor": "8 fixed paired queries; reciprocal queries remain dependent."
+  },
+  "status": "PREPARED_BEFORE_TEST_ACCESS_EXECUTION_REQUIRES_ROOT_SOURCE_REVIEW",
+  "test": {
+    "actors": [
+      5,
+      6,
+      11,
+      12,
+      21,
+      22
+    ],
+    "bytes": 21937,
+    "choices": 2,
+    "data_contract_commit": "419cc6fba3ce7f1cdde6b96bbf92bc3e324c0560",
+    "exclusions": [],
+    "features": 9,
+    "normalization": "Exact 19 F32 train-only mean/std/scale bytes from existing public manifests. No test fit and no normalization recomputation.",
+    "normalizer_sha256": "7e82bcff70d5d8b94f9096f66ef6b28a6eedfad12bc763214d5cca68e75b98b0",
+    "public_source_commit": "bc4912ea657864d33b36a57da0b50eb35bee90af",
+    "queries": 48,
+    "queries_per_actor": 8,
+    "replacement_queries": false,
+    "sha256": "750526a732c93c27079a42ef9aea113e876661c4e0b3f5e6237e81c9ec268085",
+    "targets_per_actor": [
+      4,
+      4
+    ],
+    "ticks": 6
+  }
+}

@@ -1,0 +1,162 @@
+# Disabled template. Root alone publishes after reviewing the full locked lane.
+name: HCSN locked historical test audit 20261127
+
+"on":
+  push:
+    branches: [research/hcsn-locked-historical-test-audit-20261127]
+    paths:
+      - qualification/hcsn_locked_historical_test_audit_20261127/**
+      - .github/workflows/hcsn-locked-historical-test-audit.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hcsn-locked-historical-test-audit-20261127-once
+  cancel-in-progress: false
+
+jobs:
+  locked-historical-audit:
+    if: github.run_attempt == 1 && github.run_number == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NUMEXPR_NUM_THREADS: '1'
+      CUDA_VISIBLE_DEVICES: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_sender40_pilot_20261127
+            qualification/hcsn_boundary_transfer83_137_20261127
+            qualification/hcsn_locked_historical_test_audit_20261127
+            .github/workflows/hcsn-locked-historical-test-audit.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12.3'
+      - name: Verify exact locked publication before data access
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast,hashlib,json,os,pathlib,subprocess
+          task=pathlib.Path('qualification/hcsn_locked_historical_test_audit_20261127')
+          helper=pathlib.Path('qualification/hcsn_sender40_pilot_20261127')
+          transfer=pathlib.Path('qualification/hcsn_boundary_transfer83_137_20261127')
+          binding=json.loads((task/'EXECUTION_BINDINGS.json').read_text())
+          if binding['status']!='FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW' or binding['parent_order']!=[47,83,137]:
+              raise SystemExit('Unreviewed locked historical audit.')
+          review=binding['root_review_sha256']
+          if not isinstance(review,str) or len(review)!=64 or any(c not in '0123456789abcdef' for c in review):
+              raise SystemExit('Missing exact root source review.')
+          parent=subprocess.check_output(['git','rev-parse','HEAD^'],text=True).strip()
+          if parent!=binding['exact_parent_commit']:
+              raise SystemExit('Publication is not one child of exact repair source.')
+          changes=subprocess.check_output(['git','diff','--name-status',parent,'HEAD'],text=True).splitlines()
+          actual={line.split('\t')[-1]:line.split('\t')[0] for line in changes}
+          expected={str(task/name):'A' for name in binding['adapter_files']}
+          expected.update({str(task/'EXECUTION_BINDINGS.json'):'A',binding['workflow']['path']:'A'})
+          if len(changes)!=len(expected) or actual!=expected:
+              raise SystemExit('Exact added-path-only publication closure differs.')
+          for directory,group in ((task,'adapter_files'),(helper,'helper_files'),(transfer,'transfer_files')):
+              for name,item in binding[group].items():
+                  raw=(directory/name).read_bytes()
+                  if len(raw)!=item['bytes'] or hashlib.sha256(raw).hexdigest()!=item['sha256']:
+                      raise SystemExit('Pinned source identity differs: '+name)
+          raw=pathlib.Path(binding['workflow']['path']).read_bytes()
+          if len(raw)!=binding['workflow']['bytes'] or hashlib.sha256(raw).hexdigest()!=binding['workflow']['sha256']:
+              raise SystemExit('Workflow differs from reviewed source.')
+          selection=json.loads((task/'SELECTED_MODELS.json').read_text())
+          if (selection['unique_checkpoints']!=6 or selection['planned_forwards']!=6 or
+                  any(row['methods']['METHOD']['selected']!='KEEP' or row['methods']['BP']['selected']!='BP_TASK_16' for row in selection['parents'])):
+              raise SystemExit('Locked original pre-test selections differ.')
+          for path in task.glob('*.py'):
+              ast.parse(path.read_text(),filename=str(path))
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-locked-historical-test-output'
+          out.mkdir(exist_ok=False)
+          (out/'PUBLICATION.json').write_text(json.dumps(dict(parent=parent,head=os.environ['GITHUB_SHA'],
+              changes=actual,run_id=os.environ['GITHUB_RUN_ID'],run_number=os.environ['GITHUB_RUN_NUMBER'],
+              run_attempt=os.environ['GITHUB_RUN_ATTEMPT'],selection_lock_sha256=binding['selection_lock']['sha256'],
+              fresh_holdout=False,test_access_yet=False),indent=2)+'\n')
+          PY
+      - name: Install the already qualified CPU dependency versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export AUDIT_SETUP_START=$(date +%s)
+          python -m venv "$RUNNER_TEMP/hcsn-locked-historical-test-venv"
+          PYTHON="$RUNNER_TEMP/hcsn-locked-historical-test-venv/bin/python"
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 numpy==2.3.5 scipy==1.17.0
+          "$PYTHON" - <<'PY'
+          import importlib.metadata,json,os,pathlib,subprocess,sys,time
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-locked-historical-test-output'
+          (out/'packages.txt').write_text(subprocess.check_output([sys.executable,'-m','pip','freeze','--all'],text=True))
+          (out/'SETUP.json').write_text(json.dumps(dict(wall_seconds=time.time()-int(os.environ['AUDIT_SETUP_START']),
+              python=sys.version,versions={k:importlib.metadata.version(k) for k in ('torch','numpy','scipy')},
+              transitive_wheel_hashes_locked=False,model_calls=0,setup_not_hidden_in_zero_gradient_cost=True),indent=2)+'\n')
+          PY
+      - name: Retrieve three exact predecessor artifacts once
+        env:
+          BOUNDARY_TRANSFER_ARTIFACT_READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_locked_historical_test_audit_20261127
+          TRANSFER=qualification/hcsn_boundary_transfer83_137_20261127
+          "$RUNNER_TEMP/hcsn-locked-historical-test-venv/bin/python" "$TASK/fetch_artifacts.py" "$TASK/EXECUTION_BINDINGS.json" "$TRANSFER" \
+            "$RUNNER_TEMP/hcsn-locked-historical-test-prior" "$RUNNER_TEMP/hcsn-locked-historical-test-output/DOWNLOADS.json"
+      - name: Revalidate sealed selections then extract the fixed historical test
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_locked_historical_test_audit_20261127
+          HELPER=qualification/hcsn_sender40_pilot_20261127
+          TRANSFER=qualification/hcsn_boundary_transfer83_137_20261127
+          "$RUNNER_TEMP/hcsn-locked-historical-test-venv/bin/python" "$TASK/prepare_public.py" "$TASK/EXECUTION_BINDINGS.json" "$HELPER" "$TRANSFER" \
+            "$RUNNER_TEMP/hcsn-locked-historical-test-prior" "$RUNNER_TEMP/hcsn-locked-historical-test-prepared" \
+            "$RUNNER_TEMP/hcsn-locked-historical-test-output/PREPARATION_RESULT.json"
+          python - <<'PY'
+          import os,pathlib,shutil
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          source=root/'hcsn-locked-historical-test-prepared'
+          out=root/'hcsn-locked-historical-test-output'
+          for name in ('PREPARED.json','SELECTED_MODELS.json','SELECTION_REVALIDATED_BEFORE_TEST.json','PRIOR_COSTS.json'):
+              shutil.copyfile(source/name,out/name)
+          PY
+      - name: Evaluate fixed unique checkpoints once under separate audit limits
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK="$GITHUB_WORKSPACE/qualification/hcsn_locked_historical_test_audit_20261127"
+          HELPER="$GITHUB_WORKSPACE/qualification/hcsn_sender40_pilot_20261127"
+          TRANSFER="$GITHUB_WORKSPACE/qualification/hcsn_boundary_transfer83_137_20261127"
+          PYTHON="$RUNNER_TEMP/hcsn-locked-historical-test-venv/bin/python"
+          sudo -n systemd-run --wait --pipe --collect --unit="hcsn-locked-historical-test-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --property="User=$(id -un)" --property="Group=$(id -gn)" --property="WorkingDirectory=$GITHUB_WORKSPACE" \
+            --property=MemoryMax=1073741824 --property=CPUQuota=100% --property=TasksMax=64 \
+            --property=RuntimeMaxSec=210 --property=KillMode=control-group \
+            --setenv=OMP_NUM_THREADS=1 --setenv=OPENBLAS_NUM_THREADS=1 --setenv=MKL_NUM_THREADS=1 \
+            --setenv=NUMEXPR_NUM_THREADS=1 --setenv=CUDA_VISIBLE_DEVICES= --setenv=PYTHONDONTWRITEBYTECODE=1 \
+            --setenv=PYTHONUNBUFFERED=1 --setenv="LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" \
+            "$PYTHON" "$TASK/supervise.py" "$TASK/EXECUTION_BINDINGS.json" "$HELPER" "$TRANSFER" \
+            "$RUNNER_TEMP/hcsn-locked-historical-test-prepared" "$RUNNER_TEMP/hcsn-locked-historical-test-output/supervised" \
+            "$RUNNER_TEMP/hcsn-locked-historical-test-output/PREPARATION_RESULT.json"
+      - name: Preserve all audit results including failures and absent slots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-locked-historical-test-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-locked-historical-test-output
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6

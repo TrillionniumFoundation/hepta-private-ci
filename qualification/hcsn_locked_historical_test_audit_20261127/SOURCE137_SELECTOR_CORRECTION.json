@@ -1,0 +1,109 @@
+{
+  "cpu_seconds": 0.004235017000000001,
+  "experiment_selection_was_already_correct": true,
+  "historical_test_read": false,
+  "intent_sha256": "dc2e91119eb152bef0f24dbae5cdf2104562743c5b01b7a3b4fafbff26c4f401",
+  "new_operations": {
+    "backward": 0,
+    "checkpoint_decodes": 0,
+    "fit": 0,
+    "metric_recomputations": 0,
+    "model": 0,
+    "saved_row_selection_calls": 3
+  },
+  "original_audit_sha256": "079c7bf5ee10a9050c5744d35590ef507b33d654eec1e5c2b46362ad365ccc69",
+  "original_choose_source": "def choose(rows):\n    \"\"\"Rows already pass protection. KEEP wins a full tie; then fixed declaration order.\"\"\"\n    return min(rows, key=lambda r: (-r[\"dev\"][\"correct\"], r[\"dev\"][\"brier\"], r[\"norm\"],\n                                    0 if r[\"name\"] == \"KEEP\" else 1, r[\"declaration_index\"]))",
+  "original_metric_and_tensor_audit_retained": true,
+  "original_source_sha256": "80683a7496553acac63fc23226155761bb4354ef7fbb935aff1f9b8ff25c90ea",
+  "result_sha256": "add2b211ce4fda5066e83dceed11dbf107fbd883a513a264c845c09ce3a606cc",
+  "rows": [
+    {
+      "actual_selection_unchanged": true,
+      "all_declared_slots": [
+        "RERUN_PROGRAM_025",
+        "RERUN_PROGRAM_100"
+      ],
+      "eligible_pool_and_original_keys": [
+        {
+          "key": [
+            -25,
+            0.15925675919357474,
+            0.0,
+            0,
+            0
+          ],
+          "name": "KEEP"
+        }
+      ],
+      "method": "RERUN_PROGRAM",
+      "selected": "KEEP"
+    },
+    {
+      "actual_selection_unchanged": true,
+      "all_declared_slots": [
+        "COPY_SOURCE_DELTA_025",
+        "COPY_SOURCE_DELTA_100"
+      ],
+      "eligible_pool_and_original_keys": [
+        {
+          "key": [
+            -25,
+            0.15925675919357474,
+            0.0,
+            0,
+            0
+          ],
+          "name": "KEEP"
+        }
+      ],
+      "method": "COPY_SOURCE_DELTA",
+      "selected": "KEEP"
+    },
+    {
+      "actual_selection_unchanged": true,
+      "all_declared_slots": [
+        "BP_TASK_4",
+        "BP_TASK_16"
+      ],
+      "eligible_pool_and_original_keys": [
+        {
+          "key": [
+            -25,
+            0.15925675919357474,
+            0.0,
+            0,
+            0
+          ],
+          "name": "KEEP"
+        },
+        {
+          "key": [
+            -25,
+            0.15914012360901744,
+            0.11484850971028293,
+            1,
+            5
+          ],
+          "name": "BP_TASK_4"
+        },
+        {
+          "key": [
+            -25,
+            0.15883628588534882,
+            0.3103275761110311,
+            1,
+            6
+          ],
+          "name": "BP_TASK_16"
+        }
+      ],
+      "method": "BP_TASK",
+      "selected": "BP_TASK_16"
+    }
+  ],
+  "schema": "hepta.saved-row-selection-audit-correction.v1",
+  "selection_changed": false,
+  "status": "PASS_EXACT_ORIGINAL_BRIER_KEEP_PRIORITY_RULE",
+  "supersedes_only": "RAW_OUTPUT_AUDIT original-selection-key recomputation claim",
+  "wall_seconds": 0.00429725199501263
+}

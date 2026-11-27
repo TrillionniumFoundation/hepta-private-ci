@@ -1,0 +1,714 @@
+{
+  "all_failed_and_missing_source_slots_retained": true,
+  "name": "LOCKED_HISTORICAL_TEST_AUDIT",
+  "new_holdout": false,
+  "parent_order": [
+    47,
+    83,
+    137
+  ],
+  "parents": [
+    {
+      "family": "SENDER_ROLE",
+      "methods": {
+        "BP": {
+          "edited_model_selected": true,
+          "evaluated_candidates": 2,
+          "fallback_keep": false,
+          "original_availability": "AVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "BP_TASK_16",
+          "source_method": "BP_TASK",
+          "status": "SELECTED_BEFORE_TEST"
+        },
+        "METHOD": {
+          "edited_model_selected": false,
+          "evaluated_candidates": 2,
+          "fallback_keep": true,
+          "original_availability": "AVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "KEEP",
+          "source_method": "ANALYTIC_ROLE",
+          "status": "SELECTED_BEFORE_TEST"
+        }
+      },
+      "original_selection_unavailable": false,
+      "original_status": "COMPLETED",
+      "qualification": {
+        "artifact_key": "sender47",
+        "member": "supervised/experiment/CPU_PRODUCER_QUALIFICATION.json"
+      },
+      "seed": 47,
+      "slot_results": [
+        {
+          "declaration_index": 1,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.16002813106801156,
+            "ce": 0.4919964481361862,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.39181230199999995,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.4147915960000006
+          },
+          "name": "ANALYTIC_ROLE_025",
+          "norm": 0.19871513090490933,
+          "parent_correct_to_wrong": 0,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8214285714285714,
+            "brier": 0.18874972033703802,
+            "ce": 0.574358432688369,
+            "correct": 23,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.2193601551740007,
+            "ce": 0.6244981799363164,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 2,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.160551886729035,
+            "ce": 0.49328442199171785,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.3835159819999996,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.4137929940000049
+          },
+          "name": "ANALYTIC_ROLE_100",
+          "norm": 0.7948605095189405,
+          "parent_correct_to_wrong": 1,
+          "protection_passed": false,
+          "retain": {
+            "accuracy": 0.7857142857142857,
+            "brier": 0.1892638547424383,
+            "ce": 0.5752297266326234,
+            "correct": 22,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21984347400741583,
+            "ce": 0.625555175925365,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 3,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15977228966943524,
+            "ce": 0.4913904676387261,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.3942769230000005,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.42208005300000195
+          },
+          "name": "BP_TASK_4",
+          "norm": 0.09902629223319481,
+          "parent_correct_to_wrong": 0,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8214285714285714,
+            "brier": 0.1884780106704073,
+            "ce": 0.5738228455061307,
+            "correct": 23,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21910282955987484,
+            "ce": 0.6239422233207618,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 4,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15950872073227113,
+            "ce": 0.4907910460474795,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.39016021099999953,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.4216866080000017
+          },
+          "name": "BP_TASK_16",
+          "norm": 0.3132611003711533,
+          "parent_correct_to_wrong": 0,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8214285714285714,
+            "brier": 0.1881890882987596,
+            "ce": 0.5732417743253672,
+            "correct": 23,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.2187948189652109,
+            "ce": 0.6232808449447772,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 5,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.1606499351423742,
+            "ce": 0.4934819830446177,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.3878471499999998,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.41309011900000314
+          },
+          "name": "WRONG_ROLE",
+          "norm": 0.8193827157577559,
+          "parent_correct_to_wrong": 1,
+          "protection_passed": false,
+          "retain": {
+            "accuracy": 0.7857142857142857,
+            "brier": 0.18938542492145363,
+            "ce": 0.5755285683818366,
+            "correct": 22,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21998432707318,
+            "ce": 0.6258547976703213,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 6,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15965793025724243,
+            "ce": 0.4911591429912531,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.3815333490000006,
+            "full_forwards": 2,
+            "includes": "actual checkpoint reload/two complete evaluations/metrics/NPZ serialization/restoration",
+            "paired_queries": 140,
+            "wall_seconds": 0.41871642599998893
+          },
+          "name": "RANDOM",
+          "norm": 0.7948483897241476,
+          "parent_correct_to_wrong": 0,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8214285714285714,
+            "brier": 0.18830902394381854,
+            "ce": 0.5734037310945862,
+            "correct": 23,
+            "n": 28
+          },
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21892645629024649,
+            "ce": 0.6235685693336984,
+            "correct": 50,
+            "n": 80
+          }
+        }
+      ],
+      "slots": [
+        "ANALYTIC_ROLE_025",
+        "ANALYTIC_ROLE_100",
+        "BP_TASK_4",
+        "BP_TASK_16",
+        "WRONG_ROLE",
+        "RANDOM"
+      ],
+      "source_artifact_key": "sender47",
+      "source_method": "ANALYTIC_ROLE",
+      "source_prefix": "supervised/experiment",
+      "source_result_counts": {
+        "analytic_solves": 2,
+        "backwards": 17,
+        "body_ticks": 198,
+        "forwards": 33,
+        "optimizer_steps": 16,
+        "paired_queries": 1114,
+        "trace_linear_replays": 6
+      },
+      "source_result_sha256": "8a22bef0ccfad8a50def320d138f43be6c87c5ac22ce044cc12ea03b09b8d19c",
+      "unique_evaluations": [
+        {
+          "checkpoint_sha256": "92756ef7d5dc98d27cb305a9132eb03aca31487ceddaa09be7456457ed3df7dd",
+          "name": "KEEP",
+          "parameter_sha256": null,
+          "source": "PUBLIC_PARENT"
+        },
+        {
+          "checkpoint_bytes": 6719,
+          "checkpoint_sha256": "7b4af9ece820c9e1d5975a4705508671e49fa1d23be158d04f07573b2c9bda87",
+          "name": "BP_TASK_16",
+          "parameter_bytes": 160,
+          "parameter_sha256": "a5a5dd36bf415a694f05a741619e87742168dd29a5e350aea7773ea69ac659b3",
+          "source": "EXACT_PREDECESSOR_ARTIFACT"
+        }
+      ]
+    },
+    {
+      "family": "BOUNDARY_PROGRAM",
+      "methods": {
+        "BP": {
+          "edited_model_selected": true,
+          "evaluated_candidates": 2,
+          "fallback_keep": false,
+          "original_availability": "AVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "BP_TASK_16",
+          "source_method": "BP_TASK",
+          "status": "SELECTED_BEFORE_TEST"
+        },
+        "METHOD": {
+          "edited_model_selected": false,
+          "evaluated_candidates": 0,
+          "fallback_keep": true,
+          "original_availability": "ABSTAIN_OR_UNAVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "KEEP",
+          "source_method": "RERUN_PROGRAM",
+          "status": "SELECTED_BEFORE_TEST"
+        }
+      },
+      "original_selection_unavailable": false,
+      "original_status": "PARENT_COMPLETED",
+      "qualification": {
+        "artifact_key": "transfer83_137",
+        "member": "supervised/parent83/CPU_PRODUCER_QUALIFICATION.json"
+      },
+      "seed": 83,
+      "slot_results": [
+        {
+          "declaration_index": 1,
+          "kept_in_planned_denominator": true,
+          "name": "RERUN_PROGRAM_025",
+          "reason": "TARGET_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 2,
+          "kept_in_planned_denominator": true,
+          "name": "RERUN_PROGRAM_100",
+          "reason": "TARGET_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 3,
+          "kept_in_planned_denominator": true,
+          "name": "COPY_SOURCE_DELTA_025",
+          "reason": "SOURCE_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 4,
+          "kept_in_planned_denominator": true,
+          "name": "COPY_SOURCE_DELTA_100",
+          "reason": "SOURCE_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 5,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15910089343572864,
+            "ce": 0.4898036525208663,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.4610896179999999,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.4721323859999984
+          },
+          "name": "BP_TASK_4",
+          "norm": 0.13570747166047237,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8928571428571429,
+            "brier": 0.18775489865966646,
+            "ce": 0.5725129944416644,
+            "correct": 25,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21836956754299558,
+            "ce": 0.6223441166649737,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 6,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15871939746600608,
+            "ce": 0.488945041096938,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.5020347440000004,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.5114666239999792
+          },
+          "name": "BP_TASK_16",
+          "norm": 0.32570098311079504,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8928571428571429,
+            "brier": 0.1873477431136384,
+            "ce": 0.571698548529776,
+            "correct": 25,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.6375,
+            "brier": 0.2179215029182539,
+            "ce": 0.6213788516179248,
+            "correct": 51,
+            "n": 80
+          }
+        }
+      ],
+      "slots": [
+        "RERUN_PROGRAM_025",
+        "RERUN_PROGRAM_100",
+        "COPY_SOURCE_DELTA_025",
+        "COPY_SOURCE_DELTA_100",
+        "BP_TASK_4",
+        "BP_TASK_16"
+      ],
+      "source_artifact_key": "transfer83_137",
+      "source_method": "RERUN_PROGRAM",
+      "source_prefix": "supervised/parent83",
+      "source_result_counts": {
+        "analytic_solves": 0,
+        "backwards": 17,
+        "body_ticks": 150,
+        "forwards": 25,
+        "lagrange_iterations": 0,
+        "optimizer_steps": 16,
+        "paired_queries": 554,
+        "proposal_directions": 0,
+        "root_bisections": 114,
+        "root_cells": 93,
+        "root_interval_evaluations": 93,
+        "root_point_evaluations": 145,
+        "scalar_inverse_targets": 2,
+        "trace_linear_replays": 6
+      },
+      "source_result_sha256": "502e0b536665347fbd183b54e0d0f62f94ea9446991539e5c0f3fe4922c02256",
+      "unique_evaluations": [
+        {
+          "checkpoint_sha256": "dff3771fca8cc19d99188179ea8eb745012521b87f1edddffd446e1867cab033",
+          "name": "KEEP",
+          "parameter_sha256": null,
+          "source": "PUBLIC_PARENT"
+        },
+        {
+          "checkpoint_bytes": 6719,
+          "checkpoint_sha256": "7353092deb8d3f8d6f177f6e461e0da881c7a0ad7b4cc0ffcf1d300a190fd6ff",
+          "name": "BP_TASK_16",
+          "parameter_bytes": 160,
+          "parameter_sha256": "3a155a62ea128701f911805774effaf5ab3d67600879576cc62c52fc743c675f",
+          "source": "EXACT_PREDECESSOR_ARTIFACT"
+        }
+      ]
+    },
+    {
+      "family": "BOUNDARY_PROGRAM",
+      "methods": {
+        "BP": {
+          "edited_model_selected": true,
+          "evaluated_candidates": 2,
+          "fallback_keep": false,
+          "original_availability": "AVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "BP_TASK_16",
+          "source_method": "BP_TASK",
+          "status": "SELECTED_BEFORE_TEST"
+        },
+        "METHOD": {
+          "edited_model_selected": false,
+          "evaluated_candidates": 2,
+          "fallback_keep": true,
+          "original_availability": "AVAILABLE",
+          "original_development_signal": false,
+          "planned_candidate_slots": 2,
+          "selected": "KEEP",
+          "source_method": "RERUN_PROGRAM",
+          "status": "SELECTED_BEFORE_TEST"
+        }
+      },
+      "original_selection_unavailable": false,
+      "original_status": "REPAIR_COMPLETED",
+      "qualification": {
+        "artifact_key": "transfer83_137",
+        "member": "supervised/parent137/CPU_PRODUCER_QUALIFICATION.json"
+      },
+      "seed": 137,
+      "slot_results": [
+        {
+          "declaration_index": 1,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15951876556630765,
+            "ce": 0.49094059115774946,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.35197874900000015,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.3859914619999927
+          },
+          "name": "RERUN_PROGRAM_025",
+          "norm": 0.18987191693712968,
+          "protection_passed": false,
+          "retain": {
+            "accuracy": 0.8571428571428571,
+            "brier": 0.18816685030689712,
+            "ce": 0.5730374541411816,
+            "correct": 24,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.21865745533668796,
+            "ce": 0.6229924774037923,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 2,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.16037689608125028,
+            "ce": 0.492918794839173,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.3979636339999999,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.5351266420000087
+          },
+          "name": "RERUN_PROGRAM_100",
+          "norm": 0.7594876745660772,
+          "protection_passed": false,
+          "retain": {
+            "accuracy": 0.7857142857142857,
+            "brier": 0.1890628657905688,
+            "ce": 0.5747544011106919,
+            "correct": 22,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.625,
+            "brier": 0.219617030906464,
+            "ce": 0.625070673448853,
+            "correct": 50,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 3,
+          "kept_in_planned_denominator": true,
+          "name": "COPY_SOURCE_DELTA_025",
+          "reason": "SOURCE_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 4,
+          "kept_in_planned_denominator": true,
+          "name": "COPY_SOURCE_DELTA_100",
+          "reason": "SOURCE_PROGRAM_ABSTAIN",
+          "replacement_calls": 0,
+          "status": "UNAVAILABLE"
+        },
+        {
+          "declaration_index": 5,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15914012360901744,
+            "ce": 0.49007892417166543,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.4093042440000003,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.43953003699999726
+          },
+          "name": "BP_TASK_4",
+          "norm": 0.11484850971028293,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8928571428571429,
+            "brier": 0.1877693014251905,
+            "ce": 0.5722478957048425,
+            "correct": 25,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.6375,
+            "brier": 0.21821896112399966,
+            "ce": 0.6220457834539979,
+            "correct": 51,
+            "n": 80
+          }
+        },
+        {
+          "declaration_index": 6,
+          "dev": {
+            "accuracy": 0.78125,
+            "brier": 0.15883628588534882,
+            "ce": 0.4893697078773327,
+            "correct": 25,
+            "n": 32
+          },
+          "evaluation_cost": {
+            "cpu_seconds": 0.4548162839999996,
+            "full_forwards": 2,
+            "paired_queries": 140,
+            "wall_seconds": 0.47146124599998984
+          },
+          "name": "BP_TASK_16",
+          "norm": 0.3103275761110311,
+          "protection_passed": true,
+          "retain": {
+            "accuracy": 0.8928571428571429,
+            "brier": 0.18738024056061717,
+            "ce": 0.571481762374015,
+            "correct": 25,
+            "n": 28
+          },
+          "status": "EVALUATED",
+          "train": {
+            "accuracy": 0.65,
+            "brier": 0.21783710618902327,
+            "ce": 0.6212286110549112,
+            "correct": 52,
+            "n": 80
+          }
+        }
+      ],
+      "slots": [
+        "RERUN_PROGRAM_025",
+        "RERUN_PROGRAM_100",
+        "COPY_SOURCE_DELTA_025",
+        "COPY_SOURCE_DELTA_100",
+        "BP_TASK_4",
+        "BP_TASK_16"
+      ],
+      "source_artifact_key": "repair137",
+      "source_method": "RERUN_PROGRAM",
+      "source_prefix": "supervised/repair137",
+      "source_result_counts": {
+        "analytic_solves": 2,
+        "backwards": 16,
+        "body_ticks": 150,
+        "cached_inverse_targets": 24,
+        "forwards": 25,
+        "lagrange_iterations": 0,
+        "optimizer_steps": 16,
+        "paired_queries": 768,
+        "proposal_directions": 3,
+        "root_bisections": 0,
+        "root_cells": 0,
+        "root_interval_evaluations": 0,
+        "root_point_evaluations": 0,
+        "scalar_inverse_targets": 0,
+        "trace_linear_replays": 0
+      },
+      "source_result_sha256": "add2b211ce4fda5066e83dceed11dbf107fbd883a513a264c845c09ce3a606cc",
+      "unique_evaluations": [
+        {
+          "checkpoint_sha256": "7b662ad2738c3816802fedc5ac41a2d9f3c4b24d4ddce8463dabc9dbd46a8428",
+          "name": "KEEP",
+          "parameter_sha256": null,
+          "source": "PUBLIC_PARENT"
+        },
+        {
+          "checkpoint_bytes": 6719,
+          "checkpoint_sha256": "079e9ddcf6d8c404cf1d1241ae1549b32e08091e65805090465e2d7a053807b8",
+          "name": "BP_TASK_16",
+          "parameter_bytes": 160,
+          "parameter_sha256": "57e948693ee4d6c0c2ca4c08ff68321f4c362404cd7aa9b062e26db4a634d4fa",
+          "source": "EXACT_PREDECESSOR_ARTIFACT"
+        }
+      ]
+    }
+  ],
+  "planned_body_ticks": 36,
+  "planned_forwards": 6,
+  "planned_paired_queries": 288,
+  "schema": "hepta.locked-historical-test-selection.v1",
+  "selection_uses_test": false,
+  "unique_checkpoints": 6
+}
