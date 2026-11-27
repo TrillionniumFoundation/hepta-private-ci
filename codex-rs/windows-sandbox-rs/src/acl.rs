@@ -313,11 +313,15 @@ unsafe fn dacl_has_complete_deny_for_sid(
             return false;
         }
         let hdr = &*(p_ace as *const ACE_HEADER);
-        // Only trust the leading explicit, unconditional deny ACEs. An earlier
-        // allow can satisfy access before a later deny; unknown ACE types and
-        // noncanonical order conservatively require installing the full deny.
-        if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
+        // Inherited DENY ACEs cannot grant access and cannot be replaced by an
+        // explicit SET_ACCESS repair, so skip them while looking for the
+        // explicit complete deny. ALLOW and unknown ACEs may affect access;
+        // fail closed on either before finding that explicit deny.
+        if hdr.AceType != ACCESS_DENIED_ACE_TYPE {
             return false;
+        }
+        if (hdr.AceFlags & INHERITED_ACE) != 0 {
+            continue;
         }
         // Match the constructor's effective, recursively inheritable scope.
         // Inherit-only, no-propagate, or missing child scope is insufficient.

@@ -128,6 +128,60 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
     Ok(())
 }
 
+#[test]
+fn complete_denies_skip_inherited_partial_denies_before_explicit_full_denies() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (kind, partial_mask) in [
+        (DenyAceKind::Read, FILE_READ_EA),
+        (DenyAceKind::Write, DELETE),
+    ] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, partial_mask, inheritance | u32::from(INHERITED_ACE))?;
+        acl.deny(&sid, kind.mask(), inheritance)?;
+        // SAFETY: the ACL and SID remain valid through the query.
+        assert!(unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_denies_fail_closed_after_inherited_partial_denies() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (kind, partial_mask) in [
+        (DenyAceKind::Read, FILE_READ_EA),
+        (DenyAceKind::Write, DELETE),
+    ] {
+        let mut partial_acl = NativeAcl::new()?;
+        partial_acl.deny(&sid, partial_mask, inheritance | u32::from(INHERITED_ACE))?;
+        partial_acl.deny(&sid, partial_mask, inheritance)?;
+        // SAFETY: the ACL and SID remain valid through the query.
+        assert!(!unsafe { kind.already_present(partial_acl.as_ptr(), sid.as_ptr()) });
+
+        let mut allow_acl = NativeAcl::new()?;
+        allow_acl.deny(&sid, partial_mask, inheritance | u32::from(INHERITED_ACE))?;
+        // SAFETY: append into the initialized ACL using the live SID. This
+        // inherited deny followed by an allow must not be bypassed by a later deny.
+        if unsafe {
+            AddAccessAllowedAceEx(
+                allow_acl.as_ptr(),
+                ACL_REVISION,
+                inheritance,
+                FILE_ALL_ACCESS,
+                sid.as_ptr(),
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        allow_acl.deny(&sid, kind.mask(), inheritance)?;
+        // SAFETY: the ACL and SID remain valid through the query.
+        assert!(!unsafe { kind.already_present(allow_acl.as_ptr(), sid.as_ptr()) });
+    }
+    Ok(())
+}
+
 struct RestoreDacl {
     file: File,
     dacl: *mut ACL,
