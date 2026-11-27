@@ -756,17 +756,10 @@ fn missing_symlink_and_fifo_live_images_poison_without_blocking() {
             0 => {}
             1 => symlink(root.0.join("missing-target"), &path).expect("symlink image"),
             _ => {
-                let output = std::process::Command::new("mkfifo")
-                    .args(["-m", "600"])
-                    .arg(&path)
-                    .output()
+                use nix::sys::stat::Mode;
+
+                nix::unistd::mkfifo(&path, Mode::S_IRUSR | Mode::S_IWUSR)
                     .expect("create fifo image");
-                assert!(
-                    output.status.success(),
-                    "mkfifo failed: stdout={} stderr={}",
-                    String::from_utf8_lossy(&output.stdout),
-                    String::from_utf8_lossy(&output.stderr)
-                );
                 assert!(
                     fs::symlink_metadata(&path)
                         .expect("stat fifo image")
