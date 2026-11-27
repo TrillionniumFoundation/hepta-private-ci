@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened]
     branches:
-      - "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e"
+      - "fix/hepta-windows-credentials-owned-nine-20261127-7c9e"
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: hepta-windows-credentials-nine-20261127-7c9e
+  group: hepta-windows-credentials-cross-drive-20261127-7c9e
   cancel-in-progress: false
 
 env:
@@ -35,9 +35,9 @@ jobs:
       github.run_attempt == 1 &&
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'fix/hepta-windows-credentials-owned-nine-20261127-7c9e' &&
-      github.event.pull_request.base.ref == 'fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e' &&
-      github.event.pull_request.base.sha == '1b2ae899a8956ee96201956bced828f0824ea5f3' &&
+      github.event.pull_request.head.ref == 'fix/hepta-windows-credentials-cross-drive-20261127-7c9e' &&
+      github.event.pull_request.base.ref == 'fix/hepta-windows-credentials-owned-nine-20261127-7c9e' &&
+      github.event.pull_request.base.sha == 'dd1c9b529c44a2efd54ee1b35b0c6e24b398ce87' &&
       github.actor == 'ProfHepta' &&
       github.event.pull_request.user.login == 'ProfHepta' }}
     runs-on: windows-2025
@@ -100,7 +100,7 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          HEPTA_WINDOWS_CREDENTIALS_INPUT_SHA256: "79b18ba4f374d39b00a796d80f663ef6dc7e691d572b63a105acda7b8d8e584c"
+          HEPTA_WINDOWS_CREDENTIALS_INPUT_SHA256: "8bf42b05eb67113e6dccc2afcd4aa00a87c1d7d896a50f612b5ff24e85afac0b"
         run: |
           $ErrorActionPreference = "Stop"
           $out = Join-Path $env:RUNNER_TEMP ("hepta-windows-credentials-nine-" + $env:GITHUB_RUN_ID)
@@ -119,7 +119,7 @@ jobs:
           scope = {"__name__": "__main__", "__file__": str(path), "__package__": ""}
           exec(compile(raw, str(path), "exec"), scope)
           '@
-            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_windows_credentials_nine_v1.py") "fb38432604bf422d3a11557c1f86922693d80b78604439db25ac9fc9d95f1099"
+            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_windows_credentials_nine_v1.py") "f9bfc4987ef7586fd9007536a3fa03630cbb0ac20038c61e5f7ad1cecde491e2"
             $code = $LASTEXITCODE
             if ($null -eq $code) { $code = 1; throw "No original Python exit code" }
           } catch {
@@ -162,6 +162,7 @@ jobs:
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/COLD_BUILD_ORIGINAL_RECEIPT.json
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/COMPLETE_LIBRARY_INVENTORY.json
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/NATIVE_CONTEXT.original.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/CROSS_DRIVE_CONTROLS.original.json
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/original-api/
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/commands/
             ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/exact-nine/

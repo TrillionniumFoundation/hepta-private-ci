@@ -22,16 +22,17 @@ import urllib.parse
 import urllib.request
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-PARENT_HEAD = "1b2ae899a8956ee96201956bced828f0824ea5f3"
-PARENT_TREE = "4944b2a7d5b8ef27f0f0b5c76a717b9127268493"
-BASE_BRANCH = "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e"
-HEAD_BRANCH = "fix/hepta-windows-credentials-owned-nine-20261127-7c9e"
+PARENT_HEAD = "dd1c9b529c44a2efd54ee1b35b0c6e24b398ce87"
+PARENT_TREE = "4c744183c696313dbb781d223071893324b184f7"
+BASE_BRANCH = "fix/hepta-windows-credentials-owned-nine-20261127-7c9e"
+HEAD_BRANCH = "fix/hepta-windows-credentials-cross-drive-20261127-7c9e"
 WORKFLOW = ".github/workflows/hepta-windows-current-ci.yml"
 CALLER_PATH = "scripts/run_hepta_windows_credentials_nine_v1.py"
 COLLECTOR_PATH = "scripts/hepta_windows_credentials_nine_collector_v1.py"
 INPUT_PATH = "scripts/hepta_windows_credentials_nine_inputs_v1.json"
 LIFECYCLE_PATH = "scripts/hepta_windows_credential_lifecycle_v1.py"
 OWNER_PATH = "scripts/hepta_windows_credential_native_owner_v1.py"
+CONTROL_PATH = "scripts/hepta_windows_credentials_cross_drive_controls_v1.py"
 CANDIDATE_PATHS = [
     ".github/fixtures/windows-current-ci-scope.json",
     ".github/workflows/hepta-windows-current-ci.yml",
@@ -61,16 +62,10 @@ CANDIDATE_PATHS = [
     "scripts/hepta_windows_credentials_nine_collector_v1.py",
     "scripts/hepta_windows_credentials_nine_inputs_v1.json",
     "scripts/run_hepta_windows_credentials_nine_v1.py",
+    CONTROL_PATH,
 ]
-ADDED_PATHS = [
-    "codex-rs/windows-sandbox-rs/src/credential_store.rs",
-    "codex-rs/windows-sandbox-rs/src/hosted_credential_lifetime.rs",
-    "scripts/hepta_windows_credential_lifecycle_v1.py",
-    "scripts/hepta_windows_credential_native_owner_v1.py",
-    "scripts/hepta_windows_credentials_nine_collector_v1.py",
-    "scripts/hepta_windows_credentials_nine_inputs_v1.json",
-    "scripts/run_hepta_windows_credentials_nine_v1.py",
-]
+CHANGED_PATHS = [WORKFLOW, COLLECTOR_PATH, CONTROL_PATH, INPUT_PATH, CALLER_PATH]
+ADDED_PATHS = [CONTROL_PATH]
 FORMATTED24 = [
     {
         "repo_path": ".github/fixtures/windows-current-ci-scope.json",
@@ -284,6 +279,24 @@ HISTORY = {
         "cause": "KeyError('RUSTUP_HOME')",
         "source_lineage_not_automatically_adopted": True,
         "replayed_here": False,
+    },
+    "original7186": {
+        "head": "dd1c9b529c44a2efd54ee1b35b0c6e24b398ce87",
+        "tree": "4c744183c696313dbb781d223071893324b184f7",
+        "run_id": 45992607643,
+        "run_attempt": 1,
+        "job_id": 140483967919,
+        "status": "FAIL",
+        "whole_seconds": 51,
+        "commands": 2,
+        "phase_attempts": 2,
+        "native_cases": 0,
+        "cause": 'ValueError("Paths don\'t have the same drive")',
+        "original_result_sha256": "7530fb08f62e24cc5321155ecb2e7289b316c78d31aaed40415c674169dac98c",
+        "Root_archive_authentication_sha256": "b3ad40a965b8a0572b2e99c7f9c6deadf7ba852abdc0fe477d786ee4498a26ff",
+        "reset_or_refund": False,
+        "prior_result_reused_as_pass": False,
+        "same_candidate_replayed": False,
     },
     "frozen_E1_E6_transferred_seconds": 0,
     "Setup7_scope_transferred_seconds": 0,
@@ -1340,15 +1353,16 @@ def main():
             and config["root_original_first_attempt_cleared"] is True
             and config["root_new_candidate_regression_approved"] is True
             and config["root_account_operations_approved"] is True
-            and config["root_ephemeral_host_lifetime_accepted"] is True,
+            and config["root_ephemeral_host_lifetime_accepted"] is True
+            and config["root_cross_drive_controls_approved"] is True,
             "Root first-native admission is inactive",
         )
         need(
             config["parent"] == {"head": PARENT_HEAD, "tree": PARENT_TREE},
-            "actual7164 source predecessor binding",
+            "actual7186 source predecessor binding",
         )
         need(
-            config["scope_id"] == "hepta-windows-credentials-nine-20261127-7c9e",
+            config["scope_id"] == "hepta-windows-credentials-cross-drive-20261127-7c9e",
             "frozen new scope identity",
         )
         for key in (
@@ -1376,8 +1390,9 @@ def main():
         )
         need(
             config["source_paths"] == list(CANDIDATE_PATHS)
-            and config["new_paths"] == list(ADDED_PATHS),
-            "exact28 source scope",
+            and config["new_paths"] == list(ADDED_PATHS)
+            and config["changed_paths"] == list(CHANGED_PATHS),
+            "exact29 source closure and exact5 changed paths",
         )
         need(
             set(config["source_sha256"])
@@ -1432,6 +1447,15 @@ def main():
             "hepta_windows_credentials_nine_collector_v1",
             repo / COLLECTOR_PATH,
             config["source_sha256"][COLLECTOR_PATH],
+        )
+        controls, controls_raw = source_module(
+            "hepta_windows_credentials_cross_drive_controls_v1",
+            repo / CONTROL_PATH,
+            config["source_sha256"][CONTROL_PATH],
+        )
+        need(
+            list(controls.CONTROL_METHODS) == config["cross_drive_control_methods"],
+            "exact eight new path controls",
         )
         need(
             list(lifecycle.TESTS) == list(collector.TESTS) == config["exact_tests"]
@@ -1607,9 +1631,9 @@ def main():
         )
         parent, current = tree_map(original_parent), tree_map(original_current)
         need(
-            len(parent) == 16147
-            and sum(x["bytes"] for x in parent.values()) == 335617461,
-            "actual7164 complete parent inventory",
+            len(parent) == 16154
+            and sum(x["bytes"] for x in parent.values()) == 336024308,
+            "actual7186 complete parent inventory",
         )
         need(
             {p for p in parent if parent[p]["mode"] == "120000"} == {LINK_PATH}
@@ -1621,10 +1645,10 @@ def main():
             p for p in set(parent) | set(current) if parent.get(p) != current.get(p)
         }
         need(
-            changed == set(CANDIDATE_PATHS)
+            changed == set(CHANGED_PATHS)
             and set(ADDED_PATHS).isdisjoint(parent)
             and set(CANDIDATE_PATHS) - set(ADDED_PATHS) <= set(parent),
-            "candidate must match the exact28 approved paths and seven actual parent absences",
+            "candidate must match exact5 changes, one actual absence and the full source closure",
         )
         need(
             all(current[p]["mode"] == "100644" for p in CANDIDATE_PATHS)
@@ -1634,7 +1658,7 @@ def main():
             ),
             "candidate source modes",
         )
-        need(len(current) == 16154, "full current source leaf count")
+        need(len(current) == 16155, "full current source leaf count")
         attrs = {
             p: value
             for p, value in current.items()
@@ -2000,6 +2024,42 @@ def main():
             need(same == raw, "generated metadata publication changed")
             return raw
 
+        # Source/HEAD custody is complete before these new in-process controls.
+        # The isolated collector copy executes the same checked raw buffer; no
+        # native command, native owner replacement, extra phase or budget is added.
+        cancellation.check()
+        need(
+            time.monotonic() < operation_deadline, "no work time left for path controls"
+        )
+        result["cross_drive_control_source"] = {
+            "repo_path": CONTROL_PATH,
+            **digest(controls_raw),
+        }
+        control_observation = {}
+        result["cross_drive_controls"] = control_observation
+        controls.observe(
+            collector_raw,
+            config["source_sha256"][COLLECTOR_PATH],
+            str(repo / COLLECTOR_PATH),
+            operation_deadline,
+            cancellation.check,
+            control_observation,
+        )
+        need(
+            control_observation.get("status") == "PASS"
+            and control_observation.get("tests_run") == 8
+            and control_observation.get("within_original_work_deadline") is True,
+            "new path controls have no complete in-budget observation",
+        )
+        result["cross_drive_control_record"] = json_file(
+            output / "CROSS_DRIVE_CONTROLS.original.json", control_observation
+        )
+        lifecycle.verify_original_runtime(owner, api_native, cancellation)
+        cancellation.check()
+        need(
+            time.monotonic() < operation_deadline,
+            "path control retention exhausted the original work budget",
+        )
         prepared = True
         result["ordinary_scope_budget"] = BUDGET
         result["account_host_admission"] = {
