@@ -2342,30 +2342,43 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
     ) = sqlx::query_as(
-        "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
+        "WITH current_receipt AS (
+             SELECT r.*
+             FROM kg_projection_generation_receipts AS r
+             JOIN kg_projection AS p
+               ON p.projection_scope = r.projection_scope AND p.generation = r.generation
+             JOIN kg_projection_generation_storage AS storage
+               ON storage.projection_scope = r.projection_scope
+               AND storage.generation = r.generation
+             WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?
+               AND storage.storage_mode = 'revision_facts_v1'
+         ),
+         selected_heads AS (
+             SELECT h.trigger_memory_id AS memory_id, h.trigger_memory_revision AS revision
+             FROM kg_projection_generation_receipts AS h
+             JOIN current_receipt AS r ON r.projection_scope = h.projection_scope
+             JOIN memory_revisions AS m
+               ON m.memory_id = h.trigger_memory_id AND m.revision = h.trigger_memory_revision
+             WHERE h.generation <= r.generation
+               AND NOT EXISTS (
+                   SELECT 1 FROM kg_projection_generation_receipts AS newer
+                   WHERE newer.projection_scope = h.projection_scope
+                     AND newer.trigger_memory_id = h.trigger_memory_id
+                     AND newer.generation > h.generation AND newer.generation <= r.generation
+               )
+               AND m.verification = 'verified' AND m.lifecycle = 'active'
+         )
+         SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
-                   AND n.memory_id = r.trigger_memory_id
-                   AND n.memory_revision = r.trigger_memory_revision
-                   AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
-                   AND e.memory_id = r.trigger_memory_id
-                   AND e.memory_revision = r.trigger_memory_revision
-                   AND e.source_id = ? AND e.source_revision = 1)
-         FROM kg_projection_generation_receipts AS r
+                (SELECT COUNT(*) FROM kg_revision_entities AS e JOIN selected_heads AS h
+                 ON e.memory_id = h.memory_id AND e.memory_revision = h.revision),
+                (SELECT COUNT(*) FROM kg_revision_relations AS e JOIN selected_heads AS h
+                 ON e.memory_id = h.memory_id AND e.memory_revision = h.revision)
+         FROM current_receipt AS r
          JOIN kg_projection_generation_semantics AS s
-           ON s.projection_scope = r.projection_scope AND s.generation = r.generation
-         JOIN kg_projection AS p
-           ON p.projection_scope = r.projection_scope AND p.generation = r.generation
-         WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
+           ON s.projection_scope = r.projection_scope AND s.generation = r.generation",
     )
-    .bind(expected_source_id)
-    .bind(expected_source_id)
     .bind(memory_id)
     .bind(memory_revision)
     .fetch_one(&pool)
