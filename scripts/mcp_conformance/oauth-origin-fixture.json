@@ -4,28 +4,20 @@
   "root_admission": {
     "reviewer": "root",
     "accepted": true,
-    "sha256": "9bf220c57303a868af90a20c88d09d04efb3738c1cc271a8ea57d4f9748059c7"
+    "sha256": "ccd64c5a93e24e102e106c523f4d5a98428bbcbf320745092a9d8b7b0a0fcbd0"
   },
   "publication": {
-    "requires_actual_stage_b_parent": true,
+    "requires_actual_parent": true,
     "parent": {
-      "head": "5a842a417dc288e22d506fb16bc691b889fa4297",
-      "tree": "b8b977b8c6e8970a09f7afd1474c258e7f2142b8"
+      "head": "dd17dd2f16fc7a5923d2a970c8267e40fa5aa06b",
+      "tree": "920c44a8f0234ef909fc9089fe9c202c16e63ddb"
     },
     "root_must_bind_final_candidate": true,
     "source_paths": [
-      ".github/workflows/blocking-ci.yml",
-      ".github/workflows/sdk.yml",
       "scripts/mcp_conformance/README.md",
-      "scripts/mcp_conformance/codex_conformance_adapter.py",
       "scripts/mcp_conformance/conformance_fixture.py",
       "scripts/mcp_conformance/oauth-origin-fixture.json",
-      "scripts/mcp_conformance/oauth-origin-fixture.patch",
-      "scripts/mcp_conformance/prepare_oauth_fixture.py",
-      "scripts/mcp_conformance/run_codex_compliance.py",
-      "scripts/mcp_conformance/test_conformance_fixture.py",
-      "scripts/mcp_conformance/test_oauth_authorization_origins.py",
-      "sdk/typescript/tests/mcpConformance.test.ts"
+      "scripts/mcp_conformance/test_conformance_fixture.py"
     ]
   },
   "upstream": {
@@ -2171,16 +2163,16 @@
     "retention_seconds": 20
   },
   "scope_notes": [
-    "Root may authorize one first original SDK qualification under the unchanged 420 = 400 + 20 second fixture bound and existing SDK deadlines. Activation is admission to execute; completion evidence is retained separately.",
+    "This source successor is inactive. Root must separately accept its exact four changed paths and authorize any new ordinary SDK qualification; the original #7180 failed job and all of its costs remain retained. The same fixture upper bounds remain 420 = 400 + 20 seconds, without transferring or resetting the original clock.",
     "This is a reviewed fork of the exact upstream source, with three modified sources and one new control source. It is not an unchanged official npm distribution.",
     "Eight mocked startup/spawn component controls are distinct from the three-protocol authenticated HTTP conformance run.",
     "The original 23 baseline failures and 12 subsequent failures remain historical facts. This source manifest grants no successful execution or conformance qualification.",
     "The 420-second build acceptance deadline is separate from the 8-minute workflow step timeout and the pre-existing 60-minute SDK job maximum.",
     "Dependency lock identity is pinned. npm ci success does not individually qualify every installed runtime dependency file.",
-    "The original SDK build and both consumers must bind this event source, its sole B32 parent, the original run/attempt/job, the complete source tree and the exact staged Codex/sibling bytes. An old receipt at the same HEAD does not qualify.",
-    "GITHUB_SHA retains the actual provider event identity. The SDK explicitly checks out the PR source head; a pull-request event merge is separately checked for equal tree and exact [B32, source] parents.",
+    "The original SDK build and both consumers must bind this event source, its sole accepted parent, the original run/attempt/job, the complete source tree and the exact staged Codex/sibling bytes. An old receipt at the same HEAD does not qualify.",
+    "GITHUB_SHA retains the actual provider event identity. The SDK explicitly checks out the PR source head; a pull-request event merge is separately checked for equal tree and exact [accepted parent, source] parents.",
     "Each identity observation uses at most 20 seconds inside existing build/fixture/SDK deadlines. No identity observation adds a native execution budget or permits another attempt.",
-    "Both parent slots bind actual #7179 head 5a842a417dc288e22d506fb16bc691b889fa4297 and tree b8b977b8c6e8970a09f7afd1474c258e7f2142b8. Any successor requires its actual independent receipt, both literal replacements and a new complete outside-path comparison before activation."
+    "Both parent slots bind actual #7180 head dd17dd2f16fc7a5923d2a970c8267e40fa5aa06b and tree 920c44a8f0234ef909fc9089fe9c202c16e63ddb. The actual changed roster is four modified paths; the other eight original C2 paths remain inherited unchanged. Activation requires a new Root receipt and complete outside-path comparison, not the original exact12 admission."
   ],
   "qualifications": {
     "source_only": true,

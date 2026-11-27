@@ -18,9 +18,10 @@ Use Node.js 22 and Python 3.11 or later for the fixture build.
 The reviewed-fork receipt is produced by the original `blocking-ci` SDK job
 after Root activates its source manifest. That job explicitly checks out the
 event's source head and retains the provider's event SHA separately. For a pull
-request, the source has the pinned B32 parent, and the actual event merge must
-have the same tree and exactly the B32/source parents. A complete Git tree
-reconstruction checks all source leaves and the exact twelve changed paths.
+request, the source has the pinned accepted parent, and the actual event merge
+must have the same tree and exactly the parent/source parents. This successor
+uses the original C2 candidate as its parent. A complete Git tree reconstruction
+checks all source leaves and the exact four changed paths.
 
 The existing Bazel step records the source before and after its original build,
 then hashes both the original Bazel outputs and the staged Codex/code-mode-host
@@ -28,6 +29,16 @@ siblings. The later fixture and SDK consumers require the authenticated provider
 record for that same run, first attempt, job, runner and current step, including
 successful completion of the original build step. Environment values select
 provider records; they are not accepted as standalone run or binary evidence.
+
+Source maps retain their 512 MiB total limit. Each original or staged binary has
+a separate 1 GiB limit and is hashed in at most 1 MiB chunks. The original
+same-file metadata checks, executable requirement and twenty-second identity
+deadline apply to both binaries. Exceeding either size or time bound fails the
+observation. A larger binary does not increase the source-tree allowance.
+
+The original C2 SDK job failed after Bazel succeeded, before fixture preparation
+or SDK tests began. This successor requires separate Root admission; it does
+not reset that original clock or claim the unlaunched tests passed.
 
 Inside that original workflow, fixture preparation uses:
 

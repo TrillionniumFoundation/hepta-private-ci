@@ -558,27 +558,20 @@ def verify_receipt(
 # Source/event/binary binding is independent of conformance result assertions.
 HEPTA_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 HEPTA_PARENT = {
-    "head": "5a842a417dc288e22d506fb16bc691b889fa4297",
-    "tree": "b8b977b8c6e8970a09f7afd1474c258e7f2142b8",
+    "head": "dd17dd2f16fc7a5923d2a970c8267e40fa5aa06b",
+    "tree": "920c44a8f0234ef909fc9089fe9c202c16e63ddb",
 }
-HEPTA_C2_PATHS = (
-    ".github/workflows/blocking-ci.yml",
-    ".github/workflows/sdk.yml",
+HEPTA_CHANGED_PATHS = (
     "scripts/mcp_conformance/README.md",
-    "scripts/mcp_conformance/codex_conformance_adapter.py",
     "scripts/mcp_conformance/conformance_fixture.py",
     "scripts/mcp_conformance/oauth-origin-fixture.json",
-    "scripts/mcp_conformance/oauth-origin-fixture.patch",
-    "scripts/mcp_conformance/prepare_oauth_fixture.py",
-    "scripts/mcp_conformance/run_codex_compliance.py",
     "scripts/mcp_conformance/test_conformance_fixture.py",
-    "scripts/mcp_conformance/test_oauth_authorization_origins.py",
-    "sdk/typescript/tests/mcpConformance.test.ts",
 )
 BUILD_STEP = "Build codex and code-mode host with Bazel"
 FIXTURE_STEP = "Build reviewed OAuth-origin conformance fixture"
 TEST_STEP = "Test SDK packages"
 SOURCE_BYTES_LIMIT = 512 * 1024 * 1024
+BINARY_BYTES_LIMIT = 1024 * 1024 * 1024
 
 
 def identity_remaining(deadline):
@@ -726,14 +719,14 @@ def publication_binding(manifest):
     require(isinstance(publication, dict), "publication binding is absent")
     require(
         publication.get("parent") == HEPTA_PARENT,
-        "fixture does not bind actual B32 parent",
+        "fixture does not bind the accepted parent",
     )
     require(
-        publication.get("source_paths") == list(HEPTA_C2_PATHS),
+        publication.get("source_paths") == list(HEPTA_CHANGED_PATHS),
         "Hepta exact source scope differs",
     )
     require(
-        publication.get("requires_actual_stage_b_parent") is True
+        publication.get("requires_actual_parent") is True
         and publication.get("root_must_bind_final_candidate") is True,
         "publication authority changed",
     )
@@ -811,9 +804,10 @@ def identity_tree(files, prefix=""):
 def file_observation(path, deadline, maximum=SOURCE_BYTES_LIMIT):
     path = Path(path)
     before = path.lstat()
+    require(stat.S_ISREG(before.st_mode), f"nonregular identity file: {path}")
     require(
-        stat.S_ISREG(before.st_mode) and before.st_size <= maximum,
-        "nonregular or oversized file",
+        before.st_size <= maximum,
+        f"identity file exceeds byte bound: {path}: {before.st_size} > {maximum}",
     )
     sha, git = (
         hashlib.sha256(),
@@ -961,7 +955,7 @@ def current_execution(manifest, root, output, deadline, stage):
         head, branch = pr["head"]["sha"], pr["head"]["ref"]
         require(
             pr.get("base", {}).get("sha") == HEPTA_PARENT["head"],
-            "actual PR base is not B32",
+            "actual PR base is not the accepted parent",
         )
         pr_number = event.get("number")
         require(type(pr_number) is int and pr_number > 0, "provider PR number")
@@ -1044,7 +1038,7 @@ def current_execution(manifest, root, output, deadline, stage):
     require(
         commit.get("sha") == head
         and [row["sha"] for row in commit.get("parents", [])] == [HEPTA_PARENT["head"]],
-        "actual source head does not have sole B32 parent",
+        "actual source head does not have the sole accepted parent",
     )
     tree = commit.get("tree", {}).get("sha")
     require(
@@ -1143,11 +1137,12 @@ def verified_source(manifest, root, output, deadline, stage, expected_files=None
             if parent.get(path) != files.get(path)
         )
         require(
-            changed == list(HEPTA_C2_PATHS)
+            changed == list(HEPTA_CHANGED_PATHS)
             and all(
-                files.get(path, {}).get("mode") == "100644" for path in HEPTA_C2_PATHS
+                files.get(path, {}).get("mode") == "100644"
+                for path in HEPTA_CHANGED_PATHS
             ),
-            "actual changed source roster is not the accepted exact12",
+            "actual changed source roster is not the accepted exact4",
         )
     else:
         files = {
@@ -1176,7 +1171,7 @@ def verified_source(manifest, root, output, deadline, stage, expected_files=None
 
 def binary_identity(path, deadline):
     resolved = Path(path).resolve(strict=True)
-    row = file_observation(resolved, deadline)
+    row = file_observation(resolved, deadline, maximum=BINARY_BYTES_LIMIT)
     require(bool(row["physical"][2] & 0o111), "built binary is not executable")
     return {"path": str(Path(path).absolute()), "resolved": str(resolved), **row}
 
