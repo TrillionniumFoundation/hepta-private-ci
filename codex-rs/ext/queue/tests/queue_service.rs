@@ -301,11 +301,11 @@ impl FailDeleteOnceQueueStore {
         // requested window width; the original short-lease override follows.
         let duration_ms = lease_expires_at_ms
             .checked_sub(now_ms)
-            .expect("test dispatch window duration must fit");
+            .unwrap_or_else(|| panic!("test dispatch window duration must fit"));
         let now_ms = clock.load(Ordering::SeqCst);
         let lease_expires_at_ms = now_ms
             .checked_add(duration_ms)
-            .expect("test dispatch window timestamp must fit");
+            .unwrap_or_else(|| panic!("test dispatch window timestamp must fit"));
         (now_ms, lease_expires_at_ms)
     }
 
