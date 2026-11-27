@@ -34,6 +34,18 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def same_json_value(actual, expected):
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return actual.keys() == expected.keys() and all(
+            same_json_value(actual[key], value) for key, value in expected.items())
+    if isinstance(expected, list):
+        return len(actual) == len(expected) and all(
+            same_json_value(left, right) for left, right in zip(actual, expected))
+    return actual == expected
+
+
 def verify_cargo_evidence(graph, metadata, commands, original, target):
     """Re-derive receipt identities from the retained actual Cargo streams."""
     raw_metadata = json.loads(Path(commands[0]["stdout"]).read_text())
@@ -47,7 +59,7 @@ def verify_cargo_evidence(graph, metadata, commands, original, target):
         "manifest_sha256": identity.sha(row["manifest_path"]),
         "source": row["source"], "name": row["name"], "version": row["version"]}
         for name, row in packages.items()}
-    require(metadata["packages"] == expected_metadata,
+    require(same_json_value(metadata["packages"], expected_metadata),
             "historical source inventory differs from actual Cargo metadata")
     owner = next(row for row in packages.values() if
                  Path(row["manifest_path"]).resolve() == original / identity.CRATE / "Cargo.toml")
@@ -86,13 +98,14 @@ def verify_cargo_evidence(graph, metadata, commands, original, target):
             files[path.name] = {"source": str(path), "path": str(Path(graph["stage"]) / path.name),
                 "bytes": path.stat().st_size, "sha256": graph["files"][path.name]["sha256"],
                 "package_id": package["id"]}
-    require(graph["units"] == units and graph["files"] == files and
-            graph["native_paths"] == sorted(native_paths),
+    require(same_json_value(graph["units"], units) and
+            same_json_value(graph["files"], files) and
+            same_json_value(graph["native_paths"], sorted(native_paths)),
             "historical graph differs from the actual Cargo artifact stream")
     for name, selected in graph["direct"].items():
         choices = [unit for unit in units if unit["target"]["name"] == name and
                    unit["package_id"] == wanted[name]]
-        require(choices == [selected["unit"]] and
+        require(same_json_value(choices, [selected["unit"]]) and
                 selected["path"] in [str(Path(graph["stage"]) / member)
                                      for member in choices[0]["files"] if member.endswith(".rlib")],
                 "historical direct dependency is not the actual resolved Cargo unit: " + name)
@@ -185,10 +198,10 @@ def verify(record):
     require(record.get("codegen_environment_overrides") == {},
             "historical dependency compiler flags lack their explicit admission")
     expected = record["source"]
-    require(source(expected["root"], expected["commit"]) == expected,
+    require(same_json_value(source(expected["root"], expected["commit"]), expected),
             "historical source/dependency baseline changed")
     for key in ("rustc", "cargo", "graph", "metadata", "commands"):
-        require(bind(record[key]["path"]) == record[key],
+        require(same_json_value(bind(record[key]["path"]), record[key]),
                 "historical dependency input or receipt changed: " + key)
     require(record["rustc"]["sha256"] == identity.RUSTC_SHA256,
             "historical compiler is not the pinned compiler")
@@ -200,7 +213,7 @@ def verify(record):
     if mode == 0:
         require(configuration is None, "checked historical policy has an unexpected override")
     else:
-        require(configuration is not None and bind(configuration["path"]) == configuration and
+        require(configuration is not None and same_json_value(bind(configuration["path"]), configuration) and
                 Path(configuration["path"]).read_text() == WRAPPING_PROFILE,
                 "historical wrapping policy differs")
     commands = json.loads(Path(record["commands"]["path"]).read_text())
@@ -220,9 +233,9 @@ def verify(record):
                 str(Path(expected["root"]) / "codex-rs"),
                 "historical dependency command failed or used another workspace")
         for stream in ("stdout", "stderr"):
-            require(bind(command[stream]) == {"path": command[stream],
+            require(same_json_value(bind(command[stream]), {"path": command[stream],
                     "bytes": command[stream + "_bytes"],
-                    "sha256": command[stream + "_sha256"]},
+                    "sha256": command[stream + "_sha256"]}),
                     "historical dependency command output changed")
     graph = json.loads(Path(record["graph"]["path"]).read_text())
     require(graph["actual_cargo_build_succeeded"] is True and
@@ -244,7 +257,8 @@ def verify(record):
                    "overflow_checks": not (mode == 1 and name in {"similar", "codex_apply_patch"}),
                    "test": False}
         require(unit in graph["units"] and
-                all(unit["profile"].get(key) == value for key, value in profile.items()),
+                all(type(unit["profile"].get(key)) is type(value) and
+                    unit["profile"][key] == value for key, value in profile.items()),
                 "historical direct dependency profile or unit differs: " + name)
     cargo.verify_graph(graph)
     metadata = json.loads(Path(record["metadata"]["path"]).read_text())

@@ -261,11 +261,18 @@ def producer_inputs(producer, original_root, original_manifest, *, dependency_ba
             dependency_declarations[path] = {"original_sha256": old,
                                              "producer_sha256": sha(producer / path)}
     matched = {}
+    source_projections = {}
     for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
         if path in dependency_declarations:
             continue
         if sha(producer / path) != sha(original_root / path):
-            raise RuntimeError(f"original dependency/type declaration changed: {path}")
+            from . import dependency_projection
+            if dependency_baseline is None or path != (
+                    dependency_projection.DEPENDENCY + "/" + dependency_projection.SOURCE):
+                raise RuntimeError(f"original dependency/type declaration changed: {path}")
+            source_projections[path] = dependency_projection.source(
+                (producer / path).read_bytes(), (original_root / path).read_bytes())
+            continue
         matched[path] = sha(producer / path)
     # The producing Actions checkout may be shallow. Baseline trees came from
     # the separate immutable original checkout, never from assumed local history.
@@ -275,17 +282,23 @@ def producer_inputs(producer, original_root, original_manifest, *, dependency_ba
         actual = git(producer, "rev-parse", f"HEAD:{relative}").decode().strip()
         if actual != expected:
             pin = _EXEC_SERVER_TEST_PROJECTION
-            if (relative, expected, actual) != (
+            listing = git(producer, "ls-tree", "-r", "-z", actual)
+            if (relative, expected, actual) == (
                     pin["dependency"], pin["original_tree"], pin["actual_tree"]):
+                projections[relative] = _exec_server_test_projection(relative, expected, actual, listing)
+            elif dependency_baseline is not None:
+                from . import dependency_projection
+                projections[relative] = dependency_projection.tree(relative, expected, actual, listing)
+            else:
                 raise RuntimeError(f"real path dependency differs from its pinned original: {relative}")
-            projections[relative] = _exec_server_test_projection(
-                relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
         path_trees[relative] = actual
     result = {**current, "matched_original_files": matched, "path_dependency_trees": path_trees,
               "original_source_manifest": original_manifest["crate_tree"],
               "exact_routing_inverse": recover_owner(producer)}
     if projections:
         result["path_dependency_projections"] = projections
+    if source_projections:
+        result["dependency_source_projections"] = source_projections
     if dependency_baseline is not None:
         result["dependency_declarations"] = dependency_declarations
         result["historical_dependency_graph"] = dependency_baseline["graph"]

@@ -1,0 +1,51 @@
+{
+  "schema": "codex.hia.ba4b-component-execution-index.v1",
+  "candidate": "ba4b4778d0b900c2259538b14b181e11dd39a3a7",
+  "overall_sequence_passed": false,
+  "overall_sequence_tests_skipped": 4,
+  "uuid": {
+    "passed": true,
+    "public_pairs": 9609,
+    "complete_regex_matches": 78778
+  },
+  "formatter": {
+    "passed": true,
+    "policy_gate_passed": true,
+    "paired_public_results": 7948,
+    "actual_hia_calls": 15864,
+    "actual_cross_policy_differences": 1417,
+    "original_file_count": 109,
+    "full_original_unit_suite_executed_by_this_gate": false
+  },
+  "template": {
+    "passed": true,
+    "original_tests_passed": 14,
+    "case_pairs": 13206,
+    "actual_native_calls": 66549,
+    "seconds": 23.81705355644226,
+    "resource_bound_unchanged": true,
+    "limited_affinity": [
+      0,
+      1
+    ],
+    "original_failures_retained": [
+      "hia-template-caller.json",
+      "hia-template-caller-small-mmap.json"
+    ],
+    "terminal": {
+      "session_id": "dpty-7b965e81e0e2ad62c38b9d7f60ca7b3d1e80ac9253ecc989abf36528dd8ebdb1",
+      "exit_code": 0,
+      "output_complete": true
+    }
+  },
+  "receipts_archive": {
+    "path": "ba4b-comparison-terminal-receipts.tar.gz",
+    "bytes": 202922,
+    "sha256": "5285809771e34a334d29902a758b53a50e2183cb8ff398e2a67c79f9bda85435"
+  },
+  "raw_evidence_directory": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/complete-owner-ba4b",
+  "archive_scope": "Top-level actual reports and selected command streams; full bound payloads and binaries remain at their recorded paths.",
+  "full_native_workflow_qualified": false,
+  "whole_codex_rewritten": false,
+  "legacy_retirement": false
+}

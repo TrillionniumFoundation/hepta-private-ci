@@ -34,7 +34,7 @@ def verify(args, report):
     original = args.original_root.resolve(strict=True)
     library = args.library_dir.resolve(strict=True)
     sys.path.insert(0, str(producer / "hia/tests"))
-    from file_update_oracle import cargo, historical, identity
+    from file_update_oracle import cargo, dependency_projection, historical, identity
     from patch_effects_oracle import admission, observations
 
     require = admission.require
@@ -65,6 +65,7 @@ def verify(args, report):
         Path(__file__).resolve(),
         *support.glob("*.py"), support / "driver.rs", support / "observed_fs.rs",
         Path(cargo.__file__).resolve(), Path(historical.__file__).resolve(), Path(identity.__file__).resolve(),
+        Path(dependency_projection.__file__).resolve(),
         transport_path, transport_path.with_name("transport_error_driver.rs"),
     }
     input_hashes = {str(path): identity.sha(path) for path in sorted(inputs)}

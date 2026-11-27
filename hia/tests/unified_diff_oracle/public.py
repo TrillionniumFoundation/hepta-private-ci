@@ -22,7 +22,8 @@ def verify(context):
     root, original_sources = extract_original(context)
     cases = prepare_cases(context)
     positive_report = json.loads(context.args.policy_report.read_bytes())
-    assert positive_report['passed'] and positive_report['source_unchanged'] and positive_report['native_inputs_unchanged']
+    assert (positive_report['passed'] is True and positive_report['source_unchanged'] is True
+            and positive_report['native_inputs_unchanged'] is True)
     assert positive_report['native_inputs'] == context.native_before
     assert context.bind(positive_report['source_before']['path']) == positive_report['source_before']
     assert json.loads(Path(positive_report['source_before']['path']).read_bytes()) == context.before
@@ -36,7 +37,7 @@ def verify(context):
         directory = OUT / f'policy-{mode}'
         directory.mkdir()
         positive = positive_report['policies'][str(mode)]
-        assert positive['passed']
+        assert positive['passed'] is True
         for dependency in positive['actual_owner_extern_inputs'].values():
             for field in ('selected', 'link_library'):
                 assert common.bind(dependency[field]['path']) == dependency[field]

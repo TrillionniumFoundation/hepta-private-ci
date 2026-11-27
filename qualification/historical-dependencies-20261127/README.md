@@ -77,3 +77,61 @@ exec-stdin job, the legacy ABI job and workflow triggers are unchanged.
 This retains the original per-job time bound while allowing the three
 new historical dependency builds without consuming the main job budget.
 Original diagnostics and all owner/formatter result paths are retained.
+
+## Exact types and current Linux dependency projection
+
+Independent review found that Python equality could treat an integer as a
+boolean in a rebound Cargo profile. Admission now compares recursive JSON types
+as well as values. Five additional mutations of the actual receipt exercise
+integer debug assertions, test flags and overflow flags, boolean debug-info, and
+an integer profile in the recorded unit stream. All eighteen actual mutations
+were rejected and the unchanged positive receipt still passed. The bound helper
+source, all mutation records and the actual terminal are retained in
+`typed-controls-and-darwin-source-admission.tar.gz` and its adjacent index.
+
+The first full owner attempt on `ba4b4778d0b900c2259538b14b181e11dd39a3a7`
+then rejected an existing reviewed Darwin authorization change in exec-server.
+A separate exact inverse now binds all 144 current dependency leaves, restores
+the three precise Darwin leaves to the previously admitted 143-leaf tree, then
+applies the unchanged Wine-test inverse to recover the pinned original tree.
+The complete authorization source bytes also recover their original Git blob:
+on Linux the candidate list is exactly `[final_path]` and the rejection predicate
+remains `D || !A`; the new Darwin helper is excluded by its original cfg.
+Unrelated leaves, modes, duplicates, missing or additional files, different
+source predicates and refreshed original pins are rejected by eight additional
+controls. The original historical Cargo graph remains separate and unchanged.
+
+This exact source admission passed against the actual clean ROG producer and
+unchanged a201 snapshot. It does not by itself qualify the complete owner or
+filesystem-effect observations. The earlier full attempt remains a failure,
+including every skipped dependent comparison, until its successor runs all
+required original comparisons successfully.
+
+## Subsequent actual component execution
+
+The complete `ba4b` sequence finished with failure and four skipped dependent
+gates; that original sequence record remains unchanged. Its UUID comparison
+passed 9,609 public pairs and 78,778 complete regex matches. The formatter policy
+gate and complete public comparison both passed: 3,974 cases in each mode,
+7,948 paired public results, 15,864 actual HIA calls, 1,417 observed differences
+between checked and wrapping policies, and all 109 original source files bound.
+This public formatter gate retains its original scope and does not claim to have
+run the full original unit suite.
+
+The template gate initially failed inside the unchanged 2 GiB resource bound
+because Git mapped a large borrowed pack. Restricting only the three isolated
+repositories' local Git mapping windows to 16 MiB/64 MiB exposed a second failure:
+lld could not create its worker threads under the same bound. Restricting the
+owned process to two of its original 32 allowed CPUs resolved that infrastructure
+failure without changing compiler flags, tested source, 2 GiB address-space or
+192 MiB evidence limits. The exact original command then naturally passed in
+23.817 seconds: all fourteen original tests, 13,206 public pairs and 66,549 real
+native calls. Both prior failures remain retained.
+
+`ba4b-component-execution.json` indexes those actual outcomes and the original
+failed sequence. `ba4b-comparison-terminal-receipts.tar.gz` preserves the actual
+reports and selected command streams; the complete bound observation payloads
+and physical binary artifacts remain in the recorded ROG evidence directory.
+The adjacent invocation sources retain the exact commands used. These component
+passes do not turn skipped file-update/effects successors or the full platform
+matrix into a passing result.

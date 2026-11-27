@@ -61,6 +61,23 @@ def controls(record, output):
           lambda graph: graph["direct"]["similar"]["unit"]["profile"].update(
               overflow_checks=not graph["direct"]["similar"]["unit"]["profile"]["overflow_checks"])),
           "profile or unit differs")
+    check("integer-debug-assertions", change_document("integer-debug-assertions", "graph",
+          lambda graph: graph["direct"]["similar"]["unit"]["profile"].update(debug_assertions=1)),
+          "profile or unit differs")
+    check("integer-test-profile", change_document("integer-test-profile", "graph",
+          lambda graph: graph["direct"]["similar"]["unit"]["profile"].update(test=0)),
+          "profile or unit differs")
+    check("integer-overflow-profile", change_document("integer-overflow-profile", "graph",
+          lambda graph: graph["direct"]["similar"]["unit"]["profile"].update(
+              overflow_checks=int(graph["direct"]["similar"]["unit"]["profile"]["overflow_checks"]))),
+          "profile or unit differs")
+    check("boolean-debug-info", change_document("boolean-debug-info", "graph",
+          lambda graph: graph["direct"]["similar"]["unit"]["profile"].update(debuginfo=False)),
+          "profile or unit differs")
+    check("integer-recorded-profile", change_document("integer-recorded-profile", "graph",
+          lambda graph: graph["units"][0]["profile"].update(
+              debug_assertions=int(graph["units"][0]["profile"]["debug_assertions"]))),
+          "graph differs from the actual Cargo artifact stream")
     check("changed-manifest", change_document("changed-manifest", "metadata",
           lambda metadata: next(iter(metadata["packages"].values())).update(manifest_sha256="0" * 64)),
           "historical dependency manifest changed")

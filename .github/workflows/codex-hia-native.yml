@@ -1718,6 +1718,8 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_file_update_dependency_admission.py -v \
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-dependency-admission.log"
+          python3 -B codex/hia/tests/test_file_update_darwin_admission.py -v \
+            2>&1 | tee "$RUNNER_TEMP/hia-file-update-darwin-admission.log"
 
       - name: Check out complete original file-update owner
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -1970,6 +1972,7 @@ jobs:
             ${{ runner.temp }}/hia-file-update-caller.json
             ${{ runner.temp }}/hia-file-update-caller.log
             ${{ runner.temp }}/hia-file-update-dependency-admission.log
+            ${{ runner.temp }}/hia-file-update-darwin-admission.log
             ${{ runner.temp }}/hia-file-update-caller/cases.json
             ${{ runner.temp }}/hia-file-update-caller/original-source-manifest.json
             ${{ runner.temp }}/hia-file-update-caller/metadata-source-inputs.json
@@ -1987,7 +1990,7 @@ jobs:
             ${{ runner.temp }}/hia-file-update-caller/historical-dependencies/*.json
             ${{ runner.temp }}/hia-patch-effects-caller/historical-dependencies/commands/
             ${{ runner.temp }}/hia-patch-effects-caller/historical-dependencies/*.json
-            ${{ runner.temp }}/hia-patch-effects-caller/current-default-dependency-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller/current_default-dependency-manifest.json
             ${{ runner.temp }}/unified-public-gate/policy-*/historical-dependencies/commands/
             ${{ runner.temp }}/unified-public-gate/policy-*/historical-dependencies/*.json
             ${{ runner.temp }}/unified-public-gate/policy-*/historical-dependencies/*.toml
