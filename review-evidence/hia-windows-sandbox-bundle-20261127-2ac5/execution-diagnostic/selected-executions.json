@@ -1,0 +1,319 @@
+{
+  "schema_url": "https://raw.githubusercontent.com/bazelbuild/bazel/9.0.0/src/main/protobuf/spawn.proto",
+  "schema_sha256": "a75248c8586aabcc938c91778cffb6d1071019326a8e6be5722c4ed4ef9df990",
+  "compressed_bytes": 4523982,
+  "raw_bytes": 25285341,
+  "raw_sha256": "885f364f9575b737f3e8c11cb43b5002db9acea003ddf5908ff9784c6c5a73dc",
+  "entries": 81096,
+  "counts": {
+    "2": 1,
+    "8": 371,
+    "3": 63505,
+    "6": 14603,
+    "7": 2231,
+    "10": 111,
+    "4": 274
+  },
+  "test_spawns": 44,
+  "selected": [
+    {
+      "label": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+      "args": [
+        "external\\bazel_tools\\tools\\test\\tw.exe",
+        "codex-rs/exec-server/exec-server-file_system_windows-test.bat",
+        "--test-threads=1"
+      ],
+      "environment": {
+        "CARGO_BIN_EXE_bwrap": "_main/codex-rs/bwrap/bwrap.exe",
+        "CARGO_BIN_EXE_codex-command-runner": "_main/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+        "CARGO_BIN_EXE_codex-windows-sandbox-setup": "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+        "CARGO_MANIFEST_DIR": "codex-rs/exec-server",
+        "PATH": "C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.52.37025\\bin\\HostX64\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8.1 Tools\\x64\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Team Tools\\DiagnosticsHub\\Collector;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\Extensions\\Microsoft\\CodeCoverage.Console;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\\\MSBuild\\Current\\Bin\\amd64;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\Tools\\;C:\\mingw64\\bin;C:\\Program Files\\Git\\bin;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Scripts;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64;C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\;C:\\Program Files\\Microsoft SDKs\\Service Fabric\\Tools\\ServiceFabricLocalClusterManager;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\ucrt64\\bin;C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\Llvm\\x64\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\vcpkg;C:\\Program Files\\nodejs;C:\\msys64\\mingw64\\bin;C:\\msys64\\ucrt64\\bin;C:\\Users\\runneradmin\\AppData\\Local\\Microsoft\\WindowsApps",
+        "RUNFILES_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat.runfiles",
+        "RUNFILES_MANIFEST_ONLY": "1",
+        "SYSTEMROOT": "C:\\Windows",
+        "TEST_BINARY": "codex-rs\\exec-server\\exec-server-file_system_windows-test.bat",
+        "TEST_INFRASTRUCTURE_FAILURE_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.infrastructure_failure",
+        "TEST_LOGSPLITTER_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.raw_splitlogs/test.splitlogs",
+        "TEST_PREMATURE_EXIT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.exited_prematurely",
+        "TEST_SIZE": "medium",
+        "TEST_SRCDIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat.runfiles",
+        "TEST_TARGET": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+        "TEST_TIMEOUT": "300",
+        "TEST_TMPDIR": "_tmp/7c291ab8039c7e983fd43b1efc6323ef",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest/ANNOTATIONS",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest",
+        "TEST_UNDECLARED_OUTPUTS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs",
+        "TEST_UNDECLARED_OUTPUTS_MANIFEST": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest/MANIFEST",
+        "TEST_UNUSED_RUNFILES_LOG_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.unused_runfiles_log",
+        "TEST_WARNINGS_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.warnings",
+        "TEST_WORKSPACE": "_main"
+      },
+      "exit_code": 101,
+      "status": "NON_ZERO_EXIT",
+      "runner": "local",
+      "input_set_id": 74644,
+      "inputs": [
+        {
+          "entry_id": 74641,
+          "type": "runfiles-tree",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat.runfiles",
+          "input_set_id": 74640,
+          "symlinks_id": 0,
+          "root_symlinks_id": 0
+        },
+        {
+          "entry_id": 74306,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test-bin.exe",
+          "digest": {
+            "hash": "ce95d194bad98964f2ccff0a8fd1f096462fc7460f116d82e73222a99657456f",
+            "bytes": 78932480
+          }
+        },
+        {
+          "entry_id": 74286,
+          "type": "file",
+          "path": "codex-rs/exec-server/tests/file_system_windows.rs",
+          "digest": {
+            "hash": "b9ba14e3e4cfb892dbcbe8d31b9837e473877f1573709152fa7d5f049d544d53",
+            "bytes": 12854
+          }
+        },
+        {
+          "entry_id": 61889,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+          "digest": {
+            "hash": "ab31b0dd1032314f3564efb963c98a19b5b036c636346fe411c0804be782d1a1",
+            "bytes": 23595008
+          }
+        },
+        {
+          "entry_id": 61597,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+          "digest": {
+            "hash": "f15c867313abc60659f13c0709041325d6df06b2b75e52a0314408a77e701064",
+            "bytes": 35834368
+          }
+        },
+        {
+          "entry_id": 74639,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat",
+          "digest": {
+            "hash": "33e0ccfa4a309ba507e880fba71a298514b4e374699ac9ebe116470c7e9f6c02",
+            "bytes": 9065
+          }
+        }
+      ]
+    },
+    {
+      "label": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+      "args": [
+        "external\\bazel_tools\\tools\\test\\xml.exe",
+        "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log",
+        "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.xml",
+        "22",
+        "101"
+      ],
+      "environment": {
+        "CARGO_BIN_EXE_bwrap": "_main/codex-rs/bwrap/bwrap.exe",
+        "CARGO_BIN_EXE_codex-command-runner": "_main/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+        "CARGO_BIN_EXE_codex-windows-sandbox-setup": "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+        "CARGO_MANIFEST_DIR": "codex-rs/exec-server",
+        "PATH": "C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.52.37025\\bin\\HostX64\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8.1 Tools\\x64\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Team Tools\\DiagnosticsHub\\Collector;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\Extensions\\Microsoft\\CodeCoverage.Console;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\\\MSBuild\\Current\\Bin\\amd64;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\Tools\\;C:\\mingw64\\bin;C:\\Program Files\\Git\\bin;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Scripts;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64;C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\;C:\\Program Files\\Microsoft SDKs\\Service Fabric\\Tools\\ServiceFabricLocalClusterManager;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\ucrt64\\bin;C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\Llvm\\x64\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\vcpkg;C:\\Program Files\\nodejs;C:\\msys64\\mingw64\\bin;C:\\msys64\\ucrt64\\bin;C:\\Users\\runneradmin\\AppData\\Local\\Microsoft\\WindowsApps",
+        "RUNFILES_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat.runfiles",
+        "RUNFILES_MANIFEST_ONLY": "1",
+        "SYSTEMROOT": "C:\\Windows",
+        "TEST_BINARY": "codex-rs\\exec-server\\exec-server-file_system_windows-test.bat",
+        "TEST_INFRASTRUCTURE_FAILURE_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.infrastructure_failure",
+        "TEST_LOGSPLITTER_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.raw_splitlogs/test.splitlogs",
+        "TEST_NAME": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+        "TEST_PREMATURE_EXIT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.exited_prematurely",
+        "TEST_SHARD_INDEX": "0",
+        "TEST_SIZE": "medium",
+        "TEST_SRCDIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/exec-server/exec-server-file_system_windows-test.bat.runfiles",
+        "TEST_TARGET": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+        "TEST_TIMEOUT": "300",
+        "TEST_TMPDIR": "_tmp/7c291ab8039c7e983fd43b1efc6323ef",
+        "TEST_TOTAL_SHARDS": "0",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest/ANNOTATIONS",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest",
+        "TEST_UNDECLARED_OUTPUTS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs",
+        "TEST_UNDECLARED_OUTPUTS_MANIFEST": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.outputs_manifest/MANIFEST",
+        "TEST_UNUSED_RUNFILES_LOG_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.unused_runfiles_log",
+        "TEST_WARNINGS_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.warnings",
+        "TEST_WORKSPACE": "_main"
+      },
+      "exit_code": 0,
+      "status": "",
+      "runner": "local",
+      "input_set_id": 74647,
+      "inputs": [
+        {
+          "entry_id": 74646,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log",
+          "digest": {
+            "hash": "aee3a4d405f88240aa35b7a3a7be6e108bf1cc0bf2e511bc39c40a8457e7b59b",
+            "bytes": 7778
+          }
+        }
+      ]
+    },
+    {
+      "label": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+      "args": [
+        "external\\bazel_tools\\tools\\test\\tw.exe",
+        "codex-rs/cli/cli-sandbox_cloud_config-test.bat"
+      ],
+      "environment": {
+        "CARGO_BIN_EXE_bwrap": "_main/codex-rs/bwrap/bwrap.exe",
+        "CARGO_BIN_EXE_codex": "_main/codex-rs/cli/codex.exe",
+        "CARGO_BIN_EXE_codex-command-runner": "_main/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+        "CARGO_BIN_EXE_codex-windows-sandbox-setup": "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+        "CARGO_BIN_EXE_hepta": "_main/codex-rs/cli/hepta.exe",
+        "CARGO_BIN_EXE_logs_client": "_main/codex-rs/cli/logs_client.exe",
+        "CARGO_MANIFEST_DIR": "codex-rs/cli",
+        "PATH": "C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.52.37025\\bin\\HostX64\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8.1 Tools\\x64\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Team Tools\\DiagnosticsHub\\Collector;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\Extensions\\Microsoft\\CodeCoverage.Console;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\\\MSBuild\\Current\\Bin\\amd64;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\Tools\\;C:\\mingw64\\bin;C:\\Program Files\\Git\\bin;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Scripts;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64;C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\;C:\\Program Files\\Microsoft SDKs\\Service Fabric\\Tools\\ServiceFabricLocalClusterManager;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\ucrt64\\bin;C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\Llvm\\x64\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\vcpkg;C:\\Program Files\\nodejs;C:\\msys64\\mingw64\\bin;C:\\msys64\\ucrt64\\bin;C:\\Users\\runneradmin\\AppData\\Local\\Microsoft\\WindowsApps",
+        "RUNFILES_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat.runfiles",
+        "RUNFILES_MANIFEST_ONLY": "1",
+        "SYSTEMROOT": "C:\\Windows",
+        "TEST_BINARY": "codex-rs\\cli\\cli-sandbox_cloud_config-test.bat",
+        "TEST_INFRASTRUCTURE_FAILURE_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.infrastructure_failure",
+        "TEST_LOGSPLITTER_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.raw_splitlogs/test.splitlogs",
+        "TEST_PREMATURE_EXIT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.exited_prematurely",
+        "TEST_SIZE": "medium",
+        "TEST_SRCDIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat.runfiles",
+        "TEST_TARGET": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+        "TEST_TIMEOUT": "300",
+        "TEST_TMPDIR": "_tmp/38773d74f21e7e344076d8e811ab9ed2",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest/ANNOTATIONS",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest",
+        "TEST_UNDECLARED_OUTPUTS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs",
+        "TEST_UNDECLARED_OUTPUTS_MANIFEST": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest/MANIFEST",
+        "TEST_UNUSED_RUNFILES_LOG_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.unused_runfiles_log",
+        "TEST_WARNINGS_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.warnings",
+        "TEST_WORKSPACE": "_main"
+      },
+      "exit_code": 1,
+      "status": "NON_ZERO_EXIT",
+      "runner": "local",
+      "input_set_id": 78424,
+      "inputs": [
+        {
+          "entry_id": 78423,
+          "type": "runfiles-tree",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat.runfiles",
+          "input_set_id": 78422,
+          "symlinks_id": 0,
+          "root_symlinks_id": 0
+        },
+        {
+          "entry_id": 78301,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test-bin.exe",
+          "digest": {
+            "hash": "3f84538e2388b4ab3bd6416a6c1e4909ff6cc372df8395daf216bf6f7070fa77",
+            "bytes": 68492288
+          }
+        },
+        {
+          "entry_id": 78274,
+          "type": "file",
+          "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+          "digest": {
+            "hash": "e4fe46d800429f383422d5596a438032c1fdf00fa589123c6478722ce9e42803",
+            "bytes": 6026
+          }
+        },
+        {
+          "entry_id": 61889,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+          "digest": {
+            "hash": "ab31b0dd1032314f3564efb963c98a19b5b036c636346fe411c0804be782d1a1",
+            "bytes": 23595008
+          }
+        },
+        {
+          "entry_id": 61597,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+          "digest": {
+            "hash": "f15c867313abc60659f13c0709041325d6df06b2b75e52a0314408a77e701064",
+            "bytes": 35834368
+          }
+        },
+        {
+          "entry_id": 78421,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat",
+          "digest": {
+            "hash": "133eef5d8f0d2043e9fbdcc66636c06185e4c91a6092b8da70a761cbca5682bf",
+            "bytes": 9434
+          }
+        }
+      ]
+    },
+    {
+      "label": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+      "args": [
+        "external\\bazel_tools\\tools\\test\\xml.exe",
+        "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.log",
+        "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.xml",
+        "0",
+        "1"
+      ],
+      "environment": {
+        "CARGO_BIN_EXE_bwrap": "_main/codex-rs/bwrap/bwrap.exe",
+        "CARGO_BIN_EXE_codex": "_main/codex-rs/cli/codex.exe",
+        "CARGO_BIN_EXE_codex-command-runner": "_main/codex-rs/windows-sandbox-rs/codex-command-runner.exe",
+        "CARGO_BIN_EXE_codex-windows-sandbox-setup": "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+        "CARGO_BIN_EXE_hepta": "_main/codex-rs/cli/hepta.exe",
+        "CARGO_BIN_EXE_logs_client": "_main/codex-rs/cli/logs_client.exe",
+        "CARGO_MANIFEST_DIR": "codex-rs/cli",
+        "PATH": "C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.52.37025\\bin\\HostX64\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8.1 Tools\\x64\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Team Tools\\DiagnosticsHub\\Collector;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\Extensions\\Microsoft\\CodeCoverage.Console;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\\\MSBuild\\Current\\Bin\\amd64;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\Tools\\;C:\\mingw64\\bin;C:\\Program Files\\Git\\bin;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Scripts;C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64;C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\;C:\\Program Files\\Microsoft SDKs\\Service Fabric\\Tools\\ServiceFabricLocalClusterManager;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\ucrt64\\bin;C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\Llvm\\x64\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\vcpkg;C:\\Program Files\\nodejs;C:\\msys64\\mingw64\\bin;C:\\msys64\\ucrt64\\bin;C:\\Users\\runneradmin\\AppData\\Local\\Microsoft\\WindowsApps",
+        "RUNFILES_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat.runfiles",
+        "RUNFILES_MANIFEST_ONLY": "1",
+        "SYSTEMROOT": "C:\\Windows",
+        "TEST_BINARY": "codex-rs\\cli\\cli-sandbox_cloud_config-test.bat",
+        "TEST_INFRASTRUCTURE_FAILURE_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.infrastructure_failure",
+        "TEST_LOGSPLITTER_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.raw_splitlogs/test.splitlogs",
+        "TEST_NAME": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+        "TEST_PREMATURE_EXIT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.exited_prematurely",
+        "TEST_SHARD_INDEX": "0",
+        "TEST_SIZE": "medium",
+        "TEST_SRCDIR": "bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/cli/cli-sandbox_cloud_config-test.bat.runfiles",
+        "TEST_TARGET": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+        "TEST_TIMEOUT": "300",
+        "TEST_TMPDIR": "_tmp/38773d74f21e7e344076d8e811ab9ed2",
+        "TEST_TOTAL_SHARDS": "0",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest/ANNOTATIONS",
+        "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest",
+        "TEST_UNDECLARED_OUTPUTS_DIR": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs",
+        "TEST_UNDECLARED_OUTPUTS_MANIFEST": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.outputs_manifest/MANIFEST",
+        "TEST_UNUSED_RUNFILES_LOG_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.unused_runfiles_log",
+        "TEST_WARNINGS_OUTPUT_FILE": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.warnings",
+        "TEST_WORKSPACE": "_main"
+      },
+      "exit_code": 0,
+      "status": "",
+      "runner": "local",
+      "input_set_id": 78466,
+      "inputs": [
+        {
+          "entry_id": 78465,
+          "type": "file",
+          "path": "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.log",
+          "digest": {
+            "hash": "43a445ac67b360c15fe286cff9ac97db1d50ae551c25ebce027a9e94cc759c57",
+            "bytes": 188
+          }
+        }
+      ]
+    }
+  ]
+}

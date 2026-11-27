@@ -1,0 +1,65 @@
+{
+  "base": "0740add90bc6cd0639052bcb025ea65f0ef81b37",
+  "budgets_and_assertions_preserved": true,
+  "format": {
+    "returncode": 0,
+    "seconds": 0.19505237485282123
+  },
+  "original_artifact_id": 15226956527,
+  "original_artifact_members": [
+    {
+      "bytes": 4523982,
+      "name": "bazel-execution-logs/execution-log-test-original-sandbox-runfiles-1839.zst",
+      "sha256": "d5b4b6793759827b1a993b3d5d29dc9e533324e14a5dfd9aa98417db97eb3a41"
+    },
+    {
+      "bytes": 683463,
+      "name": "windows-sandbox-runfiles.log",
+      "sha256": "99460de537edbc9a64cc06044a00dbd33437d96276976f757f0822886d4fc7b3"
+    }
+  ],
+  "original_failure_head": "60bbf9390b89f3815c9e1aa0bfb142ceb16ec3ec",
+  "original_job_id": 140684128523,
+  "original_run_id": 46051634787,
+  "original_three_targets": [
+    "//codex-rs/cli:cli-sandbox_cloud_config-test",
+    "//codex-rs/exec-server:exec-server-file_system_windows-test",
+    "//codex-rs/core:core-all-test"
+  ],
+  "original_workflow_unchanged_except_new_branch": true,
+  "schema": "hepta.windows.sandbox-bundle-candidate.v1",
+  "scope": "Declared test binaries are copied into target-private executable sibling layouts; product trusted lookup and original tests remain unchanged.",
+  "status": "CANDIDATE_FORMATTED_ORIGINAL_WINDOWS_GATE_PENDING",
+  "unchanged_baseline_files": {
+    "MODULE.bazel": {
+      "bytes": 23883,
+      "sha256": "04e040030979e158f0ad54f9a76f8cc7963ae03940a5d672eadcfefa377ced88"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1742739,
+      "sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423406,
+      "sha256": "0396f882a9def6e4583b7251395022cfac48e529c48dad031b904b63f53d460b"
+    },
+    "codex-rs/cli/tests/sandbox_cloud_config.rs": {
+      "bytes": 5858,
+      "sha256": "766c7d2b7740cd49936d16c1f4654fbbc0e7319f9c80ffd68e492c3ccc8a0157"
+    },
+    "codex-rs/exec-server/tests/file_system_windows.rs": {
+      "bytes": 12459,
+      "sha256": "b53fba4224b78647dc83bd537ffbdf84756bbd342092bce3240ac4ee67002885"
+    },
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs": {
+      "bytes": 20235,
+      "sha256": "8d22e6acb74148bf2d8f2b81bbeccc2fd0bdaf89310e772119f9c2f2fd9e7b0c"
+    },
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": {
+      "bytes": 21445,
+      "sha256": "37746f520536d158c112b7ed2d0ec4d0fc868822d7bf6fab256864b5f4b685b8"
+    }
+  },
+  "whole_matrix_pass_claimed": false,
+  "windows_pass_claimed": false
+}

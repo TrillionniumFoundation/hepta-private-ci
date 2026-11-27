@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@crates//:data.bzl", "DEP_DATA")
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
@@ -87,6 +88,12 @@ def _workspace_root_test_impl(ctx):
 
     launcher = ctx.actions.declare_file(ctx.label.name + ".bat" if is_windows else ctx.label.name)
     test_bin = ctx.executable.test_bin
+    bundle_files = []
+    if ctx.file.windows_test_bin:
+        if not is_windows or not ctx.attr.runfile_environment_only:
+            fail("windows_test_bin requires a Windows runfile-only test")
+        test_bin = ctx.file.windows_test_bin
+        bundle_files.append(test_bin)
     workspace_root_marker = ctx.file.workspace_root_marker
     launcher_template = ctx.file._windows_launcher_template if is_windows else ctx.file._bash_launcher_template
     runfile_env_exports = _windows_runfile_env_exports(ctx) if is_windows else _bash_runfile_env_exports(ctx)
@@ -112,6 +119,8 @@ def _workspace_root_test_impl(ctx):
         runfiles = runfiles.merge(data_dep[DefaultInfo].default_runfiles)
     for runfile_dep in ctx.attr.runfile_env:
         runfile = _runfile_env_file(runfile_dep)
+        if ctx.file.windows_test_bin:
+            bundle_files.append(runfile)
         runfiles = runfiles.merge(ctx.runfiles(files = [runfile]))
         runfiles = runfiles.merge(runfile_dep[DefaultInfo].default_runfiles)
 
@@ -133,7 +142,7 @@ def _workspace_root_test_impl(ctx):
         providers = [
             DefaultInfo(
                 executable = launcher,
-                files = depset([launcher]),
+                files = depset([launcher] + bundle_files),
                 runfiles = runfiles,
             ),
             ctx.attr.test_bin[RunEnvironmentInfo],
@@ -147,7 +156,7 @@ def _workspace_root_test_impl(ctx):
     return [
         DefaultInfo(
             executable = launcher,
-            files = depset([launcher]),
+            files = depset([launcher] + bundle_files),
             runfiles = runfiles,
         ),
         RunEnvironmentInfo(
@@ -224,6 +233,11 @@ workspace_root_test = rule(
             mandatory = True,
         ),
         "test_threads": attr.int(),
+        "windows_test_bin": attr.label(
+            allow_single_file = True,
+            cfg = "target",
+            doc = "Physical Windows test copy beside the declared sandbox helper executables.",
+        ),
         "workspace_root_marker": attr.label(
             allow_single_file = True,
             mandatory = True,
@@ -246,6 +260,44 @@ workspace_root_test = rule(
         ),
     },
 )
+
+def _windows_sandbox_test_bundle(name, test_bin, binaries):
+    # Sandbox helper lookup deliberately trusts executable siblings, not PATH.
+    # Keep each test and its Cargo binaries in a separate, physical output
+    # directory. Top-level outputs also survive remote-download-toplevel.
+    bundle_dir = name + ".windows-sandbox-bundle"
+    bundled_test = name + "-windows-sandbox-bundled-test"
+    copy_file(
+        name = bundled_test,
+        src = test_bin,
+        out = bundle_dir + "/" + Label(test_bin).name + ".exe",
+        allow_symlink = False,
+        is_executable = True,
+        tags = ["manual"],
+        testonly = True,
+    )
+    bundled_env = {}
+    basenames = {}
+    for index, (binary, env_var) in enumerate(binaries.items()):
+        if not env_var.startswith("CARGO_BIN_EXE_"):
+            bundled_env[binary] = env_var
+            continue
+        basename = env_var.removeprefix("CARGO_BIN_EXE_") + ".exe"
+        if basename.lower() in basenames:
+            fail("duplicate Windows sandbox bundle executable: {}".format(basename))
+        basenames[basename.lower()] = True
+        bundled_binary = name + "-windows-sandbox-bundled-binary-" + str(index)
+        copy_file(
+            name = bundled_binary,
+            src = binary,
+            out = bundle_dir + "/" + basename,
+            allow_symlink = False,
+            is_executable = True,
+            tags = ["manual"],
+            testonly = True,
+        )
+        bundled_env[":" + bundled_binary] = env_var
+    return ":" + bundled_test, bundled_env
 
 def codex_rust_crate(
         name,
@@ -733,12 +785,32 @@ def codex_rust_crate(
                     **test_kwargs
                 )
             elif fixture_runfile_env:
+                fixture_env = integration_test_cargo_env_runfiles | fixture_runfile_env
+                windows_test_bin = None
+                if (
+                    "CARGO_BIN_EXE_codex-command-runner" in fixture_runfile_env.values() and
+                    "CARGO_BIN_EXE_codex-windows-sandbox-setup" in fixture_runfile_env.values()
+                ):
+                    bundled_test, bundled_env = _windows_sandbox_test_bundle(
+                        test_name,
+                        ":" + integration_test_binary,
+                        cargo_env_runfiles | fixture_runfile_env,
+                    )
+                    windows_test_bin = select({
+                        "@platforms//os:windows": bundled_test,
+                        "//conditions:default": None,
+                    })
+                    fixture_env = select({
+                        "@platforms//os:windows": bundled_env,
+                        "//conditions:default": cargo_env_runfiles | non_windows_cargo_env_runfiles | fixture_runfile_env,
+                    })
                 workspace_root_test(
                     name = test_name,
                     chdir_workspace_root = False,
-                    runfile_env = integration_test_cargo_env_runfiles | fixture_runfile_env,
+                    runfile_env = fixture_env,
                     runfile_environment_only = True,
                     test_bin = ":" + integration_test_binary,
+                    windows_test_bin = windows_test_bin,
                     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
                     target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
                     tags = test_tags,

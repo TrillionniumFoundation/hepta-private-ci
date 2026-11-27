@@ -18,14 +18,14 @@ rem Bazel declares Windows sandbox helpers as runfiles rather than siblings.
 rem Export only the resolved declared binaries to the test process search path.
 if defined CARGO_BIN_EXE_codex-windows-sandbox-setup (
   if not exist "!CARGO_BIN_EXE_codex-windows-sandbox-setup!" (
-    >&2 echo declared Windows sandbox setup helper is missing
+    >&2 echo declared Windows sandbox setup helper is missing: "!CARGO_BIN_EXE_codex-windows-sandbox-setup!"
     exit /b 1
   )
   for %%I in ("!CARGO_BIN_EXE_codex-windows-sandbox-setup!") do set "PATH=%%~dpI;!PATH!"
 )
 if defined CARGO_BIN_EXE_codex-command-runner (
   if not exist "!CARGO_BIN_EXE_codex-command-runner!" (
-    >&2 echo declared Windows command runner is missing
+    >&2 echo declared Windows command runner is missing: "!CARGO_BIN_EXE_codex-command-runner!"
     exit /b 1
   )
   for %%I in ("!CARGO_BIN_EXE_codex-command-runner!") do set "PATH=%%~dpI;!PATH!"
@@ -180,6 +180,9 @@ if not defined resolve_runfile_result (
   call :clear_resolve_runfile_state
   exit /b 1
 )
+rem Both directory and manifest mappings may be relative to the test cwd.
+rem Freeze their absolute physical location before any consumer changes cwd.
+for %%I in ("!resolve_runfile_result!") do set "resolve_runfile_result=%%~fI"
 call :clear_resolve_runfile_state
 exit /b 0
 

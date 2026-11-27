@@ -1,0 +1,26 @@
+{
+  "base": "0740add90bc6cd0639052bcb025ea65f0ef81b37",
+  "branch": "codex/hia-windows-sandbox-bundle-20261127-2ac5",
+  "files": {
+    "defs.bzl": {
+      "before_bytes": 39729,
+      "before_sha256": "522730e54e9d07a7c54dc91cc812a8f8dece8c7c587d0360e4a03920abd74030",
+      "after_bytes": 43000,
+      "after_sha256": "9be5d09483ccca6e046d7ce7d4a97ab6fa9015cf752b2905ec894904b564de7a"
+    },
+    "workspace_root_test_launcher.bat.tpl": {
+      "before_bytes": 8363,
+      "before_sha256": "322a74b8696b2f3f88f883ad759e7c1024d739e49b1b10c9aea06916c6507cc0",
+      "after_bytes": 8679,
+      "after_sha256": "5041900b7663330247af2af4c02dfd5d8c545d300517423f630183b5c489132a"
+    },
+    ".github/workflows/hia-windows-sandbox-runfiles.yml": {
+      "before_bytes": 3187,
+      "before_sha256": "cc85e900e28f24318378fda49eea323767f316413a935cef96523ee78467cabf",
+      "after_bytes": 3242,
+      "after_sha256": "733c7732c4a11f026f1d04cf8b795f3950dc7036f8770c224fabf5527bd0ea61"
+    }
+  },
+  "scope": "fixture executable placement only; original Rust tests and production helper lookup remain unchanged",
+  "validation": "candidate, original Windows targets not yet run"
+}
