@@ -1,5 +1,10 @@
 mod firewall;
+mod machine_identity;
+mod machine_identity_mutex;
+mod machine_identity_store;
 mod no_reparse_dir;
+mod private_identity_publication;
+mod private_identity_security;
 mod read_acl_mutex;
 
 use anyhow::Context;
@@ -65,7 +70,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 
-const DENY_ACCESS: i32 = 3;
 #[cfg(test)]
 const WRITE_ROOT_ALLOW_MASK: u32 =
     FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE;
@@ -598,6 +602,7 @@ fn provision_and_hide_sandbox_users(
 ) -> Result<()> {
     let provision_result = provision_sandbox_users(
         &payload.codex_home,
+        &payload.real_user,
         &payload.offline_username,
         &payload.online_username,
         log,
@@ -679,24 +684,17 @@ fn lock_persistent_sandbox_dirs(payload: &Payload, sandbox_group_sid: &[u8]) -> 
             ),
         ))
     })?;
-    lock_sandbox_dir(
-        &sandbox_secrets_dir(&payload.codex_home),
-        &payload.real_user,
-        sandbox_group_sid,
-        DENY_ACCESS,
-        FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE,
-        FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE,
-        payload.mode,
-    )
-    .map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperSandboxLockFailed,
-            format!(
-                "lock sandbox secrets dir {} failed: {err}",
-                sandbox_secrets_dir(&payload.codex_home).display()
-            ),
-        ))
-    })?;
+    private_identity_publication::PrivateSecrets::prepare(&payload.codex_home, &payload.real_user)
+        .map(|_| ())
+        .map_err(|err| {
+            anyhow::Error::new(SetupFailure::new(
+                SetupErrorCode::HelperSandboxLockFailed,
+                format!(
+                    "lock sandbox secrets dir {} failed: {err}",
+                    sandbox_secrets_dir(&payload.codex_home).display()
+                ),
+            ))
+        })?;
     let legacy_users = sandbox_dir(&payload.codex_home).join("sandbox_users.json");
     if legacy_users.exists() {
         let _ = std::fs::remove_file(&legacy_users);

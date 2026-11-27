@@ -1,0 +1,71 @@
+name: HIA Windows machine account identity
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-machine-identity-20261127-2ac5
+    paths:
+      - codex-rs/windows-sandbox-rs/**
+      - .github/workflows/hia-windows-machine-identity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-setup-identity:
+    name: Complete original setup helper and real identity controls
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run every original setup helper test and real identity controls
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --nocache_test_results \
+            --test_output=all \
+            --test_arg=--nocapture \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests 2>&1 | tee "$RUNNER_TEMP/windows-machine-identity.log"
+          if grep -Eq 'FLAKY|test result: FAILED|Attempt #([2-9][0-9]*|1[0-9]+)' "$RUNNER_TEMP/windows-machine-identity.log"; then
+            echo "::error::Original target had a failed or retried attempt."
+            exit 1
+          fi
+          grep -Eq '^//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests[[:space:]]+PASSED in ' "$RUNNER_TEMP/windows-machine-identity.log"
+          grep -F 'HIA_MACHINE_IDENTITY_CONTROL cross_process_homes: PASS; workers=2; first_credentials_still_valid=true' "$RUNNER_TEMP/windows-machine-identity.log"
+          echo "Original setup helper and identity controls: PASS, retries=0, flaky=0; full consumer and platform matrices remain independent."
+      - name: Preserve original execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-original-machine-identity-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/bazel-execution-logs
+            ${{ runner.temp }}/windows-machine-identity.log
+          if-no-files-found: error
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
