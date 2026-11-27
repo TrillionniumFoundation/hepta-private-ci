@@ -1,0 +1,67 @@
+{
+ "selection": {
+  "109": {
+   "waived_s": 1.7413217230000555,
+   "row": {
+    "dev_r1": 0.006064690026954178,
+    "dev_r5": 0.03099730458221024,
+    "time": 9.71909017500002,
+    "rate": 0.001,
+    "step": 128,
+    "state": "lr0-s128.pt",
+    "hash": "148ac4e04ed644bbd6ef35b3fa9d6fd9243480c5b56e1809e2aa32e1bfea721b"
+   }
+  },
+  "271": {
+   "waived_s": 2.9274440819999654,
+   "row": {
+    "dev_r1": 0.008086253369272238,
+    "dev_r5": 0.02358490566037736,
+    "time": 9.818539192999651,
+    "rate": 0.0003,
+    "step": 96,
+    "state": "lr1-s96.pt",
+    "hash": "bce86a8966ce1fbacf61748d5a26508e5501a2d42594205ad52de0c1e6ef8596"
+   }
+  },
+  "463": {
+   "waived_s": 2.029264891999901,
+   "row": {
+    "dev_r1": 0.014824797843665768,
+    "dev_r5": 0.04919137466307277,
+    "time": 13.983392155999809,
+    "rate": 0.001,
+    "step": 160,
+    "state": "lr0-s160.pt",
+    "hash": "e4c99dfae9c76a9f1ff50aaff994c4bd7b48a3a6563c481a3e43199432e10407"
+   }
+  }
+ },
+ "metrics": {
+  "109": {
+   "strict_R1": 0.005186721991701245,
+   "title_R1": 0.005186721991701245,
+   "strict_R5": 0.022302904564315353,
+   "strict_R10": 0.040975103734439834
+  },
+  "271": {
+   "strict_R1": 0.0025933609958506223,
+   "title_R1": 0.0025933609958506223,
+   "strict_R5": 0.023858921161825725,
+   "strict_R10": 0.03682572614107884
+  },
+  "463": {
+   "strict_R1": 0.007261410788381743,
+   "title_R1": 0.007261410788381743,
+   "strict_R5": 0.02800829875518672,
+   "strict_R10": 0.06224066390041494
+  }
+ },
+ "mean_conventional": 0.005013831258644537,
+ "literal_minus_conventional": 0.005878284923928078,
+ "paired95": [
+  0.0010373443983402494,
+  0.011242219917012387
+ ],
+ "notes": "Within-family sensitivity after original scores were known. No model updates. CNN receives extra measured time equal to complete model startup and both zero-step development evaluations."
+}
