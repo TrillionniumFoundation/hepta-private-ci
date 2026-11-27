@@ -8,7 +8,7 @@ fn input() -> TestResult<NativePreparedInputV2> {
         schema_version: 2,
         prompt: "Use only the original admitted evidence.".to_string(),
         context_query: Some("original query".to_string()),
-        agentd_socket: std::path::absolute("/tmp/original-owner.sock")?,
+        agentd_socket: std::path::absolute(std::env::temp_dir().join("original-owner.sock"))?,
         timeout_ms: 5_000,
         intelligence: Some(NativeIntelligenceInputBindingV2 {
             snapshot: NativeRunSnapshotV2 {
