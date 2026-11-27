@@ -1,0 +1,18 @@
+{
+  "host": "darwin",
+  "source_selection": "full pinned rules_rust source with --cfg windows on macOS; no native Windows or Wine claim",
+  "rustc": "/Users/qianqi/.rustup/toolchains/1.96.1-aarch64-apple-darwin/bin/rustc",
+  "tinyjson_source": "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/tinyjson-2.5.1/src/lib.rs",
+  "source_sha256": {
+    "util.rs": "2365f126d9270c1c87419c9435c64cef0cce7c6bc9bd40235ee1f2048c6865f8",
+    "output.rs": "92f7f782dbbd97beccfb65597e904e78c14edcc612f94ba279aff18321208284",
+    "flags.rs": "36ee42819bbd59e95547fcf26a4569f8cc4578d3aad709f4af0db70c68ab271c",
+    "options.rs": "c51254a980ca367b2850bf4beed4d3d784f680cf95d7db6e3ffd4af203826a7c",
+    "main.rs": "081697e55b38b74f208cd022de6831419a03863b850d819d94df4b92c5fef9fa",
+    "options_response_file_tests.rs": "c49fca4b2e9fce3f0cb186646ed6b0364c5b3db075d4b061ed81fa461c8a9fb6",
+    "rustc.rs": "ec9823df3f08b43defa6497637b133995d26a351ff5ae0a64621cb6a19e72c23",
+    "rust_process_wrapper_smoke.py": "8481e4db54a4142610e4e1566d6f04c40c9c7c632bbc9db5132eaca1e47bf177",
+    "run_bazel_with_buildbuddy.py": "cd6c334f138254dd576f67d50d93abcb4647d5b1e8636f9e7bec24e31473932f"
+  },
+  "native_windows_lock_gate": "pending"
+}

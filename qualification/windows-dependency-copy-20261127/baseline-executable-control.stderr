@@ -1,0 +1,38 @@
+test_executable_products_are_excluded_without_requiring_a_lock (rust_process_wrapper_smoke.ProcessWrapperSmokeTest.test_executable_products_are_excluded_without_requiring_a_lock) ... FAIL
+
+======================================================================
+FAIL: test_executable_products_are_excluded_without_requiring_a_lock (rust_process_wrapper_smoke.ProcessWrapperSmokeTest.test_executable_products_are_excluded_without_requiring_a_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/rust_process_wrapper_smoke.py", line 195, in test_executable_products_are_excluded_without_requiring_a_lock
+    self.assert_copied_and_cleaned(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        result,
+        ^^^^^^^
+    ...<3 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/rust_process_wrapper_smoke.py", line 138, in assert_copied_and_cleaned
+    self.assertEqual(observed["files"], [expected])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [{'program.EXE': '65786563757461626c65', 'program.ex[86 chars]79'}] != [{'program.exe.lib': '696d706f7274206c696272617279',[47 chars]79'}]
+
+First differing element 0:
+{'program.EXE': '65786563757461626c65', 'program.ex[85 chars]279'}
+{'program.exe.lib': '696d706f7274206c696272617279',[46 chars]279'}
+
+- [{'program.EXE': '65786563757461626c65',
+-   'program.exe.dll': '736861726564206c696272617279',
+? ^^
+
++ [{'program.exe.dll': '736861726564206c696272617279',
+? ^^
+
+    'program.exe.lib': '696d706f7274206c696272617279'}]
+
+----------------------------------------------------------------------
+Ran 1 test in 0.481s
+
+FAILED (failures=1)

@@ -1,0 +1,74 @@
+{
+  "schema": "codex.windows-dependency-copy.v1",
+  "base": "57c0f3c0c7b64c7c0015ebf1c6c127a4f52da643",
+  "upstream": "f19661ba71f77c993ce1eb082053692610fe4313",
+  "original_failure": {
+    "run_id": 45960650092,
+    "job_id": 140378293622,
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45960650092/job/140378293622",
+    "representation": "complete decoded log returned by GitHub connector",
+    "utf8_bytes": 583845,
+    "sha256": "8cf18ba192b43d3c0bd95930203ab6066f6a3e2da705ad8caf0a838cdac1b6ce"
+  },
+  "native_windows_qualified": false,
+  "whole_rewrite_qualified": false,
+  "legacy_retirement_qualified": false,
+  "mac_terminal": {
+    "session_id": "dpty-bee38fd68b59d45f7417a9673f40e02f1a86cf9a95f6873d998dbe8904a8fe4f",
+    "exit_code": 0,
+    "output_complete": true
+  },
+  "unknown_readonly_diagnostic": {
+    "host": "mac",
+    "idempotency_key": "hia-windows-dependency-copy-2ac5-mac-compiler-readonly-v1",
+    "tool_error": "MCP request timed out",
+    "replayed": false
+  },
+  "evidence_files": [
+    {
+      "name": "result.json",
+      "sha256": "33a15f2ba5597a5a46bdfadc05b03e400ac3e5be329234476ba61756c18c9eaa",
+      "bytes": 1636
+    },
+    {
+      "name": "execution.json",
+      "sha256": "6939eadd9f37d6b42e905c34fa17569ddb4eb65edd6d589ed5a51a3b61bd67f4",
+      "bytes": 2793
+    },
+    {
+      "name": "execution-python314.json",
+      "sha256": "4809c5cecd569c56fb84d14e7f340d49d6de2c1feb24e539d39121a325930258",
+      "bytes": 2020
+    },
+    {
+      "name": "source-manifest.json",
+      "sha256": "a3c10f9da5e5bee9a0564f3ef821d9c45b8cbead37b657493feded9f69493c24",
+      "bytes": 1242
+    },
+    {
+      "name": "wrapper-unit-tests.stdout",
+      "sha256": "931bc223cbb8e0c55aa3995fee637ed8124b5e4ec0f555c1f24337a727c83b6a",
+      "bytes": 1383
+    },
+    {
+      "name": "candidate-portable-behaviors.stderr",
+      "sha256": "e132d4bed34631a6a78f7fab101a8fcc6637758b39826b4203d494552af86b5c",
+      "bytes": 690
+    },
+    {
+      "name": "candidate-portable-behaviors-python314.stderr",
+      "sha256": "75265525612b6626e9ade5d0d6abd340d54ffabff38a8db997a03c7582c0a797",
+      "bytes": 840
+    },
+    {
+      "name": "baseline-executable-control.stderr",
+      "sha256": "22a12aa055ae701142305d9518e1ca7a77e4207462482db8eba3548ef7266f92",
+      "bytes": 1839
+    },
+    {
+      "name": "rustc-version.stdout",
+      "sha256": "28a3d6b44fd36649efdcc159a47e2e08cce8cd2dee204a8a0967125c7bb17b2d",
+      "bytes": 192
+    }
+  ]
+}

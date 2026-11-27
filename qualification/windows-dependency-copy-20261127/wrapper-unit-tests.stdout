@@ -1,0 +1,23 @@
+
+running 18 tests
+test options::response_file_tests::unreadable_wrapper_response_file_fails_before_running_the_child ... ok
+test options::response_file_tests::ordinary_wrapper_and_child_arguments_do_not_read_response_files ... ok
+test flags::test::test_extra_args ... ok
+test options::test::test_enforce_allow_features_flag_user_didnt_say ... ok
+test options::response_file_tests::wrapper_response_files_cannot_change_the_child_boundary_or_recurse ... ok
+test flags::test::test_flag_single_repeated ... ok
+test flags::test::test_flag_help ... ok
+test options::response_file_tests::multiline_values_remain_literal_through_the_normal_flag_parser ... ok
+test flags::test::test_repeated_flags ... ok
+test options::test::test_enforce_allow_features_flag_user_requested_something ... ok
+test options::test::test_enforce_allow_features_flag_user_requested_something_in_param_file ... ok
+test output::test::test_json_parsing_error ... ok
+test test::test_process_line_diagnostic_rendered ... ok
+test test::test_process_line_diagnostic_json ... ok
+test util::test::test_read_to_array ... ok
+test util::test::test_stamp_status_to_array ... ok
+test test::test_process_line_noise ... ok
+test options::response_file_tests::large_wrapper_prefix_preserves_all_arguments_and_child_response_files ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

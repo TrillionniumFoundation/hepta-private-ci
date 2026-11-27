@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/run_portable_subset.py", line 3, in <module>
+    import rust_process_wrapper_smoke as smoke
+  File "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/rust_process_wrapper_smoke.py", line 17, in <module>
+    import run_bazel_with_buildbuddy
+  File "/Users/qianqi/work/hia-windows-dependency-copy-20261127-2ac5/with-pinned-tinyjson/run_bazel_with_buildbuddy.py", line 117, in <module>
+    def remote_config(args: Sequence[str], env: Mapping[str, str]) -> str | None:
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'

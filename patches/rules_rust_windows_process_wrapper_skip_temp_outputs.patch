@@ -1,13 +1,18 @@
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
+@@ -213,6 +213,17 @@ fn consolidate_dependency_search_paths(
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
++            if file_name_lower.ends_with(".exe")
++                || file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++            {
 +                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
 +                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
++                // Executables in the same directory are build products, not Rust
++                // dependency libraries, and may still be locked by another action.
++                // Keep DLLs, rlibs, metadata and import libraries in the search path.
 +                continue;
 +            }
              if !seen.insert(file_name_lower) {
