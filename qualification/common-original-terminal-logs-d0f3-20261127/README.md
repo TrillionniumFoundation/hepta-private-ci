@@ -1,0 +1,9 @@
+# Original d0f3 terminal logs
+
+All four files are complete decoded GitHub job logs, encoded as UTF-8 and stored in deterministic gzip containers. Each container is decompressed and checked against every original byte before publication. The manifest gives raw and container sizes and SHA-256 identities. Earlier complete core, historical-owner, exec, and Windows shard failures remain in qualification/common-current-ci-d0f3-20261127.
+
+The exact original legacy job 140593639691 completed successfully. Native-components job 140593639682 ran every recorded step through the strict lint, scoped owner fixes, complete artifact upload and job cleanup, with every step marked success. Its final GitHub job conclusion is nevertheless cancelled. It began at 15:54:27 UTC and ended at 16:58:02 UTC on 2026-11-27, while the original workflow job timeout is 60 minutes. The available raw log contains no cancellation error, so the precise cancellation cause is not upgraded from inference to fact. The full native workflow remains unqualified. Its original 905-file artifact is 15218861309, 34,505,950 bytes, uploaded archive SHA-256 d6d659925ad47fb778c4317ea2e6154b11ad22cf1f64db7a8d884610f0c5f72e.
+
+The original Linux GNU and musl Bazel jobs both failed. Their failing original Windows executable targets ran through Wine; these are not claims of real Windows success or native Linux failure. All their complete logs, including retries and timeouts, are preserved. Other original Windows platform failures and cancelled macOS work remain open. No skipped, cancelled, failed, or flaky result is reclassified as a pass.
+
+This commit changes evidence only. Follow-up Windows source candidates and their exact commits/runs are independent; these original attempts are never overwritten or retried by this archival step.

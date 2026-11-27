@@ -1,0 +1,55 @@
+{
+  "full_bazel_matrix_qualified": false,
+  "full_native_workflow_qualified": false,
+  "records": [
+    {
+      "conclusion": "cancelled",
+      "gzip_bytes": 403438,
+      "gzip_sha256": "0fb0f41022834386adad3426b0afd09e062c68a4428ee575f285084227eb636b",
+      "job_id": 140593639682,
+      "name": "native-components",
+      "path": "job-140593639682.log.gz",
+      "raw_bytes": 2509149,
+      "raw_sha256": "ff45f47834240400e25c9abfadadbde5e1117d01a4d09ebf2f3b8fef63a01f04",
+      "run_id": 46024897697,
+      "source_head": "d0f3b85fe991d51d23ac6ef0019484aae3a93379"
+    },
+    {
+      "conclusion": "success",
+      "gzip_bytes": 286617,
+      "gzip_sha256": "4eb2cd0953fce310dc59d1eeae526b5ebd560cc7d6ca2163c2d5760ea481c474",
+      "job_id": 140593639691,
+      "name": "legacy-complete",
+      "path": "job-140593639691.log.gz",
+      "raw_bytes": 1640561,
+      "raw_sha256": "55d7dbfa89d63c621c2088b668a85d070128ef7cc3531967bb9db3f7fbcbb3cf",
+      "run_id": 46024897697,
+      "source_head": "d0f3b85fe991d51d23ac6ef0019484aae3a93379"
+    },
+    {
+      "conclusion": "failure",
+      "gzip_bytes": 129298,
+      "gzip_sha256": "0eda1d7d45885e580823ed2a9758fea4cbfd0fe98d3b4086b75c1f39765b52b9",
+      "job_id": 140594591765,
+      "name": "bazel-linux-gnu",
+      "path": "job-140594591765.log.gz",
+      "raw_bytes": 1274799,
+      "raw_sha256": "2dd1e1283d6870a36cf06e7e586db6181ce83f54f66bb5cd87d341f4db78bb88",
+      "run_id": 46025167575,
+      "source_head": "d0f3b85fe991d51d23ac6ef0019484aae3a93379"
+    },
+    {
+      "conclusion": "failure",
+      "gzip_bytes": 130758,
+      "gzip_sha256": "d2d136048e43834c634fff7fd142191822e33f24579e0eb6fedf5f86da6ea034",
+      "job_id": 140594591638,
+      "name": "bazel-linux-musl",
+      "path": "job-140594591638.log.gz",
+      "raw_bytes": 1293782,
+      "raw_sha256": "437e3511da900d9c1b4900c15603954e148242821db4ac615e6e72393d7bec29",
+      "run_id": 46025167575,
+      "source_head": "d0f3b85fe991d51d23ac6ef0019484aae3a93379"
+    }
+  ],
+  "schema": "hia.original-ci-terminal-archive.v1"
+}
