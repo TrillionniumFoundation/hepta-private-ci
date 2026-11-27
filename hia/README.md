@@ -1,6 +1,30 @@
 # HIA components: revision-bound joint qualification
 
-## Current source follow-up: inline UTF-8 boundaries and word equality
+## Current source follow-up: guarded inline head/tail equality
+
+Source commit `99e46153d4db235c00a14056d5e50735c3c69f47`, a direct child of
+`4468d5e58afd8cb2837896afbd2d3fae32c0b97b`, changes only the inline HIA kernel, its
+source-bound ABI contract and literal raw harness. For a comparison of at least
+16 bytes, equality checks the first and last eight-byte words, then compares
+the remaining middle interval with the unchanged word/byte loop. The intervals
+are disjoint and cover the requested length, including 16- and 17-byte cases.
+Short comparisons retain the original loop. Both callers establish slice
+bounds before comparison; the buffers remain immutable during the comparison.
+The previous UTF-8 fold/resolve boundary checks, selection and generic caller
+effects, 96-byte frame, compiler pin, configured lock and Rust source are
+unchanged. This is a static source review, not a native or performance result.
+
+All 63 predecessor literal cases are retained and 12 additional cases are
+configured: 75 cases, 600 planned calls over the existing capacity/fill
+matrix. No new native calls, build or runtime qualification are claimed.
+The predecessor's CI observations and earlier exact-revision local results do
+not qualify this source. All whole-product, production dispatch, default,
+platform, performance and retirement gates remain open.
+
+## Prior source follow-up: inline UTF-8 boundaries and word equality
+
+The following records the initial source-only assessment of that earlier
+revision; its evidence and pending statements are not transferred.
 
 Source commit `82b35fed31d860f647d7ac01226877ab13ec4515` changes only the inline HIA kernel,
 its ABI contract and literal raw harness. Fold and Resolve validate the

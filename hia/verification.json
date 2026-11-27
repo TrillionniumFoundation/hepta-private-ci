@@ -26,16 +26,16 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Source-only follow-up at 82b35fed31d860f647d7ac01226877ab13ec4515. Prior 450f native37 local component results are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
+  "scope": "Source-only follow-up at 99e46153d4db235c00a14056d5e50735c3c69f47. Prior 450f native37 local component results and predecessor 4468d5e CI observations are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
     "status": "source_only_inline_followup_current_tree_pending",
     "qualification_revision": null,
     "source_composed": true,
     "new_source_module": "inline_hidden_tag",
-    "kernel_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
-    "kernel_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
-    "kernel_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
+    "kernel_source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+    "kernel_source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+    "kernel_source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879",
     "owner_source_revision": "27e6ddd7f86ebcc64e2715c57fb10aa4835dd749",
     "public_oracle_source_revision": "7e355e2b4c323b0ad0ff88d3bbf22fb25d7df523",
     "integration_source_revision": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
@@ -56,7 +56,7 @@
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false,
-    "configured_raw_literal_cases": 63,
+    "configured_raw_literal_cases": 75,
     "executed_raw_native_calls": 0,
     "original_inline_public_methods_preserved": 5,
     "added_public_methods_both_features": 11,
@@ -82,8 +82,8 @@
       "native37"
     ],
     "mandatory_predecessor16_gate_executed": false,
-    "scope": "Source-only follow-up at 82b35fed31d860f647d7ac01226877ab13ec4515. Prior 450f native37 local component results are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
-    "planned_raw_native_calls": 504
+    "scope": "Source-only follow-up at 99e46153d4db235c00a14056d5e50735c3c69f47. Prior 450f native37 local component results and predecessor 4468d5e CI observations are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
+    "planned_raw_native_calls": 600
   },
   "source_owner_histories": {
     "17": {
@@ -445,7 +445,7 @@
     "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
   },
   "current_pending_gates": [
-    "Qualify the new inline source, with all original 43 literal cases and 20 added cases; 504 native calls planned, none executed for this follow-up.",
+    "Qualify the new inline source, with all original 43 literal cases, 20 earlier added cases and 12 new head/tail cases; 600 native calls planned, none executed for this follow-up.",
     "Run the complete native37 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
     "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The three library-only symbols remain outside installed reachability claims.",
     "Complete the separate mandatory original/native16/current network owner gate; the current two-baseline workflow cannot replace it.",

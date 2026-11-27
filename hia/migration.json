@@ -82,7 +82,7 @@
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
     "qualification_status": "source_only_inline_followup_current_tree_pending",
     "remaining_work": [
-      "Fresh exact-source B1/B2/B3, all 37 bindings, all retained raw gates including 63 planned inline literal cases (504 calls), native/default owners, Core/UI/installed and full workflow gates. Prior local native37 passes are historical.",
+      "Fresh exact-source B1/B2/B3, all 37 bindings, all retained raw gates including 75 planned inline literal cases (600 calls), native/default owners, Core/UI/installed and full workflow gates. Prior local native37 passes are historical.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -1940,9 +1940,9 @@
     {
       "id": "inline_hidden_tag",
       "hia_source": "hia/inline_hidden_tag.hepta",
-      "hia_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
-      "hia_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
-      "hia_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
+      "hia_source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+      "hia_source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+      "hia_source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879",
       "source_path": "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
       "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
       "source_git_blob": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff",
@@ -1984,8 +1984,8 @@
         "skipped": null,
         "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
         "previous_validation_transferred": false,
-        "literal_cases_planned": 63,
-        "native_calls_planned": 504,
+        "literal_cases_planned": 75,
+        "native_calls_planned": 600,
         "literal_cases_passed": null
       }
     }
@@ -3861,9 +3861,9 @@
       "utf8_stream",
       "inline_hidden_tag"
     ],
-    "new_kernel_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
-    "new_kernel_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
-    "new_kernel_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead"
+    "new_kernel_source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+    "new_kernel_source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+    "new_kernel_source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879"
   },
   "source_owner_histories": {
     "17": {
