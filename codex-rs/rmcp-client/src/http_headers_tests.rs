@@ -220,6 +220,13 @@ async fn explicit_oauth_grant_does_not_extend_helper_or_resource_credential_scop
     let resource = MockServer::start().await;
     let authorization = MockServer::start().await;
     let resource_url = format!("{}/mcp", resource.uri());
+    // rmcp probes the resource before fetching protected resource metadata.
+    Mock::given(method("GET"))
+        .and(path("/mcp"))
+        .respond_with(ResponseTemplate::new(404))
+        .expect(1)
+        .mount(&resource)
+        .await;
     Mock::given(method("GET"))
         .and(path("/.well-known/oauth-protected-resource/mcp"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -304,7 +311,29 @@ async fn explicit_oauth_grant_does_not_extend_helper_or_resource_credential_scop
     ] {
         assert!(authorized[0].headers.get(header).is_none(), "{header}");
     }
-    let original = resource.received_requests().await.unwrap();
+    let (probes, original): (Vec<_>, Vec<_>) = resource
+        .received_requests()
+        .await
+        .unwrap()
+        .into_iter()
+        .partition(|request| request.url.path() == "/mcp");
+    assert_eq!(probes.len(), 1);
+    assert_eq!(probes[0].method.as_str(), "GET");
+    assert_eq!(
+        original
+            .iter()
+            .map(|request| (request.method.as_str(), request.url.path()))
+            .collect::<Vec<_>>(),
+        vec![("GET", "/.well-known/oauth-protected-resource/mcp")]
+    );
+    for (header, expected) in [
+        ("authorization", "Bearer resource-secret"),
+        ("proxy-authorization", "Basic proxy-secret"),
+        ("x-helper", "helper-secret"),
+        ("x-resource-secret", "resource-custom-secret"),
+    ] {
+        assert_eq!(probes[0].headers[header], expected);
+    }
     assert_eq!(original.len(), 1);
     assert_eq!(
         original[0].headers["authorization"],
