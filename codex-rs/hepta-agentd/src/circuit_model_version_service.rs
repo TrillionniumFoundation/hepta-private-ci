@@ -118,6 +118,10 @@ impl Host {
 
     /// Original ordinary deployment entry. Root's command does not contain
     /// C's authenticated RunStart; the unchanged runtime still requires it.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The published positional API remains available to existing callers."
+    )]
     pub async fn serve_original_ordinary(
         self: Arc<Self>,
         stream: UnixStream,
@@ -140,6 +144,24 @@ impl Host {
             Arc::clone(&self).run_original_c(arg0_paths),
         )?;
         Ok(served)
+    }
+
+    /// Accepts the original peer transport as a single value.
+    pub async fn serve_original_ordinary_task_stream(
+        self: Arc<Self>,
+        channel: crate::OriginalCellQ24NoUpdateTaskStreamV1,
+        arg0_paths: codex_arg0::Arg0DispatchPaths,
+    ) -> Result<u64, Error> {
+        self.serve_original_ordinary(
+            channel.stream,
+            channel.peer,
+            channel.uid,
+            channel.original_task_pidfd,
+            channel.timeout,
+            channel.lifetime,
+            arg0_paths,
+        )
+        .await
     }
 
     pub async fn run_original_c(
@@ -259,6 +281,10 @@ impl Host {
     /// The opaque actual S result extends this installed Model pin to C. The
     /// original C observer independently rereads S/T; this endpoint only reads
     /// the held C Cell/Source, never executes or signs C.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The published positional API remains available to existing callers."
+    )]
     pub async fn serve_original_next_use_readback(
         self: Arc<Self>,
         selection: Selection,
@@ -301,6 +327,28 @@ impl Host {
         drop(queued);
         result
     }
+
+    /// Accepts the original peer transport as a single value.
+    pub async fn serve_original_next_use_readback_task_stream(
+        self: Arc<Self>,
+        selection: Selection,
+        channel: crate::OriginalCellQ24NoUpdateTaskStreamV1,
+    ) -> Result<u64, Error> {
+        self.serve_original_next_use_readback(
+            selection,
+            channel.stream,
+            channel.peer,
+            channel.uid,
+            channel.original_task_pidfd,
+            channel.timeout,
+            channel.lifetime,
+        )
+        .await
+    }
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The published positional API remains available to existing callers."
+    )]
     pub async fn serve_original_completion_readiness(
         self: Arc<Self>,
         selection: Selection,
@@ -342,6 +390,24 @@ impl Host {
         .map_err(|_| Error::CommitUncertain)?;
         drop(queued);
         result
+    }
+
+    /// Accepts the original peer transport as a single value.
+    pub async fn serve_original_completion_readiness_task_stream(
+        self: Arc<Self>,
+        selection: Selection,
+        channel: crate::OriginalCellQ24NoUpdateTaskStreamV1,
+    ) -> Result<u64, Error> {
+        self.serve_original_completion_readiness(
+            selection,
+            channel.stream,
+            channel.peer,
+            channel.uid,
+            channel.original_task_pidfd,
+            channel.timeout,
+            channel.lifetime,
+        )
+        .await
     }
     fn original_next_use_reader(
         &self,

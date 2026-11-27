@@ -30,8 +30,10 @@ fn root_factory_record_reopens_bound_without_replacing_original_files() -> anyho
         &Digest32::of_bytes(b"synthetic-writer-data").to_string(),
         &initial,
         &scope,
-        FilePin::capture(&journal)?,
-        FilePin::capture(&witness_file)?,
+        ModelFilePins {
+            journal: FilePin::capture(&journal)?,
+            witness: FilePin::capture(&witness_file)?,
+        },
         Digest32::of_bytes(b"test-file-domain-no-independence-claim"),
         Digest32::of_bytes(b"policy"),
     )?;
@@ -123,8 +125,10 @@ fn root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witn
         &Digest32::of_bytes(b"writer").to_string(),
         &initial,
         &scope,
-        FilePin::capture(&replacement)?,
-        FilePin::capture(&empty_witness)?,
+        ModelFilePins {
+            journal: FilePin::capture(&replacement)?,
+            witness: FilePin::capture(&empty_witness)?,
+        },
         Digest32::of_bytes(b"domain"),
         Digest32::of_bytes(b"policy"),
     )?;

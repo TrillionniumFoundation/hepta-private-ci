@@ -30,8 +30,11 @@ pub struct OriginalCellQ24MaterialSourceConnectionV1 {
 }
 
 impl OriginalCellQ24MaterialSourceConnectionV1 {
-    /// Bind the original descriptor, process and lifetime immediately. No
-    /// Dataset receipt, future head, batch, label or signer is supplied.
+    /// Retains the V1 positional stream constructor for existing callers.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Existing V1 callers use the original positional stream constructor"
+    )]
     pub fn from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -81,6 +84,26 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
             scope,
             baseline,
         })
+    }
+
+    /// Bind the original descriptor, process and lifetime immediately. No
+    /// Dataset receipt, future head, batch, label or signer is supplied.
+    pub fn from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        baseline: Arc<LoadedCellQ24ModelV1>,
+    ) -> Result<Self, Error> {
+        Self::from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            initial,
+            scope,
+            baseline,
+            input.timeout,
+            input.lifetime,
+        )
     }
 
     pub(crate) fn require_initial_context(

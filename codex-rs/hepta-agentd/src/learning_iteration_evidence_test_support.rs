@@ -149,10 +149,10 @@ impl Fixture {
         Ok((
             LearningIterationEvidenceClientV1 {
                 command: None,
-                channel: Mutex::new(Some(Channel {
+                channel: Mutex::new(Some(Box::new(Channel {
                     transport,
                     next_request_id: 1,
-                })),
+                }))),
                 initial: self.initial.clone(),
                 actor_id: self.receipt.actor_id.clone(),
                 verifier: self.verifier.clone(),

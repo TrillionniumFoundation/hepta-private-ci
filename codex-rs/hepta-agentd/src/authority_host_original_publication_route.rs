@@ -2,13 +2,12 @@
 //! owner on the same Root service. A late caller supplies its original end.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
 
 pub(in crate::authority_host_runtime::session) fn prepare_original_publication_route(
     service: &HostAuthorityService,
-    config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner_pidfd: &OwnedFd,
+    peer_inputs: HostAuthorityRegistrationInputs<'_>,
     learning: &RegisteredHostLearningCheckpointV1,
     original_end: Option<Instant>,
     version: PublicationVersion,
@@ -18,6 +17,12 @@ pub(in crate::authority_host_runtime::session) fn prepare_original_publication_r
     RootGenerationPublicationEnrollmentCapabilityV1,
     crate::RootGenerationPublicationOfferV1,
 )> {
+    let HostAuthorityRegistrationInputs {
+        config,
+        registration,
+        owner: owner_pidfd,
+    } = peer_inputs;
+
     crate::authority_host_service::generation_publication::original_root()?;
     if let Some(end) = original_end {
         crate::authority_host_runtime::owner_alive(owner_pidfd, end)?;

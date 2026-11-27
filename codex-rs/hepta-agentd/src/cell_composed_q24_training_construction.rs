@@ -25,7 +25,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         Ok(Self {
             journal,
             witness,
-            plan,
+            plan: Box::new(plan),
             batch,
             rule,
             key,
@@ -67,7 +67,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         Ok(Self {
             journal,
             witness,
-            plan,
+            plan: Box::new(plan),
             batch,
             rule,
             key,

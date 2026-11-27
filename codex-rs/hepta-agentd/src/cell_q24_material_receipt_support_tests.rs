@@ -90,7 +90,6 @@ pub(super) fn sign(
 
 pub(super) struct Fixture {
     root: PathBuf,
-    pub(super) at: u64,
     pub(super) baseline: Arc<LoadedCellQ24ModelV1>,
     pub(super) identity: AgentdIdentity,
     pub(super) source: source::Source,
@@ -373,7 +372,6 @@ impl Fixture {
         Ok(Self {
             _directory: directory,
             root,
-            at,
             baseline,
             identity,
             source,

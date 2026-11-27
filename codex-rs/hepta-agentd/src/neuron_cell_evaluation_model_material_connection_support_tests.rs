@@ -46,6 +46,58 @@ fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChanne
 }
 
 impl OriginalCellEvaluationHostV1 {
+    pub(crate) fn check_model_material_public_peer_constructors(&self) -> anyhow::Result<()> {
+        use crate::learning_iteration_evidence_client::command_test_support as peer_fixture;
+
+        for positional in [true, false] {
+            let initial = self.context.initial()?;
+            let identity = peer_fixture::identity()?;
+            let (stream, _other_end) = UnixStream::pair()?;
+            let input = crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer: crate::LearningIterationEvidencePeerV1 {
+                    pid: identity.pid,
+                    // SAFETY: geteuid reads the current test process credential.
+                    uid: unsafe { libc::geteuid() },
+                    boot_id: identity.boot_id,
+                    process_start_ticks: identity.process_start_ticks,
+                    actor_id: initial.owners.experience.clone(),
+                },
+                original_owner_pidfd: peer_fixture::pidfd()?,
+                timeout: Duration::from_millis(500),
+                lifetime: Duration::from_secs(30),
+            };
+            let result = if positional {
+                OriginalCellEvaluationModelMaterialConnectionV1::from_original_stream(
+                    input.stream,
+                    input.peer,
+                    input.original_owner_pidfd,
+                    initial,
+                    self.context.scope.clone(),
+                    self.context.registration.clone(),
+                    self.context.verifier.clone(),
+                    input.timeout,
+                    input.lifetime,
+                )
+            } else {
+                OriginalCellEvaluationModelMaterialConnectionV1::from_original_peer_stream(
+                    input,
+                    initial,
+                    self.context.scope.clone(),
+                    self.context.registration.clone(),
+                    self.context.verifier.clone(),
+                )
+            };
+            assert!(matches!(
+                result,
+                Err(Error::Binding(
+                    "original empty Root binding and fixed Evaluator material process"
+                ))
+            ));
+        }
+        Ok(())
+    }
+
     pub(crate) fn fixture_model_material_commands(
         self: &Arc<Self>,
         expected: Option<Receipt>,

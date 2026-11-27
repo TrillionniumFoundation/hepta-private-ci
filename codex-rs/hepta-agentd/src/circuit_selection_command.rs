@@ -271,6 +271,10 @@ impl OriginalCircuitSelectionCommandClientV1 {
     /// Cold Root supplies its exact original Training cut and complete original
     /// signatures. This constructor can only restore readback, including when
     /// Root has no confirmed Selection ACK. It cannot manufacture a fresh context.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn recover_from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -305,6 +309,29 @@ impl OriginalCircuitSelectionCommandClientV1 {
             context,
             true,
             retained,
+        )
+    }
+
+    /// Recover the original Selection readback from its checkpoint and peer.
+    pub fn recover_from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+        training: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        verifier: LearningEvidenceVerifierV1,
+        training_evidence: SignedLearningEvidenceV1,
+        expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
+    ) -> Result<Self, Error> {
+        Self::recover_from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            training,
+            scope,
+            verifier,
+            training_evidence,
+            expected,
+            input.timeout,
+            input.lifetime,
         )
     }
 
@@ -444,7 +471,7 @@ impl OriginalCircuitSelectionCommandClientV1 {
         self.context.authenticate(current)?;
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
+                let original = wire::decode_completed(&self.context, snapshot, *evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

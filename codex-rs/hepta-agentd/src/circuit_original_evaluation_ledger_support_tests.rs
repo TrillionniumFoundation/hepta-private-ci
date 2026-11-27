@@ -32,7 +32,7 @@ pub(in super::super) fn decision(
         selected_candidate_id: selected,
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id(&format!("B-actions:{}", episode))?,
+            set_id: id(&format!("B-actions:{episode}"))?,
             state_digest: d("explicit-original-B-decision-state"),
             generator_id: credentials.generator.principal.principal_id.clone(),
             generator_code_digest: d("explicit-original-B-generator"),
@@ -111,11 +111,11 @@ pub(in super::super) fn freeze(
     plan: &DatasetFreezePlanV2,
     at: u64,
 ) -> anyhow::Result<SignedLearningEvidenceV1> {
-    Ok(sign(
+    sign(
         writer.verifier(),
         &credentials.evaluator,
         /*seed*/ 42,
         &dataset_freeze_signing_payload_v2(&writer.snapshot()?, plan)?,
         at,
-    )?)
+    )
 }

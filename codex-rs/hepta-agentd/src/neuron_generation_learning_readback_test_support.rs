@@ -12,15 +12,7 @@ use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
 
 use super::AgentdGenerationLearningUseReadbackV1;
-use crate::LearningIterationCheckpointErrorV1;
-
-// Exercise the exact production codec without widening its production API.
-#[allow(
-    clippy::duplicate_mod,
-    reason = "This test-only exporter reuses the private production codec without widening its API"
-)]
-#[path = "learning_iteration_checkpoint_codec.rs"]
-mod checkpoint_codec;
+use crate::learning_iteration_checkpoint::readback_fixture_codec as checkpoint_codec;
 
 pub(crate) fn verify_original_bytes(
     readback: &AgentdGenerationLearningUseReadbackV1,

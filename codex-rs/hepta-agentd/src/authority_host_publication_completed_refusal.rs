@@ -32,10 +32,6 @@ impl OriginalPublicationHistoryProofV1<'_> {
         self.accepted.original_current()
     }
 
-    pub(crate) fn original_work_expiry_seconds(&self) -> u64 {
-        self.accepted.original_work_expiry_seconds()
-    }
-
     pub(crate) fn acceptance_digest(&self) -> io::Result<Digest32> {
         self.accepted.require_original(self.original)?;
         Ok(Digest32::of_parts(&[

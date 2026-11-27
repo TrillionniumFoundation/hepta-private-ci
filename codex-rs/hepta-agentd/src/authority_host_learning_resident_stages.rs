@@ -22,8 +22,8 @@ use crate::learning_iteration_evidence_client::OriginalCandidateOperationEvidenc
 
 /// Construction is only the corresponding concrete, consuming public factory.
 pub(super) enum ResidentOriginalStageOwnersV3 {
-    NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
-    Candidate(OriginalCellQ24CandidateStageOwnersV1),
+    NoUpdate(Box<OriginalCellQ24NoUpdateStageOwnersV1>),
+    Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
 }
 
 /// A single admitted continuation owns this value until its Root checkpoint.
@@ -168,10 +168,10 @@ impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3 {
     ) -> LearningIterationOwnerFutureV1<'a, ()> {
         match self {
             Self::NoUpdate(stages) => {
-                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)
+                LearningIterationStageOwnerPortsV1::validate_recovery(stages.as_ref(), snapshot)
             }
             Self::Candidate(stages) => {
-                LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)
+                LearningIterationStageOwnerPortsV1::validate_recovery(stages.as_ref(), snapshot)
             }
         }
     }
@@ -183,10 +183,10 @@ impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3 {
     ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
         match self {
             Self::NoUpdate(stages) => {
-                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)
+                LearningIterationStageOwnerPortsV1::execute_stage(stages.as_ref(), snapshot, stage)
             }
             Self::Candidate(stages) => {
-                LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)
+                LearningIterationStageOwnerPortsV1::execute_stage(stages.as_ref(), snapshot, stage)
             }
         }
     }
@@ -197,10 +197,10 @@ impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3 {
     ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
         match self {
             Self::NoUpdate(stages) => {
-                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)
+                LearningIterationStageOwnerPortsV1::prepare_proposal(stages.as_ref(), snapshot)
             }
             Self::Candidate(stages) => {
-                LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)
+                LearningIterationStageOwnerPortsV1::prepare_proposal(stages.as_ref(), snapshot)
             }
         }
     }
@@ -213,13 +213,13 @@ impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3 {
     ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
         match self {
             Self::NoUpdate(stages) => LearningIterationStageOwnerPortsV1::receipt_attestation(
-                stages,
+                stages.as_ref(),
                 snapshot,
                 receipt,
                 now_unix_seconds,
             ),
             Self::Candidate(stages) => LearningIterationStageOwnerPortsV1::receipt_attestation(
-                stages,
+                stages.as_ref(),
                 snapshot,
                 receipt,
                 now_unix_seconds,

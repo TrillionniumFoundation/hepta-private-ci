@@ -161,7 +161,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "self.service.with_initial_publication_context(", "!matches!(&*held, OriginalLedgerCustody::Absent)"))
         self.check_markers(AGENT + "authority_host_historical_ledger_session.rs", "fn take_original_source_ledger(", (
             "std::mem::replace(&mut *held, OriginalLedgerCustody::Absent)",
-            "OriginalLedgerCustody::Registered(original) => Ok(Some(original))", "OriginalLedgerCustody::Held(_)", "self.close()"))
+            "OriginalLedgerCustody::Registered(original) => Ok(Some(*original))", "OriginalLedgerCustody::Held(_)", "self.close()"))
 
     def test_actual_registration_precedes_ack_and_nested_context_keeps_cell(self):
         self.reject_removal(AGENT + "authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",

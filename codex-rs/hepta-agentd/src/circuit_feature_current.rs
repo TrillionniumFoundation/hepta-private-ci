@@ -112,6 +112,7 @@ pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
 pub use retained_publication::prepare_original_circuit_retained_publication_v1;
 pub use retained_publication::recover_original_circuit_retained_publication_v1;
 pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use retained_publication::version::OriginalCircuitRetainedPublicationTaskV1;
 pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;

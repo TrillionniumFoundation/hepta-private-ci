@@ -9,7 +9,6 @@ use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::OriginalCellQ24TrainingReadbackConnectionV1;
 use crate::learning_iteration_evidence_client::wire as evidence_wire;
-use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -340,7 +339,7 @@ fn fault_peer(
                             .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                         wire::CommandResult::Completed {
                             snapshot,
-                            evidence: evidence_wire::Evidence::from_original(&changed),
+                            evidence: Box::new(evidence_wire::Evidence::from_original(&changed)),
                         }
                     }
                 };

@@ -379,7 +379,7 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let completed =
-                    wire::decode_completed(&self.context, snapshot, evidence, fresh_now)?;
+                    wire::decode_completed(&self.context, snapshot, *evidence, fresh_now)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

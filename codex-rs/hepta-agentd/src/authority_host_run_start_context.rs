@@ -4,6 +4,7 @@
 
 use super::inputs::RunStartOwnerIds;
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 
 impl HostAuthorityService {
     pub(super) fn require_run_start_registration(
@@ -48,13 +49,17 @@ impl HostAuthorityService {
         &self,
         retained: &RegisteredInitialRunStartRetentionV1,
         slot: &RegisteredGenerationInitial,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        publisher_pidfd: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         publication: &OriginalRunStartPublicationDataV1,
         request_id: u64,
         session_end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner: publisher_pidfd,
+        } = peer_inputs;
+
         original_root()?;
         if retained.consumed.swap(true, Ordering::AcqRel) {
             return Err(io::Error::other(

@@ -198,6 +198,13 @@ impl RootRetainedRunStartDataV1 {
         Ok(Self { state, refusal })
     }
 
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "CALLERS retains the cold digest boundary with no product callers"
+        )
+    )]
     pub(crate) fn readback_digest(&self) -> io::Result<Digest32> {
         RootDataRefusalV1::inspect(&self.refusal, || {
             self.state.require_exact_unchecked()?;
@@ -209,6 +216,10 @@ impl RootRetainedRunStartDataV1 {
     /// durably retained observation time, not treated as today's permission.
     /// The caller must independently join actual retirement, current AuthBus
     /// and the new recipient's Root learning scope before using this history.
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this guarded cold read with no product callers"
+    )]
     pub(crate) fn read_original_publication(
         &self,
         files: &RootInitialRunStartFilesV1,

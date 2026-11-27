@@ -1,5 +1,6 @@
 //! Retain the separately enrolled factory in the original Root serve scope.
 
+use crate::authority_host_config::HostAuthorityPeerTransport;
 use std::net::Shutdown;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
@@ -206,11 +207,13 @@ fn serve_optional_with_end(
             let result = match original_end {
                 Some(end) => service.serve_q24_model_factory_until(
                     &factory.factory,
-                    config,
-                    registration,
-                    stream,
-                    policy,
-                    owner.try_clone()?,
+                    HostAuthorityPeerTransport {
+                        config,
+                        registration,
+                        stream,
+                        policy,
+                        owner: owner.try_clone()?,
+                    },
                     end,
                 ),
                 None => service.serve_q24_model_factory(

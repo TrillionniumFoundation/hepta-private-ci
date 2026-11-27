@@ -30,6 +30,69 @@ fn protocol(rule: &str) -> anyhow::Result<Registration> {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn named_candidate_peer_constructors_preserve_registered_profile() -> anyhow::Result<()> {
+    use crate::learning_iteration_evidence_client::command_test_support as transport;
+
+    let registered = protocol("original-primary-fold-and-unit-rule")?;
+    let other = protocol("separate-panel")?;
+    pretty_assertions::assert_ne!(registered.evaluation_profile(), other.evaluation_profile());
+    let fixture = MaterialCommandFixture::candidate_pages_for_evaluation_profile(
+        registered.evaluation_profile(),
+    )
+    .await?;
+    let material = &fixture.config;
+    let local_stream = |actor_id: StableId| -> anyhow::Result<_> {
+        let identity = transport::identity()?;
+        let (stream, _other_end) = std::os::unix::net::UnixStream::pair()?;
+        Ok(crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer: crate::LearningIterationEvidencePeerV1 {
+                pid: identity.pid,
+                // SAFETY: this reads only the test process's effective user ID.
+                uid: unsafe { libc::geteuid() },
+                boot_id: identity.boot_id,
+                process_start_ticks: identity.process_start_ticks,
+                actor_id,
+            },
+            original_owner_pidfd: transport::pidfd()?,
+            timeout: Duration::from_millis(500),
+            lifetime: Duration::from_secs(30),
+        })
+    };
+    for create in [
+        crate::OriginalCellEvaluationCommandConnectionV1::from_original_peer_stream,
+        crate::OriginalCellEvaluationCommandConnectionV1::recover_from_original_peer_stream,
+    ] {
+        let result = create(
+            local_stream(material.initial.owners.evaluator.clone())?,
+            material.initial.clone(),
+            material.scope.clone(),
+            other.clone(),
+            material.verifier.clone(),
+        );
+        assert!(matches!(
+            result,
+            Err(crate::OriginalCellEvaluationCommandErrorV1::Binding(
+                "original empty Root cut and fixed Evaluator process"
+            ))
+        ));
+    }
+    let model = crate::OriginalCellQ24ModelCommandConnectionV1::recover_from_original_peer_stream(
+        local_stream(material.initial.owners.proposal.clone())?,
+        material.clone(),
+        other,
+        None,
+    );
+    assert!(matches!(
+        model,
+        Err(crate::OriginalCellQ24ModelCommandErrorV1::Binding(
+            "original Model actor and pre-registered panel"
+        ))
+    ));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn candidate_stage_reads_actual_candidate_from_same_three_original_owners()
 -> anyhow::Result<()> {
     // Canonical B/retention registration is fixed before the actual A source,

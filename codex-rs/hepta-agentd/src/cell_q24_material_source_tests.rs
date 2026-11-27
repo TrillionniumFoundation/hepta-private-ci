@@ -220,10 +220,10 @@ fn connected_original_evidence(
     Ok((
         crate::LearningIterationEvidenceClientV1 {
             command: None,
-            channel: Mutex::new(Some(EvidenceChannel {
+            channel: Mutex::new(Some(Box::new(EvidenceChannel {
                 transport,
                 next_request_id: 1,
-            })),
+            }))),
             initial: f.initial.clone(),
             actor_id: f.initial.owners.owner(role.stage()).clone(),
             verifier: f.config.verifier.clone(),

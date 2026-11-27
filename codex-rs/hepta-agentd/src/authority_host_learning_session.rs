@@ -1,5 +1,6 @@
 //! A dedicated learning listener inside the same retained Root serve scope.
 
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::net::Shutdown;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
@@ -286,9 +287,11 @@ fn serve_optional_with_end(
                 learning.publication.as_ref(),
                 &learning.learning,
                 service,
-                config,
-                registration,
-                owner,
+                HostAuthorityRegistrationInputs {
+                    config,
+                    registration,
+                    owner,
+                },
                 end,
                 run_model,
             ),

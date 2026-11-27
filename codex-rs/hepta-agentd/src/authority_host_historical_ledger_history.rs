@@ -28,8 +28,8 @@ enum HistoryState {
     Verifying,
     Complete {
         observed: Box<OriginalLedgerObservation>,
-        held: OriginalLedgerReadGuard,
-        trust: RegisteredInitialLearningTrustV1,
+        held: Box<OriginalLedgerReadGuard>,
+        trust: Box<RegisteredInitialLearningTrustV1>,
     },
 }
 
@@ -231,7 +231,7 @@ impl PendingOriginalLedgerHistoryV1<'_> {
             verifier: activated.verifier(),
         };
         let mode = OriginalLedgerReadModeV1::Retained {
-            ledger: LedgerReadOnlyCutV1 {
+            ledger: Box::new(LedgerReadOnlyCutV1 {
                 binding: cut.ledger_binding.parse().map_err(io::Error::other)?,
                 frontier: LedgerWitnessFrontier {
                     anchor: LedgerAnchor {
@@ -245,7 +245,7 @@ impl PendingOriginalLedgerHistoryV1<'_> {
                 ledger_digest: cut.ledger_image.parse().map_err(io::Error::other)?,
                 witness_length: cut.witness_length,
                 witness_digest: cut.witness_image.parse().map_err(io::Error::other)?,
-            },
+            }),
             signatures: JournalAnchor {
                 sequence: cut.signature_sequence,
                 checkpoint_digest: cut.signature_checkpoint.parse().map_err(io::Error::other)?,
@@ -298,8 +298,8 @@ impl PendingOriginalLedgerHistoryV1<'_> {
         }
         self.state = HistoryState::Complete {
             observed: Box::new(observed),
-            held,
-            trust,
+            held: Box::new(held),
+            trust: Box::new(trust),
         };
         Ok(RootOriginalHistoricalLedgerObservationV1 {
             record: record.clone(),

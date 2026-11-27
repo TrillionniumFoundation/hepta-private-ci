@@ -22,8 +22,7 @@ use codex_hepta_learning_ledger::outcome_signing_payload_v2;
 use codex_hepta_types::FixedQ32;
 use pretty_assertions::assert_eq;
 
-#[path = "circuit_credit_ledger_test_support.rs"]
-mod ledger;
+use crate::circuit_cell::tests::ledger_support as ledger;
 
 fn initial(
     publication: &CircuitTaskSourcePublicationV1,

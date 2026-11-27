@@ -74,12 +74,11 @@ impl RetainedIssuerFixtureV1 {
         )?;
         let checkpoint = original.version.retained_artifact_checkpoint()?;
         let inputs = original.inputs()?;
-        let host = OriginalCircuitRetainedVersionHostV1::from_original_owners(
+        let host = OriginalCircuitRetainedVersionHostV1::from_original_publication_task(
             material,
             dataset,
             training,
-            inputs,
-            task,
+            crate::OriginalCircuitRetainedPublicationTaskV1 { inputs, task },
             checkpoint,
             issuer,
             Duration::from_secs(300),
@@ -144,7 +143,7 @@ impl RetainedIssuerFixtureV1 {
 }
 
 enum RetainedIssuerReplyV1 {
-    Signed(SignedFinalUseGrant),
+    Signed(Box<SignedFinalUseGrant>),
     Denied,
     LoseAck,
 }
@@ -178,7 +177,7 @@ fn root_reply(
             return Ok(());
         }
         let (grant, denial) = match reply {
-            RetainedIssuerReplyV1::Signed(grant) => (Some(grant), None),
+            RetainedIssuerReplyV1::Signed(grant) => (Some(*grant), None),
             RetainedIssuerReplyV1::Denied => (None, Some("explicit fixture policy denied")),
             RetainedIssuerReplyV1::LoseAck => unreachable!("handled above"),
         };

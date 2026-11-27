@@ -9,7 +9,7 @@ use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 
-pub(super) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
+pub(crate) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -25,7 +25,7 @@ pub(super) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::
     Ok(())
 }
 
-pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
+pub(crate) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
     // SAFETY: pidfd_open creates one new owned pin for the retained parent or child.
     let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
     anyhow::ensure!(fd >= 0, "{}", io::Error::last_os_error());
@@ -33,7 +33,7 @@ pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
     Ok(unsafe { OwnedFd::from_raw_fd(fd as i32) })
 }
 
-pub(super) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
+pub(crate) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
     let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
     Ok(stat
         .rsplit_once(") ")
@@ -43,7 +43,7 @@ pub(super) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(super) struct ProtectedFile {
+pub(crate) struct ProtectedFile {
     device: u64,
     inode: u64,
     owner: u32,
@@ -51,7 +51,7 @@ pub(super) struct ProtectedFile {
     bytes: Vec<u8>,
 }
 
-pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
+pub(crate) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
     std::fs::read_dir(path)?
         .map(|entry| {
             let path = entry?.path();
@@ -73,13 +73,17 @@ pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, P
         .collect()
 }
 
-pub(super) struct ChildOwner {
+pub(crate) struct ChildOwner {
     child: Option<Child>,
     deadline: Instant,
 }
 
 impl ChildOwner {
-    pub(super) fn spawn(receive: UnixDatagram, state: &Path) -> anyhow::Result<Self> {
+    pub(crate) fn spawn(
+        receive: UnixDatagram,
+        state: &Path,
+        child_test: &str,
+    ) -> anyhow::Result<Self> {
         let executable = File::open(std::env::current_exe()?)?;
         let inherited = [receive.as_raw_fd(), executable.as_raw_fd()];
         let mut command = Command::new("/usr/bin/setpriv");
@@ -96,7 +100,7 @@ impl ChildOwner {
             .arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
             .args([
                 "--exact",
-                CHILD_TEST,
+                child_test,
                 "--ignored",
                 "--nocapture",
                 "--test-threads=1",
@@ -138,14 +142,14 @@ impl ChildOwner {
         })
     }
 
-    pub(super) fn pid(&self) -> anyhow::Result<u32> {
+    pub(crate) fn pid(&self) -> anyhow::Result<u32> {
         self.child
             .as_ref()
             .map(Child::id)
             .ok_or_else(|| anyhow::anyhow!("retained original child required"))
     }
 
-    pub(super) fn release(&mut self) -> anyhow::Result<()> {
+    pub(crate) fn release(&mut self) -> anyhow::Result<()> {
         self.child
             .as_mut()
             .and_then(|child| child.stdin.as_mut())
@@ -154,7 +158,7 @@ impl ChildOwner {
         Ok(())
     }
 
-    pub(super) fn finish(mut self) -> anyhow::Result<String> {
+    pub(crate) fn finish(mut self) -> anyhow::Result<String> {
         loop {
             if self
                 .child
@@ -195,23 +199,4 @@ impl Drop for ChildOwner {
             let _ = child.wait();
         }
     }
-}
-
-pub(super) fn observation(stream: &mut UnixStream) -> anyhow::Result<serde_json::Value> {
-    stream.set_read_timeout(Some(Duration::from_millis(500)))?;
-    stream.set_write_timeout(Some(Duration::from_millis(500)))?;
-    let request = serde_json::to_vec(&serde_json::json!({"schema_version":1,
-        "operation":"runtime.authority.observation.v1"}))?;
-    stream.write_all(&(request.len() as u32).to_be_bytes())?;
-    stream.write_all(&request)?;
-    let mut length = [0; 4];
-    stream.read_exact(&mut length)?;
-    let length = u32::from_be_bytes(length) as usize;
-    anyhow::ensure!(
-        (1..=16 * 1024).contains(&length),
-        "bounded observation reply required"
-    );
-    let mut bytes = vec![0; length];
-    stream.read_exact(&mut bytes)?;
-    Ok(serde_json::from_slice(&bytes)?)
 }

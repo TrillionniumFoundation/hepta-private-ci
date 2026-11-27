@@ -87,12 +87,14 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     ) -> Result<u64, Error> {
         self.serve_role_commands(
             Role::Experience,
-            stream,
-            consumer,
-            consumer_uid,
-            original_consumer_pidfd,
-            timeout,
-            lifetime,
+            crate::OriginalCellQ24NoUpdateTaskStreamV1 {
+                stream,
+                peer: consumer,
+                uid: consumer_uid,
+                original_task_pidfd: original_consumer_pidfd,
+                timeout,
+                lifetime,
+            },
         )
     }
 
@@ -107,25 +109,31 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     ) -> Result<u64, Error> {
         self.serve_role_commands(
             Role::Dataset,
-            stream,
-            consumer,
-            consumer_uid,
-            original_consumer_pidfd,
-            timeout,
-            lifetime,
+            crate::OriginalCellQ24NoUpdateTaskStreamV1 {
+                stream,
+                peer: consumer,
+                uid: consumer_uid,
+                original_task_pidfd: original_consumer_pidfd,
+                timeout,
+                lifetime,
+            },
         )
     }
 
     fn serve_role_commands(
         &self,
         role: Role,
-        stream: UnixStream,
-        consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd,
-        timeout: Duration,
-        lifetime: Duration,
+        input: crate::OriginalCellQ24NoUpdateTaskStreamV1,
     ) -> Result<u64, Error> {
+        let crate::OriginalCellQ24NoUpdateTaskStreamV1 {
+            stream,
+            peer: consumer,
+            uid: consumer_uid,
+            original_task_pidfd: original_consumer_pidfd,
+            timeout,
+            lifetime,
+        } = input;
+
         let _permit = self.connections.try_acquire().map_err(|_| Error::Busy)?;
         let mut channel = original_owner_command_channel_v1(
             stream,

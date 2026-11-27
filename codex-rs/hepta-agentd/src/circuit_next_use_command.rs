@@ -294,6 +294,10 @@ impl OriginalCircuitNextUseCommandClientV1 {
     /// Cold Root supplies its exact original Selection cut and complete original
     /// signatures. This constructor can only restore readback, including when
     /// Root has no confirmed NextUse ACK. It cannot manufacture a fresh context.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn recover_from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -330,6 +334,31 @@ impl OriginalCircuitNextUseCommandClientV1 {
             context,
             true,
             retained,
+        )
+    }
+
+    /// Recover the original NextUse readback from its checkpoint and peer.
+    pub fn recover_from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+        selection: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        verifier: LearningEvidenceVerifierV1,
+        training_evidence: SignedLearningEvidenceV1,
+        selection_evidence: SignedLearningEvidenceV1,
+        expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
+    ) -> Result<Self, Error> {
+        Self::recover_from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            selection,
+            scope,
+            verifier,
+            training_evidence,
+            selection_evidence,
+            expected,
+            input.timeout,
+            input.lifetime,
         )
     }
 
@@ -456,7 +485,7 @@ impl OriginalCircuitNextUseCommandClientV1 {
             let bytes = channel.peer.request(&encoded);
             #[cfg(test)]
             if let Err(error) = &bytes {
-                diagnostics::transport_error("client.command_transport", error);
+                diagnostics::transport_error("client.command_transport", *error);
             }
             let bytes = bytes.map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
@@ -480,7 +509,7 @@ impl OriginalCircuitNextUseCommandClientV1 {
         }
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
+                let original = wire::decode_completed(&self.context, snapshot, *evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

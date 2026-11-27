@@ -61,7 +61,7 @@ impl ResidentRegisteredStateV3 {
                 )
                 .map_err(|_| Error::Unavailable)?;
             match result.value {
-                ResidentStoreValueV3::Snapshot(snapshot) => Ok((snapshot, result.now_ms)),
+                ResidentStoreValueV3::Snapshot(snapshot) => Ok((*snapshot, result.now_ms)),
                 _ => Err(Error::Unavailable),
             }
         })
@@ -92,7 +92,7 @@ impl ResidentRegisteredStateV3 {
                 )
                 .map_err(|_| Error::CommitUncertain)?;
             match result.value {
-                ResidentStoreValueV3::Fresh(fresh) => Ok(fresh),
+                ResidentStoreValueV3::Fresh(fresh) => Ok(fresh.map(|fresh| *fresh)),
                 _ => Err(Error::CommitUncertain),
             }
         })

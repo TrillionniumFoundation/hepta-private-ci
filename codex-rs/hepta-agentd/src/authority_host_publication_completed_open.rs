@@ -18,9 +18,9 @@ impl<'a> OriginalCompletedPublicationReadV1<'a> {
         root_path: &Path,
         inputs: RootGenerationPublicationEnrollmentV1,
         files: Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>,
-        mode: OriginalCompletedPublicationModeV1,
-        end: Instant,
+        read_inputs: OriginalCompletedPublicationReadInputs,
     ) -> io::Result<Self> {
+        let OriginalCompletedPublicationReadInputs { mode, end } = read_inputs;
         original_root()?;
         refusal::require_end(end)?;
         let profile = proof.original_profile()?;

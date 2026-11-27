@@ -356,7 +356,7 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, current)?;
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
+                let original = wire::decode_completed(&self.context, snapshot, *evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

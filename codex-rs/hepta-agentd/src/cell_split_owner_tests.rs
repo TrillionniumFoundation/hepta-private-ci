@@ -596,7 +596,7 @@ fn split_binding_rejects_rebound_baseline_and_future_window() {
     too_short.minimum_future_window_micros = 0;
     assert_eq!(too_short.validate(), Err(CellSplitErrorV1::InvalidPlan));
     let mut no_change_as_candidate = frozen.clone();
-    no_change_as_candidate.no_change_baseline_id = frozen.selected_candidate_id.clone();
+    no_change_as_candidate.no_change_baseline_id = frozen.selected_candidate_id;
     assert_eq!(
         no_change_as_candidate.validate(),
         Err(CellSplitErrorV1::InvalidPlan)
@@ -621,7 +621,7 @@ fn artifact_identity_is_independent_from_cell_and_candidate_ids() {
     let mut stale_lineage = p.clone();
     stale_lineage.predecessor_artifact_id = id("artifact:wrong-parent");
     assert_ne!(p.binding_digest(), stale_lineage.binding_digest());
-    let mut invalid_lineage = p.clone();
+    let mut invalid_lineage = p;
     invalid_lineage.child_artifact_id = invalid_lineage.predecessor_artifact_id.clone();
     assert_eq!(
         invalid_lineage.validate(),

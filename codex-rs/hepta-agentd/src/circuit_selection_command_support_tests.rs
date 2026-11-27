@@ -189,10 +189,10 @@ pub(crate) fn evidence_client(
     Ok((
         LearningIterationEvidenceClientV1 {
             command: None,
-            channel: Mutex::new(Some(EvidenceChannel {
+            channel: Mutex::new(Some(Box::new(EvidenceChannel {
                 transport,
                 next_request_id: 1,
-            })),
+            }))),
             initial: context.initial()?,
             actor_id: context.training.owners.selector.clone(),
             verifier: context.verifier.clone(),
@@ -233,7 +233,7 @@ pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(
                 wire::decode_completed(
                     &owner.context,
                     snapshot,
-                    evidence,
+                    *evidence,
                     now().map_err(|_| HostIssuerTransportError::InvalidRequest)?,
                 )
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?,

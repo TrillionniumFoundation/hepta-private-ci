@@ -54,6 +54,13 @@ pub(super) struct CTaskData {
     files: files::ExecutionFilesData,
 }
 
+pub(super) struct OriginalCTaskSelectionInputs<'a> {
+    pub(super) route: &'a OriginalPreparedPublicationRoute,
+    pub(super) identity: &'a AgentdIdentity,
+    pub(super) decision: &'a Decision,
+    pub(super) selected: &'a CellBackendManifestV2,
+}
+
 pub(super) struct OriginalCTaskPlan {
     source: OriginalLateInput,
     target: OriginalLateInput,
@@ -139,16 +146,17 @@ impl OriginalCTaskPlan {
 
     pub(super) async fn open_original_new_task(
         self,
-        route: &OriginalPreparedPublicationRoute,
-        identity: &AgentdIdentity,
-        decision: &Decision,
-        selected: &CellBackendManifestV2,
+        selection: OriginalCTaskSelectionInputs<'_>,
         baseline: Arc<LoadedCellQ24ModelV1>,
         owners: &OriginalCellQ24LearningStageOwnersV1,
         receipt: &OriginalHistoricalTaskReadReceiptV1,
         files: &mut OriginalFiles,
         cancelled: &CancellationToken,
     ) -> Result<OriginalNewCTask, AgentdError> {
+        let route: &OriginalPreparedPublicationRoute = selection.route;
+        let identity: &AgentdIdentity = selection.identity;
+        let decision: &Decision = selection.decision;
+        let selected: &CellBackendManifestV2 = selection.selected;
         if !matches!(self.mode, OpenMode::Create) {
             return Err(refused(
                 "an existing C requires explicit original cold recovery",

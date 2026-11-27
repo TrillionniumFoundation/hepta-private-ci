@@ -90,7 +90,7 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
 
 enum FixtureAccess {
     Fresh,
-    Readonly(OriginalCellQ24ModelCommandReceiptV1),
+    Readonly(Box<OriginalCellQ24ModelCommandReceiptV1>),
 }
 fn fixture_client(
     context: Context,
@@ -102,7 +102,7 @@ fn fixture_client(
     let (stream, peer) = UnixStream::pair()?;
     let (execution_requested, retained) = match access {
         FixtureAccess::Fresh => (false, None),
-        FixtureAccess::Readonly(original) => (true, Some(original)),
+        FixtureAccess::Readonly(original) => (true, Some(*original)),
     };
     Ok((
         OriginalCellQ24ModelCommandClientV1 {
@@ -381,8 +381,10 @@ impl OriginalCellQ24ModelCommandReceiptV1 {
 
         // A separately supplied original readonly handoff never inherits
         // Execute, even though the original completion and signature pin exist.
-        let (cold, mut peer) =
-            fixture_client(context.clone(), FixtureAccess::Readonly(retained.clone()))?;
+        let (cold, mut peer) = fixture_client(
+            context.clone(),
+            FixtureAccess::Readonly(Box::new(retained.clone())),
+        )?;
         let server = std::thread::spawn(move || -> anyhow::Result<()> {
             assert!(peer.exchange(|bytes| response(
                 &context,

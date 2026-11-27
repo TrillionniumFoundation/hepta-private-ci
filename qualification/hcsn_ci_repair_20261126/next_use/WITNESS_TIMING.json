@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic",
+  "source_commit": "bc4912ea657864d33b36a57da0b50eb35bee90af",
+  "source_blob": {
+    "original": "60f16e8ee8608f095ce1233c10eeb5733be49c8d",
+    "buffered": "6e22e42d36de9b72ca206ed3800c3c93489b3f00"
+  },
+  "platform": "native x86_64-unknown-linux-musl; Rust 1.96.0; the original locked dev/test package settings; test profile for agentd opt-level 1, debug assertions and overflow checks enabled, debug info 0, no additional rustflags",
+  "plan": "Before inspecting new results, alternate baseline/buffered/buffered/baseline for twelve total independent executions of the original next-use evidence 500 ms test, six per source, no automatic retry, locally under a common load. Preserve each result and elapsed subphases. One separately instrumented strace per version is diagnostic only. Full-current source runs and hosted musl qualify separately.",
+  "binary_sha256": {
+    "baseline": "9ded852f938f2c4cf8edb6b74c157731aa29329245f3fc61938aad90872a22b0",
+    "buffered": "59b42b24604f367a904ee47ee07ec0afcbb0a3a798772c3fd405a9bcefb10d0e"
+  },
+  "leaf_tests": {
+    "original": {
+      "pass": 25,
+      "fail": 0,
+      "ignore": 0
+    },
+    "buffered": {
+      "pass": 25,
+      "fail": 0,
+      "ignore": 0
+    }
+  },
+  "runs": [
+    {
+      "sequence": 1,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 576173,
+      "evidence_return_us": 501859,
+      "deadline_errors": true,
+      "log_sha256": "76a329ebb9d0a00e045645ffd31130682673f0dc32c26b3ffa748a80f6d6ff87"
+    },
+    {
+      "sequence": 2,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 533472,
+      "evidence_return_us": 501220,
+      "deadline_errors": true,
+      "log_sha256": "3a05a6e997c9409021d667b036523250bcb273a218438d514e2014dd4e2f1e5c"
+    },
+    {
+      "sequence": 3,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 676695,
+      "evidence_return_us": 501783,
+      "deadline_errors": true,
+      "log_sha256": "57306f21b3b19d7bef4383098ad2ac4de8f728e787afed3260e953e2bf9b41a8"
+    },
+    {
+      "sequence": 4,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 756603,
+      "evidence_return_us": 500909,
+      "deadline_errors": true,
+      "log_sha256": "1850d2c9e061fc2e000feda2d0e0e83b03ad433610345ff038cba7a529bb2225"
+    },
+    {
+      "sequence": 5,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 538403,
+      "evidence_return_us": 501348,
+      "deadline_errors": true,
+      "log_sha256": "bc4a6cd5ba3a3afd134d257a6829bd3c030ae2ef548c37d1789cbb58ea35ff4e"
+    },
+    {
+      "sequence": 6,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 755241,
+      "evidence_return_us": 501802,
+      "deadline_errors": true,
+      "log_sha256": "0a95da942ecc8e4b2e508c83b6f21eb3d85f919aa52b4ba347d75af0461f300c"
+    },
+    {
+      "sequence": 7,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 499032,
+      "evidence_return_us": 501053,
+      "deadline_errors": true,
+      "log_sha256": "9364c239bbb1d30d4a5e179dad89d64fefde915c14cf46e08dde3f6faae49051"
+    },
+    {
+      "sequence": 8,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 559456,
+      "evidence_return_us": 501554,
+      "deadline_errors": true,
+      "log_sha256": "35798f527a72234a29427e71294fd11ba7316ef94cb9dbceb1e313bbe53e45d8"
+    },
+    {
+      "sequence": 9,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 625930,
+      "evidence_return_us": 501093,
+      "deadline_errors": true,
+      "log_sha256": "456e4cbd103eef670cf0e5811aa0be6e3e734d845c3b756eff5b47af63576163"
+    },
+    {
+      "sequence": 10,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 712537,
+      "evidence_return_us": 500997,
+      "deadline_errors": true,
+      "log_sha256": "ebafec739f9090535715a0fb8a1aeeece892d5b2f73fcbf6323ca6b1fc2f7fc4"
+    },
+    {
+      "sequence": 11,
+      "arm": "buffered",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 587048,
+      "evidence_return_us": 501471,
+      "deadline_errors": true,
+      "log_sha256": "3bd459694a03d3faac735a5db14fb11f75feb010778e295013a54f8999390716"
+    },
+    {
+      "sequence": 12,
+      "arm": "baseline",
+      "return_code": 101,
+      "exactly_one_test": true,
+      "test_pass": 0,
+      "command_us": 755874,
+      "evidence_return_us": 501622,
+      "deadline_errors": true,
+      "log_sha256": "96c766f44da9bbd86019a971926066bb3d5c2731924f0800267acf96959b9b47"
+    }
+  ],
+  "timing_interpretation": "A deadline error censors completion. Report the client-observed return separately from the longer command readback whose result is validated against the same original state. Per-process strace observations terminated at different work points and are not a matched leaf syscall comparison.",
+  "interpretation": "Neither binary completed the original acceptance case within its evidence deadline in these twelve processes. The buffered-only candidate is not accepted.",
+  "trace_policy": "Six separate GNU diagnostic executions sampled at the listed requested offsets following the command timing marker, before the evidence return. Stack stops perturb time. They do not provide a representative CPU-frequency estimate.",
+  "requested_gnu_sample_offsets_ms": [
+    {
+      "offset": 45,
+      "observed": "SHA-256 of physically read execution anchor in SourceOwner::require_current"
+    },
+    {
+      "offset": 110,
+      "observed": "serialization of current owner binding for its digest"
+    },
+    {
+      "offset": 185,
+      "observed": "decoding of the evidence signer's Ed25519 verifying key"
+    },
+    {
+      "offset": 260,
+      "observed": "strict Ed25519 signature verification of an artifact selection"
+    },
+    {
+      "offset": 335,
+      "observed": "deserialization of the CURRENT test fixture's FileCas value"
+    },
+    {
+      "offset": 410,
+      "observed": "strict Ed25519 signature verification of an artifact selection"
+    }
+  ]
+}

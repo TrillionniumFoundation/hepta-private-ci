@@ -47,13 +47,15 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
             let config = &member.qualification.config;
             OriginalCellEvaluationCohortCustodyV1::require_original_member(
                 &member.cohort,
-                registration,
-                task,
-                &config.training,
-                &config.scope,
-                &config.plan,
-                &config.training_evidence,
-                &config.verifier,
+                crate::circuit_on_policy_evaluation::CohortMemberInputs {
+                    registration,
+                    task,
+                    training: &config.training,
+                    scope: &config.scope,
+                    plan: &config.plan,
+                    training_evidence: &config.training_evidence,
+                    verifier: &config.verifier,
+                },
             )?;
             let saved = original::validate_config(config)?;
             let record = config.plan.record();

@@ -59,6 +59,10 @@ impl RootHistoricalTaskReadClientV1 {
 
     /// First acceptance is an explicit one-shot request on the existing lane.
     /// An uncertain response never permits another attempt by this client.
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this one-shot session boundary with no product callers"
+    )]
     pub(crate) fn accept_original_completed_learning(
         self: &Arc<Self>,
         session: &AgentdRootAuthoritySession,

@@ -3,19 +3,25 @@
 //! lane, after both native readbacks and the complete Root context return.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::cell_q24_model_proposal::project_original_root_model;
 use crate::root_q24_model_b_protocol as wire;
 
 pub(super) fn serve_original_b_model_request(
-    service: &HostAuthorityService,
+    peer_inputs: HostAuthorityCallInputs<'_>,
     factory: &RegisteredQ24ModelFactory,
-    config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner_pidfd: &OwnedFd,
     bytes: &[u8],
     next_request_id: &mut u64,
-    frame_end: Instant,
 ) -> io::Result<Vec<u8>> {
+    let frame_end: Instant = peer_inputs.end;
+    let HostAuthorityCallInputs {
+        service,
+        config,
+        registration,
+        owner: owner_pidfd,
+        ..
+    } = peer_inputs;
+
     let request: wire::Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
     if request.schema != 2
         || factory.profile.wire_schema() != 2
@@ -49,11 +55,13 @@ pub(super) fn serve_original_b_model_request(
     // durable attempt. Never enter with_learning_profile around this call.
     crate::OriginalRootIndependentBEvaluationFilesV1::with_original_completed_evaluation(
         original,
-        service,
-        config,
-        registration,
-        owner_pidfd,
-        frame_end,
+        HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner: owner_pidfd,
+            end: frame_end,
+        },
         training_head,
         |actual| {
             let scope = factory.learning.require_cell_scope(

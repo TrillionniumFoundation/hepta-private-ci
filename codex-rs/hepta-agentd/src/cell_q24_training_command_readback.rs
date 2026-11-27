@@ -158,7 +158,7 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
         }
         let training = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                wire::decode_completed(&context, snapshot, evidence, current)?
+                wire::decode_completed(&context, snapshot, *evidence, current)?
             }
             wire::CommandResult::Missing => return Err(Error::Missing),
             wire::CommandResult::Pending => return Err(Error::Pending),
@@ -235,7 +235,7 @@ impl OriginalCellQ24TrainingReadbackConnectionV1 {
         Ok(LearningIterationEvidenceClientV1 {
             channel: Mutex::new(None),
             command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Training(
-                reader,
+                Box::new(reader),
             )))),
             initial,
             actor_id,
@@ -289,7 +289,7 @@ impl OriginalTrainingReadbackV1 {
         }
         let completed = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                wire::decode_completed(&self.context, snapshot, evidence, current)?
+                wire::decode_completed(&self.context, snapshot, *evidence, current)?
             }
             // This capability already pins a real completed T. A different
             // current state cannot erase that fact or become a fresh NoUpdate.

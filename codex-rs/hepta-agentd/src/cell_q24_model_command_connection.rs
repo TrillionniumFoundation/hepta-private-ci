@@ -46,18 +46,24 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             material,
             registration,
-            timeout,
-            lifetime,
             Origin::Fresh,
         )
     }
     /// A checkpoint can pin the original record. It never grants Execute and
     /// is authenticated only after the actual original D/T/E have been read.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 peer constructor retains its original positional signature"
+    )]
     pub fn recover_from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
@@ -69,26 +75,53 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             material,
             registration,
-            timeout,
-            lifetime,
             Origin::Recovered(expected.map(Box::new)),
         )
     }
-    fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+
+    /// Recover the original Model peer against its optional pinned checkpoint.
+    pub fn recover_from_original_peer_stream(
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         material: OriginalCellQ24MaterialReceiptConfigV1,
         registration: OriginalCellEvaluationPanelRegistrationV1,
-        timeout: Duration,
-        lifetime: Duration,
+        expected: Option<(LearningIterationSnapshotV1, Digest32)>,
+    ) -> Result<Self, Error> {
+        Self::recover_from_original_stream(
+            input.stream,
+            input.peer,
+            input.original_owner_pidfd,
+            material,
+            registration,
+            expected,
+            input.timeout,
+            input.lifetime,
+        )
+    }
+    fn bind_original_stream(
+        transport: crate::OriginalCellQ24NoUpdatePeerStreamV1,
+
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        registration: OriginalCellEvaluationPanelRegistrationV1,
+
         origin: Origin,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = transport;
+
         let (initial_binding, started) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         if peer.actor_id != material.initial.owners.proposal

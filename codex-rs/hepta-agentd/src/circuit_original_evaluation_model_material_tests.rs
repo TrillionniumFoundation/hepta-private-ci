@@ -29,6 +29,16 @@ async fn complete(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn public_model_material_constructors_require_the_original_evaluator() -> anyhow::Result<()> {
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    fixture
+        .host
+        .as_ref()
+        .context("registered evaluator")?
+        .check_model_material_public_peer_constructors()
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_model_material_reads_actual_panel_and_identical_local_digest()
 -> anyhow::Result<()> {
     let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;

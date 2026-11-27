@@ -1,6 +1,7 @@
 //! Root-only late enrollment from actual original capabilities, after the
 //! original learning decision exists. Peer messages cannot supply these inputs.
 
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::os::unix::fs::MetadataExt;
 use std::sync::Arc;
 
@@ -94,14 +95,18 @@ pub struct RootGenerationPublicationEnrollmentV1 {
 impl HostAuthorityService {
     pub(super) fn enroll_armed_generation_publication(
         &self,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
         version: PublicationVersion,
         refusal: Arc<PublicationRefusal>,
     ) -> io::Result<RegisteredGenerationPublication> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        } = peer_inputs;
+
         original_root()?;
         self.with_learning_profile(
             config,

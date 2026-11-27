@@ -73,8 +73,8 @@ pub struct OriginalCellQ24TrainingSigningConfigV1 {
 }
 
 pub struct OriginalCellQ24TrainingReceiptOwnerV1<W: AnchorWitnessStore> {
-    journal: LearningOwnerJournalV1<W>,
-    config: OriginalCellQ24TrainingSigningConfigV1,
+    journal: Box<LearningOwnerJournalV1<W>>,
+    config: Box<OriginalCellQ24TrainingSigningConfigV1>,
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
 }
@@ -89,8 +89,8 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
         Ok(Self {
-            journal,
-            config,
+            journal: Box::new(journal),
+            config: Box::new(config),
             key,
             saved,
         })
@@ -107,8 +107,8 @@ impl<W: AnchorWitnessStore> OriginalCellQ24TrainingReceiptOwnerV1<W> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
         Ok(Self {
-            journal,
-            config,
+            journal: Box::new(journal),
+            config: Box::new(config),
             key,
             saved,
         })

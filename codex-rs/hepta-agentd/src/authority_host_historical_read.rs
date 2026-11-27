@@ -2,6 +2,7 @@
 //! Protected deployment data fixes both the current recipient and old inputs;
 //! it neither opens a legacy learning checkpoint nor freezes a Dataset scope.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
 use std::io;
 use std::os::fd::OwnedFd;
 use std::path::Path;
@@ -225,14 +226,19 @@ impl HistoricalTaskReadRuntime {
 
     fn observe_complete_task(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         operation: HistoricalReadOperationV1,
         request_id: u64,
-        end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
+
         let trust_requested = match operation {
             HistoricalReadOperationV1::Task => false,
             HistoricalReadOperationV1::LearningTrust => true,
@@ -250,13 +256,15 @@ impl HistoricalTaskReadRuntime {
             | HistoricalReadOperationV1::CaptureCompletedHistory
             | HistoricalReadOperationV1::ReadCompletedHistory => {
                 return self.completed_learning_operation(
-                    service,
-                    config,
-                    registration,
-                    owner,
+                    HostAuthorityCallInputs {
+                        service,
+                        config,
+                        registration,
+                        owner,
+                        end,
+                    },
                     operation,
                     request_id,
-                    end,
                 );
             }
         };

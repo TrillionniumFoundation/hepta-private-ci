@@ -81,7 +81,7 @@ impl ArtifactFiles {
             required_current_head: None,
             withdrawal_registry: withdrawals,
             storage_binding: Digest32::of_bytes(b"qualification-artifact-storage"),
-            now: now,
+            now,
         })?;
         let candidate = publish_candidate(&mut owner, manifest, &key, dataset, now)?;
         let current = owner.current_registry_view(now)?;
@@ -269,7 +269,7 @@ fn publish_candidate(
         payload,
         signed_current_head: signed,
         expected_registry_predecessor_head: predecessor,
-        now: now,
+        now,
     })?;
     anyhow::ensure!(
         receipt.registry_head_digest == staged.snapshot().head_digest,

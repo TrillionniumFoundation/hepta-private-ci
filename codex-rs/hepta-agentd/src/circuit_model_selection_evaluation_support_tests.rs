@@ -102,8 +102,7 @@ pub(super) fn sign_product(
 impl EvaluationFixture {
     pub(crate) async fn new(
         initial: &LearningIterationSnapshotV1,
-        training: LearningIterationSnapshotV1,
-        training_evidence: SignedLearningEvidenceV1,
+        (training, training_evidence): (LearningIterationSnapshotV1, SignedLearningEvidenceV1),
         scope: &FrozenLearningScopeV2,
         generator: &TrustedLearningSignerV1,
         evaluator: &TrustedLearningSignerV1,

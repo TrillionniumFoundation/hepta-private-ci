@@ -28,7 +28,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         Ok(Self {
             journal,
             prepared,
-            config,
+            config: Box::new(config),
             key,
             saved,
         })

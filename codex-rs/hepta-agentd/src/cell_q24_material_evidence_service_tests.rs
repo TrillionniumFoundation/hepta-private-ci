@@ -127,10 +127,10 @@ fn connected_fixture(
     });
     let client = LearningIterationEvidenceClientV1 {
         command: None,
-        channel: Mutex::new(Some(Channel {
+        channel: Mutex::new(Some(Box::new(Channel {
             transport,
             next_request_id: 1,
-        })),
+        }))),
         initial: f.initial.clone(),
         actor_id: f.initial.owners.owner(role.stage()).clone(),
         verifier: f.config.verifier.clone(),

@@ -86,11 +86,11 @@ impl OriginalCellEvaluationHostV1 {
             }
             channel.check_peer_lifetime()?;
             self.finish_model_material_response(&mut session)?;
-            if request_id == 1 {
-                if let Some((ready, release)) = pause.take() {
-                    ready.send(())?;
-                    release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
-                }
+            if request_id == 1
+                && let Some((ready, release)) = pause.take()
+            {
+                ready.send(())?;
+                release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
             }
         }
         anyhow::bail!("original material session exhausted");

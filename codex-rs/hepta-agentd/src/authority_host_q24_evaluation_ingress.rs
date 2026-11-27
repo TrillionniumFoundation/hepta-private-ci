@@ -2,6 +2,7 @@
 //! Hashing a physical image here does not decode labels or consume a holdout.
 //! Only the later original provider can decode and release that exact image.
 
+use crate::authority_host_config::HostAuthorityCallInputs;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
@@ -16,14 +17,20 @@ use crate::root_independent_b_source_protocol::*;
 impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(in super::super) fn retain_original_signed_source(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
+
         source_peer: &OriginalBSourcePeer,
-        frame_end: Instant,
+
         request: &SourceRequest,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: frame_end,
+        } = call_inputs;
+
         let end = self.end.min(frame_end);
         OriginalBRecord::inspect(&self.record, end, |enrollment| {
             if request.schema != 1

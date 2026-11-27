@@ -102,6 +102,10 @@ pub struct OriginalCellQ24TaskDatasetFreezeInputsV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "The public V1 variants carry owned LedgerRecord values for construction and by-value matching"
+)]
 pub enum OriginalCellQ24TaskLedgerStatusV1 {
     AwaitingOutcome {
         decision: LedgerRecord,

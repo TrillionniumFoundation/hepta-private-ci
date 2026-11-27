@@ -91,15 +91,15 @@ class RunStartHistoricalJoinSourceTests(unittest.TestCase):
             "target.scope().agent_id != identity.agent_id.as_str()", "&original.publisher != publisher",
             "original.publisher_epoch != publisher_epoch", "publisher_epoch == 0",
             "original.initial_profile != initial_profile", "original.writer != writer",
-            "original.target_files != target_files", "*state = ReadState::Bound(identity.clone())",
+            "original.target_files != target_files", "*state = ReadState::Bound(Box::new(identity.clone()))",
         ))
 
     def test_real_read_holds_original_files_and_cannot_swallow_failure(self):
         self.remove(PATH, "read_original_publication", (
             "let ReadState::Bound(bound_identity)",
-            "std::mem::replace(&mut *state, ReadState::Verifying)", "if &bound_identity != identity",
+            "std::mem::replace(&mut *state, ReadState::Verifying)", "if bound_identity.as_ref() != identity",
             "RootRetainedRunStartDataV1::read_original_publication_unchecked(",
-            "*state = ReadState::Complete {", "files,", "identity: bound_identity", "frame: frame.clone()",
+            "*state = ReadState::Complete {", "files,", "identity: bound_identity", "frame: Box::new(frame.clone())",
         ))
         self.remove(PATH, "retained_digest", (
             "std::mem::replace(&mut *state, ReadState::Verifying)", "ReadState::Complete { .. }",
@@ -109,7 +109,7 @@ class RunStartHistoricalJoinSourceTests(unittest.TestCase):
     def test_finish_repeats_physical_record_and_checks_actual_original_end(self):
         self.remove(PATH, "finish", (
             "let ReadState::Complete {", "std::mem::replace(&mut *state, ReadState::Verifying)",
-            "RootRetainedRunStartDataV1::read_original_publication_unchecked(", ")? != frame",
+            "RootRetainedRunStartDataV1::read_original_publication_unchecked(", ")? != *frame",
             "self.retained.state.require_exact_unchecked()?", "if self.failed.load(Ordering::Acquire)",
             "require_end(self.end)",
         ))

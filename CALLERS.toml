@@ -1,20 +1,20 @@
 # Exact caller TOML bytes; use scripts/hepta_caller_manifest.py to inspect or edit.
 storage_format = "hepta-callers-gzip-v1"
-manifest_bytes = 3469844
-manifest_sha256 = "8d89e0ce423fa99e224df2bc4a8916fde5c15c072654823d31e19e2e581cd76d"
+manifest_bytes = 3475604
+manifest_sha256 = "064cb7eded27070e8da1b631146f95ad3746684a45c43ce6c60052598296c319"
 boundary_count = 1652
 protected_file_count = 826
 
 [[part]]
 path = "scripts/hepta_callers_manifest_parts/part-0000.toml.gz"
-compressed_bytes = 249718
-compressed_sha256 = "70e864f9bf65deb12b6569f652f0cc4a28bfc4bd80423dfb5fa7a102577cc5b5"
-raw_bytes = 1734922
-raw_sha256 = "0338c6accd8af540929583908f96cccbd9aafb80809ed2e14924cbaf67c2a891"
+compressed_bytes = 250147
+compressed_sha256 = "90ba86af0337dc024796c0092820fc9a38d58e6c41494947a00e08fe3fc60cdd"
+raw_bytes = 1737802
+raw_sha256 = "b932118bbad291858b2125fa4e1784b1a095f836a28d96684244d1e0ca1cdb04"
 
 [[part]]
 path = "scripts/hepta_callers_manifest_parts/part-0001.toml.gz"
-compressed_bytes = 326300
-compressed_sha256 = "565971849c14ea7f1b0f462bad93a5cb1513e15783ddd3c58fbe8edb9013cc8c"
-raw_bytes = 1734922
-raw_sha256 = "e11d77162bf424e7f9c925e32f237035fa4ac400ef8a4e93b70ef49edbef2d12"
+compressed_bytes = 326720
+compressed_sha256 = "1a522af1ff32c7c6680e8766d478ba24d1153d80d0756b8b8c2c704b8c3a5977"
+raw_bytes = 1737802
+raw_sha256 = "d6e1a0231adcfa4ae8b86757d43d4fc13d537d8b6d52cbe09e6322bf2714f626"

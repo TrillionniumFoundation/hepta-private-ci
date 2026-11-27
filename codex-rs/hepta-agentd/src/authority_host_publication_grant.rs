@@ -1,6 +1,7 @@
 //! C issuance is reachable only through the same original publication lane.
 //! A peer supplies equality checks, never a binding, writer or grant policy.
 
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseBinding;
@@ -78,13 +79,17 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         request: &Request,
         sequence: &mut u64,
         end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        } = peer_inputs;
+
         refusal::require_end(end)?;
         let Command::IssueFinalUse { expected, intent } = &request.command else {
             return Err(io::Error::other("original FinalUse command required"));

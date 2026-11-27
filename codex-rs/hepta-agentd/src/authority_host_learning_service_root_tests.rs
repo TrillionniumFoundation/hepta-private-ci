@@ -48,7 +48,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 #[path = "authority_host_learning_service_root_support.rs"]
-mod support;
+pub(crate) mod support;
 
 const CHILD_TEST: &str = "authority_host_learning_service_root_tests::root_learning_registered_service_dedicated_uid_child";
 const STORE_OWNER: &str = "root-learning-checkpoint-v1";
@@ -197,7 +197,7 @@ fn root_learning_public_registration_serves_retained_writer_and_recovers_history
     let profile_file = protected.path().join("learning-profile.json");
     support::write_json(&profile_file, &profile)?;
     let (offer, receive) = UnixDatagram::pair()?;
-    let mut child = support::ChildOwner::spawn(receive, &state)?;
+    let mut child = support::ChildOwner::spawn(receive, &state, CHILD_TEST)?;
     let child_pin = support::pidfd(child.pid()?)?;
     let credential_deadline = Instant::now() + Duration::from_secs(2);
     while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)
@@ -462,7 +462,7 @@ fn root_learning_registered_service_dedicated_uid_child() -> anyhow::Result<()> 
     let mut observation = UnixStream::connect(runtime.join("observation.sock"))?;
     let issuer = UnixStream::connect(runtime.join("issuer.sock"))?;
     let checkpoint = UnixStream::connect(runtime.join("checkpoint.sock"))?;
-    let observed = support::observation(&mut observation)?;
+    let observed = read_authority_observation(&mut observation)?;
     assert_eq!(
         (
             observed["registered_agent_id"].as_str(),
@@ -484,4 +484,25 @@ fn root_learning_registered_service_dedicated_uid_child() -> anyhow::Result<()> 
     std::io::stdin().read_exact(&mut released)?;
     assert_eq!(released, [1]);
     Ok(())
+}
+
+pub(crate) fn read_authority_observation(
+    stream: &mut UnixStream,
+) -> anyhow::Result<serde_json::Value> {
+    stream.set_read_timeout(Some(Duration::from_millis(500)))?;
+    stream.set_write_timeout(Some(Duration::from_millis(500)))?;
+    let request = serde_json::to_vec(&serde_json::json!({"schema_version":1,
+        "operation":"runtime.authority.observation.v1"}))?;
+    stream.write_all(&(request.len() as u32).to_be_bytes())?;
+    stream.write_all(&request)?;
+    let mut length = [0; 4];
+    stream.read_exact(&mut length)?;
+    let length = u32::from_be_bytes(length) as usize;
+    anyhow::ensure!(
+        (1..=16 * 1024).contains(&length),
+        "bounded observation reply required"
+    );
+    let mut bytes = vec![0; length];
+    stream.read_exact(&mut bytes)?;
+    Ok(serde_json::from_slice(&bytes)?)
 }

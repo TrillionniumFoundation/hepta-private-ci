@@ -254,9 +254,10 @@ impl RetainedOriginalAPhase {
         self.daemon.require_dead()?;
         self.root.require_dead()?;
         self.observer.require_dead()?;
+        let (daemon, root) = self.original_processes();
         for (name, child) in [
-            ("daemon", &self.daemon),
-            ("root", &self.root),
+            ("daemon", daemon),
+            ("root", root),
             ("observer", &self.observer),
         ] {
             let directory = self.plan.protected.path().join(name);

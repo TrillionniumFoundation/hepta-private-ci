@@ -24,7 +24,6 @@ use super::lifecycle::ShutdownExpectation;
 use super::lifecycle::host_config;
 use super::lifecycle::ordinary_session;
 use super::lifecycle::owner_files;
-use super::observations::cancellation;
 use super::observations::deliver;
 use super::observations::original_result;
 
@@ -351,5 +350,91 @@ async fn execute(
         "historical_publication_is_live_authority": false, "current_source_owner_checked": false,
         "live_adoption": false, "cli_model_selection_added": false, "included_in_junit": false,
         "storage_root_rollback_qualified": false,
+    }))
+}
+
+/// Request cancellation only after observing this operation as pending. The
+/// receipt records the completion race separately and never claims that an
+/// observed cancellation proves a model kernel was physically preempted.
+async fn cancellation(
+    handle: &NeuronGenerationRuntimeHandleV2,
+    original: &CellGenerationRequestV2,
+    clock: &dyn Fn() -> u64,
+    output: &Path,
+    identity: CellTaskCostIdentityV2,
+) -> Result<Value> {
+    let before = handle.snapshot().await?;
+    let now = clock();
+    ensure!(now > 0, "host clock is unavailable");
+    let request = CellGenerationRequestV2 {
+        operation_id: "v13-cancel-observation".into(),
+        predecessor: before.clone(),
+        admitted_at_micros: now,
+        deadline_micros: now
+            .checked_add(120_000_000)
+            .context("request deadline overflow")?,
+        ..original.clone()
+    };
+    let admission = handle.step(request.clone()).await;
+    let (pending_observed, receipt) = match admission {
+        Err(CellGenerationErrorV2::Pending) => {
+            ensure!(
+                handle.pending_request().await?.as_ref() == Some(&request),
+                "pending operation changed before cancellation"
+            );
+            handle.cancel(request.digest()?).await?;
+            let receipt = original_result(
+                handle,
+                &request,
+                clock,
+                handle.reconcile(request.digest()?).await,
+            )
+            .await?;
+            ensure!(
+                receipt.disposition == CellGenerationDispositionV2::Cancelled,
+                "persisted cancellation did not settle as cancelled"
+            );
+            let after = handle.snapshot().await?;
+            ensure!(
+                after.state == before.state
+                    && after.prefix == before.prefix
+                    && handle.pending_output().await?.is_none(),
+                "cancelled proposal published output or state"
+            );
+            (true, receipt)
+        }
+        Ok(receipt) => {
+            ensure!(
+                receipt.disposition == CellGenerationDispositionV2::Advanced,
+                "cancellation probe completed with unexpected disposition: {:?}",
+                receipt.disposition
+            );
+            let chunk = handle
+                .pending_output()
+                .await?
+                .context("completed cancellation probe lacks outbox")?;
+            deliver(
+                handle,
+                &request,
+                chunk,
+                &output.join("CANCEL-RACE-DELIVERED.jsonl"),
+                identity,
+            )
+            .await?;
+            (false, receipt)
+        }
+        Err(error) => return Err(error.into()),
+    };
+    ensure!(
+        handle.pending_request().await?.is_none(),
+        "cancellation probe still pending"
+    );
+    Ok(serde_json::json!({
+        "request": request,
+        "pending_observed": pending_observed,
+        "cancel_intent_persisted": pending_observed,
+        "completed_before_cancel_request": !pending_observed,
+        "receipt": receipt,
+        "physical_model_preemption_claimed": false,
     }))
 }

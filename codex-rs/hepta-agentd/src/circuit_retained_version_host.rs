@@ -57,6 +57,12 @@ type RetainedVersionPreparedV1 =
 type RetainedVersionInputsV1 =
     OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
+/// Supplied publication inputs and task; the host checks both on admission.
+pub struct OriginalCircuitRetainedPublicationTaskV1 {
+    pub inputs: RetainedVersionInputsV1,
+    pub task: OriginalCircuitRetainedTaskInputsV1,
+}
+
 /// Expected identity of an already started original artifact transaction.
 /// This metadata can only narrow actual owner readback; it grants nothing.
 pub struct OriginalCircuitRetainedArtifactCheckpointV1 {
@@ -154,6 +160,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
     /// descriptor deadlines and the three independent publication authorities.
     /// The issuer must already be bound by `from_root_stream`; a legacy
     /// unprotected provider cannot be promoted into this purpose.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 constructor retains separate positional publication inputs and task"
+    )]
     pub fn from_original_owners(
         material: OriginalCellQ24MaterialReceiptConfigV1,
         dataset: OriginalCellQ24DatasetCommandReadbackV1,
@@ -203,6 +213,28 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 selection_reader: None,
                 final_use_issuer: Some(final_use_issuer),
             },
+            lifetime,
+        )
+    }
+
+    /// Admit the original owners with their publication inputs and retained task.
+    pub fn from_original_publication_task(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        dataset: OriginalCellQ24DatasetCommandReadbackV1,
+        trainer: OriginalCellQ24TrainingCommandConnectionV1,
+        publication_task: OriginalCircuitRetainedPublicationTaskV1,
+        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
+        final_use_issuer: AgentdUnixFinalUseGrantProvider,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::from_original_owners(
+            material,
+            dataset,
+            trainer,
+            publication_task.inputs,
+            publication_task.task,
+            artifact_checkpoint,
+            final_use_issuer,
             lifetime,
         )
     }

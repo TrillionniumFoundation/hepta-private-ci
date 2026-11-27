@@ -9,7 +9,7 @@ use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 pub struct OriginalCellQ24TrainingReadbackV1 {
     prepared: Arc<CellQ24PreparedLearningV1>,
     training: Arc<OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
-    dataset: LearningIterationSnapshotV1,
+    dataset: Box<LearningIterationSnapshotV1>,
     completed: LearningIterationSnapshotV1,
     cancelled: Arc<AtomicBool>,
 }
@@ -77,7 +77,7 @@ impl OriginalCellQ24TrainingReadbackV1 {
         let original: OriginalCellQ24TrainingReadbackV1 = Self {
             prepared,
             training,
-            dataset,
+            dataset: Box::new(dataset),
             completed: cut,
             cancelled,
         };
@@ -125,7 +125,7 @@ impl OriginalCellQ24TrainingReadbackV1 {
         if !Arc::ptr_eq(prepared, &self.prepared)
             || !Arc::ptr_eq(training, &self.training)
             || !Arc::ptr_eq(cancelled, &self.cancelled)
-            || dataset != &self.dataset
+            || dataset != self.dataset.as_ref()
         {
             return Err(Error::WrongScope);
         }

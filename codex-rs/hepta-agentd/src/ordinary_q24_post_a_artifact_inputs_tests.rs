@@ -107,7 +107,7 @@ pub(super) fn write_original_candidate_head(
         compatibility_digest: material.compatibility_digest,
         encoded_size_bytes: material.encoded_size_bytes,
     };
-    let mut preview = registry.clone();
+    let mut preview = registry;
     preview.append(ArtifactEvent::Register {
         event_id: StableId::new(format!(
             "artifact-publication:{}",

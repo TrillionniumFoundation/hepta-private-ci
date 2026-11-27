@@ -2,6 +2,7 @@
 //! the same Root runtime owns every file, registration and durability decision.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_service::generation_initial::Command;
 use crate::authority_host_service::generation_initial::Request;
 
@@ -79,9 +80,11 @@ impl<'a> OriginalRunStartRetentionExchange<'a> {
             self.service.retain_initial_run_start(
                 retained,
                 self.slot,
-                self.config,
-                self.registration,
-                self.owner,
+                HostAuthorityRegistrationInputs {
+                    config: self.config,
+                    registration: self.registration,
+                    owner: self.owner,
+                },
                 publication,
                 request.request_id,
                 self.session_end,

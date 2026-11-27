@@ -26,6 +26,12 @@ pub(crate) enum OriginalCompletedPublicationModeV1 {
     ReadFinalized,
 }
 
+/// Requested read mode and the existing deadline; the reader retains all checks.
+pub(crate) struct OriginalCompletedPublicationReadInputs {
+    pub(crate) mode: OriginalCompletedPublicationModeV1,
+    pub(crate) end: Instant,
+}
+
 /// Exact read-only DATA. Only the enclosing completed-history lane can attest
 /// its final admission, after this reader and the original refusal finish.
 #[derive(Clone, Debug, Eq, PartialEq)]

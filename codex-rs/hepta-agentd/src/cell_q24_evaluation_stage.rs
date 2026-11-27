@@ -29,6 +29,10 @@ use crate::cell_q24_learning_owner_error::owner_error;
 use crate::neuron_cell_evaluation_receipt_owner::ReceiptSources;
 use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "The public V1 SystemLongitudinal variant carries owned time evidence for construction and by-value matching"
+)]
 pub enum OriginalCellQ24EvaluationTimingV1 {
     Qualification,
     SystemLongitudinal {

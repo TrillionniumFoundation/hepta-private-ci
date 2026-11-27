@@ -181,7 +181,7 @@ async fn original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_
     assert_eq!(journal_bytes(&mut owners)?, before);
     let prefix = binding::experience_prefix(&config, &experience.receipt)?;
     let dataset = owners.attest_dataset(fixture.sources(&prefix))?;
-    let mut foreign_experience = experience.receipt.clone();
+    let mut foreign_experience = experience.receipt;
     foreign_experience.evidence_digest = support::d("foreign-experience-proof");
     let foreign_prefix = binding::experience_prefix(&config, &foreign_experience)?;
     let before = journal_bytes(&mut owners)?;

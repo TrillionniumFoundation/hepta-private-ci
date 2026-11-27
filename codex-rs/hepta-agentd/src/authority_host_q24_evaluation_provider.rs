@@ -16,6 +16,8 @@ use crate::CellEvaluationPlanV1;
 
 use super::admission::OriginalBAuthorities;
 use super::deployment::OriginalBInputs;
+use super::protocol::OriginalBProtocolData;
+use super::record::OriginalBEnrollment;
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -85,12 +87,14 @@ impl<'a> OriginalBProvider<'a> {
         files: &'a OriginalBInputs,
         authorities: &'a OriginalBAuthorities,
         plan: &'a CellEvaluationPlanV1,
-        namespace: Digest32,
-        unit_profile: Digest32,
-        registered_at: u64,
+        enrollment: &OriginalBEnrollment,
+        protocol: &OriginalBProtocolData,
         clock: &'a dyn Fn() -> io::Result<u64>,
         admitted: &'a OriginalBReleasedSource,
     ) -> Self {
+        let namespace = Digest32::from_array(enrollment.namespace);
+        let unit_profile = protocol.unit_profile();
+        let registered_at = enrollment.registered_at_seconds;
         Self {
             files,
             authorities,
