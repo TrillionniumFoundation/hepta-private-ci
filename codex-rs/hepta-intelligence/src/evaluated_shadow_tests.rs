@@ -106,7 +106,6 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
     path.with_extension("witness")
 }
 
-
 fn open_ledger_directory(path: &std::path::Path) -> std::fs::File {
     #[cfg(windows)]
     {
