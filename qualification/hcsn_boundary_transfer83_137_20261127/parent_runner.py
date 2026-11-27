@@ -154,7 +154,7 @@ def rerun_program(adapter, trace, output, ledger, program, inverse, candidates, 
         ledger.charge("proposal_directions")
         write(output/("fit_%02d.json" % len(fits)), row)
         fits.append(row)
-        ledger.event("fit_returned", **row)
+        ledger.event("fit_returned", fit_evidence=row)
         return direction, row
 
     program.invert_boundary = record_inverse

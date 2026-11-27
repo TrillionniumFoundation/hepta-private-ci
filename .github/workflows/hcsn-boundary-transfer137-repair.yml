@@ -1,0 +1,167 @@
+# Disabled by the .in filename. Root alone materializes the exact workflow and
+# status/root_review_sha256 after independent review. This is a separate repair
+# attempt; the original run and its no-retry failure are never rewritten.
+name: HCSN seed137 explicit repair continuation 20261127
+
+"on":
+  push:
+    branches: [research/hcsn-boundary-transfer137-repair-20261127]
+    paths:
+      - qualification/hcsn_boundary_transfer137_repair_20261127/**
+      - .github/workflows/hcsn-boundary-transfer137-repair.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hcsn-boundary-transfer137-repair-20261127-once
+  cancel-in-progress: false
+
+jobs:
+  explicit-repair:
+    if: github.run_attempt == 1 && github.run_number == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NUMEXPR_NUM_THREADS: '1'
+      CUDA_VISIBLE_DEVICES: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_sender40_pilot_20261127
+            qualification/hcsn_boundary8_pilot_20261127
+            qualification/hcsn_boundary_transfer83_137_20261127
+            qualification/hcsn_boundary_transfer137_repair_20261127
+            .github/workflows/hcsn-boundary-transfer137-repair.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12.3'
+      - name: Verify exact new repair publication and one-statement logger fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast, hashlib, json, os, pathlib, subprocess
+          task = pathlib.Path('qualification/hcsn_boundary_transfer137_repair_20261127')
+          helper = pathlib.Path('qualification/hcsn_sender40_pilot_20261127')
+          core = pathlib.Path('qualification/hcsn_boundary8_pilot_20261127')
+          transfer = pathlib.Path('qualification/hcsn_boundary_transfer83_137_20261127')
+          binding = json.loads((task/'EXECUTION_BINDINGS.json').read_text())
+          if binding['status'] != 'FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW' or binding['seed'] != 137:
+              raise SystemExit('Unreviewed separate repair binding.')
+          if (not isinstance(binding['root_review_sha256'],str) or len(binding['root_review_sha256']) != 64
+                  or any(c not in '0123456789abcdef' for c in binding['root_review_sha256'])):
+              raise SystemExit('Missing exact independent root review.')
+          parent = subprocess.check_output(['git','rev-parse','HEAD^'],text=True).strip()
+          if parent != binding['predecessor_artifact']['qualified_head_commit']:
+              raise SystemExit('Repair publication is not one child of the exact failed attempt source.')
+          changes = subprocess.check_output(['git','diff','--name-status',parent,'HEAD'],text=True).splitlines()
+          actual = {line.split('\t')[-1]:line.split('\t')[0] for line in changes}
+          expected = {str(task/name):'A' for name in binding['adapter_files']}
+          expected.update({str(task/'EXECUTION_BINDINGS.json'):'A', binding['workflow']['path']:'A',
+              str(transfer/'parent_runner.py'):'M'})
+          if len(changes) != len(expected) or actual != expected:
+              raise SystemExit('Exact repair changed-path/status closure differs.')
+          before = subprocess.check_output(['git','show',parent+':'+str(transfer/'parent_runner.py')])
+          if hashlib.sha256(before).hexdigest() != binding['logging_fix']['original_source_sha256']:
+              raise SystemExit('Original failing runner identity differs.')
+          after = (transfer/'parent_runner.py').read_bytes()
+          if after != before.replace(b'ledger.event("fit_returned", **row)',b'ledger.event("fit_returned", fit_evidence=row)',1):
+              raise SystemExit('The old runner has more than the single reviewed logger statement change.')
+          for directory,group in ((task,'adapter_files'),(helper,'helper_files'),(core,'core_files'),(transfer,'transfer_files')):
+              for name,item in binding[group].items():
+                  raw=(directory/name).read_bytes()
+                  if len(raw)!=item['bytes'] or hashlib.sha256(raw).hexdigest()!=item['sha256']:
+                      raise SystemExit('Pinned source identity mismatch: '+name)
+          raw=pathlib.Path(binding['workflow']['path']).read_bytes()
+          if len(raw)!=binding['workflow']['bytes'] or hashlib.sha256(raw).hexdigest()!=binding['workflow']['sha256']:
+              raise SystemExit('Workflow differs from reviewed bytes.')
+          for path in task.glob('*.py'):
+              ast.parse(path.read_text(),filename=str(path))
+          output=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-transfer137-repair-output'
+          output.mkdir(exist_ok=False)
+          (output/'PUBLICATION.json').write_text(json.dumps(dict(parent=parent,head=os.environ['GITHUB_SHA'],
+              changes=actual,run_id=os.environ['GITHUB_RUN_ID'],run_number=os.environ['GITHUB_RUN_NUMBER'],
+              run_attempt=os.environ['GITHUB_RUN_ATTEMPT'],independent_repair=True,old_failure_preserved=True),indent=2)+'\n')
+          PY
+      - name: Install the unchanged public CPU package versions in a new environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REPAIR_SETUP_START=$(date +%s)
+          python -m venv "$RUNNER_TEMP/hcsn-transfer137-repair-venv"
+          PYTHON="$RUNNER_TEMP/hcsn-transfer137-repair-venv/bin/python"
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 numpy==2.3.5 scipy==1.17.0
+          "$PYTHON" - <<'PY'
+          import importlib.metadata,json,os,pathlib,subprocess,sys,time
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-transfer137-repair-output'
+          (out/'packages.txt').write_text(subprocess.check_output([sys.executable,'-m','pip','freeze','--all'],text=True))
+          (out/'SETUP.json').write_text(json.dumps(dict(wall_seconds=time.time()-int(os.environ['REPAIR_SETUP_START']),
+              python=sys.version,versions={key:importlib.metadata.version(key) for key in ('torch','numpy','scipy')},
+              transitive_wheel_hashes_locked=False,model_calls=0),indent=2)+'\n')
+          PY
+      - name: Fetch the one exact original cross-parent artifact without retry
+        env:
+          BOUNDARY_TRANSFER_ARTIFACT_READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary_transfer137_repair_20261127
+          "$RUNNER_TEMP/hcsn-transfer137-repair-venv/bin/python" "$TASK/fetch_predecessor.py" "$TASK/EXECUTION_BINDINGS.json" \
+            "$RUNNER_TEMP/hcsn-transfer137-repair-original.zip" "$RUNNER_TEMP/hcsn-transfer137-repair-output/DOWNLOAD.json"
+      - name: Prepare original public137 inputs and immutable cached root evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary_transfer137_repair_20261127
+          TRANSFER=qualification/hcsn_boundary_transfer83_137_20261127
+          "$RUNNER_TEMP/hcsn-transfer137-repair-venv/bin/python" "$TASK/prepare_public.py" "$TASK/EXECUTION_BINDINGS.json" "$TRANSFER" \
+            "$RUNNER_TEMP/hcsn-transfer137-repair-original.zip" "$RUNNER_TEMP/hcsn-transfer137-repair-prepared" \
+            "$RUNNER_TEMP/hcsn-transfer137-repair-output/PUBLIC_PREPARATION_RESULT.json"
+          python - <<'PY'
+          import os,pathlib,shutil
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          prepared=root/'hcsn-transfer137-repair-prepared'
+          out=root/'hcsn-transfer137-repair-output'
+          for name in ('PREPARED.json','SOURCE47_RESULT.json'):
+              shutil.copyfile(prepared/name,out/name)
+          shutil.copytree(prepared/'cached137',out/'original137_evidence')
+          PY
+      - name: Run only the separately budgeted seed137 repair once
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK="$GITHUB_WORKSPACE/qualification/hcsn_boundary_transfer137_repair_20261127"
+          HELPER="$GITHUB_WORKSPACE/qualification/hcsn_sender40_pilot_20261127"
+          CORE="$GITHUB_WORKSPACE/qualification/hcsn_boundary8_pilot_20261127"
+          TRANSFER="$GITHUB_WORKSPACE/qualification/hcsn_boundary_transfer83_137_20261127"
+          PYTHON="$RUNNER_TEMP/hcsn-transfer137-repair-venv/bin/python"
+          sudo -n systemd-run --wait --pipe --collect --unit="hcsn-transfer137-repair-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --property="User=$(id -un)" --property="Group=$(id -gn)" --property="WorkingDirectory=$GITHUB_WORKSPACE" \
+            --property=MemoryMax=1073741824 --property=CPUQuota=100% --property=TasksMax=64 \
+            --property=RuntimeMaxSec=330 --property=KillMode=control-group \
+            --setenv=OMP_NUM_THREADS=1 --setenv=OPENBLAS_NUM_THREADS=1 --setenv=MKL_NUM_THREADS=1 \
+            --setenv=NUMEXPR_NUM_THREADS=1 --setenv=CUDA_VISIBLE_DEVICES= --setenv=PYTHONDONTWRITEBYTECODE=1 \
+            --setenv=PYTHONUNBUFFERED=1 --setenv="LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" \
+            "$PYTHON" "$TASK/supervise.py" "$TASK/EXECUTION_BINDINGS.json" "$HELPER" "$CORE" "$TRANSFER" \
+            "$RUNNER_TEMP/hcsn-transfer137-repair-prepared" "$RUNNER_TEMP/hcsn-transfer137-repair-output/supervised"
+      - name: Preserve original failure and all new completed or failed repair evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-transfer137-repair-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-transfer137-repair-output
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6

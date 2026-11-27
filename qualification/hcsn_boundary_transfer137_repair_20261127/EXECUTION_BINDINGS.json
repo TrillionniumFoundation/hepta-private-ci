@@ -1,0 +1,220 @@
+{
+  "adapter_files": {
+    "CACHED_ROOT_BINDING_V1.json": {
+      "bytes": 49656,
+      "sha256": "f34092aedf30ec720be4a100211f80f1adfdc609d668f8252c969f7a3ead302e"
+    },
+    "README.md": {
+      "bytes": 7532,
+      "sha256": "61c7cdfc6313630e31fb21313c857fe089201882fa8c82e92c38508c2719040a"
+    },
+    "REPAIR_CONTINUATION_PROTOCOL_V1.json": {
+      "bytes": 7206,
+      "sha256": "d9077f2b0ae00d8ed6e871e98ba172192693b656c79916ea77a306c48305454b"
+    },
+    "cache_replay.py": {
+      "bytes": 5691,
+      "sha256": "114decad2aaa32d876cb2ac0a81a37208b5cec0c2c1009c1101633bb26b6c08f"
+    },
+    "fetch_predecessor.py": {
+      "bytes": 5479,
+      "sha256": "b73285c9176f0c56cfa0fadad20e79ad27b2085b8dc4d3d4d4684b0625897e1e"
+    },
+    "prepare_public.py": {
+      "bytes": 8855,
+      "sha256": "f67c8c0e3112b32a7ee0c2ac05bede6aa695b32c83d19c458e0d0253cc98b0a6"
+    },
+    "public_inputs_seed137.json": {
+      "bytes": 9785,
+      "sha256": "242712d7af4b1b98f4ac15c3e51163c9322ce9be8eb7983fd609c86d991c175e"
+    },
+    "repair_runner.py": {
+      "bytes": 27674,
+      "sha256": "468eae827de1f4e918154a5af300be94a52b0472e3dc54b8996c71cf8e2fe951"
+    },
+    "supervise.py": {
+      "bytes": 10334,
+      "sha256": "68d95cf13882d1d721a26d3d5396393e1d8452c8e27c58359763babe6ca533a8"
+    }
+  },
+  "branch": "research/hcsn-boundary-transfer137-repair-20261127",
+  "cache_binding": {
+    "bytes": 49656,
+    "sha256": "f34092aedf30ec720be4a100211f80f1adfdc609d668f8252c969f7a3ead302e"
+  },
+  "core_files": {
+    "PREREGISTERED_TARGET_RULES_V2.json": {
+      "bytes": 11869,
+      "sha256": "3f56e3384c516e8ec7dcf970e2a9d535ab32f437b7d690a85946f52d1497adc1"
+    },
+    "boundary_inverse.py": {
+      "bytes": 14412,
+      "sha256": "e6da84d80047492c2afb5d74faafd1be227cc7775d012a50167b035cfdec025a"
+    },
+    "boundary_program.py": {
+      "bytes": 10702,
+      "sha256": "ea36b3768b7617275947e6d955e4d3770c33a5700de9b649b938b642e7744dde"
+    }
+  },
+  "exact_parent_commit": "2d95f617effefb1a3f3baaadd4fe23816b2ba247",
+  "helper_files": {
+    "PROTOCOL.json": {
+      "bytes": 13570,
+      "sha256": "6faa56b621427de19e15025cde193e0defd2c48f052d3efb5f966d97852e8653"
+    },
+    "candidates.py": {
+      "bytes": 8996,
+      "sha256": "88edf2ac88467272868e3fe030fcb62ca31b58ad15dacfeceb7cf91d6336c023"
+    },
+    "model_adapter.py": {
+      "bytes": 15140,
+      "sha256": "9e43c5a91c9859f1689195068d86eaab9a02b0894103648f7fb0c4f348edc412"
+    },
+    "pilot.py": {
+      "bytes": 19276,
+      "sha256": "5f014690442a3ad456828484dc69a66f40960312d1be4b38cd0e7791f920408b"
+    },
+    "prepare_public.py": {
+      "bytes": 6082,
+      "sha256": "30f5259ee9a94bd54c46f99445277bc1b101bf5f2f3a36e47f0bd6a695f72e6b"
+    },
+    "public_inputs.json": {
+      "bytes": 9781,
+      "sha256": "ae6aea553ae9ab99c8aba0e47056eb1377f2e34dad683a397f3e4163f8bd45ea"
+    },
+    "static_support.py": {
+      "bytes": 8701,
+      "sha256": "80683a7496553acac63fc23226155761bb4354ef7fbb935aff1f9b8ff25c90ea"
+    }
+  },
+  "logging_fix": {
+    "created_utc": "2026-11-27T11:09:08.364766+00:00",
+    "fit_calls": 0,
+    "math_core_change": false,
+    "model_calls": 0,
+    "new_source_sha256": "9b9086ba744785a03637a51f117f8c5b90a4f93b4a7d7304dac741218a38264a",
+    "old_failure_modified": false,
+    "original_commit": "2d95f617effefb1a3f3baaadd4fe23816b2ba247",
+    "original_source_sha256": "ca5ab371f132f50aa19178c39924ca4854715cda1637facf864979047a6fa452",
+    "patch_sha256": "a7ec970d553bfcb37a96f5009f5821a56516c4781f8e6cf3c7690db508dbf8bf",
+    "schema": "hepta.transfer137.logging-only-repair.v1",
+    "single_changed_statement": {
+      "new": "ledger.event(\"fit_returned\", fit_evidence=row)",
+      "old": "ledger.event(\"fit_returned\", **row)"
+    },
+    "status": "PREPARED_NOT_PUBLISHED"
+  },
+  "new_limits": {
+    "analytic_solves": 2,
+    "backwards": 16,
+    "body_ticks": 150,
+    "cached_inverse_targets": 24,
+    "forwards": 25,
+    "lagrange_iterations": 256,
+    "optimizer_steps": 16,
+    "paired_queries": 768,
+    "proposal_directions": 3,
+    "root_bisections": 0,
+    "root_cells": 0,
+    "root_interval_evaluations": 0,
+    "root_point_evaluations": 0,
+    "scalar_inverse_targets": 0,
+    "trace_linear_replays": 0
+  },
+  "old_original_result_sha256": "0462761f4562fe80dd303a4571371e029b58f2e4f940e18a93c5b31eacf98c38",
+  "old_raw_counter_audit": {
+    "bytes": 17285,
+    "path": "root/public_transfer_pilot_v1/RAW_OUTPUT_AUDIT.json",
+    "sha256": "da9087e7f9db5e88b802bb1169807b2c03677409103aceecb4e673d718313aef"
+  },
+  "old_transfer_actual_counts": {
+    "analytic_solves": 1,
+    "backwards": 18,
+    "body_ticks": 180,
+    "forwards": 30,
+    "optimizer_steps": 16,
+    "paired_queries": 700,
+    "proposal_directions": 1,
+    "root_bisections": 1026,
+    "root_cells": 1629,
+    "root_interval_evaluations": 1629,
+    "root_point_evaluations": 1485,
+    "scalar_inverse_targets": 26,
+    "trace_linear_replays": 12
+  },
+  "original_outer_counts_complete": false,
+  "parent_manifest": {
+    "bytes": 9785,
+    "sha256": "242712d7af4b1b98f4ac15c3e51163c9322ce9be8eb7983fd609c86d991c175e"
+  },
+  "predecessor_artifact": {
+    "artifact_id": 15191543148,
+    "artifact_name": "hcsn-boundary-transfer-public-45986114332-1",
+    "bytes": 694064,
+    "qualified_head_commit": "2d95f617effefb1a3f3baaadd4fe23816b2ba247",
+    "qualified_head_semantics": "Exact published source identity; original seed137 PARENT_ABORTED implementation failure is preserved, not scientifically qualified by CI overall success",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 45986114332,
+    "sha256": "3b47fa7ec94d9fe4a2449e6b59d3c42520cac24fad8d35a1839f18efca64f342"
+  },
+  "protocol": {
+    "bytes": 7206,
+    "sha256": "d9077f2b0ae00d8ed6e871e98ba172192693b656c79916ea77a306c48305454b"
+  },
+  "pure_interface_qualification": {
+    "cache_result": {
+      "bytes": 1501,
+      "sha256": "5715ab25049ac25e8f799c6a4ec7882a3f71365678750f9701ca3851ca5dd950"
+    },
+    "cache_returns": 24,
+    "cache_started_operations": 27,
+    "cache_work_separate_from_future_repair": true,
+    "derived_fit_accounting_result": {
+      "bytes": 2505,
+      "sha256": "b955de0f1d86d334d7f2a28ff328e6f5fc42712bc1e778470802e90d4a3941b2"
+    },
+    "derived_fit_accounting_synthetic_cases": 6,
+    "logger_result": {
+      "bytes": 2047,
+      "sha256": "f7470aaaf7177068a05955c2527be52347d7734a66dcec8ef810de7ab2e568f9"
+    },
+    "new_fits": 0,
+    "new_model_calls": 0,
+    "new_scalar_roots": 0
+  },
+  "resources": {
+    "attempts": 1,
+    "full_call_return_gate_seconds": 20,
+    "memory_bytes": 1073741824,
+    "old_parent_budget_not_reused": true,
+    "one_cpu": true,
+    "own_process_cpu_seconds": 180,
+    "own_process_wall_seconds": 300,
+    "supervisor_wall_seconds": 330
+  },
+  "root_review_sha256": "02c6789b6a411bd4a45f97f687ac782b1ce2c2b2aed4e446a81c2357122c6d9b",
+  "schema": "hepta.transfer137.repair-execution-binding.v1",
+  "seed": 137,
+  "source_fits_before_freeze": 0,
+  "source_model_calls_before_freeze": 0,
+  "status": "FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW",
+  "transfer_files": {
+    "parent_runner.py": {
+      "bytes": 26188,
+      "sha256": "9b9086ba744785a03637a51f117f8c5b90a4f93b4a7d7304dac741218a38264a"
+    },
+    "prepare_public.py": {
+      "bytes": 9356,
+      "sha256": "68ba29126f0cd524030958c6ea0dfb94ff3dde59bb0c160a4349f602ad9a8eb8"
+    },
+    "supervise.py": {
+      "bytes": 14278,
+      "sha256": "807d36c1c0657facf96735bc22c18c57993db6ec08615d03bc27239a59a98b07"
+    }
+  },
+  "workflow": {
+    "bytes": 10327,
+    "path": ".github/workflows/hcsn-boundary-transfer137-repair.yml",
+    "sha256": "3c29a8ece03b624fb15452bd8c66526a09f1584c0fafec2a09eb00e579a73e88"
+  }
+}

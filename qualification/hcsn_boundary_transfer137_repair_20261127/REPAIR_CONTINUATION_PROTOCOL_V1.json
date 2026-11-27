@@ -1,0 +1,238 @@
+{
+  "accounting": {
+    "bp_and_direct_edit_evaluations_separate": true,
+    "cache_lookup_work_measured": true,
+    "original_failed_fit_cost_retained": true,
+    "original_qualification_cost_attributed_once": true,
+    "partial_started_counts_preserved": true,
+    "setup_initialization_qvi_measured_in_shared_cost": true,
+    "unreturned_internal_counts_unknown": true
+  },
+  "bound_inputs": {
+    "cache_binding": {
+      "bytes": 49656,
+      "sha256": "f34092aedf30ec720be4a100211f80f1adfdc609d668f8252c969f7a3ead302e"
+    },
+    "logger_regression": {
+      "bytes": 2047,
+      "sha256": "f7470aaaf7177068a05955c2527be52347d7734a66dcec8ef810de7ab2e568f9"
+    },
+    "logging_patch": {
+      "bytes": 480,
+      "sha256": "a7ec970d553bfcb37a96f5009f5821a56516c4781f8e6cf3c7690db508dbf8bf"
+    }
+  },
+  "combined_transfer_maximum_if_completed": {
+    "analytic_solves": 3,
+    "backwards": 34,
+    "body_ticks": 330,
+    "cached_inverse_targets": 24,
+    "forwards": 55,
+    "optimizer_steps": 32,
+    "paired_queries": 1468,
+    "proposal_directions": 4,
+    "root_bisections": 1026,
+    "root_cells": 1629,
+    "root_interval_evaluations": 1629,
+    "root_point_evaluations": 1485,
+    "scalar_inverse_targets": 26,
+    "trace_linear_replays": 12
+  },
+  "copy_slots": {
+    "planned_slots_kept": 2,
+    "reason": "Original seed47 program scientifically abstained before producing any candidate",
+    "replacement": false,
+    "status": "UNAVAILABLE"
+  },
+  "execution_before_root_review_forbidden": true,
+  "existing_qualification_reused": {
+    "cpu_producer": true,
+    "gradient": true,
+    "historical_qualification_same_parent": true,
+    "new_qualification_backwards": 0,
+    "new_qualification_forwards": 0
+  },
+  "failure_policy": {
+    "automatic_retry": false,
+    "cache_mismatch": "FAIL_WITHOUT_LIVE_ROOT_FALLBACK",
+    "implementation_error": "FAILED_IMPLEMENTATION",
+    "integrity_error": "FAIL",
+    "original_receipts_never_rewritten": true,
+    "parity_error": "FAIL",
+    "scientific_program_abstention": "Retain unavailable method slots and continue unchanged BP only if original inverse.Abstain contract applies"
+  },
+  "independent_new_attempt": true,
+  "new_limits": {
+    "analytic_solves": 2,
+    "backwards": 16,
+    "body_ticks": 150,
+    "cached_inverse_targets": 24,
+    "forwards": 25,
+    "lagrange_iterations": 256,
+    "optimizer_steps": 16,
+    "paired_queries": 768,
+    "proposal_directions": 3,
+    "root_bisections": 0,
+    "root_cells": 0,
+    "root_interval_evaluations": 0,
+    "root_point_evaluations": 0,
+    "scalar_inverse_targets": 0,
+    "trace_linear_replays": 0
+  },
+  "old_transfer_actual_counts": {
+    "analytic_solves": 1,
+    "backwards": 18,
+    "body_ticks": 180,
+    "forwards": 30,
+    "optimizer_steps": 16,
+    "paired_queries": 700,
+    "proposal_directions": 1,
+    "root_bisections": 1026,
+    "root_cells": 1629,
+    "root_interval_evaluations": 1629,
+    "root_point_evaluations": 1485,
+    "scalar_inverse_targets": 26,
+    "trace_linear_replays": 12
+  },
+  "original_candidate_order": [
+    "RERUN_PROGRAM_025",
+    "RERUN_PROGRAM_100",
+    "COPY_SOURCE_DELTA_025",
+    "COPY_SOURCE_DELTA_100",
+    "BP_TASK_4",
+    "BP_TASK_16"
+  ],
+  "original_no_retry_unchanged": true,
+  "original_result": {
+    "ci_overall_success_is_not_parent_success": true,
+    "path": "original artifact supervised/parent137/RESULT.json",
+    "retained": true,
+    "scientific_abstain": false,
+    "sha256": "0462761f4562fe80dd303a4571371e029b58f2e4f940e18a93c5b31eacf98c38",
+    "status": "PARENT_ABORTED"
+  },
+  "other_parent_new_execution": false,
+  "per_parent_exception": {
+    "cannot_claim_original_per_parent_cap_unchanged": true,
+    "cumulative_fit_count": 3,
+    "explicit_new_budget": true,
+    "new_fit_count": 2,
+    "no_borrowing_seed83_unused_budget": true,
+    "old_per_parent_fit_limit": 2,
+    "seed137_old_fit_count": 1
+  },
+  "phases": [
+    {
+      "fit_calls": 0,
+      "model_calls": 0,
+      "name": "EXACT_INPUT_CACHE_ADMISSION",
+      "root_calls": 0
+    },
+    {
+      "body_ticks": 6,
+      "compare": "Saved original train_scores and receiver_features plus receiver_first_hit_f64/receiver_value_f64/sender_drift/cost/boundary, exact decisions",
+      "compile_trace": false,
+      "extra_recurrent_linear_replays": 0,
+      "forwards": 1,
+      "name": "FRESH_PARENT_PARITY",
+      "paired_queries": 80,
+      "parity_failure": "STOP before new fits/BP/candidates",
+      "proposal_trace": "Always use complete original SHA-pinned cached train trace, never the fresh outputs",
+      "source": "Exact original137 public PT and original train80 data; original Adapter",
+      "thresholds": {
+        "decision_disagreements": 0,
+        "features_max_abs": 8e-06,
+        "physical_max_abs": 2e-09,
+        "scores_max_abs": 2e-05
+      }
+    },
+    {
+      "cached_inverse_returns": 24,
+      "doses": [
+        0.25,
+        1.0
+      ],
+      "math_core_unchanged": true,
+      "name": "REPLAY_FIXED_PROGRAM",
+      "new_fits": 2,
+      "new_scalar_inverses": 0,
+      "real_directions": 3,
+      "unused_wrong_role_random_costed": true
+    },
+    {
+      "backwards": 16,
+      "forwards": 16,
+      "name": "FIXED_BP",
+      "paired_queries": 128,
+      "unchanged_original_function": true,
+      "updates": 16
+    },
+    {
+      "complete_checkpoint_bytes": true,
+      "name": "SEAL_ALL_FOUR_CANDIDATES",
+      "new_model_calls": 0,
+      "other_registered_tensor_and_alias_values_preserved": true
+    },
+    {
+      "candidate_slots": 4,
+      "compile_trace": false,
+      "forwards": 8,
+      "name": "EVALUATE_FIXED_CANDIDATES",
+      "no_new_test": true,
+      "paired_queries": 560,
+      "train_then_combined_dev32_retain28": true
+    }
+  ],
+  "preparation_new_fits": 0,
+  "preparation_new_model_calls": 0,
+  "preparation_new_root_calls": 0,
+  "registered_utc": "2026-11-27T11:16:41.052092+00:00",
+  "repair_reason": "An implementation-only duplicate wall_seconds logger-key collision after the first returned fit; no candidate137 was saved or evaluated.",
+  "resources": {
+    "attempts": 1,
+    "full_call_return_gate_seconds": 20,
+    "memory_bytes": 1073741824,
+    "old_parent_budget_not_reused": true,
+    "one_cpu": true,
+    "own_process_cpu_seconds": 180,
+    "own_process_wall_seconds": 300,
+    "supervisor_wall_seconds": 330
+  },
+  "schema": "hepta.transfer137.repair-continuation-protocol.v1",
+  "scope_limits": {
+    "financial_dataset": false,
+    "native_transaction": false,
+    "new_holdout": false,
+    "production": false,
+    "trading": false,
+    "train_dev_retain_already_seen": true
+  },
+  "seed": 137,
+  "sole_publication_and_launch_owner": "root",
+  "status": "PROPOSED_FOR_ROOT_REVIEW_NOT_EXECUTABLE",
+  "unchanged_math_and_selection": {
+    "actual_f32_norm_squared_cap": "1/1",
+    "all_target_rules": true,
+    "boundary_root_rule": true,
+    "bp_seed": 20261127,
+    "bp_steps": [
+      4,
+      16
+    ],
+    "core_construct": true,
+    "doses": [
+      0.25,
+      1.0
+    ],
+    "same_bp": true,
+    "same_input_drive_40_scope": true,
+    "same_retain_exclusion": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "same_selection": true,
+    "same_two_fit_objectives": true
+  }
+}
