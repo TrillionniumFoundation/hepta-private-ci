@@ -114,7 +114,13 @@ async fn isolated_responses_tls_probe() -> Result<()> {
             let server_expected = expected.clone();
             let mut server = tokio::spawn(async move {
                 let (socket, _) = listener.accept().await?;
-                let mut websocket = tokio_tungstenite::accept_async(socket).await?;
+                // This client offers permessage-deflate; the locked server handshake requires
+                // an explicit configuration when an extension offer is present.
+                let mut websocket = tokio_tungstenite::accept_async_with_config(
+                    socket,
+                    Some(super::websocket_config()),
+                )
+                .await?;
                 let request = websocket.next().await.context("receive probe message")??;
                 ensure!(
                     request == server_expected,
