@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File [35m"/tmp/hepta-hcsn-flickr8k-c511-9c415/attention_free/src/run.py"[0m, line [35m128[0m, in [35m<module>[0m
+    if __name__=='__main__':[31mmain[0m[1;31m()[0m
+                            [31m~~~~[0m[1;31m^^[0m
+  File [35m"/tmp/hepta-hcsn-flickr8k-c511-9c415/attention_free/src/run.py"[0m, line [35m105[0m, in [35mmain[0m
+    [31mwait_for[0m[1;31m(ROOT/'tied_edit/summary.json',33000)[0m
+    [31m~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/tmp/hepta-hcsn-flickr8k-c511-9c415/attention_free/src/run.py"[0m, line [35m48[0m, in [35mwait_for[0m
+    if time.monotonic()>deadline:[1;31mraise TimeoutError(p.name)[0m
+                                 [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mTimeoutError[0m: [35msummary.json[0m
