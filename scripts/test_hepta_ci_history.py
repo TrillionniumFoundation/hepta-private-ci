@@ -48,6 +48,8 @@ class ExactHistoryTests(unittest.TestCase):
             self.source.as_uri(),
             str(self.checkout),
         )
+        # Detached auto-maintenance can write pack files during fixture cleanup.
+        self.git(self.checkout, "config", "maintenance.auto", "false")
 
     def git(self, directory, *arguments):
         return subprocess.check_output(
