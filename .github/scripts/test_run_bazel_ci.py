@@ -110,9 +110,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         native = "//codex-rs/fake:fake-integration-test-bin"
         cross = "//codex-rs/fake:fake-integration-test-windows-cross-bin"
         query_output = self.root / "clippy-query.txt"
-        query_output.write_text(
-            f"{unit}\n{native}\n{cross}\n", encoding="utf-8"
-        )
+        query_output.write_text(f"{unit}\n{native}\n{cross}\n", encoding="utf-8")
         script = SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"
         for runner_os, flags, integration in (
             ("Windows", [], native),
