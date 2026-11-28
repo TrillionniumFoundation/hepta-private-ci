@@ -1,0 +1,105 @@
+{
+  "base_commit": "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893",
+  "executed_fits": 0,
+  "executed_native_tests": 0,
+  "real_provisioning": false,
+  "real_recovery": false,
+  "schema": 1,
+  "search": {
+    "compressed_sha256": "0e1256307ce3d4749697093fc6077ea8960704c1a70aea5676e74807bbfc8880",
+    "fixed_ref": "0195e00d2883db5208de6cab8119cb6304b231c9",
+    "native_head_before_after_equal": true,
+    "raw_bytes": 22765,
+    "raw_sha256": "a2a3ba376fb663ae55e914a3ebe367b418fe9d05bb1a61fe584e189ebd5cda8c",
+    "scope": "listed concrete symbols across codex-rs and scripts; candidate production hits read separately",
+    "whole_dynamic_call_graph_proven": false
+  },
+  "source_blobs_verified": true,
+  "source_read_commit": "3871fbb62d4c3f69d07ce8651d488309c5363be8",
+  "sources": [
+    {
+      "bytes": 14107,
+      "git_blob": "4881a7f08aaf3f98c08012fee4dae95235f11232",
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "sha256": "598041d22b9b61d900372058f6181c48edfba5e04463b49f834414c24a3aa4fc"
+    },
+    {
+      "bytes": 1294,
+      "git_blob": "3ab054540d7c6bd9107a4235bec220e03ccf2e57",
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "sha256": "9b205d7397a167d59adfb6e9e40dfd251e91a476b0b071309905930a5f635805"
+    },
+    {
+      "bytes": 9064,
+      "git_blob": "ba44274288e20aa82a9fbb49967d6b520ae07d3c",
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "sha256": "925e75ec7daabc2fbfd067b5e61253650118644f3a2444879ea91c714bdba107"
+    },
+    {
+      "bytes": 49602,
+      "git_blob": "6689dccd18093c1877772f866696d07b499bf8a8",
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sha256": "56dfad6ae6354ac185d2c6448a5b4a2ed0e74425bb64fd709546271bffd150c9"
+    },
+    {
+      "bytes": 9534,
+      "git_blob": "4a077f8f9601b0ca1dc5973c044da2201b8c6686",
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "sha256": "d2bb2d34091aabe350a71785d8d32cf40fa669cfdc3cf1e25a5152ae566fd03b"
+    },
+    {
+      "bytes": 6398,
+      "git_blob": "de3e1bd47e7a579d13e071179d140ef4d15f3424",
+      "path": "codex-rs/hepta-agentd/src/production_terminal_launch.rs",
+      "sha256": "a55966b4f695b89d32d83ca62252b342af4a333396e109c2e31a4853bdca1fef"
+    },
+    {
+      "bytes": 18903,
+      "git_blob": "506da9f6e044df9f3e2107653f7f7528a90af6b7",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "sha256": "de346f44df01cf7b0766bfc0d643be60bb652bf26fddb5a17598759538d7eea0"
+    },
+    {
+      "bytes": 8271,
+      "git_blob": "c48ba5cce3b80a09fa04c9bf3c4215fb01bea685",
+      "path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs",
+      "sha256": "19359751b052abccac74d20b84f48a2edf2ea63ecfe2df452e66a43e328b3571"
+    },
+    {
+      "bytes": 14879,
+      "git_blob": "da9fe1c32a21e1aee324fdf14698c68a4eb0de98",
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint.rs",
+      "sha256": "da19b93a6939e361e9c65d3b5db5ebfbc65947be9280308034b9b6bd43211a59"
+    },
+    {
+      "bytes": 23939,
+      "git_blob": "ec6440803a0f1284bbc1ef98b5121075fe74dbd4",
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "sha256": "990fc15c75a08aa36cfc54fcff7e31d76f4f3723d36000931fb806fdfd6fad5b"
+    },
+    {
+      "bytes": 33946,
+      "git_blob": "f44c8858a55886c7997562a02ba87b9a7d359bf2",
+      "path": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "sha256": "24ee0eafbbd26e8d017cbeac6befbfc3babf89b916cade3350d1505059bf4fad"
+    },
+    {
+      "bytes": 16412,
+      "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+      "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+    },
+    {
+      "bytes": 61661,
+      "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10"
+    },
+    {
+      "bytes": 2313,
+      "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352"
+    }
+  ]
+}
