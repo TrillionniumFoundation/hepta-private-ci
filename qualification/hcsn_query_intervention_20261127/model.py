@@ -107,7 +107,7 @@ def logistic(x,y,penalty):
         val=np.logaddexp(0,eta).sum()-y@eta+.5*penalty*(w[1:]@w[1:])
         grad=np.r_[res.sum(),z.T@res+penalty*w[1:]]
         return val,grad
-    result=minimize(obj,np.zeros(z.shape[1]+1),jac=True,method='L-BFGS-B',options={'maxiter':500,'ftol':5e-13,'gtol':1e-7})
+    result=minimize(obj,np.zeros(z.shape[1]+1),jac=True,method='L-BFGS-B',options={'maxiter':4000,'ftol':5e-13,'gtol':1e-7})
     if not result.success:raise ArithmeticError(result.message)
     return dict(mean=mean.tolist(),std=std.tolist(),w=result.x.tolist())
 

@@ -1,0 +1,1 @@
+The first training process stopped before sealing when the smooth-hazard baseline at cell B reached the 500-iteration L-BFGS-B cap. No held-out labels or scores were read. The restarted process retains the data, objectives, candidate settings and selection rule, increasing that same solver's iteration ceiling to 4,000. All results use a complete run.

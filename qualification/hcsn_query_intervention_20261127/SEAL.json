@@ -1,0 +1,2633 @@
+{
+  "A": {
+    "source_sha256": "93c2e36e44b0d7fc00b346652a3373085ca45a982bf72cec310f07cf33ef094a",
+    "repeats": 13,
+    "input_bins": 19000,
+    "methods": {
+      "literal_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.19686085110915197,
+        "dev_brier": 0.057061062546845315,
+        "feature_seconds": 1.5718904029981786,
+        "calibration_seconds": 0.059142799998880946,
+        "calibrator": {
+          "mean": [
+            -6.063389519284146,
+            1.1552453009330903
+          ],
+          "std": [
+            5.663469210427814,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.2982370833269785,
+            3.2304360086529313,
+            0.2805289453564023
+          ]
+        }
+      },
+      "literal_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.2065659660989548,
+        "dev_brier": 0.05919738009888206,
+        "feature_seconds": 1.6035401250010182,
+        "calibration_seconds": 0.05017973799840547,
+        "calibrator": {
+          "mean": [
+            -6.067557901339919,
+            1.1552453009330903
+          ],
+          "std": [
+            5.672963434569279,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.700000381764574,
+            2.6081977875767244,
+            0.4095889273810375
+          ]
+        }
+      },
+      "tangent_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 1.0,
+        "dev_log_loss": 0.198112794441811,
+        "dev_brier": 0.057401735896154875,
+        "feature_seconds": 1.5586230930002785,
+        "calibration_seconds": 0.04679838400079461,
+        "calibrator": {
+          "mean": [
+            -6.060872679486306,
+            1.1552453009330903
+          ],
+          "std": [
+            5.664164945251975,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.223601741216686,
+            3.1550910633256337,
+            0.2976207551744723
+          ]
+        }
+      },
+      "tangent_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.20696040555605674,
+        "dev_brier": 0.05926965493574313,
+        "feature_seconds": 1.5273701759997493,
+        "calibration_seconds": 0.06489284300005238,
+        "calibrator": {
+          "mean": [
+            -6.065208815056452,
+            1.1552453009330903
+          ],
+          "std": [
+            5.674025064779149,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.687767513909265,
+            2.595940271239646,
+            0.4129567742720871
+          ]
+        }
+      },
+      "fixed_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 1.0,
+        "dev_log_loss": 0.2000060296642233,
+        "dev_brier": 0.057718732236300245,
+        "feature_seconds": 1.3998574960005499,
+        "calibration_seconds": 0.056407730999126215,
+        "calibrator": {
+          "mean": [
+            -6.0599689521828735,
+            1.1552453009330903
+          ],
+          "std": [
+            5.665249960504088,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.151083247718545,
+            3.081003080273538,
+            0.3145234448811379
+          ]
+        }
+      },
+      "fixed_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.2078029979363465,
+        "dev_brier": 0.05936925739972033,
+        "feature_seconds": 1.419596771000215,
+        "calibration_seconds": 0.04895487499925366,
+        "calibrator": {
+          "mean": [
+            -6.063944743503029,
+            1.1552453009330903
+          ],
+          "std": [
+            5.6734201892227025,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.662292397055255,
+            2.5698024312496894,
+            0.4191813416953587
+          ]
+        }
+      },
+      "boundary_only": {
+        "law_setting": "previous_logB",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.20376374654140816,
+        "dev_brier": 0.05924846893812606,
+        "feature_seconds": 0.0,
+        "calibration_seconds": 0.059030861000792356,
+        "calibrator": {
+          "mean": [
+            0.015270438910282319,
+            1.1552453009330903
+          ],
+          "std": [
+            0.04485486316025383,
+            0.8645064227544631
+          ],
+          "w": [
+            -3.708914925197207,
+            1.2467885837644275,
+            1.0323815632520423
+          ]
+        }
+      },
+      "smooth_hazard": {
+        "law_setting": "0.1",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.15827954322407553,
+        "dev_brier": 0.04740411670991406,
+        "feature_seconds": 0.8658278049988439,
+        "calibration_seconds": 0.06351485400045931,
+        "calibrator": {
+          "mean": [
+            -6.213650425672286,
+            1.1552453009330903
+          ],
+          "std": [
+            4.10709841544463,
+            0.8645064227544631
+          ],
+          "w": [
+            -6.55809591381972,
+            4.552827502642257,
+            0.03283733359554748
+          ]
+        },
+        "hazard": {
+          "mean": [
+            -1.6506001806287645e-14,
+            -4.691657372058426e-14,
+            1.7791009593044055e-14,
+            -1.0180710683585389e-14,
+            6.8343055548923075e-15,
+            -2.286335933954599e-15,
+            -0.043555303847950165,
+            -0.041584156553067166,
+            -0.038146122373685525,
+            -0.03506259616211402,
+            -0.032195384002633616,
+            -0.027954237213626665,
+            1.000000000000028,
+            0.9999999999999387,
+            1.0000000000000355,
+            1.0000000000000189,
+            1.000000000000045,
+            1.0000000000000033
+          ],
+          "std": [
+            1.000000000000015,
+            0.9999999999999862,
+            1.0000000000000175,
+            1.0000000000000153,
+            1.0000000000000226,
+            1.000000000000001,
+            0.6498793706770364,
+            0.6496516074936777,
+            0.6491960027352898,
+            0.648452577322648,
+            0.6472234249493601,
+            0.6446428837949431,
+            1.1868303278204229,
+            1.20433920364582,
+            1.226862802530995,
+            1.245893113153386,
+            1.2631568087349954,
+            1.2877550304051175
+          ],
+          "w": [
+            -7.955731514869539,
+            0.11111937336015788,
+            4.187843410895348,
+            0.8162581949490376,
+            -0.7188543618506095,
+            0.3163620183247926,
+            3.6719581415551996,
+            -2.8172123064983325,
+            2.363605480560281,
+            0.6532638716625501,
+            -0.3642277649983444,
+            -1.2242434683231895,
+            -1.7260739876257372,
+            -0.9789642602494552,
+            1.050898402461785,
+            -1.486828692985648,
+            0.43702292538166426,
+            -0.5491833934678582,
+            -1.2991322742095286
+          ]
+        }
+      }
+    },
+    "transport_checks": [
+      {
+        "law": "literal",
+        "scale": 0.35,
+        "mass_error": 3.9968028886505635e-15
+      },
+      {
+        "law": "literal",
+        "scale": 0.7,
+        "mass_error": 1.1879386363489175e-14
+      },
+      {
+        "law": "literal",
+        "scale": 1.4,
+        "mass_error": 6.661338147750939e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 0.35,
+        "mass_error": 7.771561172376096e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 0.7,
+        "mass_error": 8.881784197001252e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 1.4,
+        "mass_error": 8.659739592076221e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 0.35,
+        "mass_error": 8.215650382226158e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 0.7,
+        "mass_error": 4.884981308350689e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 1.4,
+        "mass_error": 1.0436096431476471e-14
+      }
+    ],
+    "candidates": {
+      "literal_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20128567511860618,
+          "dev_brier": 0.0578981473563191,
+          "feature_seconds": 1.7075403339986224,
+          "calibration_seconds": 0.05038519499976246
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2012891818407578,
+          "dev_brier": 0.05790016385318696,
+          "feature_seconds": 1.7075403339986224,
+          "calibration_seconds": 0.05134655000074417
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20134675118428005,
+          "dev_brier": 0.057921505527093714,
+          "feature_seconds": 1.7075403339986224,
+          "calibration_seconds": 0.04642289100047492
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20163519311316702,
+          "dev_brier": 0.05798014485668509,
+          "feature_seconds": 1.5832567229990673,
+          "calibration_seconds": 0.04720824300056847
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20163242064446082,
+          "dev_brier": 0.057982722705520844,
+          "feature_seconds": 1.5832567229990673,
+          "calibration_seconds": 0.057844396000291454
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20164473514323925,
+          "dev_brier": 0.058009733046268934,
+          "feature_seconds": 1.5832567229990673,
+          "calibration_seconds": 0.04702119900139223
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.19686085110915197,
+          "dev_brier": 0.057061062546845315,
+          "feature_seconds": 1.5718904029981786,
+          "calibration_seconds": 0.059142799998880946
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.19686265783196125,
+          "dev_brier": 0.05707024702712289,
+          "feature_seconds": 1.5718904029981786,
+          "calibration_seconds": 0.06570102799923916
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.1970096585220815,
+          "dev_brier": 0.05715965777798714,
+          "feature_seconds": 1.5718904029981786,
+          "calibration_seconds": 0.05452339099974779
+        }
+      ],
+      "literal_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20867399070266313,
+          "dev_brier": 0.05974092997119472,
+          "feature_seconds": 1.7228235739985394,
+          "calibration_seconds": 0.060018145999492845
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20866615947358785,
+          "dev_brier": 0.05973911956102537,
+          "feature_seconds": 1.7228235739985394,
+          "calibration_seconds": 0.05239829999845824
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20860988947066408,
+          "dev_brier": 0.05972385775070154,
+          "feature_seconds": 1.7228235739985394,
+          "calibration_seconds": 0.04495965000023716
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20873394858080538,
+          "dev_brier": 0.05963963473334345,
+          "feature_seconds": 1.6004367639998236,
+          "calibration_seconds": 0.05441676199916401
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2087199927434695,
+          "dev_brier": 0.059637778493481855,
+          "feature_seconds": 1.6004367639998236,
+          "calibration_seconds": 0.04709775599985733
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2086153445015228,
+          "dev_brier": 0.059622948419543055,
+          "feature_seconds": 1.6004367639998236,
+          "calibration_seconds": 0.05320287299946358
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2067460541183318,
+          "dev_brier": 0.059211030961227984,
+          "feature_seconds": 1.6035401250010182,
+          "calibration_seconds": 0.06527997300145216
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20672045591524046,
+          "dev_brier": 0.0592089323609476,
+          "feature_seconds": 1.6035401250010182,
+          "calibration_seconds": 0.05210985700068704
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2065659660989548,
+          "dev_brier": 0.05919738009888206,
+          "feature_seconds": 1.6035401250010182,
+          "calibration_seconds": 0.05017973799840547
+        }
+      ],
+      "tangent_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20460142696397943,
+          "dev_brier": 0.05874590472440586,
+          "feature_seconds": 1.496467290999135,
+          "calibration_seconds": 0.05342829400069604
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20460122717319923,
+          "dev_brier": 0.05874621127965061,
+          "feature_seconds": 1.496467290999135,
+          "calibration_seconds": 0.060511102001328254
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20462068130695157,
+          "dev_brier": 0.05875124737706458,
+          "feature_seconds": 1.496467290999135,
+          "calibration_seconds": 0.04600336200019228
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20358552184959047,
+          "dev_brier": 0.05848508689283636,
+          "feature_seconds": 1.3677140809995763,
+          "calibration_seconds": 0.05123897099838359
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20358007838096914,
+          "dev_brier": 0.058486192529071036,
+          "feature_seconds": 1.3677140809995763,
+          "calibration_seconds": 0.057543070000974694
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20356421247663867,
+          "dev_brier": 0.058499467244838226,
+          "feature_seconds": 1.3677140809995763,
+          "calibration_seconds": 0.06760496500100999
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1981152733942853,
+          "dev_brier": 0.05739468264256715,
+          "feature_seconds": 1.5586230930002785,
+          "calibration_seconds": 0.07158715600053256
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.198112794441811,
+          "dev_brier": 0.057401735896154875,
+          "feature_seconds": 1.5586230930002785,
+          "calibration_seconds": 0.04679838400079461
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.1982163226842231,
+          "dev_brier": 0.05747262225618934,
+          "feature_seconds": 1.5586230930002785,
+          "calibration_seconds": 0.0663289390013233
+        }
+      ],
+      "tangent_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.21014887438881685,
+          "dev_brier": 0.05998712418376374,
+          "feature_seconds": 1.510730051999417,
+          "calibration_seconds": 0.05976966500020353
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2101403894351829,
+          "dev_brier": 0.05998525209091008,
+          "feature_seconds": 1.510730051999417,
+          "calibration_seconds": 0.060969918999035144
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21007662127086155,
+          "dev_brier": 0.05996924514328019,
+          "feature_seconds": 1.510730051999417,
+          "calibration_seconds": 0.047698709000542294
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.209549503502522,
+          "dev_brier": 0.059782634914142076,
+          "feature_seconds": 1.3691886590004287,
+          "calibration_seconds": 0.05443267900045612
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2095351184661463,
+          "dev_brier": 0.05978069345085825,
+          "feature_seconds": 1.3691886590004287,
+          "calibration_seconds": 0.046314866000102484
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20942529177356262,
+          "dev_brier": 0.05976493727811544,
+          "feature_seconds": 1.3691886590004287,
+          "calibration_seconds": 0.09300269600134925
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2071458049559429,
+          "dev_brier": 0.0592843029904807,
+          "feature_seconds": 1.5273701759997493,
+          "calibration_seconds": 0.06507164999857196
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2071198264395546,
+          "dev_brier": 0.05928212212515699,
+          "feature_seconds": 1.5273701759997493,
+          "calibration_seconds": 0.05035370800032979
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20696040555605674,
+          "dev_brier": 0.05926965493574313,
+          "feature_seconds": 1.5273701759997493,
+          "calibration_seconds": 0.06489284300005238
+        }
+      ],
+      "fixed_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20929383473142932,
+          "dev_brier": 0.05954381622933215,
+          "feature_seconds": 1.5856213580009353,
+          "calibration_seconds": 0.056707167999775265
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20928743732572896,
+          "dev_brier": 0.059543289295693996,
+          "feature_seconds": 1.5856213580009353,
+          "calibration_seconds": 0.06475098800001433
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20924435179417294,
+          "dev_brier": 0.05954004939425527,
+          "feature_seconds": 1.5856213580009353,
+          "calibration_seconds": 0.05818768900098803
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20640980883550597,
+          "dev_brier": 0.058959536106137765,
+          "feature_seconds": 1.3888668559993675,
+          "calibration_seconds": 0.04791625399957411
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.206400001777556,
+          "dev_brier": 0.058959909262010265,
+          "feature_seconds": 1.3888668559993675,
+          "calibration_seconds": 0.05612849200042547
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2063390034973748,
+          "dev_brier": 0.0589660587760236,
+          "feature_seconds": 1.3888668559993675,
+          "calibration_seconds": 0.059066579000500496
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20001532824635387,
+          "dev_brier": 0.05771286383397839,
+          "feature_seconds": 1.3998574960005499,
+          "calibration_seconds": 0.06722352799988585
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2000060296642233,
+          "dev_brier": 0.057718732236300245,
+          "feature_seconds": 1.3998574960005499,
+          "calibration_seconds": 0.056407730999126215
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20004060727951697,
+          "dev_brier": 0.05777881491597394,
+          "feature_seconds": 1.3998574960005499,
+          "calibration_seconds": 0.07244011399961892
+        }
+      ],
+      "fixed_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2128609533947045,
+          "dev_brier": 0.0603206287473053,
+          "feature_seconds": 1.5553046889999678,
+          "calibration_seconds": 0.04720048399940424
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.21285013677121725,
+          "dev_brier": 0.0603188593731251,
+          "feature_seconds": 1.5553046889999678,
+          "calibration_seconds": 0.049301772998660454
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21276204998845205,
+          "dev_brier": 0.06030355676478654,
+          "feature_seconds": 1.5553046889999678,
+          "calibration_seconds": 0.06876528099928692
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.21109434251399423,
+          "dev_brier": 0.05996727986570822,
+          "feature_seconds": 1.3864531919989531,
+          "calibration_seconds": 0.058106618000238086
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.211078578007386,
+          "dev_brier": 0.059965435155220105,
+          "feature_seconds": 1.3864531919989531,
+          "calibration_seconds": 0.05519501399976434
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21095366456189085,
+          "dev_brier": 0.05995034577678819,
+          "feature_seconds": 1.3864531919989531,
+          "calibration_seconds": 0.05332167000051413
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20800449210803706,
+          "dev_brier": 0.05938301390798281,
+          "feature_seconds": 1.419596771000215,
+          "calibration_seconds": 0.04713224900115165
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20797725658074664,
+          "dev_brier": 0.05938096406939848,
+          "feature_seconds": 1.419596771000215,
+          "calibration_seconds": 0.09730971899989527
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2078029979363465,
+          "dev_brier": 0.05936925739972033,
+          "feature_seconds": 1.419596771000215,
+          "calibration_seconds": 0.04895487499925366
+        }
+      ],
+      "boundary_only": [
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20376374654140816,
+          "dev_brier": 0.05924846893812606,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.059030861000792356
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20376426250756996,
+          "dev_brier": 0.05924842724977588,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.047938432000592
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2037719394832674,
+          "dev_brier": 0.05924835050884197,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.059087329000249156
+        }
+      ],
+      "smooth_hazard": [
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.15827954322407553,
+          "dev_brier": 0.04740411670991406,
+          "feature_seconds": 0.8658278049988439,
+          "calibration_seconds": 0.06351485400045931
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.15832614348855764,
+          "dev_brier": 0.04739645454415025,
+          "feature_seconds": 0.8658278049988439,
+          "calibration_seconds": 0.06578119000005245
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.15909344521730348,
+          "dev_brier": 0.047414295183585795,
+          "feature_seconds": 0.8658278049988439,
+          "calibration_seconds": 0.056762461999824154
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.15892667501891464,
+          "dev_brier": 0.047518851541886835,
+          "feature_seconds": 0.2874371850011812,
+          "calibration_seconds": 0.060736078001355054
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.15895798099924233,
+          "dev_brier": 0.04751847551172403,
+          "feature_seconds": 0.2874371850011812,
+          "calibration_seconds": 0.04903109499900893
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.1593791404159161,
+          "dev_brier": 0.04754334166222556,
+          "feature_seconds": 0.2874371850011812,
+          "calibration_seconds": 0.07122425200032012
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1602049639830884,
+          "dev_brier": 0.04773870434120162,
+          "feature_seconds": 0.12050547400031064,
+          "calibration_seconds": 0.07085913300034008
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.1602454851953274,
+          "dev_brier": 0.04774245508074802,
+          "feature_seconds": 0.12050547400031064,
+          "calibration_seconds": 0.07216726700062281
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.16069593792038372,
+          "dev_brier": 0.04779272523162788,
+          "feature_seconds": 0.12050547400031064,
+          "calibration_seconds": 0.054969587999949
+        }
+      ]
+    },
+    "train_cost": {},
+    "selection_wall_seconds": 23.036650201000157,
+    "selected_raw": {
+      "literal_query": "c1ed9991c0ca368fd4bb1c209f3153640a06109a0499135a47bc1ad0c4ccceb8",
+      "literal_flat": "523f7944f13a92c8e11059b156295a4ce2927fe2a1150fe12793376680cdbde9",
+      "tangent_query": "2f513f7e10c7971adf67daf08ac20db2a168df0eb7fc01ee1e31d196bf1eab93",
+      "tangent_flat": "7ccc2bc1699674deb08a4b7cc670090ddcc5145605d1c37c756126d4cfa79ad7",
+      "fixed_query": "cbaf5d51ef1d83815ca64b2d9d282a3dbf6e673d476019183034a85b0cbc7a23",
+      "fixed_flat": "59156acf128723b848b9e985b2f00a70afe379129a11751f4728faf2f0b8b025",
+      "boundary_only": "52a7769fd6134bd33889125cb4a5b1213d0d0899d36267c8767f18258acafb1a",
+      "smooth_hazard": "d6052374ceed354ac84da1a716d165dba4699a64d399dc1297f7b9f4951447d5"
+    }
+  },
+  "B": {
+    "source_sha256": "bef13719cf15574a8ffdc4a40190ffc99c2580b7035a243bd91c1f6688fc29a5",
+    "repeats": 9,
+    "input_bins": 19000,
+    "methods": {
+      "literal_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.19902758128820383,
+        "dev_brier": 0.06012473593679448,
+        "feature_seconds": 1.5750628980003967,
+        "calibration_seconds": 0.11892275499849347,
+        "calibrator": {
+          "mean": [
+            -6.063389519284146,
+            1.1552453009330903
+          ],
+          "std": [
+            5.663469210427814,
+            0.8645064227544631
+          ],
+          "w": [
+            -8.843086158909685,
+            7.476713926953693,
+            -0.47803701678344507
+          ]
+        }
+      },
+      "literal_flat": {
+        "law_setting": "0.35",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.2212710446667353,
+        "dev_brier": 0.06825673660468466,
+        "feature_seconds": 1.3924772139998822,
+        "calibration_seconds": 0.062041228000452975,
+        "calibrator": {
+          "mean": [
+            -3.8900055969564606,
+            1.1552453009330903
+          ],
+          "std": [
+            1.67672859503553,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.6269995644857564,
+            4.474924016871838,
+            -1.09437603444134
+          ]
+        }
+      },
+      "tangent_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.20171839755724372,
+        "dev_brier": 0.06105791595843193,
+        "feature_seconds": 1.4832117250007286,
+        "calibration_seconds": 0.0547461160003877,
+        "calibrator": {
+          "mean": [
+            -6.060872679486306,
+            1.1552453009330903
+          ],
+          "std": [
+            5.664164945251975,
+            0.8645064227544631
+          ],
+          "w": [
+            -8.766910583784798,
+            7.407310583098446,
+            -0.46568094744293537
+          ]
+        }
+      },
+      "tangent_flat": {
+        "law_setting": "0.35",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.2230840956853165,
+        "dev_brier": 0.06835366639028974,
+        "feature_seconds": 1.707933942998352,
+        "calibration_seconds": 0.057396128999243956,
+        "calibrator": {
+          "mean": [
+            -3.888451285321335,
+            1.1552453009330903
+          ],
+          "std": [
+            1.676618099822758,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.588458399273942,
+            4.444781881611887,
+            -1.0820512526333417
+          ]
+        }
+      },
+      "fixed_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.20540636260860978,
+        "dev_brier": 0.06184306226002255,
+        "feature_seconds": 1.3772941029983485,
+        "calibration_seconds": 0.050729154998407466,
+        "calibrator": {
+          "mean": [
+            -6.0599689521828735,
+            1.1552453009330903
+          ],
+          "std": [
+            5.665249960504088,
+            0.8645064227544631
+          ],
+          "w": [
+            -8.642107423924207,
+            7.2876134012983815,
+            -0.44205042242252013
+          ]
+        }
+      },
+      "fixed_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.22608598757851336,
+        "dev_brier": 0.06813071157030293,
+        "feature_seconds": 1.399395962998824,
+        "calibration_seconds": 0.06338973399942915,
+        "calibrator": {
+          "mean": [
+            -6.063944743503029,
+            1.1552453009330903
+          ],
+          "std": [
+            5.6734201892227025,
+            0.8645064227544631
+          ],
+          "w": [
+            -7.615410147765682,
+            6.257870448088114,
+            -0.24942900821081576
+          ]
+        }
+      },
+      "boundary_only": {
+        "law_setting": "previous_logB",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.22271734172392746,
+        "dev_brier": 0.07066037008413019,
+        "feature_seconds": 0.0,
+        "calibration_seconds": 0.06671062500026892,
+        "calibrator": {
+          "mean": [
+            0.015270438910282319,
+            1.1552453009330903
+          ],
+          "std": [
+            0.04485486316025383,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.091254338696391,
+            2.1471736292197408,
+            1.3723719585585092
+          ]
+        }
+      },
+      "smooth_hazard": {
+        "law_setting": "0.1",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.1636232442872402,
+        "dev_brier": 0.05227065154125855,
+        "feature_seconds": 0.7189076310005476,
+        "calibration_seconds": 0.02548022600058175,
+        "calibrator": {
+          "mean": [
+            -7.211749752867083,
+            1.1552453009330903
+          ],
+          "std": [
+            4.695860154432553,
+            0.8645064227544631
+          ],
+          "w": [
+            -7.973001812770506,
+            5.521939916512061,
+            0.1866356363139762
+          ]
+        },
+        "hazard": {
+          "mean": [
+            -1.6506001806287645e-14,
+            -4.691657372058426e-14,
+            1.7791009593044055e-14,
+            -1.0180710683585389e-14,
+            6.8343055548923075e-15,
+            -2.286335933954599e-15,
+            -0.043555303847950165,
+            -0.041584156553067166,
+            -0.038146122373685525,
+            -0.03506259616211402,
+            -0.032195384002633616,
+            -0.027954237213626665,
+            1.000000000000028,
+            0.9999999999999387,
+            1.0000000000000355,
+            1.0000000000000189,
+            1.000000000000045,
+            1.0000000000000033
+          ],
+          "std": [
+            1.000000000000015,
+            0.9999999999999862,
+            1.0000000000000175,
+            1.0000000000000153,
+            1.0000000000000226,
+            1.000000000000001,
+            0.6498793706770364,
+            0.6496516074936777,
+            0.6491960027352898,
+            0.648452577322648,
+            0.6472234249493601,
+            0.6446428837949431,
+            1.1868303278204229,
+            1.20433920364582,
+            1.226862802530995,
+            1.245893113153386,
+            1.2631568087349954,
+            1.2877550304051175
+          ],
+          "w": [
+            -8.561543217068504,
+            -1.9063307604429591,
+            3.0896334151492897,
+            -1.7170886371550382,
+            -3.7936598810033257,
+            -0.817196207032702,
+            1.1692435004022386,
+            -2.7892225204750196,
+            5.168845009382623,
+            3.963981169661601,
+            0.5010786214647379,
+            1.913600900581689,
+            -0.8711759686586739,
+            -0.5947559673154661,
+            1.8197782769496735,
+            -1.3311931374051975,
+            1.4265964164894995,
+            0.08362606312568414,
+            -0.3626908236177301
+          ]
+        }
+      }
+    },
+    "transport_checks": [
+      {
+        "law": "literal",
+        "scale": 0.35,
+        "mass_error": 3.9968028886505635e-15
+      },
+      {
+        "law": "literal",
+        "scale": 0.7,
+        "mass_error": 1.1879386363489175e-14
+      },
+      {
+        "law": "literal",
+        "scale": 1.4,
+        "mass_error": 6.661338147750939e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 0.35,
+        "mass_error": 7.771561172376096e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 0.7,
+        "mass_error": 8.881784197001252e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 1.4,
+        "mass_error": 8.659739592076221e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 0.35,
+        "mass_error": 8.215650382226158e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 0.7,
+        "mass_error": 4.884981308350689e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 1.4,
+        "mass_error": 1.0436096431476471e-14
+      }
+    ],
+    "candidates": {
+      "literal_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20669688104305,
+          "dev_brier": 0.0618414400031795,
+          "feature_seconds": 1.3525103359988861,
+          "calibration_seconds": 0.06546856000022672
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20648250939831017,
+          "dev_brier": 0.061836412431926176,
+          "feature_seconds": 1.3525103359988861,
+          "calibration_seconds": 0.05241203100013081
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20501238075747977,
+          "dev_brier": 0.06182429155248082,
+          "feature_seconds": 1.3525103359988861,
+          "calibration_seconds": 0.084408437998718
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20966050781981202,
+          "dev_brier": 0.06200691468566284,
+          "feature_seconds": 1.7474408849993779,
+          "calibration_seconds": 0.1779228970008262
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20926525714652594,
+          "dev_brier": 0.06199537075739411,
+          "feature_seconds": 1.7474408849993779,
+          "calibration_seconds": 0.06082957100079511
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2066760254330123,
+          "dev_brier": 0.061952019511300895,
+          "feature_seconds": 1.7474408849993779,
+          "calibration_seconds": 0.04992556700017303
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2035781325245957,
+          "dev_brier": 0.06019662814408977,
+          "feature_seconds": 1.5750628980003967,
+          "calibration_seconds": 0.07655757700013055
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20275216068845267,
+          "dev_brier": 0.06016254004059091,
+          "feature_seconds": 1.5750628980003967,
+          "calibration_seconds": 0.14702865399885923
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.19902758128820383,
+          "dev_brier": 0.06012473593679448,
+          "feature_seconds": 1.5750628980003967,
+          "calibration_seconds": 0.11892275499849347
+        }
+      ],
+      "literal_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22318021397111817,
+          "dev_brier": 0.06863815333333882,
+          "feature_seconds": 1.3924772139998822,
+          "calibration_seconds": 0.10377414000140561
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22295823128932185,
+          "dev_brier": 0.06859619733257775,
+          "feature_seconds": 1.3924772139998822,
+          "calibration_seconds": 0.06470318199899339
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2212710446667353,
+          "dev_brier": 0.06825673660468466,
+          "feature_seconds": 1.3924772139998822,
+          "calibration_seconds": 0.062041228000452975
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22676966430369164,
+          "dev_brier": 0.0687023523996824,
+          "feature_seconds": 1.7601167459979479,
+          "calibration_seconds": 0.07445274400015478
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22638494399280545,
+          "dev_brier": 0.0686415778688388,
+          "feature_seconds": 1.7601167459979479,
+          "calibration_seconds": 0.06788199100083148
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22356832841788007,
+          "dev_brier": 0.06817473577138267,
+          "feature_seconds": 1.7601167459979479,
+          "calibration_seconds": 0.05508027199903154
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22990740151341552,
+          "dev_brier": 0.06892636939341268,
+          "feature_seconds": 1.5912126389994228,
+          "calibration_seconds": 0.05724200700024085
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22909995091685287,
+          "dev_brier": 0.06879917548938554,
+          "feature_seconds": 1.5912126389994228,
+          "calibration_seconds": 0.0714221260004706
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22413817178847473,
+          "dev_brier": 0.06797112946380014,
+          "feature_seconds": 1.5912126389994228,
+          "calibration_seconds": 0.07693844200002786
+        }
+      ],
+      "tangent_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2123599675275212,
+          "dev_brier": 0.06404154667395766,
+          "feature_seconds": 1.7008329639993462,
+          "calibration_seconds": 0.05437580999932834
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.21215534501786937,
+          "dev_brier": 0.06402865992871898,
+          "feature_seconds": 1.7008329639993462,
+          "calibration_seconds": 0.06153694699969492
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2107062480190425,
+          "dev_brier": 0.06394420082937641,
+          "feature_seconds": 1.7008329639993462,
+          "calibration_seconds": 0.05191892600123538
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2135893642228575,
+          "dev_brier": 0.06352802672759009,
+          "feature_seconds": 1.5806357199999184,
+          "calibration_seconds": 0.06685261900020123
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2131963676476035,
+          "dev_brier": 0.06350636195327321,
+          "feature_seconds": 1.5806357199999184,
+          "calibration_seconds": 0.06038533200080565
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21055580852096245,
+          "dev_brier": 0.06337627543537483,
+          "feature_seconds": 1.5806357199999184,
+          "calibration_seconds": 0.08413117599957332
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2065189001773834,
+          "dev_brier": 0.0612516743708956,
+          "feature_seconds": 1.4832117250007286,
+          "calibration_seconds": 0.06881306300056167
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20567248378265293,
+          "dev_brier": 0.06120312960585691,
+          "feature_seconds": 1.4832117250007286,
+          "calibration_seconds": 0.08318291700015834
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20171839755724372,
+          "dev_brier": 0.06105791595843193,
+          "feature_seconds": 1.4832117250007286,
+          "calibration_seconds": 0.0547461160003877
+        }
+      ],
+      "tangent_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22494137886958498,
+          "dev_brier": 0.06868251434814515,
+          "feature_seconds": 1.707933942998352,
+          "calibration_seconds": 0.07074708500113047
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22472599593992962,
+          "dev_brier": 0.06864621108939825,
+          "feature_seconds": 1.707933942998352,
+          "calibration_seconds": 0.06359230100133573
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2230840956853165,
+          "dev_brier": 0.06835366639028974,
+          "feature_seconds": 1.707933942998352,
+          "calibration_seconds": 0.057396128999243956
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22799828449990087,
+          "dev_brier": 0.06876561293224213,
+          "feature_seconds": 1.577697590999378,
+          "calibration_seconds": 0.055640841001149965
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22761339200638736,
+          "dev_brier": 0.06870838419216191,
+          "feature_seconds": 1.577697590999378,
+          "calibration_seconds": 0.06159754200052703
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22478788145118841,
+          "dev_brier": 0.06826957007747411,
+          "feature_seconds": 1.577697590999378,
+          "calibration_seconds": 0.05498227899988706
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.23063609456776712,
+          "dev_brier": 0.0689721882965464,
+          "feature_seconds": 1.5451684020008543,
+          "calibration_seconds": 0.07193579699924157
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2298193202419327,
+          "dev_brier": 0.06884649877333644,
+          "feature_seconds": 1.5451684020008543,
+          "calibration_seconds": 0.061317141000472475
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2247944882451401,
+          "dev_brier": 0.06803034891201522,
+          "feature_seconds": 1.5451684020008543,
+          "calibration_seconds": 0.050935708999531926
+        }
+      ],
+      "fixed_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2206901561173587,
+          "dev_brier": 0.06603538663451206,
+          "feature_seconds": 1.4013082740002574,
+          "calibration_seconds": 0.06285083700095129
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2204790186886095,
+          "dev_brier": 0.06601781324755644,
+          "feature_seconds": 1.4013082740002574,
+          "calibration_seconds": 0.05671713300034753
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21890100277258526,
+          "dev_brier": 0.06588784495154311,
+          "feature_seconds": 1.4013082740002574,
+          "calibration_seconds": 0.059787276999486494
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.219028133013564,
+          "dev_brier": 0.06479841731430183,
+          "feature_seconds": 1.3812897990010242,
+          "calibration_seconds": 0.06190470500041556
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.21862898178684895,
+          "dev_brier": 0.064771283304168,
+          "feature_seconds": 1.3812897990010242,
+          "calibration_seconds": 0.06400515799941786
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.21584583907300076,
+          "dev_brier": 0.06459093104630514,
+          "feature_seconds": 1.3812897990010242,
+          "calibration_seconds": 0.06660965099945315
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2106170880334405,
+          "dev_brier": 0.062118930256136566,
+          "feature_seconds": 1.3772941029983485,
+          "calibration_seconds": 0.07595301699984702
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2097387649244854,
+          "dev_brier": 0.062061480765624,
+          "feature_seconds": 1.3772941029983485,
+          "calibration_seconds": 0.054866243999640574
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20540636260860978,
+          "dev_brier": 0.06184306226002255,
+          "feature_seconds": 1.3772941029983485,
+          "calibration_seconds": 0.050729154998407466
+        }
+      ],
+      "fixed_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22891852621151645,
+          "dev_brier": 0.06901404382298033,
+          "feature_seconds": 1.4078602600002341,
+          "calibration_seconds": 0.06073193500014895
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22870512841803034,
+          "dev_brier": 0.06898328115681067,
+          "feature_seconds": 1.4078602600002341,
+          "calibration_seconds": 0.1207824739994976
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22704525762413671,
+          "dev_brier": 0.06873417273002418,
+          "feature_seconds": 1.4078602600002341,
+          "calibration_seconds": 0.0989089349986898
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2303811027458065,
+          "dev_brier": 0.06892374632644006,
+          "feature_seconds": 1.3972505730016564,
+          "calibration_seconds": 0.057945761998780654
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22999671479044917,
+          "dev_brier": 0.0688710487324572,
+          "feature_seconds": 1.3972505730016564,
+          "calibration_seconds": 0.066814391000662
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22713808984578,
+          "dev_brier": 0.0684650175788074,
+          "feature_seconds": 1.3972505730016564,
+          "calibration_seconds": 0.04919063299894333
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2320245754807922,
+          "dev_brier": 0.06905250257851576,
+          "feature_seconds": 1.399395962998824,
+          "calibration_seconds": 0.07393680499990296
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.23120178163913177,
+          "dev_brier": 0.06892998549642036,
+          "feature_seconds": 1.399395962998824,
+          "calibration_seconds": 0.05520686500130978
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22608598757851336,
+          "dev_brier": 0.06813071157030293,
+          "feature_seconds": 1.399395962998824,
+          "calibration_seconds": 0.06338973399942915
+        }
+      ],
+      "boundary_only": [
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.22301220961098736,
+          "dev_brier": 0.07074510268037949,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.07073425100134045
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.22298401684877195,
+          "dev_brier": 0.07073714247587783,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.05592652000086673
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.22271734172392746,
+          "dev_brier": 0.07066037008413019,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.06671062500026892
+        }
+      ],
+      "smooth_hazard": [
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.16641691033756686,
+          "dev_brier": 0.05306996580001844,
+          "feature_seconds": 0.7189076310005476,
+          "calibration_seconds": 0.04540254099993035
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.16600441223297382,
+          "dev_brier": 0.05296441761019759,
+          "feature_seconds": 0.7189076310005476,
+          "calibration_seconds": 0.027837249001095188
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.1636232442872402,
+          "dev_brier": 0.05227065154125855,
+          "feature_seconds": 0.7189076310005476,
+          "calibration_seconds": 0.02548022600058175
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.16764249184337524,
+          "dev_brier": 0.05369058164264995,
+          "feature_seconds": 0.2085321960003057,
+          "calibration_seconds": 0.04094564299884951
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.16729386654706094,
+          "dev_brier": 0.053592704197670586,
+          "feature_seconds": 0.2085321960003057,
+          "calibration_seconds": 0.02692314599880774
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.16534790514030634,
+          "dev_brier": 0.05293956822371505,
+          "feature_seconds": 0.2085321960003057,
+          "calibration_seconds": 0.026135076999707962
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1674673309555675,
+          "dev_brier": 0.05355332785316096,
+          "feature_seconds": 0.15504239199981384,
+          "calibration_seconds": 0.049548864999451325
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.16731870444587071,
+          "dev_brier": 0.053499026450351046,
+          "feature_seconds": 0.15504239199981384,
+          "calibration_seconds": 0.06419154399918625
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.1665243873813997,
+          "dev_brier": 0.05311945610032134,
+          "feature_seconds": 0.15504239199981384,
+          "calibration_seconds": 0.06407770900113974
+        }
+      ]
+    },
+    "train_cost": {},
+    "selection_wall_seconds": 23.110141326000303,
+    "selected_raw": {
+      "literal_query": "c1ed9991c0ca368fd4bb1c209f3153640a06109a0499135a47bc1ad0c4ccceb8",
+      "literal_flat": "d695b33b3d5f7a77b11f5029236583cdbe994b0319a234c9d6a131533ba68e44",
+      "tangent_query": "2f513f7e10c7971adf67daf08ac20db2a168df0eb7fc01ee1e31d196bf1eab93",
+      "tangent_flat": "f290aa7a37350be22ef0c0b14ec56d9a5288294168c1369e12e7e8e6d22330df",
+      "fixed_query": "cbaf5d51ef1d83815ca64b2d9d282a3dbf6e673d476019183034a85b0cbc7a23",
+      "fixed_flat": "59156acf128723b848b9e985b2f00a70afe379129a11751f4728faf2f0b8b025",
+      "boundary_only": "52a7769fd6134bd33889125cb4a5b1213d0d0899d36267c8767f18258acafb1a",
+      "smooth_hazard": "7d8b98ded07db358b93990467bcca2e924df9881bef1859507f1e98a219b5ddb"
+    }
+  },
+  "C": {
+    "source_sha256": "283a08a6897f240171332c8ddd08bd5e1210527e85d7daf0ff04f71e31ae9e72",
+    "repeats": 7,
+    "input_bins": 19000,
+    "methods": {
+      "literal_query": {
+        "law_setting": "0.35",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.17940834698228605,
+        "dev_brier": 0.05119973256382583,
+        "feature_seconds": 1.4344943899995997,
+        "calibration_seconds": 0.05429259999982605,
+        "calibrator": {
+          "mean": [
+            -3.643919577146302,
+            1.1552453009330903
+          ],
+          "std": [
+            1.1974164763489146,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.386588794121416,
+            5.389296900312037,
+            -2.709334378741303
+          ]
+        }
+      },
+      "literal_flat": {
+        "law_setting": "0.35",
+        "calibration_penalty": 1.0,
+        "dev_log_loss": 0.20278429154874872,
+        "dev_brier": 0.05645898334314017,
+        "feature_seconds": 1.434300090000761,
+        "calibration_seconds": 0.04765550199954305,
+        "calibrator": {
+          "mean": [
+            -3.645414604639555,
+            1.1552453009330903
+          ],
+          "std": [
+            1.1994716234668241,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.405116449172682,
+            3.481476056683245,
+            -1.4934705973150342
+          ]
+        }
+      },
+      "tangent_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.18330652572226333,
+        "dev_brier": 0.05280851238921674,
+        "feature_seconds": 1.380882085999474,
+        "calibration_seconds": 0.05276834700089239,
+        "calibrator": {
+          "mean": [
+            -4.241134102447871,
+            1.1552453009330903
+          ],
+          "std": [
+            3.7640184616671086,
+            0.8645064227544631
+          ],
+          "w": [
+            -6.34647054529196,
+            5.815635443282563,
+            -0.44648287600518305
+          ]
+        }
+      },
+      "tangent_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.20569074117455613,
+        "dev_brier": 0.05689032387819213,
+        "feature_seconds": 1.3708326880005188,
+        "calibration_seconds": 0.07574336600009701,
+        "calibrator": {
+          "mean": [
+            -4.2511218201180325,
+            1.1552453009330903
+          ],
+          "std": [
+            3.7825454712434503,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.611250973662489,
+            3.0674584813911676,
+            0.1780619604441408
+          ]
+        }
+      },
+      "fixed_query": {
+        "law_setting": "1.4",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.187101533235657,
+        "dev_brier": 0.05350357093365904,
+        "feature_seconds": 1.3162879619994783,
+        "calibration_seconds": 0.060076055000536144,
+        "calibrator": {
+          "mean": [
+            -4.23732997123249,
+            1.1552453009330903
+          ],
+          "std": [
+            3.76419707277447,
+            0.8645064227544631
+          ],
+          "w": [
+            -6.1299995869908575,
+            5.501115581398161,
+            -0.3749636022467016
+          ]
+        }
+      },
+      "fixed_flat": {
+        "law_setting": "1.4",
+        "calibration_penalty": 1.0,
+        "dev_log_loss": 0.20699426179320984,
+        "dev_brier": 0.057253880168586783,
+        "feature_seconds": 1.3359621740000875,
+        "calibration_seconds": 0.06111958400106232,
+        "calibrator": {
+          "mean": [
+            -4.247060404632613,
+            1.1552453009330903
+          ],
+          "std": [
+            3.779400785138426,
+            0.8645064227544631
+          ],
+          "w": [
+            -4.780397442544388,
+            3.344074021611968,
+            0.11250664610119934
+          ]
+        }
+      },
+      "boundary_only": {
+        "law_setting": "previous_logB",
+        "calibration_penalty": 10.0,
+        "dev_log_loss": 0.19905115927098493,
+        "dev_brier": 0.05730962538251383,
+        "feature_seconds": 0.0,
+        "calibration_seconds": 0.04761446799966507,
+        "calibrator": {
+          "mean": [
+            0.006497978400525413,
+            1.1552453009330903
+          ],
+          "std": [
+            0.022023477313807657,
+            0.8645064227544631
+          ],
+          "w": [
+            -3.8108281214011797,
+            1.2554229955262455,
+            1.0058312899341457
+          ]
+        }
+      },
+      "smooth_hazard": {
+        "law_setting": "10.0",
+        "calibration_penalty": 0.1,
+        "dev_log_loss": 0.1231283971154296,
+        "dev_brier": 0.03572552510971387,
+        "feature_seconds": 0.2114528429992788,
+        "calibration_seconds": 0.0492317419993924,
+        "calibrator": {
+          "mean": [
+            -4.64607539226538,
+            1.1552453009330903
+          ],
+          "std": [
+            2.2526815792686437,
+            0.8645064227544631
+          ],
+          "w": [
+            -5.38919345729908,
+            3.061110714679909,
+            -0.05457872776586225
+          ]
+        },
+        "hazard": {
+          "mean": [
+            -8.482172812590789e-15,
+            -6.026874542918023e-14,
+            2.547232315601734e-14,
+            -3.9689043362916546e-14,
+            4.2732458378651806e-14,
+            -4.312729812958172e-14,
+            1.2748512701494414e-14,
+            -8.795558023829608e-14,
+            4.3739221364705997e-14,
+            -1.69504096992402e-14,
+            4.625314871218034e-14,
+            -2.6104504300791872e-14,
+            -0.12252681834299484,
+            -0.09693101307309418,
+            -0.11729777460589566,
+            -0.09181202305157395,
+            -0.10500218747530406,
+            -0.08465943437531921,
+            -0.09090719199765318,
+            -0.07951298677720589,
+            -0.08206047504236806,
+            -0.07689359607811154,
+            -0.0775168563997284,
+            -0.07539096842957867,
+            1.0000000000000033,
+            0.9999999999999589,
+            1.0000000000000269,
+            1.0000000000005218,
+            1.0000000000000544,
+            0.9999999999998745,
+            0.9999999999999537,
+            0.9999999999997268,
+            1.0000000000000098,
+            0.9999999999996451,
+            0.9999999999999991,
+            0.9999999999999781
+          ],
+          "std": [
+            1.0000000000000033,
+            1.0000000000000002,
+            1.0000000000000064,
+            1.0000000000002747,
+            1.0000000000000182,
+            0.9999999999999513,
+            0.9999999999999731,
+            0.9999999999998936,
+            0.999999999999995,
+            0.9999999999998281,
+            0.9999999999999893,
+            0.9999999999999953,
+            0.6220242381342103,
+            0.6847070983980409,
+            0.638567356709356,
+            0.6956048294893155,
+            0.6672493381870767,
+            0.7118478100484178,
+            0.6972396020145218,
+            0.7243905002039761,
+            0.7180759524379005,
+            0.7309611411940348,
+            0.7283308558193562,
+            0.7334909617981469,
+            1.6309420595774762,
+            1.067513665114331,
+            1.4901813227331133,
+            0.9620321273091389,
+            1.233178951829887,
+            0.788692527030959,
+            0.9514896281131368,
+            0.6387858814567444,
+            0.7197319697467227,
+            0.5466994853345654,
+            0.5800121866613259,
+            0.5034419228436842
+          ],
+          "w": [
+            -5.9566834788825656,
+            0.08204973758056763,
+            -0.15193267846406996,
+            0.3325633905232497,
+            0.03701007533963196,
+            0.4394892778165484,
+            0.38268218004024024,
+            0.27079710830672993,
+            0.39780812231789897,
+            0.037457612512780014,
+            0.16367935010995072,
+            -0.06402727671132778,
+            0.05502370001719882,
+            0.05463913520747236,
+            -0.1077819387779134,
+            0.13339853487608652,
+            0.08790699147504172,
+            0.16735731929108533,
+            0.29930577135206204,
+            0.1798884518042311,
+            0.31430974604168505,
+            0.05455000596875889,
+            0.1865394096637217,
+            -0.08342863198322338,
+            0.08487650005433277,
+            0.01372878891047462,
+            -0.26823327507783656,
+            0.31192099867952516,
+            -0.15257038409263413,
+            0.32135108692767006,
+            0.5540996607343197,
+            -0.09495363945498424,
+            0.6259882331394107,
+            -0.18965524387314062,
+            -0.10108192728318278,
+            0.03161634171026899,
+            -0.274501825027108
+          ]
+        }
+      }
+    },
+    "transport_checks": [
+      {
+        "law": "literal",
+        "scale": 0.35,
+        "mass_error": 5.329070518200751e-15
+      },
+      {
+        "law": "literal",
+        "scale": 0.7,
+        "mass_error": 1.0880185641326534e-14
+      },
+      {
+        "law": "literal",
+        "scale": 1.4,
+        "mass_error": 6.106226635438361e-15
+      },
+      {
+        "law": "tangent",
+        "scale": 0.35,
+        "mass_error": 1.3322676295501878e-14
+      },
+      {
+        "law": "tangent",
+        "scale": 0.7,
+        "mass_error": 1.1879386363489175e-14
+      },
+      {
+        "law": "tangent",
+        "scale": 1.4,
+        "mass_error": 1.021405182655144e-14
+      },
+      {
+        "law": "fixed",
+        "scale": 0.35,
+        "mass_error": 5.551115123125783e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 0.7,
+        "mass_error": 7.771561172376096e-15
+      },
+      {
+        "law": "fixed",
+        "scale": 1.4,
+        "mass_error": 7.327471962526033e-15
+      }
+    ],
+    "candidates": {
+      "literal_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.17940834698228605,
+          "dev_brier": 0.05119973256382583,
+          "feature_seconds": 1.4344943899995997,
+          "calibration_seconds": 0.05429259999982605
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.17962498735191063,
+          "dev_brier": 0.05119537659258297,
+          "feature_seconds": 1.4344943899995997,
+          "calibration_seconds": 0.060920383999473415
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18232604246509604,
+          "dev_brier": 0.05148871358704744,
+          "feature_seconds": 1.4344943899995997,
+          "calibration_seconds": 0.06034497799919336
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.18337461514926112,
+          "dev_brier": 0.05254313764715484,
+          "feature_seconds": 1.494305627000358,
+          "calibration_seconds": 0.07304145000125573
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.1835549438694126,
+          "dev_brier": 0.0525416703961062,
+          "feature_seconds": 1.494305627000358,
+          "calibration_seconds": 0.06177620000016759
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18557678785507584,
+          "dev_brier": 0.052688723809171195,
+          "feature_seconds": 1.494305627000358,
+          "calibration_seconds": 0.0569181099999696
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.18066251149804516,
+          "dev_brier": 0.052215948533646264,
+          "feature_seconds": 1.3373071029982384,
+          "calibration_seconds": 0.06707802300115873
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.1808689196991418,
+          "dev_brier": 0.052200521866507206,
+          "feature_seconds": 1.3373071029982384,
+          "calibration_seconds": 0.056286257999090594
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18338787157925068,
+          "dev_brier": 0.05234547898755362,
+          "feature_seconds": 1.3373071029982384,
+          "calibration_seconds": 0.04948908599908464
+        }
+      ],
+      "literal_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20281755299904472,
+          "dev_brier": 0.056491349520539344,
+          "feature_seconds": 1.434300090000761,
+          "calibration_seconds": 0.06380668299971148
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20278429154874872,
+          "dev_brier": 0.05645898334314017,
+          "feature_seconds": 1.434300090000761,
+          "calibration_seconds": 0.04765550199954305
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20282697139563086,
+          "dev_brier": 0.05627284601101443,
+          "feature_seconds": 1.434300090000761,
+          "calibration_seconds": 0.06059225600074569
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2052459955464041,
+          "dev_brier": 0.05690641478602607,
+          "feature_seconds": 1.504677321001509,
+          "calibration_seconds": 0.05529807800121489
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2052342652508679,
+          "dev_brier": 0.05688768514488668,
+          "feature_seconds": 1.504677321001509,
+          "calibration_seconds": 0.0661447689999477
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20528923074897218,
+          "dev_brier": 0.0567626654227918,
+          "feature_seconds": 1.504677321001509,
+          "calibration_seconds": 0.06425209200097015
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20489260380429367,
+          "dev_brier": 0.056944801705455614,
+          "feature_seconds": 1.341595244999553,
+          "calibration_seconds": 0.044061208000130136
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20486299142043035,
+          "dev_brier": 0.05691669488480178,
+          "feature_seconds": 1.341595244999553,
+          "calibration_seconds": 0.05771649600137607
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20485533138393638,
+          "dev_brier": 0.05673519381877122,
+          "feature_seconds": 1.341595244999553,
+          "calibration_seconds": 0.047585549000359606
+        }
+      ],
+      "tangent_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1866059428330517,
+          "dev_brier": 0.053187663068113844,
+          "feature_seconds": 1.3588733500000671,
+          "calibration_seconds": 0.05499651800164429
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.18682469947652075,
+          "dev_brier": 0.053174911503649766,
+          "feature_seconds": 1.3588733500000671,
+          "calibration_seconds": 0.06904628300071636
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18940940177571758,
+          "dev_brier": 0.053353320090632844,
+          "feature_seconds": 1.3588733500000671,
+          "calibration_seconds": 0.049148404999868944
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1882035122318452,
+          "dev_brier": 0.05364678953907421,
+          "feature_seconds": 1.3861686419986654,
+          "calibration_seconds": 0.06768807300068147
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.18835564215396147,
+          "dev_brier": 0.05363868970827763,
+          "feature_seconds": 1.3861686419986654,
+          "calibration_seconds": 0.05152786799953901
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.19009757304577712,
+          "dev_brier": 0.05371241249063237,
+          "feature_seconds": 1.3861686419986654,
+          "calibration_seconds": 0.0707185710016347
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.18330652572226333,
+          "dev_brier": 0.05280851238921674,
+          "feature_seconds": 1.380882085999474,
+          "calibration_seconds": 0.05276834700089239
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.18348585791015623,
+          "dev_brier": 0.052787823422779205,
+          "feature_seconds": 1.380882085999474,
+          "calibration_seconds": 0.06490315200062469
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18576328714950885,
+          "dev_brier": 0.052877154217103206,
+          "feature_seconds": 1.380882085999474,
+          "calibration_seconds": 0.04815084400070191
+        }
+      ],
+      "tangent_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20585787255019386,
+          "dev_brier": 0.05704657869626861,
+          "feature_seconds": 1.3692138789992896,
+          "calibration_seconds": 0.06897387000026356
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20582931706812466,
+          "dev_brier": 0.057016442700476275,
+          "feature_seconds": 1.3692138789992896,
+          "calibration_seconds": 0.05571647400029178
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20589639096572587,
+          "dev_brier": 0.05684526262512879,
+          "feature_seconds": 1.3692138789992896,
+          "calibration_seconds": 0.0797859790000075
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2069549804162154,
+          "dev_brier": 0.05721222585863565,
+          "feature_seconds": 1.4971367070011183,
+          "calibration_seconds": 0.09127594499841507
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20694349851928728,
+          "dev_brier": 0.05719406914202354,
+          "feature_seconds": 1.4971367070011183,
+          "calibration_seconds": 0.05483330199967895
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20699271475870698,
+          "dev_brier": 0.057072160147429295,
+          "feature_seconds": 1.4971367070011183,
+          "calibration_seconds": 0.06133951000083471
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20572941743200462,
+          "dev_brier": 0.057097560090243665,
+          "feature_seconds": 1.3708326880005188,
+          "calibration_seconds": 0.06123615200158383
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2057000356933002,
+          "dev_brier": 0.05706979157551106,
+          "feature_seconds": 1.3708326880005188,
+          "calibration_seconds": 0.04940712999996322
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20569074117455613,
+          "dev_brier": 0.05689032387819213,
+          "feature_seconds": 1.3708326880005188,
+          "calibration_seconds": 0.07574336600009701
+        }
+      ],
+      "fixed_query": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1985629588321145,
+          "dev_brier": 0.05542471755331355,
+          "feature_seconds": 1.5140745890003018,
+          "calibration_seconds": 0.06688851800026896
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.1987264330637097,
+          "dev_brier": 0.05541954048912715,
+          "feature_seconds": 1.5140745890003018,
+          "calibration_seconds": 0.07918912000059208
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.20049897120484003,
+          "dev_brier": 0.05551908567247683,
+          "feature_seconds": 1.5140745890003018,
+          "calibration_seconds": 0.05362606400012737
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.19505316294648417,
+          "dev_brier": 0.0548616133531424,
+          "feature_seconds": 1.3973413540024922,
+          "calibration_seconds": 0.06422020299942233
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.19517586989260058,
+          "dev_brier": 0.05485626300701696,
+          "feature_seconds": 1.3973413540024922,
+          "calibration_seconds": 0.056799330001013004
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.19655269302631598,
+          "dev_brier": 0.05490817467115113,
+          "feature_seconds": 1.3973413540024922,
+          "calibration_seconds": 0.2219324929992581
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.187101533235657,
+          "dev_brier": 0.05350357093365904,
+          "feature_seconds": 1.3162879619994783,
+          "calibration_seconds": 0.060076055000536144
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.18726037887044908,
+          "dev_brier": 0.05348539104200054,
+          "feature_seconds": 1.3162879619994783,
+          "calibration_seconds": 0.07011035200048354
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.18928124411725322,
+          "dev_brier": 0.05355535243281176,
+          "feature_seconds": 1.3162879619994783,
+          "calibration_seconds": 0.21298873299929255
+        }
+      ],
+      "fixed_flat": [
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.21099274352234834,
+          "dev_brier": 0.0577493524232692,
+          "feature_seconds": 1.5308313490004366,
+          "calibration_seconds": 0.15238286800013157
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.2109915796891451,
+          "dev_brier": 0.057731268514919186,
+          "feature_seconds": 1.5308313490004366,
+          "calibration_seconds": 0.05555379499855917
+        },
+        {
+          "law_setting": "0.35",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2111761085464986,
+          "dev_brier": 0.057631323574122394,
+          "feature_seconds": 1.5308313490004366,
+          "calibration_seconds": 0.05952118400091422
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.2096460775788118,
+          "dev_brier": 0.05757779542797151,
+          "feature_seconds": 1.3935551720005606,
+          "calibration_seconds": 0.06784921399957966
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20964457276869727,
+          "dev_brier": 0.057563869631172514,
+          "feature_seconds": 1.3935551720005606,
+          "calibration_seconds": 0.06752777699875878
+        },
+        {
+          "law_setting": "0.7",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2097504091243401,
+          "dev_brier": 0.05747137065567896,
+          "feature_seconds": 1.3935551720005606,
+          "calibration_seconds": 0.04666024800098967
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.20701549226311539,
+          "dev_brier": 0.05727906655357413,
+          "feature_seconds": 1.3359621740000875,
+          "calibration_seconds": 0.046997662999274326
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.20699426179320984,
+          "dev_brier": 0.057253880168586783,
+          "feature_seconds": 1.3359621740000875,
+          "calibration_seconds": 0.06111958400106232
+        },
+        {
+          "law_setting": "1.4",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.2070377891103836,
+          "dev_brier": 0.05709241572406903,
+          "feature_seconds": 1.3359621740000875,
+          "calibration_seconds": 0.04835356299918203
+        }
+      ],
+      "boundary_only": [
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.19930704181316136,
+          "dev_brier": 0.05744817481741641,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.04686180899989267
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.19928315972077296,
+          "dev_brier": 0.05743533591006729,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.04678807599884749
+        },
+        {
+          "law_setting": "previous_logB",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.19905115927098493,
+          "dev_brier": 0.05730962538251383,
+          "feature_seconds": 0.0,
+          "calibration_seconds": 0.04761446799966507
+        }
+      ],
+      "smooth_hazard": [
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 5.157221096594704,
+          "dev_brier": 0.49278906941211875,
+          "feature_seconds": 1.7392917500001204,
+          "calibration_seconds": 0.07072829800017644
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 5.116917955130026,
+          "dev_brier": 0.49148697718174184,
+          "feature_seconds": 1.7392917500001204,
+          "calibration_seconds": 0.05394528800025
+        },
+        {
+          "law_setting": "0.1",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 4.781390678731523,
+          "dev_brier": 0.4798171315728275,
+          "feature_seconds": 1.7392917500001204,
+          "calibration_seconds": 0.054354259998945054
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.6956362181690433,
+          "dev_brier": 0.16685490423613958,
+          "feature_seconds": 0.6166845520001516,
+          "calibration_seconds": 0.07823703399844817
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.6856609213969351,
+          "dev_brier": 0.1654161673550431,
+          "feature_seconds": 0.6166845520001516,
+          "calibration_seconds": 0.07163050599956478
+        },
+        {
+          "law_setting": "1.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.6060156730363444,
+          "dev_brier": 0.15296139461108793,
+          "feature_seconds": 0.6166845520001516,
+          "calibration_seconds": 0.09649959499984107
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 0.1,
+          "dev_log_loss": 0.1231283971154296,
+          "dev_brier": 0.03572552510971387,
+          "feature_seconds": 0.2114528429992788,
+          "calibration_seconds": 0.0492317419993924
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 1.0,
+          "dev_log_loss": 0.1231690672270891,
+          "dev_brier": 0.035734119414601154,
+          "feature_seconds": 0.2114528429992788,
+          "calibration_seconds": 0.06538043300133722
+        },
+        {
+          "law_setting": "10.0",
+          "calibration_penalty": 10.0,
+          "dev_log_loss": 0.12359079267972889,
+          "dev_brier": 0.035823098065291284,
+          "feature_seconds": 0.2114528429992788,
+          "calibration_seconds": 0.04351731500173628
+        }
+      ]
+    },
+    "train_cost": {},
+    "selection_wall_seconds": 23.624824569998964,
+    "selected_raw": {
+      "literal_query": "f6156d070917ad2893c72885121363d2e8714fd69ea84129bf47fd29342ca4f5",
+      "literal_flat": "6a7d0ce259a78ab5a82ae049b94215cc09fe1c00f3e4166f79d6672c6bc35416",
+      "tangent_query": "d58b66307ca533640f40ffd0fa076b8ca8d6f5a27398444e908c51154bee2fda",
+      "tangent_flat": "3dea9d4cff3d35fe5ee1067902db413a4637dd723b333c73228d3ad641978f24",
+      "fixed_query": "64f1713c3b20ff5349b00cc0bbe49468a04aafa8a4783e5633624fb6999c38b4",
+      "fixed_flat": "976b3c6b6c4e71ad0023f518ea4640d7ecf5d46b1bd36cd980178ff33955f6ce",
+      "boundary_only": "92336718bd1d8864c2350d495a349469166f09d8362fff736edb42583866cb77",
+      "smooth_hazard": "02d1c895848676d429ddcc3fa44f60848beccc19c7f14a12b1184fd8e69a00b3"
+    }
+  }
+}
