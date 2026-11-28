@@ -161,19 +161,28 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
-        text = WORKFLOW.read_text().split("permissions:", 1)[0]
+    def test_aggregate_pr_feedback_is_not_filtered_at_the_trigger(self):
+        aggregate = ROOT / ".github/workflows/blocking-ci.yml"
+        triggers = aggregate.read_text().split("\non:\n", 1)[1].split("\nconcurrency:", 1)[0]
+        self.assertRegex(triggers, r"(?m)^  pull_request: \{\}$")
+        reusable = WORKFLOW.read_text().split("\non:\n", 1)[1].split("\npermissions:", 1)[0]
+        self.assertEqual(
+            re.findall(r"(?m)^  ([a-z_]+):", reusable),
+            ["workflow_call", "workflow_dispatch"],
+        )
+        scope = WORKFLOW.read_text().split("id: scope", 1)[1].split(
+            "      - name: Prepare native workspace prerequisites", 1
+        )[0]
+        diff_command = scope.split('git diff --quiet "$BASE_SHA" "$SOURCE_SHA" --', 1)[1]
         for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
+            ".cargo/",
+            "codex-rs/.cargo/",
             "rust-toolchain",
             "rust-toolchain.toml",
             "codex-rs/rust-toolchain",
             "codex-rs/rust-toolchain.toml",
-            "scripts/hepta_workspace.py",
-            "scripts/test_hepta_native_feedback.py",
         ):
-            self.assertIn('      - "' + path + '"', text)
+            self.assertRegex(diff_command, r"(?<!\S)" + re.escape(path) + r"(?!\S)")
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
@@ -403,7 +412,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
@@ -477,7 +486,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
