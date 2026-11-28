@@ -102,6 +102,14 @@ async fn draining_closes_native_admission_and_cannot_finish_with_live_worker() {
     let lifetime = owner.native_lifetime();
     let (entered, release) = pause_before_fit(&lifetime);
     let state = fixture.daemon.state();
+    state
+        .attach_automation_store(
+            codex_hepta_automation::AutomationStore::open(&fixture.daemon.identity.layout)
+                .await
+                .expect("real Circuit drain owner"),
+        )
+        .expect("attach original automation store");
+    assert_eq!(state.circuit_task_drain_blockers().await.unwrap(), 0);
     // Each state opens exclusive prompt-pipeline owners. Independent cached
     // states therefore need independent original durable fixture directories.
     let stale_daemon = AgentdFixture::new();
@@ -133,13 +141,26 @@ async fn draining_closes_native_admission_and_cannot_finish_with_live_worker() {
         )
         .unwrap();
     let mut draining = Box::pin(crate::runtime::drain_runtime(Arc::clone(&state)));
-    poll_fn(|context| {
-        // No turns or Circuit/generation workers exist in this fixture. The
-        // real blocked terminal worker alone keeps this drain future pending.
-        assert!(draining.as_mut().poll(context).is_pending());
-        Poll::Ready(())
-    })
-    .await;
+    let checks_before = lifetime.blocker_checks.load(Ordering::SeqCst);
+    tokio::time::timeout(
+        Duration::from_secs(/*secs*/ 5),
+        poll_fn(|context| match draining.as_mut().poll(context) {
+            Poll::Ready(result) => {
+                panic!("drain completed before the real native worker exited: {result:?}")
+            }
+            Poll::Pending => {
+                // SQLite I/O alone is insufficient. The same real drain poll
+                // must reach its terminal predicate and still remain pending.
+                if lifetime.blocker_checks.load(Ordering::SeqCst) > checks_before {
+                    Poll::Ready(())
+                } else {
+                    Poll::Pending
+                }
+            }
+        }),
+    )
+    .await
+    .expect("drain did not observe the real terminal worker");
     assert_eq!(state.terminal_native_drain_blockers(), 1);
     assert!(lifetime.require_fit_open().is_err());
     let snapshot = state.drain_snapshot(/*automation_blockers*/ 0).unwrap();

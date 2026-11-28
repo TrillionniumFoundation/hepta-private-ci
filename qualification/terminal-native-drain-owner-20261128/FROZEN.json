@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.terminal-native-drain-owner-freeze.v1",
+  "parent_commit": "6eba6064ab0bed37ba5fe4654c7596bc18088b9b",
+  "prospective_protocol_commit": "211597a28e84f08ebfece4a53154cca964655bf8",
+  "prospective_protocol_sha256": "cb1e9b9036062286dd292222f1df59557acd8634caedbd7d452d7877313f9c07",
+  "status": "source_frozen_native_gate_not_yet_executed",
+  "native_test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_lifetime_tests::draining_closes_native_admission_and_cannot_finish_with_live_worker",
+  "excluded_already_passing_controls": 27,
+  "source_sha256": {
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime.rs": "3aa200003fb0c1f3b7413f9bbf3b5fbdaa01dbe5ddf1bb490488d4396a48b6cf",
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime_tests.rs": "29fa2caf90390cddbed98516df422bb0d2286e3926de29c2950d9a66b65c0d90"
+  },
+  "actual_format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.7582106289919466,
+    "source_unchanged": true,
+    "receipt": "FORMAT_RESULT.json",
+    "receipt_sha256": "1b3b7cfe6683d6e9e7c3e06d72d281a8c4d2d90f09a94d31a5b53b0c28dbf53b",
+    "archive": "FORMAT_POSTIMAGES.json.gz",
+    "archive_sha256": "6f48389531f7654533d7a7d8345e566db960cb93399e70ebab8ba83ee026a313"
+  },
+  "original_protected_rule": {
+    "status": "PASS",
+    "rows": 1,
+    "checker_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+    "manifest_sha256": "95da443a50a1fac7bd6f397f134b5d17bc235f42a29094a1d0747f55f3746c70",
+    "receipt": "PROTECTED_RESULT.json",
+    "receipt_sha256": "320fe419168cc16f3b702b7204c22b0fd6b44c1d557070de2efb3bcac30f411e"
+  },
+  "budget": {
+    "original_shared_pool_seconds": 3600,
+    "actual_before_seconds": 3102.1593757750616,
+    "remaining_before_seconds": 497.8406242249384,
+    "single_control_command_cap_seconds": 145,
+    "single_control_wrapper_reserve_seconds": 66,
+    "once_scoped_fix_command_cap_seconds": 220,
+    "once_scoped_fix_wrapper_reserve_seconds": 66
+  },
+  "claims": {
+    "release_behavior_changed": false,
+    "production_rust_source_bytes_changed": true,
+    "cfg_test_observation_added": true,
+    "production_authority_changed": false,
+    "real_automation_fixture_added": true,
+    "first_poll_pending_alone_is_sufficient": false,
+    "same_future_pending_after_actual_terminal_predicate_required": true,
+    "same_future_success_after_actual_worker_exit_required": true,
+    "new_native_fit_count": 0,
+    "prior_native_receipts_unchanged": true,
+    "science_qualification_changed": false
+  }
+}
