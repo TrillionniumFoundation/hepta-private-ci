@@ -19,5 +19,25 @@
     "historical": "recover_weights.py",
     "new": "fresh_study.py"
   },
-  "selection": "Historical scoring requires exact frozen weight bytes and exact prepared test bytes. The new panel recalculates and seals 36 new development selections and retains its own timelines before fresh cold scoring."
+  "selection": "Historical scoring requires exact frozen weight bytes and exact prepared test bytes. The new panel recalculates and seals 36 new development selections and retains its own timelines before fresh cold scoring.",
+  "result_publication": {
+    "host": "desktop",
+    "branch": "research/hcsn-sustained-boundary-20261128-1140569-results",
+    "root": "qualification/hcsn_sustained_20261128/",
+    "terminal_receipts": [
+      "publication/mosi_recovery_raw-receipt.json",
+      "publication/mosi_fresh_raw-receipt.json"
+    ],
+    "immutable_check": "verified_objects.json Git blob object id in accepted result commit",
+    "pty": "dpty-653041940e4fa9f4f021d5da1908fea7bdcad8ddf2965ff06e563bc50adb363a",
+    "source_sha256": "a025aef3acc1d888617a74cbf68b4ac4ef010df4973c5a456a58974b12a33cac",
+    "native_tree": "git write-tree --missing-ok"
+  },
+  "historical_summary_finalization": {
+    "pty": "dpty-5d5f7d600104f254438f309812eade4e523f70dade9000db40cf7416452530f9",
+    "script": "finalize_historical.py",
+    "sha256": "dd8332cd6e76b649b0a3e9a2fff9683c0e30521205c75e6651f112796a6b0f49",
+    "terminal": "candidate_replay/reconstruction_result.json",
+    "terminal_sha256": "0eec922156314bb3b8533e4b5c5d946f5450587c1d528123cef7842993088f01"
+  }
 }
