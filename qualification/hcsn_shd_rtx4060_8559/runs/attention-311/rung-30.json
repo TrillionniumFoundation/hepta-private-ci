@@ -1,0 +1,36 @@
+{
+  "step": 2105,
+  "fit_cpu_s": 30.15691838200189,
+  "fit_wall_s": 30.009588233195245,
+  "overhead_wall_s": 0.20937906089238822,
+  "best": {
+    "dev_macro": 0.7159181833267212,
+    "dev_nll": 1.275606632232666,
+    "step": 2105,
+    "budget": 30,
+    "fit_gpu_wall_s": 30.009588233195245
+  },
+  "validation": [
+    {
+      "dev_macro": 0.7159181833267212,
+      "dev_nll": 1.275606632232666,
+      "step": 2105,
+      "budget": 30,
+      "fit_gpu_wall_s": 30.009588233195245
+    }
+  ],
+  "loss": 0.1441815346479416,
+  "arm": "attention",
+  "seed": 311,
+  "budget": 30,
+  "param_count": 44516,
+  "data_setup_wall_s": 0.5031059291213751,
+  "selected_hash": "d3c079fe3aa7b0c6b951a1593f7870dda5064162104aea05472971eb369de5ac",
+  "device": "NVIDIA GeForce RTX 4060",
+  "torch_version": "2.10.0+cu130",
+  "pre_gpu": "2026/11/27 21:27:19.084, NVIDIA GeForce RTX 4060, 5738 MiB, 91 %, [N/A]",
+  "post_gpu": "2026/11/27 21:27:49.312, NVIDIA GeForce RTX 4060, 5738 MiB, 80 %, [N/A]",
+  "gpu_peak_reserved": 216006656,
+  "observed_at": 1795832869.32114,
+  "clock": "synchronized accelerator fit wall time"
+}
