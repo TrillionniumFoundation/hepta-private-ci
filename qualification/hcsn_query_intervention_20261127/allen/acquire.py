@@ -41,6 +41,15 @@ def roster(work):
     return grouped,order,pages
 
 def unit(s):return s.decode().lower() if isinstance(s,bytes) else str(s).lower()
+def pipeline_version(f):
+    info=f.get('general/generated_by')
+    if info is None:return (0,0)
+    for k in range(0,len(info)-1,2):
+        if unit(info[k])=='version':
+            try:return tuple(int(v) for v in unit(info[k+1]).split('.')[:2])
+            except ValueError:return (0,0)
+    return (0,0)
+
 def segment(f,row):
     name='Sweep_'+str(row['sweep_number']);v=f['acquisition/timeseries/'+name];i=f['stimulus/presentation/'+name]
     rate=float(v['starting_time'].attrs['rate']);hz=float(i['starting_time'].attrs['rate'])
@@ -51,8 +60,9 @@ def segment(f,row):
     if name_attr.replace(' ','')!=row['stimulus_name'].lower().replace(' ',''):raise ValueError('stimulus identity '+name_attr)
     start=int(round(row['stimulus_start_time']*hz));n=int(np.floor(row['stimulus_duration']*hz+1e-4))
     if start<1 or start+n>min(len(v['data']),len(i['data'])):raise ValueError('documented epoch exceeds data')
-    voltage=v['data'][start-1:start+n].astype(float)*float(v['data'].attrs['conversion'])
-    current=i['data'][start:start+n].astype(float)*float(i['data'].attrs['conversion'])*1e12
+    version=pipeline_version(f); apply=version>=(1,1)
+    voltage=v['data'][start-1:start+n].astype(float)*(float(v['data'].attrs['conversion']) if apply else 1.)
+    current=i['data'][start:start+n].astype(float)*(float(i['data'].attrs['conversion']) if apply else 1.)*1e12
     if not (np.isfinite(voltage).all() and np.isfinite(current).all() and np.ptp(current)>0):raise ValueError('missing or constant current')
     count=round(.002*hz)
     if abs(count-.002*hz)>1e-6:raise ValueError('unsupported sample rate')
@@ -61,7 +71,9 @@ def segment(f,row):
     x=current[:used].reshape(nbin,count).mean(1).astype(np.float32);y=spikes[:used].reshape(nbin,count).any(1)
     info=dict(row=row,file_sampling_hz=hz,sweep_start_absolute_s=float(v['starting_time'][()]),
               units={'current':'pA','voltage':'V','output_bin_seconds':.002},
-              bin_count=nbin,crossings=int(spikes[:used].sum()),positive_bins=int(y.sum()),file_stimulus_name=name_attr)
+              pipeline_version=list(version),applied_file_conversion=apply,
+              reported_current_conversion=float(i['data'].attrs['conversion']),reported_voltage_conversion=float(v['data'].attrs['conversion']),
+              max_abs_current_pa=float(np.max(abs(x))),bin_count=nbin,crossings=int(spikes[:used].sum()),positive_bins=int(y.sum()),file_stimulus_name=name_attr)
     return x,y,info
 
 def acquire(work,target,limit):
