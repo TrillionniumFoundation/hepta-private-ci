@@ -109,9 +109,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         unit = "//codex-rs/fake:fake-unit-tests-bin"
         native = "//codex-rs/fake:fake-integration-test-bin"
         cross = "//codex-rs/fake:fake-integration-test-windows-cross-bin"
-        unix_process = (
-            "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
-        )
+        unix_process = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
         query_output = self.root / "clippy-query.txt"
         query_output.write_text(
             f"{unit}\n{native}\n{cross}\n{unix_process}\n", encoding="utf-8"
