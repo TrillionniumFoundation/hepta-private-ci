@@ -1,0 +1,7 @@
+# Interleaved wall and CPU confirmation
+
+The first panel exposed variable affinity on seeds 137 and 311 and lower scheduled CPU time on 557. Its 24 original endpoints remain available. This supplementary analysis uses the known corpus and earlier held observations. It has no independent fresh test set.
+
+Four trainable models per seed share a single CPU assignment and run mini-batches in a rotating round-robin order. Each sees identical permutations and identical optimization settings. Each clock measures model optimization through the completed AdamW update, excluding initialization, validation, persistence and executing another arm. Rebind the executing thread before each step and record any externally changed mask before or after each step. Record process CPU (including runtime worker overhead), active wall and their ratio. Three new endpoints per model are one complete epoch, first completed step at 60 active-wall seconds and first completed step at 60 process-CPU seconds. Seed 137, 311 and 557 each have all four interventions. Preserve original weights and both score splits for every new endpoint. Freeze all endpoint choices before the confirmation's held scoring. Use the original paired actor bootstrap and report all arms and all comparisons irrespective of sign. Equal active time describes the tested native platform and process configuration.
+
+The one-epoch checkpoints provide a direct replay under the changed scheduling protocol. Compare each endpoint to the corresponding original one-epoch checkpoint at the tensor and score levels.

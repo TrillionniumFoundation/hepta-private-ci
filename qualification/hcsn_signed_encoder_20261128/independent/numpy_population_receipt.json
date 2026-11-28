@@ -1,0 +1,47 @@
+{
+  "seed": 137,
+  "endpoint": "epoch1",
+  "held_predictions": 0,
+  "data_sha256": "18423277257e2e487521d83a8c116bc7cf5599411f4ff769e569bd849beae6ad",
+  "development_row_indices": [
+    0,
+    104,
+    208,
+    312,
+    416,
+    520,
+    625,
+    729,
+    833,
+    937,
+    1041,
+    1146
+  ],
+  "results": {
+    "stationary": {
+      "weight_sha256": "fb7012a0fa19ab0d4bc4eac0c7da79594c6bcec13fd9c8a61d9d21444c47f6e5",
+      "development_archive_sha256": "bfd988c3aefef8dd2d1d13d6feff27e3e37a757f91b6b891528be37f7f94d422",
+      "scores": 864,
+      "max_absolute_logit_difference": 0.000008891547720324411,
+      "max_total_mass_discrepancy": 1.3550566324571633e-7,
+      "exact_top1_agreement": true
+    },
+    "irreversible": {
+      "weight_sha256": "742c0c8dddb322c339b1bd313b385a72cbbc560bc02dd86bb39bcc9a7e81747f",
+      "development_archive_sha256": "17804696ac1f48eb20ae328f474c943a92fa4abb3ba5e353b02585ac84bd1517",
+      "scores": 864,
+      "max_absolute_logit_difference": 0.00000894720364996715,
+      "max_total_mass_discrepancy": 1.2306342234147394e-7,
+      "exact_top1_agreement": true
+    },
+    "returning": {
+      "weight_sha256": "64d30b7af44539294756b14d461904c728e62850efa68800f6709974d517bc60",
+      "development_archive_sha256": "2ad503cd855fda96ebcc378c78c40b90b96dfc8707e6a38a406e28823d2079e0",
+      "scores": 864,
+      "max_absolute_logit_difference": 0.000008693691931682679,
+      "max_total_mass_discrepancy": 1.1782260367354525e-7,
+      "exact_top1_agreement": true
+    }
+  },
+  "method": "NumPy float64 builds all frontends, timestep and layer recurrences, stochastic mass transitions, financial interpolation, GELU feedforward and normalized prompt scores from checkpoint tensors. PyTorch only deserializes weights."
+}
