@@ -4037,16 +4037,16 @@ impl Session {
             {
                 None
             } else {
+                let thread_id = self.thread_id().to_string();
+                let thread_metadata = serde_json::json!({ "threadId": thread_id });
                 self.services
                     .mcp_runtime
                     .latest_call_tool(
                         "notes",
                         "thread_hint",
                         /*environment_id*/ None,
-                        Some(serde_json::json!({
-                            "threadId": self.thread_id().to_string(),
-                        })),
-                        /*meta*/ None,
+                        Some(thread_metadata.clone()),
+                        Some(thread_metadata),
                         /*requested_timeout*/ None,
                         /*wait_for_server*/ false,
                     )
