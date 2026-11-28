@@ -48,10 +48,10 @@ def equity_and_slopes(assets,walls,jumps,premia,*,sigma=.23,r=.08,payout=.02,
     pb,nb=power_pair(kap)
     bl=torch.exp(-pb*h);bw=torch.exp(nb*h)
     bc=(par+coupon/(maturity*s))/kap;bv=a*rec/(kap-mu-D)
-    def solve_pair(l,b,minus,plus,goal0,goal1):
+    def solve_pair(l,minus,plus,goal0,goal1):
         A=(goal1-minus*goal0)/(plus-minus*l)
         return A,goal0-l*A
-    Ab,Bb=solve_pair(bl,bw,(nb-Kb[:,0,0])*bw,pb-Kb[:,0,0],
+    Ab,Bb=solve_pair(bl,(nb-Kb[:,0,0])*bw,pb-Kb[:,0,0],
                      rec*w[0]-bc-bv*w[0],Kb[:,0,0]*(bc+bv*w[1]-far[:,0])
                      +Kb[:,0,1]*(rec*w[1]-far[:,1])-bv*w[1])
     btop=torch.stack((bc+bv*w[1]+Ab+Bb*bw,rec*w[1]),dim=-1)
@@ -68,7 +68,7 @@ def equity_and_slopes(assets,walls,jumps,premia,*,sigma=.23,r=.08,payout=.02,
     de0=ev*w[0]+pb*Aj*bl+nb*Bj
     eh=ec+ev*w[1]+Aj+Bj*bw
     deh=ev*w[1]+pb*Aj+nb*Bj*bw
-    Ae,Be=solve_pair(el,ew,(ne-K[0,0])*ew,pe-K[0,0],-e0,
+    Ae,Be=solve_pair(el,(ne-K[0,0])*ew,pe-K[0,0],-e0,
                      dpo[:,0]+K[0,0]*(eh-po[:,0])-K[0,1]*po[:,1]-deh)
     top=torch.stack((eh+Ae+Be*ew,torch.zeros_like(Ae)),dim=-1)
     delta=dpo+torch.einsum("ab,fb->fa",K,top-po)
