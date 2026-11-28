@@ -1407,12 +1407,14 @@ jobs:
           python3 -B ../hia/tests/verify_scoped_owner_fix.py snapshot \
             --producer "$GITHUB_WORKSPACE/codex" \
             --report "$RUNNER_TEMP/hia-external-migration/source-before.json"
-          rm -f "$CARGO_TARGET_DIR/nextest/local/junit.xml"
+          # The pinned nextest version does not inherit JUnit output for local.
+          junit_path="$CARGO_TARGET_DIR/nextest/default/junit.xml"
+          rm -f "$junit_path"
           test_status=0
-          just test --locked -p codex-external-agent-migration \
+          just test --locked -p codex-external-agent-migration --profile default \
             2>&1 | tee "$RUNNER_TEMP/hia-external-migration/tests.log" || test_status=$?
-          if test -f "$CARGO_TARGET_DIR/nextest/local/junit.xml"; then
-            cp "$CARGO_TARGET_DIR/nextest/local/junit.xml" "$RUNNER_TEMP/hia-external-migration/tests.xml"
+          if test -f "$junit_path"; then
+            cp "$junit_path" "$RUNNER_TEMP/hia-external-migration/tests.xml"
           fi
           test "$test_status" -eq 0
           python3 - <<'PYTEST'
