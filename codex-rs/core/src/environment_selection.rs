@@ -1265,19 +1265,15 @@ url = "ws://127.0.0.1:8765"
         ));
         environments
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
-        let snapshot_task = tokio::spawn({
-            let environments = Arc::clone(&environments);
-            // set_default is thread-local; preserve it across Tokio workers.
-            async move { environments.snapshot().await }.with_current_subscriber()
-        });
-        tokio::task::yield_now().await;
-        assert!(!snapshot_task.is_finished());
+        let snapshot = environments.snapshot();
+        tokio::pin!(snapshot);
+        // Poll the snapshot before serving the handshake so it reaches the wait span.
+        assert!(futures::poll!(&mut snapshot).is_pending());
 
         let server = tokio::spawn(serve_environment_info(listener));
-        let snapshot = timeout(Duration::from_secs(5), snapshot_task)
+        let snapshot = timeout(Duration::from_secs(5), snapshot)
             .await
-            .expect("snapshot should finish after the environment starts")
-            .expect("snapshot task");
+            .expect("snapshot should finish after the environment starts");
 
         assert!(snapshot.starting().next().is_none());
         assert_eq!(snapshot.to_selections(), vec![selection]);
