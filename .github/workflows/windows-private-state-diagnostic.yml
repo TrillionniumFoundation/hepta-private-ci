@@ -57,12 +57,15 @@ jobs:
         shell: pwsh
         run: |
           @'
-          import hashlib, json, os, pathlib, subprocess, xml.etree.ElementTree as ET
+          import hashlib, json, os, pathlib, subprocess, re
           source = pathlib.Path("codex-rs/utils/path-utils/src")
           tests = pathlib.Path("bazel-testlogs/codex-rs/utils/path-utils/path-utils-unit-tests")
-          cases = list(ET.parse(tests / "test.xml").getroot().iter("testcase"))
-          assert len(cases) == 16, len(cases)
-          assert all(child.tag not in {"failure", "error", "skipped"} for case in cases for child in case), [case.attrib for case in cases]
+          log = (tests / "test.log").read_text(encoding="utf-8")
+          cases = re.findall(r"^test ([^\r\n]+) \.\.\. (ok|FAILED|ignored)\r?$", log, re.MULTILINE)
+          expected = ["publish::tests::publishes_and_replaces_complete_flushed_files","publish::tests::rejected_publication_preserves_the_current_file","tests::native_workdir::non_windows_paths_are_unchanged","tests::native_workdir::windows_verbatim_paths_are_simplified","tests::path_comparison::falls_back_to_raw_equality_when_paths_cannot_be_normalized","tests::path_comparison::matches_identical_existing_paths","tests::path_comparison::matches_windows_verbatim_paths","windows_private_fs::tests::directory_reparse_points_are_rejected_in_every_resolved_component","windows_private_fs::tests::entry_names_cannot_escape_the_retained_directory","windows_private_fs::tests::hardlinked_state_is_rejected_without_changing_contents","windows_private_fs::tests::private_state_publishes_reopens_and_retains_file_identity","windows_private_fs::tests::replacement_preserves_unicode_names_and_file_identity","windows_private_fs::tests::replacement_rejection_preserves_both_files_and_reports_access_denied","windows_private_fs::tests::retained_parent_does_not_follow_a_replacement_path","windows_security::tests::unsafe_directory_acl_is_rejected_without_repairing_it","windows_security::tests::unsafe_file_acl_is_rejected_before_write_or_replacement"]
+          assert sorted(name for name, result in cases) == expected, cases
+          assert all(result == "ok" for name, result in cases), cases
+          assert "test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;" in log, log
           files = {}
           for name in ["windows_private_fs.rs", "windows_private_fs/nt.rs", "windows_private_fs/snapshot.rs", "windows_private_fs_tests.rs", "windows_security.rs"]:
               path = source / name
@@ -74,7 +77,7 @@ jobs:
           assert len(binaries) == 1, binaries
           binary = binaries[0]
           binary_data = binary.read_bytes()
-          report = {"head": os.environ["GITHUB_SHA"], "source": files, "binary": {"path": binary.as_posix(), "bytes": len(binary_data), "sha256": hashlib.sha256(binary_data).hexdigest()}, "tests": [case.attrib for case in cases]}
+          report = {"head": os.environ["GITHUB_SHA"], "source": files, "binary": {"path": binary.as_posix(), "bytes": len(binary_data), "sha256": hashlib.sha256(binary_data).hexdigest()}, "tests": [{"name": name, "result": result} for name, result in cases]}
           (tests / "source-and-tests.json").write_text(json.dumps(report, indent=2) + "\n")
           print(json.dumps(report, indent=2))
           '@ | python -
