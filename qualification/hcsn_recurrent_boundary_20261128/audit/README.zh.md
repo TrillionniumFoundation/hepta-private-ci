@@ -39,3 +39,13 @@ python recount_refs.py /path/to/frozen-audit
 对于宽度 4,096、参数数为 1,016,475,200 的模型，六组标准前馈层参数为 805,429,248（79.24%），六组 value 和 output 稠密投影为 201,375,744（19.81%）。其六层各有 32 个物理群体，每个群体离散为四个存活质量点并保留不应期状态。计算采用定价和转移缓冲表。直接解析和学习合约系数的对照来自另一项实验。
 
 [六层编码器](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/04968cc615f6a8c86e3ce501bb37bf53e34e0823/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py) · [物理混合器](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/04968cc615f6a8c86e3ce501bb37bf53e34e0823/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/hcsn_temporal.py)
+
+## 09:13:18 纽约时间冻结的引用与实际文件字节
+
+此次服务器通告含 8,412 条分支引用、2,231 条标签及 13,163 条 PR 引用。引用解引用到 15,006 个不同提交尖端、9,553 棵不同根树及 94,307 棵不同目录树。逐 Git 对象取回 231,450 份不同 blob 的 **19,657,744,790 字节**，每个重算 Git 对象标识。按当时的文本识别规则，193,801 个文本对象的 4,879,018,689 字节进入九组检索，38,345 个对象另存有逐项内容 SHA-256。两个计数可以重叠，新的 696 个增量对象也记录了 SHA-256。完整逐对象账以 18 片保存在 Git，合并压缩表为 7,946,557 字节，SHA-256 为 `a79d08daa5fede9845d9454b08d1e65fc3cc299f2077f1d38a45f20249461b75`。[对象账与原通告入口](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/74d7f92154d91f89b9d550aa48cc9e86a5b0e7ef/qualification/hcsn_signed_encoder_20261128/audit/evidence/piece_plan.json)
+
+逐尖端文件的字节核验、所有祖先提交曾包含的独有文件、以及逐项科学复现属于不同的工作。原始带注释标签对象另行验证，共 236 个、77,788 字节；轻量标签 1,995 个，无嵌套标签。[标签原件验证](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/85e9d141138f880c43d20c7c79644f15237ddd99/qualification/hcsn_signed_encoder_20261128/audit/annotated_tags.json)
+
+## 研究分支集成
+
+`#7260` 的 6 个超大原始分数、5 个不可改写的二进制/嵌入式实验对象及 1 条历史 workflow 记录均已对原字节取证。为同时保留两个在 Windows/macOS 折叠的文件名，较长的实现说明原样移入 `IMPLEMENTATION_EXTENDED.md`。两种版本的传输补丁在同一原始源码上应用后生成相同 SHA-256。原始代码拼写检查、15 项来源回归、6 个大文件的逐 SHA-256 复核和 diff 空白检查在本地通过。远端各平台流水线在各自 PR 页面给出状态。[证据保真和跨平台修复](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7286) · [直接针对主分支的可用网络](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7284)
