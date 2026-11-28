@@ -8,7 +8,9 @@
     "trust_distribution::tests::signature_tests::signature_only_validation_keeps_full_content_and_validity_checks",
     "trust_distribution::tests::signature_tests::independent_signatures_do_not_assert_current_generation"
   ],
-  "proof_archive_sha256": "63809d73fdcfbdb2cb3c1fc9d8e2625d970173987584dbab2a1f3dfb779e66c6",
+  "original_gzip_proof_archive_sha256": "63809d73fdcfbdb2cb3c1fc9d8e2625d970173987584dbab2a1f3dfb779e66c6",
+  "proof_archive_encoding": "xz",
+  "proof_archive_sha256": "9d73d908cf9bcd00f128b6d90f0953604058efebce607770070ba2988cf5bd72",
   "prospective_protocol_commit": "6c0f63dd9a82474b3d18126857ea561c66defb17",
   "real_provisioning_performed": false,
   "retained_metadata_preflight_refusals": 2,
@@ -42,5 +44,6 @@
       "sha256": "cdbfc4288c05a261dab132eed4cbcdf2ad2f8a36afaf18d8f81ed0d8d73d4778"
     }
   },
-  "status": "SOURCE_SCOPED_PROOF_PASSED_NATIVE_UNEXECUTED"
+  "status": "SOURCE_SCOPED_PROOF_PASSED_NATIVE_UNEXECUTED",
+  "uncompressed_proof_sha256": "089ec1254a8026fddcd90e9ab7060fc78a10c58917462287e70d37ffa1b31f3c"
 }
