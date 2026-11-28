@@ -2,6 +2,9 @@
 // from the eventual unsafe cleanup.
 #![allow(unsafe_op_in_unsafe_fn)]
 
+#[cfg(target_os = "windows")]
+extern crate self as codex_windows_sandbox;
+
 #[cfg(any(target_os = "windows", test))]
 mod ssh_config_dependencies;
 
@@ -111,6 +114,11 @@ mod setup;
 
 #[cfg(target_os = "windows")]
 mod setup_error;
+#[cfg(target_os = "windows")]
+mod setup_home;
+#[cfg(target_os = "windows")]
+#[doc(hidden)]
+pub use setup_home::HomeSetupGuard;
 
 #[cfg(target_os = "windows")]
 mod spawn_prep;

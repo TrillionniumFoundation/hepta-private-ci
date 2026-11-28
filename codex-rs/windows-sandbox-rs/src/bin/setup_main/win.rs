@@ -543,8 +543,11 @@ fn trace_setup_marker(payload: &Payload, phase: &'static str) {
 fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
     let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;
     let _home_setup = if writes_setup_marker {
-        Some(home_setup_transaction::HomeSetupGuard::acquire(
+        let real_user_sid =
+            string_from_sid_bytes(&resolve_sid(&payload.real_user)?).map_err(anyhow::Error::msg)?;
+        Some(home_setup_transaction::HomeSetupGuard::acquire_for_user(
             &payload.codex_home,
+            &real_user_sid,
         )?)
     } else {
         None

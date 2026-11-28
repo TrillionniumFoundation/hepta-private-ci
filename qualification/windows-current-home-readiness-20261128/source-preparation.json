@@ -1,0 +1,84 @@
+{
+  "schema": "hia-windows-current-home-readiness-v1",
+  "base": "446d1448c85c50e7ea501329413e2286e050f00b",
+  "before": {
+    "lib.rs": {
+      "bytes": 30332,
+      "sha256": "09257a62ffc06a8c7f3d29b679f3fcbd43d92754734ba2b29b37bc9d753bbaae"
+    },
+    "setup.rs": {
+      "bytes": 90371,
+      "sha256": "e421e925f15b0f023754c04c94eb7b7de61c2d64e09d69ed0e7dac2cb5d4fde6"
+    },
+    "bin/setup_main/win.rs": {
+      "bytes": 49240,
+      "sha256": "77e8eb3c77038c4df019b9d56c47dfb168a663a33e69cae66b150ccd56ce6f80"
+    },
+    "bin/setup_main/win/home_setup_transaction.rs": {
+      "bytes": 2338,
+      "sha256": "229a5531de0139e130c876d3d5148c849ffdfa90bdf4e67936513100f2e1bd35"
+    },
+    "bin/setup_main/win/home_setup_transaction_tests.rs": {
+      "bytes": 7760,
+      "sha256": "d77a34ee7ba2075dfa05c2e5e3f2ba57e39aa3db33f0c916fb54760885c3cfdc"
+    },
+    "bin/setup_main/win/machine_identity_mutex.rs": {
+      "bytes": 2452,
+      "sha256": "b8329089415bae7007f8786c522226b1903782ea816ba993fac15da1539dae8a"
+    },
+    "bin/setup_main/win/private_identity_security.rs": {
+      "bytes": 9156,
+      "sha256": "5de5419a87a7801002f0260ea6145e235af11d3e3e30e688c692e09e93705427"
+    },
+    "bin/setup_main/win/no_reparse_dir.rs": {
+      "bytes": 7263,
+      "sha256": "7def3b8c5239d48fea860462d32dff5d29f7339fb176c79c4f8d0afc3acb398c"
+    }
+  },
+  "after": {
+    "lib.rs": {
+      "bytes": 30534,
+      "sha256": "f3bd2da4d8bb08ec85626b34e13fe9f2ebe4f2bf56508b4c5f8d15a4ccd867aa"
+    },
+    "setup.rs": {
+      "bytes": 91003,
+      "sha256": "80595dcc9a46f49c01e8188548a2e36c588c81cea624e5ab626591d7bd65953d"
+    },
+    "bin/setup_main/win.rs": {
+      "bytes": 49405,
+      "sha256": "601ac7ccee176d3e343dd8254586701b0a039f52ec59d31b26de53f19d808197"
+    },
+    "bin/setup_main/win/home_setup_transaction.rs": {
+      "bytes": 536,
+      "sha256": "b52b4591623421976e8dcd2bf59088bd35816f432e1dd0f72f8edeef2af8e4e9"
+    },
+    "bin/setup_main/win/home_setup_transaction_tests.rs": {
+      "bytes": 7760,
+      "sha256": "d77a34ee7ba2075dfa05c2e5e3f2ba57e39aa3db33f0c916fb54760885c3cfdc"
+    },
+    "bin/setup_main/win/machine_identity_mutex.rs": {
+      "bytes": 2792,
+      "sha256": "d2702df5b1ed837be3455757f5e7ee04c4a8d03385d280f5bb376fc82b0e973a"
+    },
+    "bin/setup_main/win/private_identity_security.rs": {
+      "bytes": 9156,
+      "sha256": "5de5419a87a7801002f0260ea6145e235af11d3e3e30e688c692e09e93705427"
+    },
+    "bin/setup_main/win/no_reparse_dir.rs": {
+      "bytes": 7263,
+      "sha256": "7def3b8c5239d48fea860462d32dff5d29f7339fb176c79c4f8d0afc3acb398c"
+    },
+    "setup_home.rs": {
+      "bytes": 3561,
+      "sha256": "7f2c46e1e8e5fab0aac9ebe58fedff11564deb2854c31eb6d185a7839e55aa36"
+    },
+    "setup_home_tests.rs": {
+      "bytes": 10438,
+      "sha256": "76b374badcfc9115d0becf6ff8d35ee4f76bcc504935f531511ac6b7cd32dca3"
+    }
+  },
+  "test_status": "NOT_RUN",
+  "original_writer_and_home_controls_unchanged": true,
+  "readiness": "original current marker and user-file check, under same physical-home lock",
+  "legacy_lock_name_preserved": true
+}

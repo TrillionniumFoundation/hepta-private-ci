@@ -1017,7 +1017,16 @@ fn trace_incomplete_setup(codex_home: &Path) {
     }
 }
 
-fn verify_setup_completed(codex_home: &Path) -> Result<()> {
+pub(crate) fn verify_setup_completed(codex_home: &Path) -> Result<()> {
+    // The helper has exited before this call. Do not hold this lock while
+    // waiting for it: full setup takes the same physical-home transaction.
+    // A concurrent full setup must finish (or fail) before current readiness
+    // can be observed. A previous completion cannot authorize a preparing home.
+    let _home_setup = crate::HomeSetupGuard::acquire_for_current_user(codex_home)
+        .map_err(|err| failure(
+            SetupErrorCode::OrchestratorHelperIncomplete,
+            format!("setup helper exited successfully before setup completed: cannot retain readiness transaction: {err:#}"),
+        ))?;
     if sandbox_setup_is_complete(codex_home) {
         Ok(())
     } else {
