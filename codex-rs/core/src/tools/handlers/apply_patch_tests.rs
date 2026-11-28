@@ -1,6 +1,8 @@
 use super::*;
 use codex_apply_patch::MaybeApplyPatchVerified;
 use codex_exec_server::LOCAL_FS;
+use codex_protocol::config_types::WindowsSandboxLevel;
+use codex_protocol::models::PermissionProfile;
 use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemSandboxEntry;
 use codex_protocol::permissions::FileSystemSandboxPolicy;
@@ -15,6 +17,10 @@ use std::sync::Arc;
 use tempfile::TempDir;
 use tokio::sync::Mutex;
 
+use crate::config::PermissionProfileSnapshot;
+use crate::environment_selection::TurnEnvironmentState;
+use crate::safety::SafetyCheck;
+use crate::safety::assess_patch_safety;
 use crate::session::step_context::StepContext;
 use crate::session::tests::make_session_and_context;
 use crate::tools::context::ToolInvocation;
@@ -22,6 +28,100 @@ use crate::tools::hook_names::HookToolName;
 use crate::tools::registry::PostToolUsePayload;
 use crate::tools::registry::PreToolUsePayload;
 use crate::turn_diff_tracker::TurnDiffTracker;
+use codex_protocol::protocol::AskForApproval;
+
+#[tokio::test]
+async fn foreign_patch_paths_preserve_environment_policy_before_approval() {
+    let (session, turn) = make_session_and_context().await;
+    let TurnEnvironmentState::Ready(environment) = &turn.environments.environments[0] else {
+        panic!("test environment must be ready");
+    };
+    let mut environment = environment.clone();
+    let native_cwd = PathUri::from_abs_path(&turn.config.cwd);
+    let foreign_cwd = PathUri::parse(if cfg!(windows) {
+        "file:///tmp/foreign-patch-approval"
+    } else {
+        "file:///C:/foreign-patch-approval"
+    })
+    .unwrap();
+    assert!(foreign_cwd.to_abs_path().is_err());
+    environment.selection.cwd = foreign_cwd.clone();
+    environment.selection.workspace_roots = vec![foreign_cwd.clone()];
+    let target = foreign_cwd.join("approval.txt").unwrap();
+    let action = ApplyPatchAction::new_add_for_test(&target, "held\n".to_string());
+
+    for (profile, writable) in [
+        (PermissionProfile::read_only(), false),
+        (PermissionProfile::workspace_write(), true),
+        (PermissionProfile::Disabled, true),
+        (
+            PermissionProfile::External {
+                network: codex_protocol::permissions::NetworkSandboxPolicy::Enabled,
+            },
+            true,
+        ),
+    ] {
+        environment.config_mut().permission_profile =
+            PermissionProfileSnapshot::legacy(profile.clone());
+        let expected_policy = environment
+            .permission_profile()
+            .file_system_sandbox_policy()
+            .materialize_project_roots_with_workspace_root_uris(environment.workspace_roots())
+            .unwrap();
+        // Exercise failure to project the cwd and failure to project an individual target.
+        for cwd in [&foreign_cwd, &native_cwd] {
+            let (paths, permissions, policy) =
+                effective_patch_permissions(&session, &environment, &action, cwd)
+                    .await
+                    .unwrap();
+            assert_eq!(paths, vec![target.clone()]);
+            assert_eq!(policy, expected_policy);
+            assert_eq!(
+                (
+                    permissions.sandbox_permissions,
+                    permissions.additional_permissions,
+                    permissions.permissions_preapproved,
+                ),
+                (
+                    crate::sandboxing::SandboxPermissions::UseDefault,
+                    None,
+                    false
+                )
+            );
+            let decision = assess_patch_safety(
+                &action,
+                AskForApproval::OnRequest,
+                &profile,
+                &policy,
+                &foreign_cwd,
+                WindowsSandboxLevel::RestrictedToken,
+            );
+            let expected = if writable {
+                SafetyCheck::AutoApprove
+            } else {
+                SafetyCheck::AskUser
+            };
+            assert_eq!(decision, expected);
+            let without_approval = assess_patch_safety(
+                &action,
+                AskForApproval::Never,
+                &profile,
+                &policy,
+                &foreign_cwd,
+                WindowsSandboxLevel::RestrictedToken,
+            );
+            match expected {
+                SafetyCheck::AskUser => {
+                    assert!(matches!(without_approval, SafetyCheck::Reject { .. }));
+                }
+                SafetyCheck::AutoApprove => {
+                    assert_eq!(without_approval, SafetyCheck::AutoApprove);
+                }
+                SafetyCheck::Reject { .. } => unreachable!(),
+            }
+        }
+    }
+}
 
 fn sample_patch() -> &'static str {
     r#"*** Begin Patch
