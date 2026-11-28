@@ -10,6 +10,7 @@ use crate::model::Stage1RecallCandidate;
 use crate::model::Stage1StartupClaimParams;
 use crate::model::ThreadRow;
 use chrono::DateTime;
+#[cfg(not(feature = "hia-native"))]
 use chrono::Duration;
 use sqlx::Executor;
 use sqlx::QueryBuilder;
@@ -167,7 +168,39 @@ WHERE kind = ? AND job_key = ?
 
         let worker_id = current_thread_id;
         let current_thread_id = worker_id.to_string();
+        #[cfg(feature = "hia-native")]
+        let max_age_cutoff = {
+            let now = Utc::now();
+            crate::hia_datetime_retention::subtract(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                crate::hia_datetime_retention::Unit::Days,
+                max_age_days.max(0),
+            )
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
+            .milliseconds
+        };
+        #[cfg(not(feature = "hia-native"))]
         let max_age_cutoff = (Utc::now() - Duration::days(max_age_days.max(0))).timestamp_millis();
+        #[cfg(feature = "hia-native")]
+        let idle_cutoff = {
+            let now = Utc::now();
+            crate::hia_datetime_retention::subtract(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                crate::hia_datetime_retention::Unit::Hours,
+                min_rollout_idle_hours.max(0),
+            )
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
+            .milliseconds
+        };
+        #[cfg(not(feature = "hia-native"))]
         let idle_cutoff =
             (Utc::now() - Duration::hours(min_rollout_idle_hours.max(0))).timestamp_millis();
 
@@ -523,6 +556,22 @@ WHERE threads.id = ? AND threads.memory_mode = 'enabled'
             return Ok(0);
         }
 
+        #[cfg(feature = "hia-native")]
+        let cutoff = {
+            let now = Utc::now();
+            crate::hia_datetime_retention::subtract(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                crate::hia_datetime_retention::Unit::Days,
+                max_unused_days.max(0),
+            )
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
+            .seconds
+        };
+        #[cfg(not(feature = "hia-native"))]
         let cutoff = (Utc::now() - Duration::days(max_unused_days.max(0))).timestamp();
         let rows_affected = sqlx::query(
             r#"
@@ -572,6 +621,22 @@ WHERE thread_id IN (
         if n == 0 {
             return Ok(Vec::new());
         }
+        #[cfg(feature = "hia-native")]
+        let cutoff = {
+            let now = Utc::now();
+            crate::hia_datetime_retention::subtract(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                crate::hia_datetime_retention::Unit::Days,
+                max_unused_days.max(0),
+            )
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
+            .seconds
+        };
+        #[cfg(not(feature = "hia-native"))]
         let cutoff = (Utc::now() - Duration::days(max_unused_days.max(0))).timestamp();
 
         let page_size = n.clamp(1, PHASE2_INPUT_SELECTION_PAGE_SIZE);

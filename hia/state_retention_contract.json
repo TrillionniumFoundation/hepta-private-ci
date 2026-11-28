@@ -1,0 +1,160 @@
+{
+  "schema": "codex.hia.state-retention.v1",
+  "reference_commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+  "compiler_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+  "production_native_modules": 42,
+  "complete_original_rust_files": 47,
+  "source_inventory_sha256": "55e6afd16c573b878ded5db7ade5217fa95e285df022111f61d2b921cf6ef0e0",
+  "calculation_fragments": [
+    {
+      "kind": "original",
+      "name": "logs",
+      "bytes": 226,
+      "sha256": "d70839b84d96b79cb1ee39a9a7f9b6094d03ef754ce335512c1c11fe3d202038"
+    },
+    {
+      "kind": "original",
+      "name": "startup",
+      "bytes": 221,
+      "sha256": "24919ed409fa9fe30f3a5f39c693e9053ec9cf9114e3e8374ef9fdd23d969e36"
+    },
+    {
+      "kind": "original",
+      "name": "prune",
+      "bytes": 88,
+      "sha256": "fa6afc0d144847356a48dbad7a8e382d50a13abd0773f9c450479da7446e1939"
+    },
+    {
+      "kind": "original",
+      "name": "phase2",
+      "bytes": 89,
+      "sha256": "be642ebb601b3e5d22ec5fe57cde9272f6781a8a797473d3bb7e1b52603d7800"
+    },
+    {
+      "kind": "current",
+      "name": "logs",
+      "bytes": 828,
+      "sha256": "114db9788a4477eaa92a690e3da56581950a9bf0e2ad95853fe7a95aed7d44bd"
+    },
+    {
+      "kind": "current",
+      "name": "startup",
+      "bytes": 1387,
+      "sha256": "62275495c99ec5153a92a7d663cf4b3348c64f9c9d75cae5d8d3e5e01b781086"
+    },
+    {
+      "kind": "current",
+      "name": "prune",
+      "bytes": 657,
+      "sha256": "77fe6f8fb9d00600abb6b508dad3d04fb3ec9947db56fed9349f8f4f03111936"
+    },
+    {
+      "kind": "current",
+      "name": "phase2",
+      "bytes": 658,
+      "sha256": "c943c44e68d2a93f3f7b93f5d669f45e2fd02aac6555563d264868ee5648fd3b"
+    }
+  ],
+  "generated_source_sha256": "1a90d05b5f69ac54c8e80c79e60f2f0b44ad926c3b2f62060ae4fe5fa62418c4",
+  "transport": {
+    "path": "hia/datetime_retention.rs",
+    "bytes": 4177,
+    "sha256": "96fc11046776d4f7426798615e962a8e31174b3d524e1b3846bc59263620c5ca"
+  },
+  "qualified_components_reused": {
+    "duration_units": {
+      "source_sha256": "1dab3ce8a1440d109e60d9f58c5a4c3d2e9905678eccf42f9baa272727ca1c6d",
+      "core_sha256": "24a0209fdab96d36b69501ebf88405a2dbee716aa4985fb297d495130acab0de",
+      "object_sha256": "91d6edb528ef762f7bfda49d9e7c73ca5116ca8701ae0bd458b5736efeb59a85"
+    },
+    "datetime_arithmetic": {
+      "source_sha256": "b1d1a41087136d1c67fcf8174b08d7eb957483a9b96880ecf0a849dd0bb2a0b0",
+      "core_sha256": "89074c838c959bcdb6532b642b7781fd6b41a642db5ef7b2706b57a47b3b92e4",
+      "object_sha256": "f2db029b8a6439acf4cc2833c2d0ff261d264c68726538b0e4fa049ee4aadf13"
+    },
+    "datetime_units": {
+      "source_sha256": "3d7b246ce374fd61bd90c896dd8695f45ff51ec0ed6740344b2b9529bee6f2d4",
+      "core_sha256": "70ef87e38b7f94533b5715c66d41c4f2ba2f6a0593a77d81fa85ffa556ed1eb1",
+      "object_sha256": "b0211f8b524bc3c552252074ee11553c40ef64861ccc46894529e3de96506b96"
+    }
+  },
+  "input_cases": 1331036,
+  "input_sha256": "ffebcdf2b70fc2eb8375ac6b4ba5ab706ba253eefbe1490a52cf1744d11fa6b9",
+  "input_words": [
+    "operation: 0 logs, 1 startup pair, 2 prune, 3 phase2 selection",
+    "timestamp seconds as i64 bits",
+    "timestamp nanoseconds as u64",
+    "day limit as i64 bits",
+    "hour limit as i64 bits"
+  ],
+  "output_words": [
+    "original typed DateTime admitted",
+    "original status: 0 skip, 1 cutoff, 2 day constructor panic, 3 hour constructor panic, 4 date subtraction panic",
+    "original first cutoff as i64 bits",
+    "original second cutoff as i64 bits",
+    "original clock read count",
+    "original panic payload: 0 none, 1 str, 2 String",
+    "native status",
+    "native first cutoff as i64 bits",
+    "native second cutoff as i64 bits",
+    "native clock read count",
+    "native panic payload kind"
+  ],
+  "observations": {
+    "input_cases": 1331036,
+    "typed_cases": [
+      155402,
+      488266,
+      321834,
+      321834
+    ],
+    "statuses": [
+      [
+        6,
+        155396,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        304400,
+        41656,
+        41040,
+        101170
+      ],
+      [
+        0,
+        239487,
+        41656,
+        0,
+        40691
+      ],
+      [
+        0,
+        239487,
+        41656,
+        0,
+        40691
+      ]
+    ],
+    "clock_reads_per_implementation": [
+      155402,
+      894185,
+      321834,
+      321834
+    ],
+    "outside_typed_domain": 43700,
+    "complete_two_clock_cases": 304400
+  },
+  "trace_raw_bytes": 117131168,
+  "trace_raw_sha256": "f5a7bcb5f3100cde393a448516d036e2cb5ff2f2e7c099eb81ecc231ce7ffdec",
+  "outside_typed_domain": "All original raw constructor cases are recorded. An invalid original DateTime remains outside the typed production caller domain; no fake DateTime is constructed. Previous whole component differentials cover raw invalid-input behavior.",
+  "calculation_scope": "Five actual state cutoffs use HIA duration constructors, checked date subtraction and seconds/milliseconds conversion. Original Chrono Utc clock and DateTime boundary remain. All original 47 Rust source files are byte-exact after the admitted inverse; all SQL, limits, early returns and tests are preserved.",
+  "clock_seam": "Each original Utc::now() expression in both calculation fragments is replaced by the same counting clock with two distinct typed values. Startup observes both values unless its first calculation panics.",
+  "log_observation_seam": "The exact delete_logs_before cutoff argument is returned by the observer; checked underflow records None before cleanup. Full original state tests separately exercise SQLite and checkpoint behavior.",
+  "whole_product_qualified": false,
+  "chrono_removed": false,
+  "legacy_retirement": false
+}
