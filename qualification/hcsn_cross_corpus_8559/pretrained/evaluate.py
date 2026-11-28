@@ -72,12 +72,21 @@ def run(work,rs,ucm):
             for cond in ('cached32','native'):
                 t2=time.perf_counter();image=[]
                 for i in range(0,len(ids),8):
-                    chunk=[]
+                    partial=dest/'vision_cache'/gal/cond;partial.mkdir(exist_ok=True,parents=True)
+                    fp=partial/f'block-{i:05d}.npy';receipt=fp.with_suffix('.json')
+                    if fp.exists() and receipt.exists():
+                        cached=json.loads(receipt.read_text())
+                        assert cached['model']==acquisition['files']['pytorch_model.bin'][1] and cached['first_id']==str(ids[i]) and sha(fp)==cached['sha256']
+                        image.append(np.load(fp));continue
+                    chunk=[];block_time=time.perf_counter()
                     for j in range(i,min(i+8,len(ids))):
                         if cond=='native':
                             with Image.open(io.BytesIO(raw[j][0])) as p:chunk.append(resize(p.convert('RGB'),cfg))
                         else:chunk.append(resize(Image.fromarray(pix[ix[j]]),cfg))
-                    out=model.vision_model(pixel_values=torch.from_numpy(np.stack(chunk)));image.append(normalize(model.visual_projection(out.pooler_output),dim=-1).numpy())
+                    out=model.vision_model(pixel_values=torch.from_numpy(np.stack(chunk)));v=normalize(model.visual_projection(out.pooler_output),dim=-1).numpy()
+                    with fp.with_suffix('.part').open('wb') as f:np.save(f,v)
+                    os.replace(fp.with_suffix('.part'),fp);receipt.write_text(json.dumps({'model':acquisition['files']['pytorch_model.bin'][1],'first_id':str(ids[i]),'sha256':sha(fp),'elapsed_s':time.perf_counter()-block_time})+'\n')
+                    image.append(v)
                 im=np.concatenate(image);it=time.perf_counter()-t2;st=time.perf_counter()
                 sim=im@txt.T;values={'pair':metrics(sim,g),'shuffle':metrics(sim[shuf],g),'image_constant':metrics(np.broadcast_to(sim[:1],sim.shape),g),'text_constant':metrics(np.broadcast_to(sim[:,:1],sim.shape),g),'hard':eval_pairs(im,txt,peer)}
                 selected={};paired={};pr=values['pair'][:,:,0].mean(1)
@@ -91,7 +100,7 @@ def run(work,rs,ucm):
                 name=gal+'_'+cond
                 for k,v in values.items():embeds[name+'_'+k]=v.astype(np.float32)
                 embeds[name+'_image']=im
-                blue[cond]={'means':{k:v.mean((0,1)).tolist() for k,v in values.items()},'paired_clip_minus_reference':paired,'vision_wall_s':it,'scoring_wall_s':time.perf_counter()-st}
+                blue[cond]={'means':{k:v.mean((0,1)).tolist() for k,v in values.items()},'paired_clip_minus_reference':paired,'vision_wall_s':it,'stored_original_vision_batches_wall_s':sum(json.loads(f.read_text())['elapsed_s'] for f in (dest/'vision_cache'/gal/cond).glob('block-*.json')),'scoring_wall_s':time.perf_counter()-st}
                 print(gal,cond,round(blue[cond]['means']['pair'][0],5),round(it,2),flush=True)
         t3=time.perf_counter();results[gal]={'n':len(ids),'unique_primary':len(set(caps)),'load_roster_and_lexical_neighbors_wall_s':t1-t0,'text_wall_s':texttime,'elapsed_wall_s':t3-t0,'image_conditions':blue}
         embeds[gal+'_text']=txt;embeds[gal+'_group']=g;embeds[gal+'_id']=ids;embeds[gal+'_peers']=peer
