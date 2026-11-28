@@ -1,0 +1,66 @@
+{
+  "request_id": "hcsn-native-hires-transport-1140569-20261128",
+  "source_sha256": "5001dc234009d3b77ac69c20529cfc1915439a82c2c9d6b0f36e83954800a713",
+  "source_bytes": 19656,
+  "provider": "colab",
+  "account": "qiqian",
+  "scientific_timeout_s": 600,
+  "artifacts": [
+    "scaling.json",
+    "checks.npz"
+  ],
+  "observed_at": "2026-11-28T11:32:44.934861+00:00",
+  "candidates": [
+    {
+      "provider": "kaggle",
+      "account": "qiqian",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "kaggle",
+      "account": "sunfo",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "kaggle",
+      "account": "tomas",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "qiqian",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "sunfo",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "colab",
+      "account": "tomas",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    }
+  ],
+  "released_predecessor": "2026-11-28T11:31:21.791271+00:00",
+  "preflight_single_thread_cpu": [
+    "physical_grid 32 8.471553479903417e-16 True",
+    "physical_grid 256 2.2878963356454265e-15 True",
+    "network_grid 32 1.0483044179502377e-15 True",
+    "network_grid 256 4.216362627554919e-15 True"
+  ]
+}

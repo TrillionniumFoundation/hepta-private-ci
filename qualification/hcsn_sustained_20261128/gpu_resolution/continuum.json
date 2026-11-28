@@ -1,0 +1,79 @@
+{
+  "domain": [
+    0.015,
+    1.3
+  ],
+  "sigma": 0.23,
+  "drift": 0.033549999999999996,
+  "finite_step": 0.25,
+  "shifts": [
+    0.023,
+    -0.031,
+    0.123,
+    -0.171
+  ],
+  "continuum_flow": [
+    0.09956995323614407,
+    0.15691478650763743,
+    0.009990732932257784,
+    0.1766782737297907
+  ],
+  "observations": [
+    {
+      "atoms": 256,
+      "finite_numpy_scipy_flow": [
+        0.10108494734514625,
+        0.15848678038759795,
+        0.010244136087343035,
+        0.17723475063540023
+      ],
+      "max_finite_continuum_flow_difference": 0.0015719938799605149,
+      "float32_dense_against_finite_oracle": 6.293557602843336e-08,
+      "float32_fft_against_finite_oracle": 6.293557602843336e-08,
+      "float64_dense_against_finite_oracle": 5.551115123125783e-17,
+      "float64_fft_against_finite_oracle": 5.551115123125783e-17
+    },
+    {
+      "atoms": 512,
+      "finite_numpy_scipy_flow": [
+        0.10032761447495625,
+        0.15770219640793964,
+        0.010117146490507246,
+        0.17695491192165366
+      ],
+      "max_finite_continuum_flow_difference": 0.0007874099003022106,
+      "float32_dense_against_finite_oracle": 1.3138618554231485e-08,
+      "float32_fft_against_finite_oracle": 1.3138618554231485e-08,
+      "float64_dense_against_finite_oracle": 5.551115123125783e-17,
+      "float64_fft_against_finite_oracle": 5.551115123125783e-17
+    },
+    {
+      "atoms": 1024,
+      "finite_numpy_scipy_flow": [
+        0.09994882612980274,
+        0.15731000401918258,
+        0.010053868125512415,
+        0.1768154221970226
+      ],
+      "max_finite_continuum_flow_difference": 0.00039521751154514284,
+      "float32_dense_against_finite_oracle": 4.983502971400711e-09,
+      "float32_fft_against_finite_oracle": 4.983502971400711e-09,
+      "float64_dense_against_finite_oracle": 2.7755575615628914e-17,
+      "float64_fft_against_finite_oracle": 2.7755575615628914e-17
+    },
+    {
+      "atoms": 2048,
+      "finite_numpy_scipy_flow": [
+        0.09975940041272764,
+        0.15711258708353562,
+        0.010022282684178953,
+        0.17674676999478112
+      ],
+      "max_finite_continuum_flow_difference": 0.00019780057589818822,
+      "float32_dense_against_finite_oracle": 3.054709662997368e-08,
+      "float32_fft_against_finite_oracle": 3.054709662997368e-08,
+      "float64_dense_against_finite_oracle": 5.551115123125783e-17,
+      "float64_fft_against_finite_oracle": 5.551115123125783e-17
+    }
+  ]
+}
