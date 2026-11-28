@@ -893,13 +893,13 @@ async fn responses_websocket_preconnect_is_reused_even_with_header_changes() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes() {
+async fn responses_websocket_request_prewarm_does_not_cross_turn_compatibility_boundary() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let harness = websocket_harness_with_options(&server, /*runtime_metrics_enabled*/ true).await;
@@ -939,23 +939,30 @@ async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes(
         }
     }
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 2);
-    let warmup = connection
-        .first()
-        .expect("missing warmup request")
-        .body_json();
-    let follow_up = connection
-        .get(1)
-        .expect("missing follow-up request")
-        .body_json();
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    let [warmup_connection, turn_connection] = connections.as_slice() else {
+        panic!("expected separate prewarm and turn connections");
+    };
+    let [warmup] = warmup_connection.as_slice() else {
+        panic!("expected one prewarm request");
+    };
+    let [follow_up] = turn_connection.as_slice() else {
+        panic!("expected one full turn request");
+    };
+    let warmup = warmup.body_json();
+    let follow_up = follow_up.body_json();
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup["tools"], serde_json::json!([]));
     assert_eq!(follow_up["type"].as_str(), Some("response.create"));
-    assert_eq!(follow_up["previous_response_id"].as_str(), Some("warm-1"));
-    assert_eq!(follow_up["input"], serde_json::json!([]));
+    assert_eq!(follow_up.get("previous_response_id"), None);
+    assert_eq!(follow_up["input"], warmup["input"]);
+    assert!(
+        follow_up["input"]
+            .as_array()
+            .is_some_and(|input| !input.is_empty())
+    );
 
     server.shutdown().await;
 }

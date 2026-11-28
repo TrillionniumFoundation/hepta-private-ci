@@ -278,19 +278,21 @@ async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
     exec_command_call["item"]["id"] = serde_json::json!("fc_exec_command_call");
     exec_command_call["item"]["internal_chat_message_metadata_passthrough"] =
         serde_json::json!({"turn_id": "turn-123"});
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
         vec![
-            ev_response_created("resp-1"),
-            exec_command_call,
-            ev_completed("resp-1"),
+            vec![
+                ev_response_created("resp-1"),
+                exec_command_call,
+                ev_completed("resp-1"),
+            ],
+            vec![
+                ev_response_created("resp-2"),
+                ev_assistant_message("msg_1", "done"),
+                ev_completed("resp-2"),
+            ],
         ],
-        vec![
-            ev_response_created("resp-2"),
-            ev_assistant_message("msg_1", "done"),
-            ev_completed("resp-2"),
-        ],
-    ]])
+    ])
     .await;
 
     let mut builder = test_codex().with_windows_cmd_shell().with_config(|config| {
@@ -304,26 +306,24 @@ async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
     test.submit_turn_with_policy("run the echo command", test.config.legacy_sandbox_policy())
         .await?;
 
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 3);
-
-    let warmup = connection
-        .first()
-        .expect("missing warmup request")
-        .body_json();
-    let first_turn = connection
-        .get(1)
-        .expect("missing first turn request")
-        .body_json();
-    let second_turn = connection
-        .get(2)
-        .expect("missing second turn request")
-        .body_json();
+    let connections = server.connections();
+    let [warmup_connection, turn_connection] = connections.as_slice() else {
+        panic!("expected a prewarm connection and a separate turn connection");
+    };
+    let [warmup] = warmup_connection.as_slice() else {
+        panic!("expected exactly one prewarm request");
+    };
+    let [first_turn, second_turn] = turn_connection.as_slice() else {
+        panic!("expected both tool-chain requests on the turn connection");
+    };
+    let warmup = warmup.body_json();
+    let first_turn = first_turn.body_json();
+    let second_turn = second_turn.body_json();
 
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(first_turn["type"].as_str(), Some("response.create"));
-    assert_eq!(first_turn["previous_response_id"].as_str(), Some("warm-1"));
+    assert_eq!(first_turn.get("previous_response_id"), None);
     assert!(
         first_turn
             .get("input")
@@ -348,11 +348,14 @@ async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
         Some(call_id)
     );
 
-    let handshake = server.single_handshake();
-    assert_eq!(
-        handshake.header("openai-beta"),
-        Some(WS_V2_BETA_HEADER_VALUE.to_string())
-    );
+    let handshakes = server.handshakes();
+    assert_eq!(handshakes.len(), 2);
+    for handshake in handshakes {
+        assert_eq!(
+            handshake.header("openai-beta"),
+            Some(WS_V2_BETA_HEADER_VALUE.to_string())
+        );
+    }
 
     server.shutdown().await;
     Ok(())
@@ -362,14 +365,14 @@ async fn websocket_v2_test_codex_shell_chain() -> Result<()> {
 async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![
             ev_response_created("resp-1"),
             ev_assistant_message("msg_1", "fast"),
             ev_completed("resp-1"),
-        ],
-    ]])
+        ]],
+    ])
     .await;
 
     let mut builder = test_codex().with_config(|config| {
@@ -391,13 +394,16 @@ async fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() 
     test.submit_turn_with_service_tier("hello", Some(ServiceTier::Fast.request_value()))
         .await?;
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 2);
-    let first_turn = connection
-        .get(1)
-        .expect("missing first turn request")
-        .body_json();
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    let [warmup_connection, turn_connection] = connections.as_slice() else {
+        panic!("expected separate prewarm and turn connections");
+    };
+    assert_eq!(warmup_connection.len(), 1);
+    let [first_turn] = turn_connection.as_slice() else {
+        panic!("expected exactly one first-turn request");
+    };
+    let first_turn = first_turn.body_json();
 
     assert_eq!(first_turn["type"].as_str(), Some("response.create"));
     assert_eq!(first_turn["service_tier"].as_str(), Some("priority"));
