@@ -129,7 +129,7 @@ jobs:
             # canonical temporary directory rather than the long runner alias.
             mac_test_tmpdir="$(mktemp -d /private/tmp/bz.XXXXXX)"
             bazel_test_args+=(
-              "--test_env=TMPDIR=${mac_test_tmpdir}"
+              "--test_env=CODEX_BAZEL_MAC_TEST_TMPDIR=${mac_test_tmpdir}"
               "--sandbox_writable_path=${mac_test_tmpdir}"
             )
           fi
