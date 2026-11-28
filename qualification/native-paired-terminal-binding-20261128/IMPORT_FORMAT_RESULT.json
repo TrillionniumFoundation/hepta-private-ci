@@ -1,0 +1,55 @@
+{
+  "schema": "paired-terminal-import-format-receipts-v1",
+  "records": {
+    "a": {
+      "result": {
+        "stage": "a",
+        "command": [
+          "just",
+          "fmt"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.21927850297652185,
+        "stdout": "",
+        "stderr": "",
+        "source_head": "25f407a04d20bb9fefb78031f409961a843227fa",
+        "hashes": {
+          "codex-rs/hepta-agentd/src/paired_terminal_binding_tests.rs": {
+            "before": "a59b0f9fd24b88287cea08287375063792f695dfe1f5943009672c320e94a5b6",
+            "after": "a59b0f9fd24b88287cea08287375063792f695dfe1f5943009672c320e94a5b6"
+          }
+        }
+      },
+      "archive_bytes": 2350,
+      "archive_sha256": "ce853303e4dcf899335b9ccb3738fe5589470be56712a6dc8eb246747984ebb4",
+      "path": "/tmp/hepta-intake-6523704f97df-paired-binding-fmt-a-v2-import/POSTIMAGES.json.gz"
+    },
+    "b": {
+      "result": {
+        "stage": "b",
+        "command": [
+          "just",
+          "fmt"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.2064824381377548,
+        "stdout": "",
+        "stderr": "",
+        "source_head": "2310302132920d0871165396193557ec0bcbac34",
+        "hashes": {
+          "codex-rs/hepta-agentd/src/paired_terminal_binding_tests.rs": {
+            "before": "ca08549b95635952df78020b1c16ca6ff6e1bb6717fbca3c2b7de98f9e4c6766",
+            "after": "ca08549b95635952df78020b1c16ca6ff6e1bb6717fbca3c2b7de98f9e4c6766"
+          }
+        }
+      },
+      "archive_bytes": 3688,
+      "archive_sha256": "59688a51894221dbc65d73a71e3ebb31d668ca0af770f67624a9c81f49900aae",
+      "path": "/tmp/hepta-intake-6523704f97df-paired-binding-fmt-b-v2-import/POSTIMAGES.json.gz"
+    }
+  },
+  "original_freeze_preserved": true,
+  "source_after_format_unchanged": true,
+  "new_native_tests_executed": false,
+  "same_source_consume_head": "2310302132920d0871165396193557ec0bcbac34"
+}
