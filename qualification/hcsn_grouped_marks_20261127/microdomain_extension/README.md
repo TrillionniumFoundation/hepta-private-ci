@@ -1,5 +1,7 @@
 # Independent diffusion microdomains with a smooth first-hit release
 
+[研究索引：多次复位、长时相变、相关性、局部写入和真实 Allen 记录](INDEX.md)
+
 A unit starts each one-step transition with a common log safety distance \(x\). Its \(n\) subunits then undergo conditionally independent Brownian diffusion with drift \(\mu\), volatility \(\sigma>0\) and common absorbing wall zero for duration \(T>0\). The first hit by any subunit releases the packet. If release occurs the next margin is the reset level \(\rho\). If all survive it is their arithmetic mean endpoint. This gives both a differentiable release and a consistent conditional expected next state. A common moving drive may set the wall at the beginning of an interval. Correlated noise and a moving wall inside the interval require a different joint first-passage law.
 
 ## One-step closed form
