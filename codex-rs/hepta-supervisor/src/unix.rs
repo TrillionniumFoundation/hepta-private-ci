@@ -667,6 +667,7 @@ fn query_agent_drain_once(
                     | std::io::ErrorKind::ConnectionRefused
                     | std::io::ErrorKind::ConnectionReset
                     | std::io::ErrorKind::ConnectionAborted
+                    | std::io::ErrorKind::NotConnected
                     | std::io::ErrorKind::BrokenPipe
                     | std::io::ErrorKind::TimedOut
                     | std::io::ErrorKind::WouldBlock
