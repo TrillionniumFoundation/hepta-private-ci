@@ -1,5 +1,6 @@
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::process::Command;
 
 use pretty_assertions::assert_eq;
@@ -25,6 +26,8 @@ use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
 use crate::test_support::private_tempdir;
+use crate::test_support::test_ssh_identity;
+#[cfg(unix)]
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -139,7 +142,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
 }
 
 #[test]
-fn independently_signed_challenge_is_verified_but_not_accepted() {
+fn detached_signature_uses_the_supported_verifier_without_granting_authority() {
     let fixture = TrustFixture::new(false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
@@ -151,7 +154,18 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
         trust: fixture.inputs(),
     })
     .expect("prepare challenge");
+    #[cfg(unix)]
     let signature_path = fixture.sign(&challenge_path);
+    #[cfg(not(unix))]
+    let signature_path = {
+        let signature_path = fixture.root.join("unsupported.sig");
+        write_private_new(
+            &signature_path,
+            crate::test_support::UNSUPPORTED_SSHSIG_TEST_ENVELOPE,
+        )
+        .expect("write a structurally valid test envelope");
+        signature_path
+    };
     let assessed = assess_g5_challenge(G5AssessRequest {
         assessment_path: None,
         challenge_path: &challenge_path,
@@ -161,9 +175,17 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
         signature: G5SignatureInput::Detached(&signature_path),
         trust: fixture.inputs(),
     })
-    .expect("verify independent signature");
-    assert_eq!(assessed.status, "SIGNATURE_VERIFIED_NO_AUTHORITY");
-    assert!(assessed.signature_verified);
+    .expect("assess independent signature");
+    #[cfg(unix)]
+    {
+        assert_eq!(assessed.status, "SIGNATURE_VERIFIED_NO_AUTHORITY");
+        assert!(assessed.signature_verified);
+    }
+    #[cfg(not(unix))]
+    {
+        assert_eq!(assessed.status, super::ASSESSMENT_STATUS_SIGNATURE_INVALID);
+        assert!(!assessed.signature_verified);
+    }
 }
 
 #[test]
@@ -256,6 +278,7 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
 struct TrustFixture {
     _temporary: TempDir,
     allowed_signers: PathBuf,
+    #[cfg(unix)]
     key: PathBuf,
     policy: PathBuf,
     policy_sha256: String,
@@ -269,33 +292,14 @@ impl TrustFixture {
     fn new(revoked: bool) -> Self {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
-        let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start test key generation");
-        assert!(status.success());
-        let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
-        let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
-        assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
+        let identity = test_ssh_identity(&root);
         let allowed_signers = root.join("allowed_signers");
         write_private_new(
             &allowed_signers,
-            format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
+            format!("operator@example ssh-ed25519 {}\n", identity.public_blob).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("compute fingerprint");
-        assert!(fingerprint_output.status.success());
-        let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("fingerprint field")
-            .to_string();
+        let fingerprint = identity.fingerprint;
         let revocation = G5RevocationState {
             effective_at_unix_seconds: 1,
             revoked_challenge_sha256: Vec::new(),
@@ -333,7 +337,8 @@ impl TrustFixture {
         Self {
             _temporary: temporary,
             allowed_signers,
-            key,
+            #[cfg(unix)]
+            key: identity.private_key,
             policy,
             policy_sha256,
             revocation,
@@ -368,6 +373,7 @@ impl TrustFixture {
         self.policy_sha256 = sha256(&policy_bytes);
     }
 
+    #[cfg(unix)]
     fn sign(&self, challenge: &Path) -> PathBuf {
         let status = Command::new("/usr/bin/ssh-keygen")
             .args(["-Y", "sign", "-f"])
@@ -383,6 +389,7 @@ impl TrustFixture {
     }
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {
