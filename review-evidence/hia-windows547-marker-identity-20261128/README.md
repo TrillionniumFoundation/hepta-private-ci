@@ -1,0 +1,17 @@
+# Original 547 failures and exact file/process observations
+
+The new source is based on the ordinary two-parent merge `1d4fd806c4cde3b094e8300bc7a1229946ceed0a`, with parents `547cee4d4402d2724db61bda1fc7066203618af3` and `309ff1fcde27b45a55a210aece0fefb09bad7764`. The latter retains the six-job / 114-step native result and reviewed current Darwin dependency projection. Neither old result is relabeled as a pass for the merged source.
+
+Original Windows run `46091305134`, job `140812590433`, failed. CLI and exec-server completed, but the core target had failed/retried attempts and an original 900-second shard timeout. The complete raw log and artifact ZIP are retained under `windows547-original/`. No failed attempt was cancelled or replayed by this change.
+
+The setup trace contains a specific unresolved contradiction: the helper reports a completed 255-byte marker, while the orchestrator subsequently reads an empty marker and correctly refuses with `orchestrator_helper_incomplete`. It is not yet established that these observations refer to the same file identity or helper process. The new `SBX_DEBUG` observations record the actual no-follow file handle identity, parent directory identity, bounded read length, metadata before/after, JSON validity, process/executable path, and spawned child identity. The marker contents and credentials are never logged. The diagnostic opens have full sharing, do not modify the file, and refuse to read a reparse or non-ordinary object.
+
+The readiness check, protected DACL, CREATE_NEW publication, same-home transaction guard, machine credential transaction and original timeout/capacity limits are unchanged. The non-elevated `Command::status` is split into its ordinary spawn/wait operations to observe the exact child PID; failure still refuses. Elevated launch keeps the original process wait and exposes its actual return only as a diagnostic observation.
+
+The original four residency-reload cases retain their assertions, budgets and max-two-thread capacity. Only `SBX_DEBUG` phase observations were added, so a timeout before filesystem setup, thread creation, completion, or reload can be distinguished from the already tested Finish completion fence.
+
+This is a diagnostic successor, not a claim that the marker contradiction or Windows core gate has been repaired. The next execution must run the same original three complete Windows targets without relaxing the no-FLAKY check. The source inputs, original files, patch, exact formatting results and normal merge transcript are retained under `diagnostic/` and `normal-merge/`.
+
+Original native run `46091115667` also remains failed: two legacy/exec jobs succeeded; the historical owner/formatter job rejected an unreviewed Darwin dependency projection; the native-components job was cancelled, and its log endpoint returned BlobNotFound. The returned error is preserved as an error, not a job log. Full artifact readback is a separate archival operation; it cannot upgrade this run's status. The ordinary merge includes the actual reviewed 309 successor rather than retrying 547 with the old projection.
+
+All four original native547 artifacts have now been completely downloaded and checked against their GitHub SHA256, with all 1,064 ZIP members read and CRC/hash verified. The full ZIP bytes are stored in ordered parts under `native547-original/`; the original failed/cancelled run status is unchanged.

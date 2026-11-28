@@ -1,0 +1,263 @@
+Merge made by the 'ort' strategy.
+ .github/workflows/codex-hia-native.yml             |  350 +++-
+ hia/ci/fixtures/native-components-33f5d31b.yml.gz  |  Bin 0 -> 16110 bytes
+ hia/ci/native_phase_gate.py                        |  362 ++++
+ .../file_update_oracle/dependency_projection.py    |   44 +-
+ hia/tests/test_file_update_bazel_admission.py      |   68 +
+ hia/tests/test_native_phase_gate.py                |  175 ++
+ hia/tests/test_native_prompt_decode_caller.py      |    8 +-
+ hia/tests/test_native_prompt_decode_profiles.py    |   75 +
+ .../native38-current-gates-20261127/README.md      |   15 +
+ .../complete-exec-server-tree-diff.patch           |   28 +
+ .../d00-core-140728629041-original.log.gz          |  Bin 0 -> 80322 bytes
+ .../d00-core-original-15230424660.zip              |  Bin 0 -> 3541786 bytes
+ .../d00-core-original-artifact-readback.json       |   23 +
+ .../d00-historical-140728629917-original.log.gz    |  Bin 0 -> 15313 bytes
+ .../diff-check.stderr                              |    0
+ .../diff-check.stdout                              |    0
+ .../first-sparse-staging-failure.log.gz            |  Bin 0 -> 691 bytes
+ .../just-fmt.stderr                                |    0
+ .../just-fmt.stdout                                |    1 +
+ .../original-and-successor-admission.stderr        |   32 +
+ .../original-and-successor-admission.stdout        |    0
+ .../owner86-original-140666984197.log.gz           |  Bin 0 -> 416020 bytes
+ .../owner86-original-140667004515.log.gz           |  Bin 0 -> 339235 bytes
+ .../owner86-original-readback.json                 |   20 +
+ .../prompt-caller-original-d00.py                  |  152 ++
+ .../qualification.json                             |   90 +
+ .../source-change-intent.json                      |    9 +
+ .../source-controls-and-format.json                |   66 +
+ .../33f-components-annotations                     |    1 +
+ .../33f-components-annotations.stderr              |    0
+ .../33f-components-annotations.terminal.json       |   26 +
+ .../33f-run-full-step-logs.zip                     |  Bin 0 -> 825821 bytes
+ .../33f-run-full-step-logs.zip.stderr              |    0
+ .../33f-run-full-step-logs.zip.terminal.json       |  509 +++++
+ .../README.md                                      |    7 +
+ .../api-snapshot.json                              | 2114 ++++++++++++++++++++
+ .../d00-components-140728629906-readback.json      |   43 +
+ .../d00-components-annotations.stderr              |    0
+ .../d00-components-annotations.stdout              |    1 +
+ .../download-attempt-v1.json                       |   82 +
+ .../job-140728629906.download.json                 |   16 +
+ .../job-140728629906.download.stderr               |    0
+ .../job-140728629906.log.gz                        |  Bin 0 -> 340607 bytes
+ .../job-140749440996.download.json                 |   16 +
+ .../job-140749440996.download.stderr               |    0
+ .../job-140749440996.log.gz                        |  Bin 0 -> 19682 bytes
+ .../job-140749441098.download.json                 |   16 +
+ .../job-140749441098.download.stderr               |    0
+ .../job-140749441098.log.gz                        |  Bin 0 -> 288019 bytes
+ .../job-140749441111.download.json                 |   16 +
+ .../job-140749441111.download.stderr               |    0
+ .../job-140749441111.log.gz                        |  Bin 0 -> 338601 bytes
+ .../job-140749441240.download.json                 |   16 +
+ .../job-140749441240.download.stderr               |    0
+ .../job-140749441240.log.gz                        |  Bin 0 -> 58229 bytes
+ .../qualification.json                             |  205 ++
+ .../source-controls/conservation-controls.stderr   |   17 +
+ .../source-controls/conservation-controls.stdout   |    0
+ .../conservation-controls.terminal.json            |    1 +
+ .../source-controls/conservation.json              |    1 +
+ .../source-controls/formatted-controls.stderr      |   17 +
+ .../source-controls/formatted-controls.stdout      |    0
+ .../formatted-controls.terminal.json               |    1 +
+ .../source-controls/just-fmt.stderr                |    0
+ .../source-controls/just-fmt.stdout                |    1 +
+ .../source-controls/just-fmt.terminal.json         |    1 +
+ .../15233436842.readback.json.gz                   |  Bin 0 -> 534 bytes
+ .../15234358359.readback.json.gz                   |  Bin 0 -> 3172 bytes
+ .../15234519736.readback.json.gz                   |  Bin 0 -> 10178 bytes
+ .../15234523629.readback.json.gz                   |  Bin 0 -> 974625 bytes
+ .../README.md                                      |    5 +
+ ...rst-direct-attempt-15234358359.readback.json.gz |  Bin 0 -> 300 bytes
+ .../first-direct-attempt-15234358359.stderr.gz     |  Bin 0 -> 144 bytes
+ .../index.json                                     |  167 ++
+ ...7880a69feefa1390c0855d991ba0fa4b28bef47273f.bin |  Bin 0 -> 8388608 bytes
+ ...ba6a711067b6dcfa5cbe16ef951ee254a278a2bf6f9.bin |  Bin 0 -> 3581646 bytes
+ ...252b706ff3046d893b1f73918ff467b905b798a2282.bin |  Bin 0 -> 8388608 bytes
+ ...9e4a50d71a182845bb22a56ae80a65244a5d4835a06.bin |  Bin 0 -> 8388608 bytes
+ ...b0638b08fdd05f0390c240f05c906303c8a34e45225.bin |  Bin 0 -> 4479449 bytes
+ ...933c29d70ec31367e074492906fe106b67851ae909a.bin |  Bin 0 -> 8388608 bytes
+ ...bed399afd737d3adfd2fbdf001881cfc91bd1018794.bin |  Bin 0 -> 8388608 bytes
+ ...122e5454f73b279e2b4168452b4bba6a4327f1b659e.bin |  Bin 0 -> 8388608 bytes
+ ...b512334db7779bce0e7cdeef91cc2e333a42e2cc5b8.bin |  Bin 0 -> 8388608 bytes
+ ...875d1d659c28b7cbd90a89cf627cb9efc6298a24598.bin |  Bin 0 -> 8388608 bytes
+ ...826b448f9cb2a59b0587b2b64bab1e0c36183b9ed1f.bin |  Bin 0 -> 8388608 bytes
+ ...2e3b893760ecc9aa22bbf4dacc2876b98f114f869e5.bin |  Bin 0 -> 8388608 bytes
+ ...1e2903a4607426a7e15a356c1cace4ad46ac21dc5c2.bin |  Bin 0 -> 8388608 bytes
+ ...f9f1188829a0d67f38275743c3352c196caca4fadd1.bin |  Bin 0 -> 8388608 bytes
+ ...34403e3864897744db2a873d0ca038ad1f15b712508.bin |  Bin 0 -> 8388608 bytes
+ ...c975371d9194b2915d90baba1eccf1adb4c342c3569.bin |  Bin 0 -> 63627 bytes
+ ...94587b7f12b361f1709f54885d9d05b96c4dd7300a9.bin |  Bin 0 -> 3794243 bytes
+ ...daad0de9651a22fdbabc2d727835cf50a70ce98060d.bin |  Bin 0 -> 8388608 bytes
+ ...784b2383094ff86fa8cc0221a6bcff3e96065958faf.bin |  Bin 0 -> 8388608 bytes
+ .../hia-native550-complete-20261127-2ac5/README.md |    5 +
+ ...d14ff780cb23bc231108f5796d66fc5b8ffeb9bc5fe.bin |  Bin 0 -> 8388608 bytes
+ ...17cccf9de345f775a391930d74000bd662ebc390c45.bin |  Bin 0 -> 3581423 bytes
+ ...081e83e87c9fe732b3babb77785e4cdf692a280ca91.bin |  Bin 0 -> 8388608 bytes
+ ...5d1000b34afea76c35815a1c02126c20a7690232836.bin |  Bin 0 -> 8388608 bytes
+ ...40299be74c952b8e3d19922223633b42e4337a56d4a.bin |  Bin 0 -> 8388608 bytes
+ ...b89c649394bacdd9d7900c6e2f44d10c55d0106889d.bin |  Bin 0 -> 1436867 bytes
+ ...bc32ba9452f91d11181b37909720e09853f1166062a.bin |  Bin 0 -> 2280848 bytes
+ ...756d7090864149bdcb3c86b91da53c7f6a4dca9f191.bin |  Bin 0 -> 8388608 bytes
+ ...20e40d716e14e5d9a73ff54557fd4ac845fd02920bf.bin |  Bin 0 -> 8388608 bytes
+ ...79aa92451b0ad7d133ee2c22121483663e344eda462.bin |  Bin 0 -> 8388608 bytes
+ ...6e7dec055f88c7834907a575dca7e660f12d1d5b98e.bin |  Bin 0 -> 8388608 bytes
+ ...c455d78ea0e52a837bd67ce7943c03e4ecd63fc7491.bin |  Bin 0 -> 4485863 bytes
+ ...fc774a7d037ddfe3c0ef81cfd11dfb4f9bee3352cd7.bin |  Bin 0 -> 8388608 bytes
+ ...f7d0e01cfdb0bc50f3395893f349d91a232077f1db4.bin |  Bin 0 -> 8388608 bytes
+ ...3c9383a6a6d7768cb64d7fe741d122650c9d10da8b1.bin |  Bin 0 -> 8388608 bytes
+ ...e408670e12cb7eb9a8f9babb289577879d6512e78cd.bin |  Bin 0 -> 8388608 bytes
+ ...5b5ac7ea9c2b6ac60eaf8b41a5d8f1293b94b50cea9.bin |  Bin 0 -> 8388608 bytes
+ ...77f8f438b0838e604f0f268caa45cb93150579466d1.bin |  Bin 0 -> 8388608 bytes
+ ...b41cba6428378b5ca9b6d6abed306e4ec50c64c06bf.bin |  Bin 0 -> 3792693 bytes
+ ...6118837e874ecf55747172aea0fe5c595982641af5c.bin |  Bin 0 -> 8388608 bytes
+ ...d8db0625e57fb7a021a9ad76a0ba78a0606280cd11f.bin |  Bin 0 -> 63735 bytes
+ ...95ce6f5ac644c39febcd2058dfd87b880584751dae8.bin |  Bin 0 -> 8388608 bytes
+ ...d29b526950509f57997d303387a5bfafbf976cf0f5a.bin |  Bin 0 -> 8388608 bytes
+ ...e47d5d4ec2bf1049b18811d8fb37d8f9a3fe435dc1f.bin |  Bin 0 -> 3419548 bytes
+ ...66f7e7d55859bd994bea008daba9a07b7a0a97d867a.bin |  Bin 0 -> 8388608 bytes
+ ...2adc5a45916993c501c4b2c9e953ce7bf108c5f553e.bin |  Bin 0 -> 8388608 bytes
+ .../qualification.json                             |  559 ++++++
+ .../raw/cloud-artifacts.json.gz                    |  Bin 0 -> 1159 bytes
+ .../raw/cloud-jobs.json.gz                         |  Bin 0 -> 10724 bytes
+ .../raw/job140773975935.log.gz                     |  Bin 0 -> 285375 bytes
+ .../raw/job140773976078.log.gz                     |  Bin 0 -> 108884 bytes
+ .../raw/job140773976146.log.gz                     |  Bin 0 -> 19503 bytes
+ .../raw/job140773976191.log.gz                     |  Bin 0 -> 58337 bytes
+ .../raw/job140773976226.log.gz                     |  Bin 0 -> 138578 bytes
+ .../raw/job140773976309.log.gz                     |  Bin 0 -> 231834 bytes
+ .../raw/members.json.gz                            |  Bin 0 -> 1198316 bytes
+ .../raw/run.json.gz                                |  Bin 0 -> 1673 bytes
+ .../raw/terminal.json.gz                           |  Bin 0 -> 903 bytes
+ 132 files changed, 5251 insertions(+), 110 deletions(-)
+ create mode 100644 hia/ci/fixtures/native-components-33f5d31b.yml.gz
+ create mode 100644 hia/ci/native_phase_gate.py
+ create mode 100644 hia/tests/test_file_update_bazel_admission.py
+ create mode 100644 hia/tests/test_native_phase_gate.py
+ create mode 100644 hia/tests/test_native_prompt_decode_profiles.py
+ create mode 100644 qualification/native38-current-gates-20261127/README.md
+ create mode 100644 qualification/native38-current-gates-20261127/complete-exec-server-tree-diff.patch
+ create mode 100644 qualification/native38-current-gates-20261127/d00-core-140728629041-original.log.gz
+ create mode 100644 qualification/native38-current-gates-20261127/d00-core-original-15230424660.zip
+ create mode 100644 qualification/native38-current-gates-20261127/d00-core-original-artifact-readback.json
+ create mode 100644 qualification/native38-current-gates-20261127/d00-historical-140728629917-original.log.gz
+ create mode 100644 qualification/native38-current-gates-20261127/diff-check.stderr
+ create mode 100644 qualification/native38-current-gates-20261127/diff-check.stdout
+ create mode 100644 qualification/native38-current-gates-20261127/first-sparse-staging-failure.log.gz
+ create mode 100644 qualification/native38-current-gates-20261127/just-fmt.stderr
+ create mode 100644 qualification/native38-current-gates-20261127/just-fmt.stdout
+ create mode 100644 qualification/native38-current-gates-20261127/original-and-successor-admission.stderr
+ create mode 100644 qualification/native38-current-gates-20261127/original-and-successor-admission.stdout
+ create mode 100644 qualification/native38-current-gates-20261127/owner86-original-140666984197.log.gz
+ create mode 100644 qualification/native38-current-gates-20261127/owner86-original-140667004515.log.gz
+ create mode 100644 qualification/native38-current-gates-20261127/owner86-original-readback.json
+ create mode 100644 qualification/native38-current-gates-20261127/prompt-caller-original-d00.py
+ create mode 100644 qualification/native38-current-gates-20261127/qualification.json
+ create mode 100644 qualification/native38-current-gates-20261127/source-change-intent.json
+ create mode 100644 qualification/native38-current-gates-20261127/source-controls-and-format.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-components-annotations
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-components-annotations.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-components-annotations.terminal.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-run-full-step-logs.zip
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-run-full-step-logs.zip.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/33f-run-full-step-logs.zip.terminal.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/README.md
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/api-snapshot.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/d00-components-140728629906-readback.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/d00-components-annotations.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/d00-components-annotations.stdout
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/download-attempt-v1.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140728629906.download.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140728629906.download.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140728629906.log.gz
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749440996.download.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749440996.download.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749440996.log.gz
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441098.download.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441098.download.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441098.log.gz
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441111.download.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441111.download.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441111.log.gz
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441240.download.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441240.download.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/job-140749441240.log.gz
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/qualification.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/conservation-controls.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/conservation-controls.stdout
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/conservation-controls.terminal.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/conservation.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/formatted-controls.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/formatted-controls.stdout
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/formatted-controls.terminal.json
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/just-fmt.stderr
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/just-fmt.stdout
+ create mode 100644 review-evidence/hia-native-phase-conservation-20261127-2ac5/source-controls/just-fmt.terminal.json
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/15233436842.readback.json.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/15234358359.readback.json.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/15234519736.readback.json.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/15234523629.readback.json.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/README.md
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/first-direct-attempt-15234358359.readback.json.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/first-direct-attempt-15234358359.stderr.gz
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/index.json
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/0518f95bbd0050a9faca27880a69feefa1390c0855d991ba0fa4b28bef47273f.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/10ebd19ba577b6565f5ceba6a711067b6dcfa5cbe16ef951ee254a278a2bf6f9.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/14b386ae9f8da20a17751252b706ff3046d893b1f73918ff467b905b798a2282.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/1bff835512e09935e80369e4a50d71a182845bb22a56ae80a65244a5d4835a06.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/280821116228df19e889eb0638b08fdd05f0390c240f05c906303c8a34e45225.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/36a341a6d196bd233b9d0933c29d70ec31367e074492906fe106b67851ae909a.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/3ef2cfc9c6dfe42511042bed399afd737d3adfd2fbdf001881cfc91bd1018794.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/6fb2e7d4c1bfcff67d329122e5454f73b279e2b4168452b4bba6a4327f1b659e.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/70d3d8ccbae5d7a1dcf87b512334db7779bce0e7cdeef91cc2e333a42e2cc5b8.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/723dbacf642a8a440f9f1875d1d659c28b7cbd90a89cf627cb9efc6298a24598.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/796e04cce76c0d6dc8709826b448f9cb2a59b0587b2b64bab1e0c36183b9ed1f.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/893218c2e8b0d5818382f2e3b893760ecc9aa22bbf4dacc2876b98f114f869e5.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/9431fc362ea403a7e79131e2903a4607426a7e15a356c1cace4ad46ac21dc5c2.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/a5bc1d372587eddd4783af9f1188829a0d67f38275743c3352c196caca4fadd1.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/bca760f565bcf9cbc390334403e3864897744db2a873d0ca038ad1f15b712508.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/be652d4ec5b23cc965d8bc975371d9194b2915d90baba1eccf1adb4c342c3569.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/cba740619444fb923435f94587b7f12b361f1709f54885d9d05b96c4dd7300a9.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/e3bec206d639de2d75a5fdaad0de9651a22fdbabc2d727835cf50a70ce98060d.bin
+ create mode 100644 review-evidence/hia-native33f-artifact-custody-20261127-2ac5/objects/e82eb3103a9ec04b15cee784b2383094ff86fa8cc0221a6bcff3e96065958faf.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/README.md
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/03ce4e89df58f849f01c1d14ff780cb23bc231108f5796d66fc5b8ffeb9bc5fe.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/08f7e1014b5c5ff41869d17cccf9de345f775a391930d74000bd662ebc390c45.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/1038e0b8b1a8a18b7540e081e83e87c9fe732b3babb77785e4cdf692a280ca91.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/26ed56da39d8bd01bea135d1000b34afea76c35815a1c02126c20a7690232836.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/2fa149ea0e70e0b50bef440299be74c952b8e3d19922223633b42e4337a56d4a.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/4dcb344459c4ec246ae7ab89c649394bacdd9d7900c6e2f44d10c55d0106889d.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/59a4c38a887893d3dd41dbc32ba9452f91d11181b37909720e09853f1166062a.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/61829b94495246eda38bb756d7090864149bdcb3c86b91da53c7f6a4dca9f191.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/67f16d82d6f1f341dd32520e40d716e14e5d9a73ff54557fd4ac845fd02920bf.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/759eae73af4fd0489b2d679aa92451b0ad7d133ee2c22121483663e344eda462.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/863669f795342f460c00c6e7dec055f88c7834907a575dca7e660f12d1d5b98e.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/8823cc4d07887b5137f3bc455d78ea0e52a837bd67ce7943c03e4ecd63fc7491.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/98880e18d17986b1f36c9fc774a7d037ddfe3c0ef81cfd11dfb4f9bee3352cd7.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/9d29517ab3fde3ab13be8f7d0e01cfdb0bc50f3395893f349d91a232077f1db4.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/a0cc9d1c64f2302cc854b3c9383a6a6d7768cb64d7fe741d122650c9d10da8b1.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/aad67684d590a35e4ca1de408670e12cb7eb9a8f9babb289577879d6512e78cd.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/ac974f727f1962ec37c545b5ac7ea9c2b6ac60eaf8b41a5d8f1293b94b50cea9.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/bb02ab42fa158aa90b4f277f8f438b0838e604f0f268caa45cb93150579466d1.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/c78bfbb329cd968a20c6db41cba6428378b5ca9b6d6abed306e4ec50c64c06bf.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/ca506dcd202273354719c6118837e874ecf55747172aea0fe5c595982641af5c.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/cc28084f5261a73347938d8db0625e57fb7a021a9ad76a0ba78a0606280cd11f.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/d1f4e3316e7939c473dff95ce6f5ac644c39febcd2058dfd87b880584751dae8.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/d8f1ae4f806b0aa19ee61d29b526950509f57997d303387a5bfafbf976cf0f5a.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/d9c2160905916ad5ff90be47d5d4ec2bf1049b18811d8fb37d8f9a3fe435dc1f.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/ea437060eec1b2a939fc066f7e7d55859bd994bea008daba9a07b7a0a97d867a.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/cas/f754d85714ee61207dd192adc5a45916993c501c4b2c9e953ce7bf108c5f553e.bin
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/qualification.json
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/cloud-artifacts.json.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/cloud-jobs.json.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773975935.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773976078.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773976146.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773976191.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773976226.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/job140773976309.log.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/members.json.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/run.json.gz
+ create mode 100644 review-evidence/hia-native550-complete-20261127-2ac5/raw/terminal.json.gz

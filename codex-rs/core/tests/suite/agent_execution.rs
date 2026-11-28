@@ -223,6 +223,12 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
     const FOLLOWUP_PROMPT: &str = "continue the original worker";
     const FOLLOWUP_TASK: &str = "continue work in the original environment";
 
+    let observe_phase = |phase: &str| {
+        if std::env::var("SBX_DEBUG").ok().as_deref() == Some("1") {
+            eprintln!("HIA_RESIDENCY_PHASE variant={} phase={phase}", reload as u8);
+        }
+    };
+
     let server = start_mock_server().await;
     mount_root_collaboration_call(
         &server,
@@ -271,7 +277,9 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
                 .set_permission_profile(PermissionProfile::workspace_write())
                 .expect("thread permissions should allow workspace writes");
         });
+    observe_phase("build-environments:start");
     let test = builder.build_with_remote_and_local_env(&server).await?;
+    observe_phase("build-environments:done");
     let mut child_environment = test.executor_environment().selection().clone();
     let (child_permissions, parent_permissions) = match reload {
         ResidencyReload::Sender => (
@@ -296,6 +304,7 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
             test.workspace_path_uri("revoked")?,
         ];
         for root in &child_environment.workspace_roots {
+            observe_phase("create-directory:start");
             test.fs()
                 .create_directory(
                     root,
@@ -306,6 +315,7 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
                     /*sandbox*/ None,
                 )
                 .await?;
+            observe_phase("create-directory:done");
         }
     } else {
         child_environment.config = EnvironmentConfigState::Ready(EnvironmentConfig {
@@ -340,13 +350,17 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
         },
     )
     .await?;
+    observe_phase("first-submit:start");
     test.submit_text_turn(FIRST_PROMPT).await?;
+    observe_phase("first-submit:done");
     let first_thread_id = created_threads.recv().await?;
+    observe_phase("first-child:created");
     let first_thread = test.thread_manager.get_thread(first_thread_id).await?;
     wait_for_event(first_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    observe_phase("first-completion:done");
 
     let mut parent_environment = child_environment.clone();
     if reload == ResidencyReload::OwnerRevokesWorkspaceRoot {
@@ -370,8 +384,11 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
         )
         .await?;
     }
+    observe_phase("replacement-submit:start");
     test.submit_text_turn(EVICT_PROMPT).await?;
+    observe_phase("replacement-submit:done");
     let replacement_thread_id = created_threads.recv().await?;
+    observe_phase("replacement-child:created");
     let replacement_thread = test
         .thread_manager
         .get_thread(replacement_thread_id)
@@ -380,6 +397,7 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    observe_phase("replacement-completion:done");
     assert!(
         test.thread_manager
             .get_thread(first_thread_id)
@@ -403,10 +421,12 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
             test.codex.config_snapshot().await.environments.environments,
             vec![parent_environment]
         );
+        observe_phase("owner-reload:start");
         let result = test
             .thread_manager
             .ensure_multi_agent_v2_child_loaded(first_thread_id)
             .await;
+        observe_phase("owner-reload:done");
         let expected_error = match reload {
             ResidencyReload::OwnerRevokesWorkspaceRoot => {
                 Some("no longer matches a ready parent environment")
@@ -443,7 +463,9 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
             PermissionProfileSnapshot::legacy(PermissionProfile::read_only());
     }
 
+    observe_phase("followup-submit:start");
     test.submit_text_turn(FOLLOWUP_PROMPT).await?;
+    observe_phase("followup-submit:done");
     let reloaded_worker = test.thread_manager.get_thread(first_thread_id).await?;
     wait_for_event(reloaded_worker.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))

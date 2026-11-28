@@ -283,6 +283,8 @@ pub use setup::sandbox_dir;
 #[cfg(target_os = "windows")]
 pub use setup::sandbox_secrets_dir;
 #[cfg(target_os = "windows")]
+pub use setup::setup_marker_observation;
+#[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorCode;
 #[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorReport;

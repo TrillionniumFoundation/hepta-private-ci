@@ -530,10 +530,11 @@ fn trace_setup_marker(payload: &Payload, phase: &'static str) {
         .map(|metadata| metadata.len());
     log_note(
         &format!(
-            "HIA_SETUP_TRANSACTION pid={} phase={phase} mode={:?} refresh_only={} marker_len={marker_len:?}",
+            "HIA_SETUP_TRANSACTION pid={} phase={phase} mode={:?} refresh_only={} marker_len={marker_len:?} physical={}",
             std::process::id(),
             payload.mode,
-            payload.refresh_only
+            payload.refresh_only,
+            codex_windows_sandbox::setup_marker_observation(&payload.codex_home)
         ),
         Some(&directory),
     );

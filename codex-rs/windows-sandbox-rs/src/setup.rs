@@ -881,6 +881,103 @@ fn report_helper_failure(
     }
 }
 
+/// Bounded read-only file observations for diagnosing a failed setup boundary.
+/// This records identities and byte counts, never credentials or marker contents.
+#[doc(hidden)]
+pub fn setup_marker_observation(codex_home: &Path) -> String {
+    use std::fs::File;
+    use std::fs::OpenOptions;
+    use std::io::Read;
+    use std::os::windows::fs::MetadataExt;
+    use std::os::windows::fs::OpenOptionsExt;
+    use std::os::windows::io::AsRawHandle;
+    use windows_sys::Win32::Foundation::HANDLE;
+    use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+    use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+    use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+    use windows_sys::Win32::Storage::FileSystem::FILE_ID_INFO;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+    use windows_sys::Win32::Storage::FileSystem::FileIdInfo;
+    use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
+
+    fn identity(file: &File) -> std::result::Result<String, i32> {
+        let mut info: FILE_ID_INFO = unsafe { std::mem::zeroed() };
+        let ok = unsafe {
+            GetFileInformationByHandleEx(
+                file.as_raw_handle() as HANDLE,
+                FileIdInfo,
+                &mut info as *mut FILE_ID_INFO as *mut c_void,
+                std::mem::size_of::<FILE_ID_INFO>() as u32,
+            )
+        };
+        if ok == 0 {
+            return Err(unsafe { GetLastError() } as i32);
+        }
+        Ok(format!(
+            "{:016x}.{:032x}",
+            info.VolumeSerialNumber,
+            u128::from_le_bytes(info.FileId.Identifier)
+        ))
+    }
+    let path = setup_marker_path(codex_home);
+    let open = |selected: &Path, directory: bool| {
+        OpenOptions::new()
+            .read(true)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(
+                FILE_FLAG_OPEN_REPARSE_POINT
+                    | if directory {
+                        FILE_FLAG_BACKUP_SEMANTICS
+                    } else {
+                        0
+                    },
+            )
+            .open(selected)
+    };
+    let parent_identity = open(&sandbox_dir(codex_home), true)
+        .map_err(|error| error.raw_os_error().unwrap_or(-1))
+        .and_then(|file| identity(&file));
+    let mut observed = serde_json::json!({
+        "path": path,
+        "parent_identity": parent_identity,
+        "current_exe": std::env::current_exe().ok(),
+        "pid": std::process::id(),
+    });
+    match open(&path, false) {
+        Err(error) => {
+            observed["open_error"] = serde_json::json!(error.to_string());
+        }
+        Ok(mut file) => {
+            observed["identity_before"] = serde_json::json!(identity(&file));
+            match file.metadata() {
+                Err(error) => observed["metadata_error"] = serde_json::json!(error.to_string()),
+                Ok(metadata) => {
+                    observed["handle_len_before"] = serde_json::json!(metadata.len());
+                    observed["attributes"] = serde_json::json!(metadata.file_attributes());
+                    if metadata.is_file()
+                        && metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT == 0
+                        && metadata.len() <= 4096
+                    {
+                        let mut raw = Vec::new();
+                        let result = (&mut file).take(4097).read_to_end(&mut raw);
+                        observed["read_len"] = serde_json::json!(raw.len());
+                        observed["read_error"] =
+                            serde_json::json!(result.err().map(|e| e.to_string()));
+                        observed["valid_marker_json"] =
+                            serde_json::json!(serde_json::from_slice::<SetupMarker>(&raw).is_ok());
+                    }
+                    observed["handle_len_after"] =
+                        serde_json::json!(file.metadata().ok().map(|m| m.len()));
+                    observed["identity_after"] = serde_json::json!(identity(&file));
+                }
+            }
+        }
+    }
+    observed.to_string()
+}
+
 fn trace_incomplete_setup(codex_home: &Path) {
     if std::env::var("SBX_DEBUG").ok().as_deref() != Some("1") {
         return;
@@ -892,8 +989,9 @@ fn trace_incomplete_setup(codex_home: &Path) {
         .ok()
         .map(|metadata| metadata.len());
     eprintln!(
-        "HIA_SETUP_OBSERVATION pid={} marker_len={marker_len:?}",
-        std::process::id()
+        "HIA_SETUP_OBSERVATION pid={} marker_len={marker_len:?} physical={}",
+        std::process::id(),
+        setup_marker_observation(codex_home)
     );
     let path = current_log_file_path(&sandbox_dir(codex_home));
     let Ok(mut log) = std::fs::File::open(path) else {
@@ -975,19 +1073,32 @@ fn run_setup_exe_payload(
     };
 
     if !needs_elevation {
-        let status = Command::new(&exe)
+        let mut child = Command::new(&exe)
             .arg(payload_b64)
             .creation_flags(0x08000000) // CREATE_NO_WINDOW
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
-            .status()
+            .spawn()
             .map_err(|err| {
                 failure(
                     SetupErrorCode::OrchestratorHelperLaunchFailed,
                     format!("failed to launch setup helper (non-elevated): {err}"),
                 )
             })?;
+        if std::env::var("SBX_DEBUG").ok().as_deref() == Some("1") {
+            eprintln!(
+                "HIA_SETUP_LAUNCH parent_pid={} child_pid={} elevated=false exe={exe:?} home={codex_home:?}",
+                std::process::id(),
+                child.id()
+            );
+        }
+        let status = child.wait().map_err(|err| {
+            failure(
+                SetupErrorCode::OrchestratorHelperLaunchFailed,
+                format!("failed to wait for setup helper (non-elevated): {err}"),
+            )
+        })?;
         if !status.success() {
             return Err(report_helper_failure(
                 codex_home,
@@ -1035,7 +1146,17 @@ fn run_setup_exe_payload(
         ));
     }
     unsafe {
-        WaitForSingleObject(sei.hProcess, INFINITE);
+        let child_pid = windows_sys::Win32::System::Threading::GetProcessId(sei.hProcess);
+        if std::env::var("SBX_DEBUG").ok().as_deref() == Some("1") {
+            eprintln!(
+                "HIA_SETUP_LAUNCH parent_pid={} child_pid={child_pid} elevated=true exe={exe:?} home={codex_home:?}",
+                std::process::id()
+            );
+        }
+        let waited = WaitForSingleObject(sei.hProcess, INFINITE);
+        if std::env::var("SBX_DEBUG").ok().as_deref() == Some("1") {
+            eprintln!("HIA_SETUP_WAIT child_pid={child_pid} wait_result={waited}");
+        }
         let mut code: u32 = 1;
         GetExitCodeProcess(sei.hProcess, &mut code);
         CloseHandle(sei.hProcess);
