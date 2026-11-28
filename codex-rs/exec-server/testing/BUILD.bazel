@@ -42,5 +42,8 @@ rust_binary(
         "//codex-rs/exec-server",
         "//codex-rs/http-client",
         "@crates//:tokio",
-    ],
+    ] + select({
+        "@platforms//os:windows": ["//codex-rs/windows-sandbox-rs"],
+        "//conditions:default": [],
+    }),
 )
