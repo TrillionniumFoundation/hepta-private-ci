@@ -4,6 +4,7 @@
 
 mod decision;
 mod engram;
+mod fast_memory;
 mod generation_bound;
 mod generator;
 mod v2;
@@ -46,6 +47,14 @@ pub use engram::SynapseRelationV1;
 pub use engram::SynapseV1;
 pub use engram::recall_with_engram;
 pub use engram::settle_engram;
+pub use fast_memory::FastMemoryCandidateV1;
+pub use fast_memory::FastMemoryConfigV1;
+pub use fast_memory::FastMemoryErrorV1;
+pub use fast_memory::FastMemoryPredictionV1;
+pub use fast_memory::FastMemoryRecallV1;
+pub use fast_memory::FastMemoryScoreV1;
+pub use fast_memory::FastMemoryUpdateV1;
+pub use fast_memory::FastMemoryV1;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
