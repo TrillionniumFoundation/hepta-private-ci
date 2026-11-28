@@ -31,6 +31,7 @@ codex-hepta-infer-core = { path = "../hepta-infer-core" }
 sha2 = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
 
 ed25519-dalek = { workspace = true }

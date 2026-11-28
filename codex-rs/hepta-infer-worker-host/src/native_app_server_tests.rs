@@ -442,6 +442,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -450,8 +452,28 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // This is a physical Agentd/App Server integration test: a real
+    // source-built Codex CLI is required for hidden exec-server helpers.
+    // Never substitute the Rust test harness for the Codex executable.
+    let codex_executable = if let Some(path) = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE") {
+        std::path::PathBuf::from(path)
+    } else if codex_utils_cargo_bin::runfiles_available() {
+        let binary_name = format!("codex{}", std::env::consts::EXE_SUFFIX);
+        codex_utils_cargo_bin::resolve_bazel_runfile(
+            Some("codex-rs/cli"),
+            std::path::Path::new(&binary_name),
+        )?
+    } else {
+        return Err("real source-built Codex executable path is not configured".into());
+    };
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        &codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
