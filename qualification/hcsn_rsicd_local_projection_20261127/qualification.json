@@ -1,0 +1,54 @@
+{
+ "arms": {
+  "feature_only": {
+   "dense_coordinates_changed": 11059439,
+   "direct_features_logits_max_abs": 0.0,
+   "nominal_original_parameters": 11101984,
+   "recipe_logits_max_abs": 0.0,
+   "seed": 125,
+   "solved_independent_coefficients": 1131762,
+   "trained_tensor_count": 55
+  },
+  "forward": {
+   "dense_coordinates_changed": 11059438,
+   "direct_features_logits_max_abs": 0.0,
+   "nominal_original_parameters": 11101984,
+   "recipe_logits_max_abs": 0.0,
+   "seed": 125,
+   "solved_independent_coefficients": 1131760,
+   "trained_tensor_count": 55
+  },
+  "frozen_probe": {
+   "dense_coordinates_changed": 0,
+   "direct_features_logits_max_abs": 0.0,
+   "nominal_original_parameters": 11101984,
+   "recipe_logits_max_abs": 0.0,
+   "seed": 125,
+   "solved_independent_coefficients": 0,
+   "trained_tensor_count": 0
+  },
+  "shuffle": {
+   "dense_coordinates_changed": 11059435,
+   "direct_features_logits_max_abs": 0.0,
+   "nominal_original_parameters": 11101984,
+   "recipe_logits_max_abs": 0.0,
+   "seed": 125,
+   "solved_independent_coefficients": 1131760,
+   "trained_tensor_count": 55
+  },
+  "tied_only": {
+   "dense_coordinates_changed": 353600,
+   "direct_features_logits_max_abs": 0.0,
+   "nominal_original_parameters": 11101984,
+   "recipe_logits_max_abs": 0.0,
+   "seed": 125,
+   "solved_independent_coefficients": 353600,
+   "trained_tensor_count": 1
+  }
+ },
+ "scope": "8 synthetic random pixel images with synthetic vocabulary labels; engine parity/parameter-accounting test only",
+ "source_eval_sha": "f0057b5842a234b35b2300194fcca1a29acc1e2e5e168b165bf395630c81e57f",
+ "source_model_sha": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+ "two_price_counterexample": "if observed tanh(L)=2*tanh(E), coefficients (2,0) and (0,1) yield exactly the same additive pressure; direct targets alone cannot identify both originals",
+ "word_vocabulary": 850
+}
