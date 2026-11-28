@@ -36,3 +36,6 @@ the exact event comparison commit after tests, with no subsequent test rerun.
 No original cache, historical science budget, DEV/final data or user trace was
 used. No branch protection or merge is enacted. Hosted workflow results are
 separate evidence and must not be inferred from this local pass.
+
+The initial hosted configuration evaluations failed before any job started;
+see `HOSTED_FAILURES.md` for all three retained evaluations and the correction.

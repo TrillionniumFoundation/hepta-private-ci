@@ -58,7 +58,6 @@ jobs:
       MKL_NUM_THREADS: "1"
       PFT_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
       PFT_FORMAT_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
-      PFT_EVIDENCE: ${{ runner.temp }}/pft-online-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -66,7 +65,9 @@ jobs:
           persist-credentials: false
       - name: Prepare evidence directory
         run: |
+          PFT_EVIDENCE="$RUNNER_TEMP/pft-online-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           mkdir -p "$PFT_EVIDENCE"
+          printf 'PFT_EVIDENCE=%s\n' "$PFT_EVIDENCE" >> "$GITHUB_ENV"
           git rev-parse HEAD > "$PFT_EVIDENCE/CHECKOUT_HEAD.txt"
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
