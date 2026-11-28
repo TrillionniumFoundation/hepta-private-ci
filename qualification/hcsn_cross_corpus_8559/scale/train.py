@@ -65,6 +65,9 @@ def fast_concordance(q,k,groups):
 def launch(work,law,seed,arm,target):
     assert target in CLOCK and arm in ARMS and seed in SEEDS
     beg=time.perf_counter();cpu0=time.process_time()
+    # Linux task birth includes interpreter startup and imports, at the scheduler clock granularity.
+    pid_birth=int(Path('/proc/self/stat').read_text().rsplit(')',1)[1].split()[19])/os.sysconf('SC_CLK_TCK')
+    def child_elapsed():return time.clock_gettime(time.CLOCK_BOOTTIME)-pid_birth
     dest=work/'fits'/f'{arm}-{seed}';dest.mkdir(exist_ok=True,parents=True)
     with (dest/'fit.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -82,6 +85,8 @@ def launch(work,law,seed,arm,target):
         else:
             ledger=dict(step=0,train_cpu=0.,train_wall=0.,validation_cpu=0.,validation_wall=0.,checkpoint_wall=0.,setup_wall=0.,setup_cpu=0.,clock_done=[],steps_done=[],events=[],starts=0)
         if target in ledger['clock_done']:return
+        process_ledger=ledger.setdefault('process_wall_through_previous_calls_s',0.)
+        coverage=ledger.setdefault('process_wall_meter_started_at_train_cpu_s',ledger['train_cpu'])
         ledger['starts']+=1;ledger['setup_wall']+=time.perf_counter()-beg;ledger['setup_cpu']+=time.process_time()-cpu0
         law_hash=digest(law);last_backup=ledger['train_cpu']
         def checkpoint():
@@ -104,12 +109,15 @@ def launch(work,law,seed,arm,target):
                 w=dest/f's{step}.pt';t=time.perf_counter();save(net.state_dict(),w);whash=digest(w);ledger['checkpoint_wall']+=time.perf_counter()-t
                 rec=dict(step=step,budgets=eligible,update_endpoint=bool(equal),source_dev=sc,dev_mean=np.mean(list(sc.values())),sha256=whash,loss=float(loss.detach()),
                          train_cpu_s=ledger['train_cpu'],train_wall_s=ledger['train_wall'],validation_cumulative_s=ledger['validation_wall'],startup_cumulative_s=ledger['setup_wall'],checkpoint_cumulative_s=ledger['checkpoint_wall'])
+                rec.update(process_startup_to_event_plus_previous_calls_s=process_ledger+child_elapsed(),process_wall_meter_started_at_train_cpu_s=coverage)
                 ledger['events'].append(rec);ledger['clock_done'].extend(eligible)
                 if equal:ledger['steps_done'].append(step)
                 checkpoint();last_backup=ledger['train_cpu']
                 print(arm,seed,step,eligible,round(rec['train_cpu_s'],2),sc,flush=True)
             elif ledger['train_cpu']-last_backup>=90:
                 checkpoint();last_backup=ledger['train_cpu']
+        ledger['process_wall_through_previous_calls_s']=process_ledger+child_elapsed()
+        checkpoint()
         if target==CLOCK[-1]:
             best=max(ledger['events'],key=lambda r:r['dev_mean'])
             write(dest/'selected.json',dict(seed=seed,arm=arm,n_param=sum(p.numel() for p in net.parameters()),best=best,ledger=ledger))
