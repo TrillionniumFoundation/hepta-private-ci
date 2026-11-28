@@ -1,0 +1,627 @@
+hia-asm.v1 hepta.hia.program.v9 codex_datetime_relaxed
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  capacity:usize = buffer.len(output)
+  required:usize = const() {"value":64}
+  enough:bool = compare.ge(capacity,required)
+  branch enough frame(source,output,workspace) short()
+block frame(frame_source:readbuf,frame_output:mutbuf,frame_workspace:mutbuf)
+  source_size:usize = buffer.len(frame_source)
+  workspace_size:usize = buffer.len(frame_workspace)
+  header_size:usize = const() {"value":32}
+  empty:usize = const() {"value":0}
+  source_ok:bool = compare.ge(source_size,header_size)
+  workspace_ok:bool = compare.eq(workspace_size,empty)
+  sizes_ok:bool = bool.and(source_ok,workspace_ok)
+  branch sizes_ok decode(frame_source,frame_output) invalid_frame()
+block decode(decode_source:readbuf,decode_output:mutbuf)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  version:u64 = buffer.load.u64.le(decode_source,p0)
+  operation:u64 = buffer.load.u64.le(decode_source,p8)
+  length:u64 = buffer.load.u64.le(decode_source,p16)
+  reserved:u64 = buffer.load.u64.le(decode_source,p24)
+  full_length:usize = buffer.len(decode_source)
+  actual_length:usize = int.sub.checked(full_length,p32)
+  actual_word:u64 = int.cast(actual_length) {"mode":"checked"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  version_ok:bool = compare.eq(version,one)
+  operation_ok:bool = compare.eq(operation,zero)
+  length_ok:bool = compare.eq(length,actual_word)
+  reserved_ok:bool = compare.eq(reserved,zero)
+  first_ok:bool = bool.and(version_ok,operation_ok)
+  second_ok:bool = bool.and(length_ok,reserved_ok)
+  frame_ok:bool = bool.and(first_ok,second_ok)
+  branch frame_ok parse(decode_source,decode_output) invalid_frame()
+block parse(parse_source:readbuf,parse_output:mutbuf)
+  result:u32 = call(parse_source,parse_output) {"function":"parse_strict"}
+  ret(result)
+block short()
+  short_code:u32 = const() {"value":4294967294}
+  ret(short_code)
+block invalid_frame()
+  frame_code:u32 = const() {"value":4294967295}
+  ret(frame_code)
+end
+fn pair(source:readbuf,position:usize) -> (u64,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  size:usize = buffer.len(source)
+  in_range:bool = compare.le(position,size)
+  branch in_range length(source,position,size) short()
+block length(length_source:readbuf,length_position:usize,length_size:usize)
+  remaining:usize = int.sub.checked(length_size,length_position)
+  two:usize = const() {"value":2}
+  enough:bool = compare.ge(remaining,two)
+  branch enough read(length_source,length_position) short()
+block read(read_source:readbuf,read_position:usize)
+  one:usize = const() {"value":1}
+  second_position:usize = int.add.checked(read_position,one)
+  first:u8 = buffer.load(read_source,read_position)
+  second:u8 = buffer.load(read_source,second_position)
+  lower:u8 = const() {"value":48}
+  upper:u8 = const() {"value":57}
+  a:bool = compare.ge(first,lower)
+  b:bool = compare.le(first,upper)
+  c:bool = compare.ge(second,lower)
+  d:bool = compare.le(second,upper)
+  first_ok:bool = bool.and(a,b)
+  second_ok:bool = bool.and(c,d)
+  valid:bool = bool.and(first_ok,second_ok)
+  branch valid number(first,second) invalid()
+block number(number_first:u8,number_second:u8)
+  ascii_zero:u64 = const() {"value":48}
+  ten:u64 = const() {"value":10}
+  first_word:u64 = int.cast(number_first) {"mode":"checked"}
+  second_word:u64 = int.cast(number_second) {"mode":"checked"}
+  first_digit:u64 = int.sub.checked(first_word,ascii_zero)
+  second_digit:u64 = int.sub.checked(second_word,ascii_zero)
+  tens:u64 = int.mul.checked(first_digit,ten)
+  value:u64 = int.add.checked(tens,second_digit)
+  success:u64 = const() {"value":0}
+  ret(value,success)
+block short()
+  short_value:u64 = const() {"value":0}
+  short_error:u64 = const() {"value":5}
+  ret(short_value,short_error)
+block invalid()
+  invalid_value:u64 = const() {"value":0}
+  invalid_error:u64 = const() {"value":4}
+  ret(invalid_value,invalid_error)
+end
+fn character(source:readbuf,position:usize,wanted:u8) -> (u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize,wanted:u8)
+  size:usize = buffer.len(source)
+  present:bool = compare.lt(position,size)
+  branch present read(source,position,wanted) short()
+block read(read_source:readbuf,read_position:usize,read_wanted:u8)
+  value:u8 = buffer.load(read_source,read_position)
+  same:bool = compare.eq(value,read_wanted)
+  success:u64 = const() {"value":0}
+  invalid:u64 = const() {"value":4}
+  result:u64 = select(same,success,invalid)
+  ret(result)
+block short()
+  error:u64 = const() {"value":5}
+  ret(error)
+end
+fn parse_date(source:readbuf) -> (i64,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  p32:usize = const() {"value":32}
+  p34:usize = const() {"value":34}
+  p36:usize = const() {"value":36}
+  p37:usize = const() {"value":37}
+  p39:usize = const() {"value":39}
+  p40:usize = const() {"value":40}
+  dash:u8 = const() {"value":45}
+  high:u64,e1:u64 = call(source,p32) {"function":"pair"}
+  low:u64,e2:u64 = call(source,p34) {"function":"pair"}
+  e3:u64 = call(source,p36,dash) {"function":"character"}
+  month:u64,e4:u64 = call(source,p37) {"function":"pair"}
+  e5:u64 = call(source,p39,dash) {"function":"character"}
+  day:u64,e6:u64 = call(source,p40) {"function":"pair"}
+  e12:u64 = bit.or(e1,e2)
+  e34:u64 = bit.or(e3,e4)
+  e56:u64 = bit.or(e5,e6)
+  e1234:u64 = bit.or(e12,e34)
+  errors:u64 = bit.or(e1234,e56)
+  zero:u64 = const() {"value":0}
+  valid:bool = compare.eq(errors,zero)
+  branch valid date(high,low,month,day) invalid()
+block date(date_high:u64,date_low:u64,date_month:u64,date_day:u64)
+  hundred:u64 = const() {"value":100}
+  centuries:u64 = int.mul.checked(date_high,hundred)
+  year_word:u64 = int.add.checked(centuries,date_low)
+  year:i64 = int.cast(year_word) {"mode":"checked"}
+  days:i64,error:u64 = call(year,date_month,date_day) {"function":"civil_days"}
+  ret(days,error)
+block invalid()
+  invalid_days:i64 = const() {"value":0}
+  invalid_error:u64 = const() {"value":4}
+  ret(invalid_days,invalid_error)
+end
+fn parse_time(source:readbuf) -> (u64,usize,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  p42:usize = const() {"value":42}
+  p43:usize = const() {"value":43}
+  p45:usize = const() {"value":45}
+  p46:usize = const() {"value":46}
+  p48:usize = const() {"value":48}
+  p49:usize = const() {"value":49}
+  colon:u8 = const() {"value":58}
+  separator:u8 = buffer.load(source,p42)
+  upper:u8 = const() {"value":84}
+  lower:u8 = const() {"value":116}
+  space:u8 = const() {"value":32}
+  upper_ok:bool = compare.eq(separator,upper)
+  lower_ok:bool = compare.eq(separator,lower)
+  space_ok:bool = compare.eq(separator,space)
+  tee_ok:bool = bool.or(upper_ok,lower_ok)
+  separator_ok:bool = bool.or(tee_ok,space_ok)
+  hour:u64,e1:u64 = call(source,p43) {"function":"pair"}
+  e2:u64 = call(source,p45,colon) {"function":"character"}
+  minute:u64,e3:u64 = call(source,p46) {"function":"pair"}
+  e4:u64 = call(source,p48,colon) {"function":"character"}
+  second:u64,e5:u64 = call(source,p49) {"function":"pair"}
+  e12:u64 = bit.or(e1,e2)
+  e34:u64 = bit.or(e3,e4)
+  e1234:u64 = bit.or(e12,e34)
+  errors:u64 = bit.or(e1234,e5)
+  zero:u64 = const() {"value":0}
+  digits_ok:bool = compare.eq(errors,zero)
+  lexical_ok:bool = bool.and(digits_ok,separator_ok)
+  branch lexical_ok fraction_check(source,hour,minute,second) invalid()
+block fraction_check(check_source:readbuf,check_hour:u64,check_minute:u64,check_second:u64)
+  position:usize = const() {"value":51}
+  size:usize = buffer.len(check_source)
+  present:bool = compare.lt(position,size)
+  branch present fraction_marker(check_source,check_hour,check_minute,check_second,position) no_fraction(check_hour,check_minute,check_second,position)
+block fraction_marker(marker_source:readbuf,marker_hour:u64,marker_minute:u64,marker_second:u64,marker_position:usize)
+  marker:u8 = buffer.load(marker_source,marker_position)
+  dot:u8 = const() {"value":46}
+  has_fraction:bool = compare.eq(marker,dot)
+  branch has_fraction fraction(marker_source,marker_hour,marker_minute,marker_second,marker_position) no_fraction(marker_hour,marker_minute,marker_second,marker_position)
+block fraction(fraction_source:readbuf,fraction_hour:u64,fraction_minute:u64,fraction_second:u64,fraction_marker_position:usize)
+  one:usize = const() {"value":1}
+  fraction_start:usize = int.add.checked(fraction_marker_position,one)
+  nanos:u64,after:usize,fraction_error:u64 = call(fraction_source,fraction_start) {"function":"parse_fraction"}
+  no_error:u64 = const() {"value":0}
+  fraction_ok:bool = compare.eq(fraction_error,no_error)
+  branch fraction_ok finish(fraction_hour,fraction_minute,fraction_second,nanos,after) failed(fraction_error)
+block no_fraction(plain_hour:u64,plain_minute:u64,plain_second:u64,plain_position:usize)
+  no_nanos:u64 = const() {"value":0}
+  jump finish(plain_hour,plain_minute,plain_second,no_nanos,plain_position)
+block finish(finish_hour:u64,finish_minute:u64,finish_second:u64,finish_nanos:u64,finish_position:usize)
+  packed:u64,zone:usize,error:u64 = call(finish_hour,finish_minute,finish_second,finish_nanos,finish_position) {"function":"time_result"}
+  ret(packed,zone,error)
+block invalid()
+  invalid_error:u64 = const() {"value":4}
+  jump failed(invalid_error)
+block failed(failed_error:u64)
+  failed_value:u64 = const() {"value":0}
+  failed_position:usize = const() {"value":0}
+  ret(failed_value,failed_position,failed_error)
+end
+fn time_result(hour:u64,minute:u64,second:u64,nanos:u64,position:usize) -> (u64,usize,u64) effects(trap) entry(entry)
+block entry(hour:u64,minute:u64,second:u64,nanos:u64,position:usize)
+  day_hours:u64 = const() {"value":24}
+  sixty:u64 = const() {"value":60}
+  hour_ok:bool = compare.lt(hour,day_hours)
+  minute_ok:bool = compare.lt(minute,sixty)
+  second_ok:bool = compare.le(second,sixty)
+  hour_minute_ok:bool = bool.and(hour_ok,minute_ok)
+  valid:bool = bool.and(hour_minute_ok,second_ok)
+  branch valid pack(hour,minute,second,nanos,position) invalid()
+block pack(pack_hour:u64,pack_minute:u64,pack_second:u64,pack_nanos:u64,pack_position:usize)
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  minute_length:u64 = const() {"value":60}
+  hour_length:u64 = const() {"value":3600}
+  billion:u64 = const() {"value":1000000000}
+  base:u64 = const() {"value":2000000000}
+  leap:bool = compare.eq(pack_second,minute_length)
+  second_adjustment:u64 = select(leap,one,zero)
+  nanos_adjustment:u64 = select(leap,billion,zero)
+  ordinary_second:u64 = int.sub.checked(pack_second,second_adjustment)
+  final_nanos:u64 = int.add.checked(pack_nanos,nanos_adjustment)
+  hours_seconds:u64 = int.mul.checked(pack_hour,hour_length)
+  minutes_seconds:u64 = int.mul.checked(pack_minute,minute_length)
+  whole_minutes:u64 = int.add.checked(hours_seconds,minutes_seconds)
+  day_second:u64 = int.add.checked(whole_minutes,ordinary_second)
+  packed_seconds:u64 = int.mul.checked(day_second,base)
+  result:u64 = int.add.checked(packed_seconds,final_nanos)
+  ret(result,pack_position,zero)
+block invalid()
+  invalid_value:u64 = const() {"value":0}
+  invalid_position:usize = const() {"value":0}
+  invalid_error:u64 = const() {"value":1}
+  ret(invalid_value,invalid_position,invalid_error)
+end
+fn parse_fraction(source:readbuf,position:usize) -> (u64,usize,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  size:usize = buffer.len(source)
+  present:bool = compare.lt(position,size)
+  branch present first(source,position) short()
+block first(first_source:readbuf,first_position:usize)
+  initial:u8 = buffer.load(first_source,first_position)
+  lower:u8 = const() {"value":48}
+  upper:u8 = const() {"value":57}
+  after_lower:bool = compare.ge(initial,lower)
+  before_upper:bool = compare.le(initial,upper)
+  valid:bool = bool.and(after_lower,before_upper)
+  zero:u64 = const() {"value":0}
+  branch valid digits(first_source,first_position,zero,zero) invalid()
+block digits(digits_source:readbuf,index:usize,value:u64,count:u64)
+  length:usize = buffer.len(digits_source)
+  more:bool = compare.lt(index,length)
+  branch more digit(digits_source,index,value,count) scale(value,count,index)
+block digit(digit_source:readbuf,digit_index:usize,digit_value:u64,digit_count:u64)
+  byte:u8 = buffer.load(digit_source,digit_index)
+  digit_lower:u8 = const() {"value":48}
+  digit_upper:u8 = const() {"value":57}
+  a:bool = compare.ge(byte,digit_lower)
+  b:bool = compare.le(byte,digit_upper)
+  is_digit:bool = bool.and(a,b)
+  branch is_digit consume(digit_source,digit_index,digit_value,digit_count,byte) scale(digit_value,digit_count,digit_index)
+block consume(consume_source:readbuf,consume_index:usize,consume_value:u64,consume_count:u64,consume_byte:u8)
+  nine:u64 = const() {"value":9}
+  within_precision:bool = compare.lt(consume_count,nine)
+  branch within_precision accumulate(consume_source,consume_index,consume_value,consume_count,consume_byte) skip(consume_source,consume_index,consume_value,consume_count)
+block accumulate(acc_source:readbuf,acc_index:usize,acc_value:u64,acc_count:u64,acc_byte:u8)
+  ten:u64 = const() {"value":10}
+  ascii_zero:u64 = const() {"value":48}
+  one_word:u64 = const() {"value":1}
+  one_index:usize = const() {"value":1}
+  word:u64 = int.cast(acc_byte) {"mode":"checked"}
+  decimal:u64 = int.sub.checked(word,ascii_zero)
+  shifted:u64 = int.mul.checked(acc_value,ten)
+  next_value:u64 = int.add.checked(shifted,decimal)
+  next_count:u64 = int.add.checked(acc_count,one_word)
+  next_index:usize = int.add.checked(acc_index,one_index)
+  jump digits(acc_source,next_index,next_value,next_count)
+block skip(skip_source:readbuf,skip_index:usize,skip_value:u64,skip_count:u64)
+  step:usize = const() {"value":1}
+  skip_next:usize = int.add.checked(skip_index,step)
+  jump digits(skip_source,skip_next,skip_value,skip_count)
+block scale(scale_value:u64,scale_count:u64,scale_position:usize)
+  target:u64 = const() {"value":9}
+  ready:bool = compare.eq(scale_count,target)
+  branch ready success(scale_value,scale_position) multiply(scale_value,scale_count,scale_position)
+block multiply(multiply_value:u64,multiply_count:u64,multiply_position:usize)
+  multiplier:u64 = const() {"value":10}
+  count_step:u64 = const() {"value":1}
+  scaled:u64 = int.mul.checked(multiply_value,multiplier)
+  scaled_count:u64 = int.add.checked(multiply_count,count_step)
+  jump scale(scaled,scaled_count,multiply_position)
+block success(success_value:u64,success_position:usize)
+  success_error:u64 = const() {"value":0}
+  ret(success_value,success_position,success_error)
+block short()
+  short_error:u64 = const() {"value":5}
+  jump failed(short_error)
+block invalid()
+  invalid_error:u64 = const() {"value":4}
+  jump failed(invalid_error)
+block failed(failed_error:u64)
+  failed_value:u64 = const() {"value":0}
+  failed_position:usize = const() {"value":0}
+  ret(failed_value,failed_position,failed_error)
+end
+fn parse_zone(source:readbuf,position:usize) -> (i64,usize,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  size:usize = buffer.len(source)
+  present:bool = compare.lt(position,size)
+  branch present read(source,position) short()
+block read(read_source:readbuf,read_position:usize)
+  first:u8 = buffer.load(read_source,read_position)
+  upper:u8 = const() {"value":90}
+  lower:u8 = const() {"value":122}
+  is_upper:bool = compare.eq(first,upper)
+  is_lower:bool = compare.eq(first,lower)
+  zulu:bool = bool.or(is_upper,is_lower)
+  branch zulu z(read_position) sign(read_source,read_position,first)
+block z(z_position:usize)
+  z_zero:i64 = const() {"value":0}
+  z_step:usize = const() {"value":1}
+  z_next:usize = int.add.checked(z_position,z_step)
+  z_error:u64 = const() {"value":0}
+  ret(z_zero,z_next,z_error)
+block sign(sign_source:readbuf,sign_position:usize,sign_byte:u8)
+  plus:u8 = const() {"value":43}
+  minus:u8 = const() {"value":45}
+  positive:bool = compare.eq(sign_byte,plus)
+  negative:bool = compare.eq(sign_byte,minus)
+  ascii:bool = bool.or(positive,negative)
+  branch ascii ascii_sign(sign_source,sign_position,negative) unicode_sign(sign_source,sign_position,sign_byte)
+block ascii_sign(ascii_source:readbuf,ascii_position:usize,ascii_negative:bool)
+  ascii_step:usize = const() {"value":1}
+  ascii_next:usize = int.add.checked(ascii_position,ascii_step)
+  jump hours(ascii_source,ascii_next,ascii_negative)
+block unicode_sign(unicode_source:readbuf,unicode_position:usize,unicode_first:u8)
+  unicode_size:usize = buffer.len(unicode_source)
+  remaining:usize = int.sub.checked(unicode_size,unicode_position)
+  three:usize = const() {"value":3}
+  prefix:u8 = const() {"value":226}
+  length_ok:bool = compare.ge(remaining,three)
+  first_ok:bool = compare.eq(unicode_first,prefix)
+  candidate:bool = bool.and(length_ok,first_ok)
+  branch candidate unicode_tail(unicode_source,unicode_position) invalid()
+block unicode_tail(tail_source:readbuf,tail_position:usize)
+  one:usize = const() {"value":1}
+  two:usize = const() {"value":2}
+  tail_step:usize = const() {"value":3}
+  p1:usize = int.add.checked(tail_position,one)
+  p2:usize = int.add.checked(tail_position,two)
+  b1:u8 = buffer.load(tail_source,p1)
+  b2:u8 = buffer.load(tail_source,p2)
+  expected1:u8 = const() {"value":136}
+  expected2:u8 = const() {"value":146}
+  b1_ok:bool = compare.eq(b1,expected1)
+  b2_ok:bool = compare.eq(b2,expected2)
+  unicode_ok:bool = bool.and(b1_ok,b2_ok)
+  after_unicode:usize = int.add.checked(tail_position,tail_step)
+  unicode_negative:bool = const() {"value":true}
+  branch unicode_ok hours(tail_source,after_unicode,unicode_negative) invalid()
+block hours(hours_source:readbuf,hours_position:usize,hours_negative:bool)
+  hours_value:u64,hours_error:u64 = call(hours_source,hours_position) {"function":"pair"}
+  hours_zero:u64 = const() {"value":0}
+  hours_ok:bool = compare.eq(hours_error,hours_zero)
+  branch hours_ok colon(hours_source,hours_position,hours_negative,hours_value) failed(hours_error)
+block colon(colon_source:readbuf,colon_hours_position:usize,colon_negative:bool,colon_hours:u64)
+  hours_width:usize = const() {"value":2}
+  colon_position:usize = int.add.checked(colon_hours_position,hours_width)
+  colon_character:u8 = const() {"value":58}
+  colon_error:u64 = call(colon_source,colon_position,colon_character) {"function":"character"}
+  colon_zero:u64 = const() {"value":0}
+  colon_ok:bool = compare.eq(colon_error,colon_zero)
+  branch colon_ok minutes(colon_source,colon_position,colon_negative,colon_hours) failed(colon_error)
+block minutes(minutes_source:readbuf,minutes_colon:usize,minutes_negative:bool,minutes_hours:u64)
+  colon_width:usize = const() {"value":1}
+  minutes_position:usize = int.add.checked(minutes_colon,colon_width)
+  minutes_value:u64,minutes_error:u64 = call(minutes_source,minutes_position) {"function":"pair"}
+  minutes_zero:u64 = const() {"value":0}
+  minutes_ok:bool = compare.eq(minutes_error,minutes_zero)
+  branch minutes_ok bounds(minutes_position,minutes_negative,minutes_hours,minutes_value) failed(minutes_error)
+block bounds(bounds_position:usize,bounds_negative:bool,bounds_hours:u64,bounds_minutes:u64)
+  minute_bound:u64 = const() {"value":60}
+  in_range:bool = compare.lt(bounds_minutes,minute_bound)
+  branch in_range offset(bounds_position,bounds_negative,bounds_hours,bounds_minutes) out_of_range()
+block offset(offset_position:usize,offset_negative:bool,offset_hours:u64,offset_minutes:u64)
+  hour_seconds:u64 = const() {"value":3600}
+  minute_seconds:u64 = const() {"value":60}
+  hours_seconds:u64 = int.mul.checked(offset_hours,hour_seconds)
+  minutes_seconds:u64 = int.mul.checked(offset_minutes,minute_seconds)
+  magnitude_word:u64 = int.add.checked(hours_seconds,minutes_seconds)
+  magnitude:i64 = int.cast(magnitude_word) {"mode":"checked"}
+  zero:i64 = const() {"value":0}
+  negated:i64 = int.sub.checked(zero,magnitude)
+  result:i64 = select(offset_negative,negated,magnitude)
+  width:usize = const() {"value":2}
+  next:usize = int.add.checked(offset_position,width)
+  success:u64 = const() {"value":0}
+  ret(result,next,success)
+block short()
+  short_error:u64 = const() {"value":5}
+  jump failed(short_error)
+block invalid()
+  invalid_error:u64 = const() {"value":4}
+  jump failed(invalid_error)
+block out_of_range()
+  range_error:u64 = const() {"value":1}
+  jump failed(range_error)
+block failed(failed_error:u64)
+  failed_offset:i64 = const() {"value":0}
+  failed_position:usize = const() {"value":0}
+  ret(failed_offset,failed_position,failed_error)
+end
+fn parse_strict(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  size:usize = buffer.len(source)
+  minimum:usize = const() {"value":51}
+  enough:bool = compare.ge(size,minimum)
+  branch enough date(source,output) short(output)
+block date(date_source:readbuf,date_output:mutbuf)
+  days:i64,date_error:u64 = call(date_source) {"function":"parse_date"}
+  date_zero:u64 = const() {"value":0}
+  date_ok:bool = compare.eq(date_error,date_zero)
+  branch date_ok time(date_source,date_output,days) failed(date_output,date_error)
+block time(time_source:readbuf,time_output:mutbuf,time_days:i64)
+  packed:u64,position:usize,time_error:u64 = call(time_source) {"function":"parse_time"}
+  time_zero:u64 = const() {"value":0}
+  time_ok:bool = compare.eq(time_error,time_zero)
+  branch time_ok zone(time_source,time_output,time_days,packed,position) failed(time_output,time_error)
+block zone(zone_source:readbuf,zone_output:mutbuf,zone_days:i64,zone_packed:u64,zone_position:usize)
+  offset:i64,after:usize,zone_error:u64 = call(zone_source,zone_position) {"function":"parse_zone"}
+  zone_zero:u64 = const() {"value":0}
+  zone_ok:bool = compare.eq(zone_error,zone_zero)
+  branch zone_ok remainder(zone_source,zone_output,zone_days,zone_packed,offset,after) failed(zone_output,zone_error)
+block remainder(remainder_source:readbuf,remainder_output:mutbuf,remainder_days:i64,remainder_packed:u64,remainder_offset:i64,remainder_position:usize)
+  length:usize = buffer.len(remainder_source)
+  consumed:bool = compare.eq(length,remainder_position)
+  branch consumed bounds(remainder_output,remainder_days,remainder_packed,remainder_offset) long(remainder_output)
+block bounds(bounds_output:mutbuf,bounds_days:i64,bounds_packed:u64,bounds_offset:i64)
+  lower:i64 = const() {"value":-86400}
+  upper:i64 = const() {"value":86400}
+  after_lower:bool = compare.gt(bounds_offset,lower)
+  before_upper:bool = compare.lt(bounds_offset,upper)
+  valid:bool = bool.and(after_lower,before_upper)
+  branch valid success(bounds_output,bounds_days,bounds_packed,bounds_offset) out_of_range(bounds_output)
+block success(success_output:mutbuf,success_days:i64,success_packed:u64,success_offset:i64)
+  result:u32 = call(success_output,success_days,success_packed,success_offset) {"function":"publish_value"}
+  ret(result)
+block short(short_output:mutbuf)
+  short_error:u64 = const() {"value":5}
+  jump failed(short_output,short_error)
+block long(long_output:mutbuf)
+  long_error:u64 = const() {"value":6}
+  jump failed(long_output,long_error)
+block out_of_range(range_output:mutbuf)
+  range_error:u64 = const() {"value":1}
+  jump failed(range_output,range_error)
+block failed(failed_output:mutbuf,failed_error:u64)
+  failed_result:u32 = call(failed_output,failed_error) {"function":"publish_error"}
+  ret(failed_result)
+end
+fn publish_error(output:mutbuf,error:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,error:u64)
+  first:usize = const() {"value":0}
+  jump clear(output,error,first)
+block clear(clear_output:mutbuf,clear_error:u64,index:usize)
+  end:usize = const() {"value":64}
+  more:bool = compare.lt(index,end)
+  branch more word(clear_output,clear_error,index) header(clear_output,clear_error)
+block word(word_output:mutbuf,word_error:u64,word_index:usize)
+  zero:u64 = const() {"value":0}
+  eight:usize = const() {"value":8}
+  _ = buffer.store.u64.le(word_output,word_index,zero)
+  next:usize = int.add.checked(word_index,eight)
+  jump clear(word_output,word_error,next)
+block header(header_output:mutbuf,header_error:u64)
+  p0:usize = const() {"value":0}
+  p40:usize = const() {"value":40}
+  version:u64 = const() {"value":1}
+  _ = buffer.store.u64.le(header_output,p0,version)
+  _ = buffer.store.u64.le(header_output,p40,header_error)
+  success:u32 = const() {"value":0}
+  ret(success)
+end
+fn publish_value(output:mutbuf,days:i64,packed:u64,offset:i64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,days:i64,packed:u64,offset:i64)
+  base:u64 = const() {"value":2000000000}
+  day_length:i64 = const() {"value":86400}
+  day_seconds_word:u64 = int.div.checked(packed,base)
+  nanos:u64 = int.rem.checked(packed,base)
+  day_seconds:i64 = int.cast(day_seconds_word) {"mode":"checked"}
+  midnight:i64 = int.mul.checked(days,day_length)
+  local_seconds:i64 = int.add.checked(midnight,day_seconds)
+  seconds:i64 = int.sub.checked(local_seconds,offset)
+  seconds_bits:u64 = int.cast(seconds) {"mode":"wrap"}
+  offset_bits:u64 = int.cast(offset) {"mode":"wrap"}
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(output,p0,one)
+  _ = buffer.store.u64.le(output,p8,one)
+  _ = buffer.store.u64.le(output,p16,seconds_bits)
+  _ = buffer.store.u64.le(output,p24,nanos)
+  _ = buffer.store.u64.le(output,p32,offset_bits)
+  _ = buffer.store.u64.le(output,p40,zero)
+  _ = buffer.store.u64.le(output,p48,zero)
+  _ = buffer.store.u64.le(output,p56,zero)
+  success:u32 = const() {"value":0}
+  ret(success)
+end
+fn civil_days(year:i64,month:u64,day:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(year:i64,month:u64,day:u64)
+  one:u64 = const() {"value":1}
+  twelve:u64 = const() {"value":12}
+  thirty_one:u64 = const() {"value":31}
+  month_min:bool = compare.ge(month,one)
+  month_max:bool = compare.le(month,twelve)
+  day_min:bool = compare.ge(day,one)
+  day_max:bool = compare.le(day,thirty_one)
+  month_ok:bool = bool.and(month_min,month_max)
+  day_ok:bool = bool.and(day_min,day_max)
+  range_ok:bool = bool.and(month_ok,day_ok)
+  branch range_ok month_length(year,month,day) invalid()
+block month_length(length_year:i64,length_month:u64,length_day:u64)
+  four:i64 = const() {"value":4}
+  hundred:i64 = const() {"value":100}
+  four_hundred:i64 = const() {"value":400}
+  zero:i64 = const() {"value":0}
+  mod_four:i64 = int.rem.checked(length_year,four)
+  mod_hundred:i64 = int.rem.checked(length_year,hundred)
+  mod_four_hundred:i64 = int.rem.checked(length_year,four_hundred)
+  by_four:bool = compare.eq(mod_four,zero)
+  not_century:bool = compare.ne(mod_hundred,zero)
+  whole_era:bool = compare.eq(mod_four_hundred,zero)
+  century_ok:bool = bool.or(not_century,whole_era)
+  leap:bool = bool.and(by_four,century_ok)
+  february:u64 = const() {"value":2}
+  april:u64 = const() {"value":4}
+  june:u64 = const() {"value":6}
+  september:u64 = const() {"value":9}
+  november:u64 = const() {"value":11}
+  d28:u64 = const() {"value":28}
+  d29:u64 = const() {"value":29}
+  d30:u64 = const() {"value":30}
+  d31:u64 = const() {"value":31}
+  is_february:bool = compare.eq(length_month,february)
+  is_april:bool = compare.eq(length_month,april)
+  is_june:bool = compare.eq(length_month,june)
+  is_september:bool = compare.eq(length_month,september)
+  is_november:bool = compare.eq(length_month,november)
+  spring_short:bool = bool.or(is_april,is_june)
+  autumn_short:bool = bool.or(is_september,is_november)
+  short_month:bool = bool.or(spring_short,autumn_short)
+  ordinary_length:u64 = select(short_month,d30,d31)
+  february_length:u64 = select(leap,d29,d28)
+  maximum:u64 = select(is_february,february_length,ordinary_length)
+  valid:bool = compare.le(length_day,maximum)
+  branch valid calculate(length_year,length_month,length_day) invalid()
+block calculate(calc_year:i64,calc_month:u64,calc_day:u64)
+  month_word:i64 = int.cast(calc_month) {"mode":"checked"}
+  day_word:i64 = int.cast(calc_day) {"mode":"checked"}
+  calc_zero:i64 = const() {"value":0}
+  calc_one:i64 = const() {"value":1}
+  calc_two:i64 = const() {"value":2}
+  calc_four:i64 = const() {"value":4}
+  calc_five:i64 = const() {"value":5}
+  calc_hundred:i64 = const() {"value":100}
+  era_years:i64 = const() {"value":400}
+  year_days:i64 = const() {"value":365}
+  era_days:i64 = const() {"value":146097}
+  month_span:i64 = const() {"value":153}
+  epoch:i64 = const() {"value":719468}
+  negative_three:i64 = const() {"value":-3}
+  nine:i64 = const() {"value":9}
+  winter:bool = compare.le(month_word,calc_two)
+  year_adjustment:i64 = select(winter,calc_one,calc_zero)
+  adjusted_year:i64 = int.sub.checked(calc_year,year_adjustment)
+  era:i64 = call(adjusted_year,era_years) {"function":"floor_div"}
+  era_start_year:i64 = int.mul.checked(era,era_years)
+  year_of_era:i64 = int.sub.checked(adjusted_year,era_start_year)
+  month_adjustment:i64 = select(winter,nine,negative_three)
+  march_month:i64 = int.add.checked(month_word,month_adjustment)
+  scaled_month:i64 = int.mul.checked(march_month,month_span)
+  corrected_month:i64 = int.add.checked(scaled_month,calc_two)
+  month_start:i64 = int.div.checked(corrected_month,calc_five)
+  with_day:i64 = int.add.checked(month_start,day_word)
+  day_of_year:i64 = int.sub.checked(with_day,calc_one)
+  whole_years:i64 = int.mul.checked(year_of_era,year_days)
+  leap_days:i64 = int.div.checked(year_of_era,calc_four)
+  century_days:i64 = int.div.checked(year_of_era,calc_hundred)
+  with_leaps:i64 = int.add.checked(whole_years,leap_days)
+  without_centuries:i64 = int.sub.checked(with_leaps,century_days)
+  day_of_era:i64 = int.add.checked(without_centuries,day_of_year)
+  era_start_days:i64 = int.mul.checked(era,era_days)
+  absolute_days:i64 = int.add.checked(era_start_days,day_of_era)
+  result:i64 = int.sub.checked(absolute_days,epoch)
+  success:u64 = const() {"value":0}
+  ret(result,success)
+block invalid()
+  invalid_days:i64 = const() {"value":0}
+  error:u64 = const() {"value":1}
+  ret(invalid_days,error)
+end
+fn floor_div(numerator:i64,denominator:i64) -> (i64) effects(trap) entry(entry)
+block entry(numerator:i64,denominator:i64)
+  quotient:i64 = int.div.checked(numerator,denominator)
+  remainder:i64 = int.rem.checked(numerator,denominator)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  negative:bool = compare.lt(remainder,zero)
+  adjustment:i64 = select(negative,one,zero)
+  result:i64 = int.sub.checked(quotient,adjustment)
+  ret(result)
+end
