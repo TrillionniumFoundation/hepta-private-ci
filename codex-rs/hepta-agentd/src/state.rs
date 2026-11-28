@@ -38,6 +38,9 @@ pub use desktop_objective::AgentdDesktopObjectiveConfig;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_terminal_learning.rs"]
+mod terminal_learning;
+
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
@@ -79,6 +82,8 @@ pub(crate) struct AgentdState {
         crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
     >,
     neuron_generation: Mutex<Option<Arc<neuron_generation::NeuronGenerationProjection>>>,
+    terminal_native_lifetime:
+        std::sync::OnceLock<Arc<crate::terminal_learning::TerminalNativeLifetimeV1>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -103,6 +108,7 @@ struct RuntimeState {
     admission_open: bool,
     drain_requested: bool,
     fenced: bool,
+    terminal_native_fenced: bool,
 }
 
 impl AgentdState {
@@ -179,6 +185,7 @@ impl AgentdState {
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
             neuron_generation: Mutex::new(None),
+            terminal_native_lifetime: std::sync::OnceLock::new(),
             intuition_policy: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
@@ -191,6 +198,7 @@ impl AgentdState {
                 admission_open: false,
                 drain_requested: false,
                 fenced: false,
+                terminal_native_fenced: false,
             }),
             identity,
             registry,
@@ -373,6 +381,7 @@ impl AgentdState {
             || record.manifest.workspace.as_path() != self.identity.workspace
             || record.manifest.resources != self.identity.resources
         {
+            self.fence_terminal_native_admission();
             return Err(AgentdError::GenerationFenced(
                 "registered agent roots or resource budget changed while agentd was running"
                     .to_string(),
@@ -389,6 +398,7 @@ impl AgentdState {
                 | (AgentLifecycle::Draining, Some(2))
         );
         if !accepted {
+            self.fence_terminal_native_admission();
             return Err(AgentdError::GenerationFenced(format!(
                 "agent {} spawn generation {} cannot serve {:?} generation {}",
                 self.identity.agent_id,
@@ -442,6 +452,9 @@ impl AgentdState {
             }
         }
         let draining = runtime.lifecycle == AgentLifecycle::Draining;
+        if draining {
+            self.close_terminal_native_admission();
+        }
         drop(runtime);
         if draining {
             self.close_neuron_generation_admission()?;
@@ -533,6 +546,7 @@ impl AgentdState {
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        self.close_terminal_native_admission();
         runtime.drain_requested = true;
         runtime.app_server_ready = false;
         runtime.notes_organ_ready = false;
@@ -603,14 +617,19 @@ impl AgentdState {
                 && running_turns == 0
                 && automation_blockers == 0
                 && self.circuit_task_pending_count() == 0
-                && generation_blockers == 0,
+                && generation_blockers == 0
+                && self.terminal_native_drain_blockers() == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })
     }
 
     pub(crate) fn mark_fenced(&self) {
+        self.close_terminal_native_admission();
         if let Ok(mut runtime) = self.runtime.lock() {
+            // Also close under the registration lock, so a concurrent first
+            // installation cannot slip between the initial close and fencing.
+            self.close_terminal_native_admission();
             runtime.app_server_ready = false;
             runtime.notes_organ_ready = false;
             runtime.required_ports_ready = false;

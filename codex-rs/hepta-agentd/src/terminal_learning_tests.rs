@@ -5,6 +5,9 @@
 #[path = "paired_terminal_binding_tests.rs"]
 mod paired_binding_tests;
 
+#[path = "terminal_native_lifetime_tests.rs"]
+mod native_lifetime_tests;
+
 use std::future::Future;
 use std::future::poll_fn;
 use std::sync::Arc;
