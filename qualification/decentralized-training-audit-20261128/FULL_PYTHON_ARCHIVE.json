@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.audit.full-python-archive.v1",
+  "file": "full-python-integrity.tar.gz",
+  "sha256": "a562269391812db9d5ca1b37c852eafe273ac8c3b5ce0c4ddd3b7247a34a43ff",
+  "bytes": 56787,
+  "original_ci_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46137268549/job/140955249143",
+  "original_ci_result": "339 discovered tests; one import error for missing openai_codex; retained without rewriting",
+  "initial_local_result": "47 tests: 44 passed, 1 missing-torch import error, 2 skipped for CPU tensor profile; retained",
+  "final_local_result": "350 passed, zero errors/failures/skips; 378.629s unittest / 383.859732497s subprocess, unchanged original discovery pattern",
+  "source_commit": "06b1889ae08978a905f1dc31373099013ef7647b",
+  "scope": "Engineering integrity with original source and locally constructed tensor fixtures; no external teacher or live-user learning qualification"
+}

@@ -74,3 +74,26 @@ This patch closes specific data-admission and encoding failures. The native
 paired owner still has its own schema, signed-label, permission, evaluator, and
 learning gates. A synthetic encoding control must not be promoted into evidence
 that those gates accepted a live external teacher or that a new user benefited.
+
+## Complete Python discovery and CI dependency repair
+
+The original hosted engineering job discovered 339 tests and ended with one
+import error: `test_sdk_capture` could not import the repository's Python SDK.
+The workflow now includes `sdk/python/src` in `PYTHONPATH` and pins Pydantic
+2.13.4 from that SDK's checked-in lock. SDK source and dependency changes also
+trigger this integration job. No test was removed or skipped to repair the gate.
+
+The original discovery command then ran at local source commit
+`06b1889ae08978a905f1dc31373099013ef7647b`: **350 passed, zero failures, errors or
+skips**, 378.629 seconds reported by unittest and 383.859732497 seconds measured
+around the subprocess. The original failed import counted as one discovery item;
+the repaired SDK module contains twelve real test methods. This explains the
+339-to-350 inventory change without deleting or adding application tests.
+
+`FULL_PYTHON_RESULT.json` and `FULL_PYTHON_ARCHIVE.json` bind the result and archive.
+The archive retains complete source hashes, raw output, dependency versions, the
+original hosted failure, and the earlier local 47-control run that lacked Torch
+(one error and two skips). The final run used the existing pinned CPU profile,
+including actual local tensor updates, cold loads and two-Cell relay controls.
+It remains an engineering fixture execution, not scientific or production
+learning qualification. The updated hosted job must report its own outcome.
