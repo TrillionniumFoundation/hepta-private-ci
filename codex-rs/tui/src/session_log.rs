@@ -78,7 +78,8 @@ impl SessionLogger {
 
 fn now_ts() -> String {
     // RFC3339 for readability; consumers can parse as needed.
-    chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true)
+    codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Millis, true)
 }
 
 pub(crate) fn maybe_init(config: &Config) {
@@ -95,7 +96,7 @@ pub(crate) fn maybe_init(config: &Config) {
         let mut p = config.log_dir.clone();
         let filename = format!(
             "session-{}.jsonl",
-            chrono::Utc::now().format("%Y%m%dT%H%M%SZ")
+            codex_utils_time::Timestamp::now().format_utc(codex_utils_time::UtcFormat::Compact)
         );
         p.push(filename);
         p

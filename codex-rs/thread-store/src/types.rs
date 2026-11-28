@@ -1,8 +1,3 @@
-use std::path::PathBuf;
-use std::sync::Arc;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_app_server_protocol::CodexErrorInfo;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
@@ -25,6 +20,8 @@ use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 mod optional_option {
     use super::*;
@@ -572,13 +569,13 @@ pub struct StoredThread {
     /// Latest observed reasoning effort, if known.
     pub reasoning_effort: Option<ReasoningEffort>,
     /// Thread creation timestamp.
-    pub created_at: DateTime<Utc>,
+    pub created_at: codex_utils_time::Timestamp,
     /// Thread last-update timestamp.
-    pub updated_at: DateTime<Utc>,
+    pub updated_at: codex_utils_time::Timestamp,
     /// Thread product-recency timestamp.
-    pub recency_at: DateTime<Utc>,
+    pub recency_at: codex_utils_time::Timestamp,
     /// Thread archive timestamp, if archived.
-    pub archived_at: Option<DateTime<Utc>>,
+    pub archived_at: Option<codex_utils_time::Timestamp>,
     /// The user-selected section for this thread, if any.
     pub section: Option<codex_state::ThreadSection>,
     /// The server-owned ordering position within the thread's section.
@@ -586,7 +583,7 @@ pub struct StoredThread {
     pub section_position: Option<i64>,
     /// The time when the thread most recently entered its current section.
     #[serde(default)]
-    pub section_entered_at: Option<DateTime<Utc>>,
+    pub section_entered_at: Option<codex_utils_time::Timestamp>,
     /// Canonical project assignment owned by app-server, if any.
     #[serde(default)]
     pub project_id: Option<String>,
@@ -699,11 +696,11 @@ pub struct ThreadMetadataPatch {
     )]
     pub reasoning_effort: ClearableField<ReasoningEffort>,
     /// Creation timestamp when known.
-    pub created_at: Option<DateTime<Utc>>,
+    pub created_at: Option<codex_utils_time::Timestamp>,
     /// Last update timestamp for this metadata observation.
-    pub updated_at: Option<DateTime<Utc>>,
+    pub updated_at: Option<codex_utils_time::Timestamp>,
     /// Advance product recency to at least this timestamp.
-    pub advance_recency_at: Option<DateTime<Utc>>,
+    pub advance_recency_at: Option<codex_utils_time::Timestamp>,
     /// Session source.
     pub source: Option<SessionSource>,
     /// Optional analytics source classification.
