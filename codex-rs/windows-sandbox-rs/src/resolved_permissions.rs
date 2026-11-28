@@ -464,6 +464,34 @@ mod tests {
         assert!(!readonly.requires_elevated_filesystem(false));
         assert!(readonly.requires_elevated_filesystem(true));
         assert!(writable.requires_elevated_filesystem(false));
+
+        let temporary_write = PermissionProfile::Managed {
+            file_system: ManagedFileSystemPermissions::Restricted {
+                entries: vec![
+                    FileSystemSandboxEntry {
+                        path: FileSystemPath::Special { value: Root },
+                        access: FileSystemAccessMode::Read,
+                        missing_path_behavior: None,
+                    },
+                    FileSystemSandboxEntry {
+                        path: FileSystemPath::Special {
+                            value: FileSystemSpecialPath::Tmpdir,
+                        },
+                        access: FileSystemAccessMode::Write,
+                        missing_path_behavior: None,
+                    },
+                ],
+                glob_scan_max_depth: None,
+            },
+            network: NetworkSandboxPolicy::Restricted,
+        };
+        let temporary_write =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &temporary_write,
+                &roots,
+            )?;
+        assert!(temporary_write.has_full_disk_read_access());
+        assert!(temporary_write.requires_elevated_filesystem(false));
         Ok(())
     }
 
