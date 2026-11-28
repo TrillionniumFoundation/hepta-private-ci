@@ -48,3 +48,7 @@ Every native single-CPU-thread process freshly imported Torch, verified the full
 The ratio of launch-to-exit medians is 1.3982× in favor of BetaEdit. Six paired ratios range from 1.2643× to 1.6046×, with median 1.4399×. This positive result applies to three sequential changes of 24,576 parameters in an already trained 731,168-parameter audiovisual model. The final six-edit endpoint still has only two passing BetaEdit parents and three passing BP parents. End-to-end speed for the six-edit three-parent gate remains unresolved.
 
 [Complete timed runs and gate metrics](timing_complete.json) · [Fresh-process timing implementation](timing.py)
+
+## Original weights and cold scores
+
+The [raw archive parts](raw/) form a byte-for-byte copy of the native artifact. The tar contains 21 per-parent and per-method head-history archives (six stages per archive), 21 final-stage unscaled logit archives and a hash index. Reassemble from a checkout of this directory using `cat raw/raw.tar.part-* > raw.tar`. Verify the tar's SHA-256, `4e017937b50851922d9a752f2e3400f66d97fc803963eb0dbe30680c7ceb0191`, before opening it. Each of the 42 inner NPZ files has its own entry in [index.json](index.json). The packed size is 18,851,840 bytes.
