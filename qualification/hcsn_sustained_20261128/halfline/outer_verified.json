@@ -1,0 +1,153 @@
+{
+  "method": "adaptive complex boundary-value problem; increasing numerical far cutoff on cross-check only",
+  "scenarios": [
+    {
+      "root": 0,
+      "omega": 0.145,
+      "analytic": [
+        0.9740409462432955,
+        0.5850604114579079
+      ],
+      "separate_numerical_results": [
+        {
+          "cutoff": 8.0,
+          "response": [
+            0.9740675941474894,
+            0.5842356621638783
+          ],
+          "absolute_difference": 0.0008251796827359165,
+          "mesh_points": 534
+        },
+        {
+          "cutoff": 12.0,
+          "response": [
+            0.9740410543990855,
+            0.5850555671740036
+          ],
+          "absolute_difference": 4.845491122658373e-06,
+          "mesh_points": 608
+        },
+        {
+          "cutoff": 18.0,
+          "response": [
+            0.9740409476262742,
+            0.5850604023096029
+          ],
+          "absolute_difference": 9.252249163814166e-09,
+          "mesh_points": 859
+        }
+      ]
+    },
+    {
+      "root": 0,
+      "omega": 0.257,
+      "analytic": [
+        0.8591210721687057,
+        0.0593517310012838
+      ],
+      "separate_numerical_results": [
+        {
+          "cutoff": 8.0,
+          "response": [
+            0.8591295625757078,
+            0.058886423730016964
+          ],
+          "absolute_difference": 0.00046538472654874305,
+          "mesh_points": 515
+        },
+        {
+          "cutoff": 12.0,
+          "response": [
+            0.8591211069576327,
+            0.059348997549054164
+          ],
+          "absolute_difference": 2.7336736017907294e-06,
+          "mesh_points": 609
+        },
+        {
+          "cutoff": 18.0,
+          "response": [
+            0.8591210728734463,
+            0.05935172570176426
+          ],
+          "absolute_difference": 5.346173084639931e-09,
+          "mesh_points": 880
+        }
+      ]
+    },
+    {
+      "root": 2,
+      "omega": 0.145,
+      "analytic": [
+        0.4480935307365145,
+        -0.03409812096709199
+      ],
+      "separate_numerical_results": [
+        {
+          "cutoff": 8.0,
+          "response": [
+            0.44809353083870546,
+            -0.03409812099144815
+          ],
+          "absolute_difference": 1.0505340688779323e-10,
+          "mesh_points": 558
+        },
+        {
+          "cutoff": 12.0,
+          "response": [
+            0.44809352979142597,
+            -0.03409812099891082
+          ],
+          "absolute_difference": 9.45623986882525e-10,
+          "mesh_points": 723
+        },
+        {
+          "cutoff": 18.0,
+          "response": [
+            0.44809353041171435,
+            -0.03409812100372617
+          ],
+          "absolute_difference": 3.2685958455886567e-10,
+          "mesh_points": 759
+        }
+      ]
+    },
+    {
+      "root": 2,
+      "omega": 1.0,
+      "analytic": [
+        0.3351230581951571,
+        -0.15215904936353838
+      ],
+      "separate_numerical_results": [
+        {
+          "cutoff": 8.0,
+          "response": [
+            0.335123058216399,
+            -0.15215904947680942
+          ],
+          "absolute_difference": 1.1524558454848154e-10,
+          "mesh_points": 709
+        },
+        {
+          "cutoff": 12.0,
+          "response": [
+            0.33512305823935745,
+            -0.15215904942020267
+          ],
+          "absolute_difference": 7.186454927218614e-11,
+          "mesh_points": 948
+        },
+        {
+          "cutoff": 18.0,
+          "response": [
+            0.33512305825019856,
+            -0.15215904942491507
+          ],
+          "absolute_difference": 8.244186197278572e-11,
+          "mesh_points": 1014
+        }
+      ]
+    }
+  ]
+}

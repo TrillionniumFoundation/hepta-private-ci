@@ -1,0 +1,691 @@
+{
+  "initial_source": "all active mass at x=0.30, empty queue, z=0",
+  "source_eps": 0.025,
+  "receiver_initial": "identical high parent, empty port filter",
+  "current_duration": 5.0,
+  "read_from": 170.0,
+  "all_external_current_zero_after": 5.0,
+  "grids": [
+    {
+      "dx": 0.03,
+      "dt": 0.025,
+      "open_edge": 12.0,
+      "pulse_amps": [
+        0.12,
+        -0.12
+      ],
+      "expected_steady_source_rates": [
+        0.11909014813609338,
+        0.8309253122543654
+      ],
+      "expected_steady_receiver_rates": [
+        0.8245717325877227,
+        0.8253487317944017
+      ],
+      "sampled": {
+        "5": {
+          "source_rate": [
+            0.005484664666857377,
+            1.0976685441761724
+          ],
+          "true_boundary_contrast": 0.0009384357755857507,
+          "receiver_rate_contrast": 0.0
+        },
+        "10": {
+          "source_rate": [
+            0.054705610480352856,
+            0.8049424625162995
+          ],
+          "true_boundary_contrast": 0.0006644391996544185,
+          "receiver_rate_contrast": 0.0
+        },
+        "20": {
+          "source_rate": [
+            0.11051120332363575,
+            0.8030696986004995
+          ],
+          "true_boundary_contrast": 0.0006027888525554573,
+          "receiver_rate_contrast": 0.0
+        },
+        "40": {
+          "source_rate": [
+            0.11299234112419931,
+            0.8030680000960287
+          ],
+          "true_boundary_contrast": 0.0005987317407212494,
+          "receiver_rate_contrast": 0.0
+        },
+        "80": {
+          "source_rate": [
+            0.1174159574535746,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005942679816164416,
+          "receiver_rate_contrast": 0.0
+        },
+        "150": {
+          "source_rate": [
+            0.11837231322235622,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005934581058564025,
+          "receiver_rate_contrast": 0.0
+        },
+        "170": {
+          "source_rate": [
+            0.11843621595599269,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005934015285433188,
+          "receiver_rate_contrast": 0.0
+        },
+        "171": {
+          "source_rate": [
+            0.11843932075905379,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.000593398740280669,
+          "receiver_rate_contrast": 0.0004220488878383666
+        },
+        "175": {
+          "source_rate": [
+            0.11845023295498733,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005933887406072417,
+          "receiver_rate_contrast": 0.0007949468856078834
+        },
+        "185": {
+          "source_rate": [
+            0.11846956694214249,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005933712370862331,
+          "receiver_rate_contrast": 0.0008253851302606474
+        },
+        "200": {
+          "source_rate": [
+            0.11849489180226896,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005933490648797775,
+          "receiver_rate_contrast": 0.0008253879253191654
+        },
+        "220": {
+          "source_rate": [
+            0.11851668540593156,
+            0.8030680000945443
+          ],
+          "true_boundary_contrast": 0.0005933297520367721,
+          "receiver_rate_contrast": 0.000825360040923484
+        }
+      },
+      "last_source_rates": [
+        0.11851668540593156,
+        0.8030680000945443
+      ],
+      "last_receiver_rates": [
+        0.796306679359922,
+        0.7971320394008455
+      ],
+      "last_contrast": 0.000825360040923484,
+      "last_5_receiver_span": 6.033394450710716e-09,
+      "cumulative_upper_escape": [
+        [
+          1.289687439530064e-07,
+          7.3906781865017075e-56
+        ],
+        [
+          1.690504798466282e-56,
+          7.209479373288019e-56
+        ]
+      ],
+      "pre_read_receiver_difference": 0.0
+    },
+    {
+      "dx": 0.015,
+      "dt": 0.0125,
+      "open_edge": 12.0,
+      "pulse_amps": [
+        0.12,
+        -0.12
+      ],
+      "expected_steady_source_rates": [
+        0.11909014813609338,
+        0.8309253122543654
+      ],
+      "expected_steady_receiver_rates": [
+        0.8245717325877227,
+        0.8253487317944017
+      ],
+      "sampled": {
+        "5": {
+          "source_rate": [
+            0.0053570956108132456,
+            1.1104167058262084
+          ],
+          "true_boundary_contrast": 0.0009498878059165826,
+          "receiver_rate_contrast": 0.0
+        },
+        "10": {
+          "source_rate": [
+            0.054064632578251864,
+            0.8251956204916486
+          ],
+          "true_boundary_contrast": 0.0006817320365218858,
+          "receiver_rate_contrast": 0.0
+        },
+        "20": {
+          "source_rate": [
+            0.11095071213413098,
+            0.82409907692803
+          ],
+          "true_boundary_contrast": 0.0006208098745307119,
+          "receiver_rate_contrast": 0.0
+        },
+        "40": {
+          "source_rate": [
+            0.11330083038197686,
+            0.8240986612578207
+          ],
+          "true_boundary_contrast": 0.00061678374141307,
+          "receiver_rate_contrast": 0.0
+        },
+        "80": {
+          "source_rate": [
+            0.11781891393540804,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006121961475001133,
+          "receiver_rate_contrast": 0.0
+        },
+        "150": {
+          "source_rate": [
+            0.11877171926783245,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006113998370548776,
+          "receiver_rate_contrast": 0.0
+        },
+        "170": {
+          "source_rate": [
+            0.11883221942808879,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006113464496209674,
+          "receiver_rate_contrast": 0.0
+        },
+        "171": {
+          "source_rate": [
+            0.11883554606125625,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006113434418973625,
+          "receiver_rate_contrast": 0.0004339904861253574
+        },
+        "175": {
+          "source_rate": [
+            0.11884678463634302,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006113329510502653,
+          "receiver_rate_contrast": 0.0007672016109230295
+        },
+        "185": {
+          "source_rate": [
+            0.1188643888376246,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006113167685124271,
+          "receiver_rate_contrast": 0.0007875604155076488
+        },
+        "200": {
+          "source_rate": [
+            0.11889009494498413,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006112944287441325,
+          "receiver_rate_contrast": 0.0007875414545333026
+        },
+        "220": {
+          "source_rate": [
+            0.11891115642245759,
+            0.8240986612577937
+          ],
+          "true_boundary_contrast": 0.0006112757600200643,
+          "receiver_rate_contrast": 0.0007875165444828358
+        }
+      },
+      "last_source_rates": [
+        0.11891115642245759,
+        0.8240986612577937
+      ],
+      "last_receiver_rates": [
+        0.8176561992357296,
+        0.8184437157802125
+      ],
+      "last_contrast": 0.0007875165444828358,
+      "last_5_receiver_span": 5.579701811697646e-09,
+      "cumulative_upper_escape": [
+        [
+          1.2294713895102664e-07,
+          9.629446267196303e-58
+        ],
+        [
+          2.1584356195196212e-58,
+          9.412179829138852e-58
+        ]
+      ],
+      "pre_read_receiver_difference": 0.0
+    },
+    {
+      "dx": 0.0075,
+      "dt": 0.00625,
+      "open_edge": 12.0,
+      "pulse_amps": [
+        0.12,
+        -0.12
+      ],
+      "expected_steady_source_rates": [
+        0.11909014813609338,
+        0.8309253122543654
+      ],
+      "expected_steady_receiver_rates": [
+        0.8245717325877227,
+        0.8253487317944017
+      ],
+      "sampled": {
+        "5": {
+          "source_rate": [
+            0.0053037797246207555,
+            1.113636442966579
+          ],
+          "true_boundary_contrast": 0.0009528637179038947,
+          "receiver_rate_contrast": 0.0
+        },
+        "10": {
+          "source_rate": [
+            0.053765378573121365,
+            0.8301664298527938
+          ],
+          "true_boundary_contrast": 0.000686085784606369,
+          "receiver_rate_contrast": 0.0
+        },
+        "20": {
+          "source_rate": [
+            0.1109912594016842,
+            0.8292265153965238
+          ],
+          "true_boundary_contrast": 0.0006252757016848836,
+          "receiver_rate_contrast": 0.0
+        },
+        "40": {
+          "source_rate": [
+            0.11337037966484641,
+            0.8292262357500026
+          ],
+          "true_boundary_contrast": 0.0006211889030340082,
+          "receiver_rate_contrast": 0.0
+        },
+        "80": {
+          "source_rate": [
+            0.11791929172917871,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006165660352307448,
+          "receiver_rate_contrast": 0.0
+        },
+        "150": {
+          "source_rate": [
+            0.11887270772502287,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157716700522782,
+          "receiver_rate_contrast": 0.0
+        },
+        "170": {
+          "source_rate": [
+            0.11893240063735791,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157190837460701,
+          "receiver_rate_contrast": 0.0
+        },
+        "171": {
+          "source_rate": [
+            0.11893578628870011,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157160131625809,
+          "receiver_rate_contrast": 0.0004385473992686295
+        },
+        "175": {
+          "source_rate": [
+            0.1189470765534711,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157054087515757,
+          "receiver_rate_contrast": 0.0007613146441188823
+        },
+        "185": {
+          "source_rate": [
+            0.11896415819044259,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156896462193198,
+          "receiver_rate_contrast": 0.0007796281416382334
+        },
+        "200": {
+          "source_rate": [
+            0.1189900487811633,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156671832044378,
+          "receiver_rate_contrast": 0.0007796068315770732
+        },
+        "220": {
+          "source_rate": [
+            0.11901092311391626,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156486853617155,
+          "receiver_rate_contrast": 0.0007795825933815115
+        }
+      },
+      "last_source_rates": [
+        0.11901092311391626,
+        0.8292262357500041
+      ],
+      "last_receiver_rates": [
+        0.822851091895795,
+        0.8236306744891765
+      ],
+      "last_contrast": 0.0007795825933815115,
+      "last_5_receiver_span": 5.510550904475053e-09,
+      "cumulative_upper_escape": [
+        [
+          1.2139820133831216e-07,
+          3.45312560191631e-58
+        ],
+        [
+          7.386666676041631e-59,
+          3.3796802277193025e-58
+        ]
+      ],
+      "pre_read_receiver_difference": 0.0
+    },
+    {
+      "dx": 0.0075,
+      "dt": 0.00625,
+      "open_edge": 15.0,
+      "pulse_amps": [
+        0.12,
+        -0.12
+      ],
+      "expected_steady_source_rates": [
+        0.11909014813609338,
+        0.8309253122543654
+      ],
+      "expected_steady_receiver_rates": [
+        0.8245717325877227,
+        0.8253487317944017
+      ],
+      "sampled": {
+        "5": {
+          "source_rate": [
+            0.0053037797246207555,
+            1.113636442966579
+          ],
+          "true_boundary_contrast": 0.0009528637179038947,
+          "receiver_rate_contrast": 0.0
+        },
+        "10": {
+          "source_rate": [
+            0.053765378573121365,
+            0.8301664298527938
+          ],
+          "true_boundary_contrast": 0.000686085784606369,
+          "receiver_rate_contrast": 0.0
+        },
+        "20": {
+          "source_rate": [
+            0.1109912594016842,
+            0.8292265153965238
+          ],
+          "true_boundary_contrast": 0.0006252757016848836,
+          "receiver_rate_contrast": 0.0
+        },
+        "40": {
+          "source_rate": [
+            0.11337037966484162,
+            0.8292262357500026
+          ],
+          "true_boundary_contrast": 0.0006211889030340082,
+          "receiver_rate_contrast": 0.0
+        },
+        "80": {
+          "source_rate": [
+            0.1179192922822772,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006165660348277749,
+          "receiver_rate_contrast": 0.0
+        },
+        "150": {
+          "source_rate": [
+            0.1188728233762085,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157715739998692,
+          "receiver_rate_contrast": 0.0
+        },
+        "170": {
+          "source_rate": [
+            0.11893261174327807,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157189065908783,
+          "receiver_rate_contrast": 0.0
+        },
+        "171": {
+          "source_rate": [
+            0.11893600288855669,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157158313211755,
+          "receiver_rate_contrast": 0.0004385472708482441
+        },
+        "175": {
+          "source_rate": [
+            0.11894731570492287,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006157052076486712,
+          "receiver_rate_contrast": 0.0007613144019887885
+        },
+        "185": {
+          "source_rate": [
+            0.11896445733067151,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156893937718802,
+          "receiver_rate_contrast": 0.000779627830081786
+        },
+        "200": {
+          "source_rate": [
+            0.11899044645770923,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156668462155468,
+          "receiver_rate_contrast": 0.0007796064136915692
+        },
+        "220": {
+          "source_rate": [
+            0.11901146237554974,
+            0.8292262357500041
+          ],
+          "true_boundary_contrast": 0.0006156482264744335,
+          "receiver_rate_contrast": 0.0007795820217136873
+        }
+      },
+      "last_source_rates": [
+        0.11901146237554974,
+        0.8292262357500041
+      ],
+      "last_receiver_rates": [
+        0.8228510924674628,
+        0.8236306744891765
+      ],
+      "last_contrast": 0.0007795820217136873,
+      "last_5_receiver_span": 5.549873671739647e-09,
+      "cumulative_upper_escape": [
+        [
+          4.125976841065279e-10,
+          1.6808666913137153e-73
+        ],
+        [
+          2.4318357569777413e-74,
+          1.6426510079918023e-73
+        ]
+      ],
+      "pre_read_receiver_difference": 0.0
+    },
+    {
+      "dx": 0.00375,
+      "dt": 0.00625,
+      "open_edge": 15.0,
+      "pulse_amps": [
+        0.12,
+        -0.12
+      ],
+      "expected_steady_source_rates": [
+        0.11909014813609338,
+        0.8309253122543654
+      ],
+      "expected_steady_receiver_rates": [
+        0.8245717325877227,
+        0.8253487317944017
+      ],
+      "sampled": {
+        "5": {
+          "source_rate": [
+            0.005300922528213782,
+            1.1144420453734551
+          ],
+          "true_boundary_contrast": 0.0009535611027218568,
+          "receiver_rate_contrast": 0.0
+        },
+        "10": {
+          "source_rate": [
+            0.05375867246770357,
+            0.8314137314782819
+          ],
+          "true_boundary_contrast": 0.0006871400916115113,
+          "receiver_rate_contrast": 0.0
+        },
+        "20": {
+          "source_rate": [
+            0.11103672303909763,
+            0.8305012618442759
+          ],
+          "true_boundary_contrast": 0.0006263495862090007,
+          "receiver_rate_contrast": 0.0
+        },
+        "40": {
+          "source_rate": [
+            0.1133911358686294,
+            0.8305010031114185
+          ],
+          "true_boundary_contrast": 0.000622282269811255,
+          "receiver_rate_contrast": 0.0
+        },
+        "80": {
+          "source_rate": [
+            0.11794520340259332,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006176513550885622,
+          "receiver_rate_contrast": 0.0
+        },
+        "150": {
+          "source_rate": [
+            0.11889827612194595,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006168582055199797,
+          "receiver_rate_contrast": 0.0
+        },
+        "170": {
+          "source_rate": [
+            0.1189577384126175,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006168058389106069,
+          "receiver_rate_contrast": 0.0
+        },
+        "171": {
+          "source_rate": [
+            0.11896115502368144,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006168027395531601,
+          "receiver_rate_contrast": 0.0004389356792128263
+        },
+        "175": {
+          "source_rate": [
+            0.11897251596447443,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006167920542747231,
+          "receiver_rate_contrast": 0.000759781039926577
+        },
+        "185": {
+          "source_rate": [
+            0.11898949318066959,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.000616776360361978,
+          "receiver_rate_contrast": 0.000777724685003589
+        },
+        "200": {
+          "source_rate": [
+            0.11901553121221686,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006167537895846522,
+          "receiver_rate_contrast": 0.0007777029505655619
+        },
+        "220": {
+          "source_rate": [
+            0.11903648142571066,
+            0.8305010031113933
+          ],
+          "true_boundary_contrast": 0.0006167352268245004,
+          "receiver_rate_contrast": 0.0007776787354403236
+        }
+      },
+      "last_source_rates": [
+        0.11903648142571066,
+        0.8305010031113933
+      ],
+      "last_receiver_rates": [
+        0.8241420354699115,
+        0.8249197142053518
+      ],
+      "last_contrast": 0.0007776787354403236,
+      "last_5_receiver_span": 5.526895718865887e-09,
+      "cumulative_upper_escape": [
+        [
+          4.1113954823493e-10,
+          1.2358377070806206e-73
+        ],
+        [
+          1.737708143325614e-74,
+          1.2086183408796122e-73
+        ]
+      ],
+      "pre_read_receiver_difference": 0.0
+    }
+  ],
+  "exploratory_amplitude_and_duration_scan": true
+}

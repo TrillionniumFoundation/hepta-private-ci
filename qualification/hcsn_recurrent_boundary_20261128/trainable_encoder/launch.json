@@ -1,0 +1,44 @@
+{
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/nice",
+    "args": [
+      "-n",
+      "8",
+      "/home/qq/.venvs/rocm10/bin/python",
+      "-u",
+      "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/train.py",
+      "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127",
+      "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/run",
+      "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/study.py"
+    ],
+    "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+    "env": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "CUDA_VISIBLE_DEVICES": "",
+      "ROCR_VISIBLE_DEVICES": ""
+    },
+    "idempotency_key": "hcsn-9de7-returning-encoder-fp32-15cell-original-v1"
+  },
+  "receipt": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "ai395",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-63f9352b39a889937b94adb59b0b13d87d8f0380e2ea08d41d8b57984097c324",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 0,
+      "bytes_stored": 0,
+      "capture_error": null,
+      "created_unix_ms": 1795875189503,
+      "output_complete": false,
+      "owner_pid": 3917217,
+      "pid": 3917218,
+      "state": "running"
+    }
+  }
+}

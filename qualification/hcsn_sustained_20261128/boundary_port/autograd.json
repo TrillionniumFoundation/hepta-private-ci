@@ -1,0 +1,143 @@
+{
+  "torch": "2.15.0+cpu",
+  "rows": [
+    {
+      "epsilon": 0.0,
+      "kappa": 1.0,
+      "contrast": [
+        0.0,
+        0.0
+      ],
+      "reverse_jacobian": [
+        [
+          0.03071935299312637,
+          0.0
+        ],
+        [
+          0.05882788085157398,
+          0.0
+        ]
+      ],
+      "fourth_order_jacobian": [
+        [
+          0.030719353013297642,
+          0.0
+        ],
+        [
+          0.05882788085810608,
+          0.0
+        ]
+      ],
+      "max_absolute_difference": 2.017127090359061e-11,
+      "cut_wire_contrast": [
+        0.0,
+        0.0
+      ],
+      "cut_wire_jacobian": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "epsilon": 0.025,
+      "kappa": 1.0,
+      "contrast": [
+        0.0007769992066790632,
+        0.001494479392802922
+      ],
+      "reverse_jacobian": [
+        [
+          0.0314412677705511,
+          0.0007757079378096662
+        ],
+        [
+          0.06073733477333299,
+          0.001498509373917387
+        ]
+      ],
+      "fourth_order_jacobian": [
+        [
+          0.03144126777191817,
+          0.0007757079239593493
+        ],
+        [
+          0.06073733477362138,
+          0.0014985093746075482
+        ]
+      ],
+      "max_absolute_difference": 1.3850316943689323e-11,
+      "cut_wire_contrast": [
+        0.0,
+        0.0
+      ],
+      "cut_wire_jacobian": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "epsilon": 0.075,
+      "kappa": 1.0,
+      "contrast": [
+        0.002385436323336876,
+        0.004629333458286422
+      ],
+      "reverse_jacobian": [
+        [
+          0.03289995845220593,
+          0.002373482767205271
+        ],
+        [
+          0.06468725817980724,
+          0.00466720818143957
+        ]
+      ],
+      "fourth_order_jacobian": [
+        [
+          0.03289995844849939,
+          0.002373482773700604
+        ],
+        [
+          0.06468725818134975,
+          0.004667208181712475
+        ]
+      ],
+      "max_absolute_difference": 6.495332917355601e-12,
+      "cut_wire_contrast": [
+        0.0,
+        0.0
+      ],
+      "cut_wire_jacobian": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "observable_order": [
+    "signed_receiver_steady_flux",
+    "single_interval_hit_mass"
+  ],
+  "differentiable_inputs": [
+    "source_gain",
+    "receiver_wire_gain"
+  ],
+  "receiver_initialization": "same high branch for the steady receiver; same 0.18 margin for the one-bin receiver"
+}
