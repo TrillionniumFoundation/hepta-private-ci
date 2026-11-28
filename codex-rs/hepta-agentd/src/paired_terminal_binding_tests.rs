@@ -512,3 +512,6 @@ async fn original_deadline_and_actual_owner_custody_cannot_be_replaced() {
         Err(TerminalLearningErrorV1::WrongScope)
     ));
 }
+
+#[path = "terminal_paired_runtime_tests.rs"]
+mod runtime_tests;

@@ -20,6 +20,21 @@ use crate::TerminalLearningReceiptV1;
 use crate::TerminalLearningRequestV1;
 use crate::terminal_learning_types::TerminalLearningModeV1;
 
+#[cfg(target_os = "linux")]
+#[path = "terminal_paired_runtime.rs"]
+mod paired;
+
+#[cfg(target_os = "linux")]
+pub use paired::PairedTerminalCompositionV1;
+#[cfg(target_os = "linux")]
+pub use paired::PairedTerminalEvaluatorInboxV1;
+#[cfg(target_os = "linux")]
+pub(crate) use paired::PairedTerminalEvaluatorPeerV1;
+#[cfg(target_os = "linux")]
+pub use paired::PairedTerminalEvaluatorRequestV1;
+#[cfg(target_os = "linux")]
+pub(crate) use paired::paired_terminal_evaluator_channel_v1;
+
 struct Command {
     request: Box<TerminalLearningRequestV1>,
     mode: TerminalLearningModeV1,
@@ -77,6 +92,8 @@ pub struct TerminalLearningRuntimeBootstrapV1 {
     spawn_generation: u64,
     owner: AgentdTerminalLearningOwnerV1,
     receiver: mpsc::Receiver<Command>,
+    #[cfg(target_os = "linux")]
+    paired: Option<paired::PairedTerminalRuntimeV1>,
 }
 
 /// Consumes one native owner under the existing Agentd generation/supervision.
@@ -105,6 +122,8 @@ pub fn terminal_learning_channel_v1(
             spawn_generation,
             owner,
             receiver,
+            #[cfg(target_os = "linux")]
+            paired: None,
         },
     ))
 }
@@ -135,6 +154,15 @@ impl TerminalLearningRuntimeBootstrapV1 {
         clock: impl Fn() -> Result<u64, TerminalLearningErrorV1> + Send + Sync,
     ) -> Result<(), AgentdError> {
         self.require_identity(state.identity())?;
+        #[cfg(target_os = "linux")]
+        let paired_receipt = match self.paired.take() {
+            Some(paired) => Some(
+                paired
+                    .run(&self.owner, &state, &cancellation, &clock)
+                    .await?,
+            ),
+            None => None,
+        };
         loop {
             let command = tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
@@ -160,6 +188,17 @@ impl TerminalLearningRuntimeBootstrapV1 {
                 result = async {
                     require_ready(&state)?;
                     let now = clock()?;
+                    #[cfg(target_os = "linux")]
+                    if let Some(paired) = &paired_receipt {
+                        // The original paired consent admits one signed job.
+                        // Its handle retains exact readback, never another fit.
+                        if matches!(mode, TerminalLearningModeV1::Train)
+                            || request.job_digest(self.owner.agent_id(), self.owner.producer_id())?
+                                != paired.training.job_digest
+                        {
+                            return Err(TerminalLearningErrorV1::WrongScope);
+                        }
+                    }
                     let result = match mode {
                         TerminalLearningModeV1::Readback => self.owner.readback(*request, now).await,
                         TerminalLearningModeV1::Train => self.owner.train(*request, now).await,
