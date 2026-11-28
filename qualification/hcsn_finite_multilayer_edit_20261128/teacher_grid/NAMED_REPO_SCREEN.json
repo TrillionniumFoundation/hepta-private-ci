@@ -1,0 +1,76 @@
+{
+ "scope": "/workspace/scratch/8559d7b79769/scope/files.tsv",
+ "historical_candidates": 157052,
+ "named_paths": [],
+ "eligible_research_text": 7735,
+ "available_screened": 7735,
+ "research_text_bytes": 58467511,
+ "missing": 0,
+ "oversized": 0,
+ "name_matches": [
+  {
+   "sha": "01a84f535c7c91ffe6d75437676e400fbc5afdfd",
+   "path": "tools/hcsn/wsp_20261104/DESIGN.md",
+   "mentions": [
+    "AlphaEdit",
+    "CrispEdit"
+   ]
+  },
+  {
+   "sha": "0d5199dee9ad069c64cb76e8619c5b228fdeced3",
+   "path": "tools/hcsn/wsp_followup_20261105/literature/RESEARCH_UPDATE.md",
+   "mentions": [
+    "CrispEdit",
+    "Steer2Edit"
+   ]
+  },
+  {
+   "sha": "a5c4d0023ee4dce44e7da8fb3e379d623fc1a56e",
+   "path": "qualification/hcsn_boundary_transfer_20261126/README.md",
+   "mentions": [
+    "AlphaEdit",
+    "CrispEdit",
+    "crispedit"
+   ]
+  },
+  {
+   "sha": "b1b92891493fba4f2c69e9cfaad1e932d912711a",
+   "path": "qualification/hcsn_ci_readbacks/fresh-boundary-20261123/RESULTS_ZH.md",
+   "mentions": [
+    "AlphaEdit"
+   ]
+  },
+  {
+   "sha": "b3d3b8ff542bff958046aa83f7fd2e5c6fafd11e",
+   "path": "qualification/hcsn_boundary_transfer_20261126/accel/projection/README.md",
+   "mentions": [
+    "AlphaEdit"
+   ]
+  },
+  {
+   "sha": "dfc52a876f0637e9fd4760d82acf6c4efd7371a4",
+   "path": "tools/hcsn/wsp_followup_20261105/README.md",
+   "mentions": [
+    "CrispEdit",
+    "Steer2Edit"
+   ]
+  },
+  {
+   "sha": "e02e50d6e56d354b6d759a19e6ccc1ecd50c9741",
+   "path": "tools/hcsn/wsp_pocket4_encoder_20261105/literature/RESEARCH_REFRESH_20261105.md",
+   "mentions": [
+    "CrispEdit",
+    "Steer2Edit"
+   ]
+  },
+  {
+   "sha": "f79e1e6684503d04d52b4e7d3fe45e2a33675070",
+   "path": "qualification/hcsn_research_20261127/edit/curvature/PROTOCOL.md",
+   "mentions": [
+    "CrispEdit"
+   ]
+  }
+ ],
+ "pattern": "(?<![A-Za-z])(?:Alpha[-_ ]?Edit|Crisp[-_ ]?Edit|Steer[-_ ]?2[-_ ]?Edit|MEMIT|EMMET)(?![A-Za-z])",
+ "cohort": "hcsn|spiking|model[_-]?edit|weight[_-]?edit|forward[_-]?projection|knowledge[_-]?edit"
+}

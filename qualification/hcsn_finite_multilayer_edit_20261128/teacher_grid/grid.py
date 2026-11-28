@@ -82,18 +82,33 @@ def main(a):
     selected,rejected=aligned(annotation)
     seek=RemoteZip(URL+'audio_25k.zip/content',BYTES,2*1024*1024)
     members=[];missing=[]
+    # Released audio and annotation folders use different speaker permutations.
+    # Accept only a unique exact match of the COMPLETE 1000-utterance filename set.
+    annotation_sets=defaultdict(set);audio_sets=defaultdict(set)
+    with zipfile.ZipFile(annotation) as annotations:
+        for f in annotations.namelist():
+            path=Path(f)
+            if f.startswith('alignments/') and path.suffix=='.align':annotation_sets[path.parent.name].add(path.stem)
     with zipfile.ZipFile(seek) as zipper:
         info={z.filename:z for z in zipper.infolist()}
+        for f in info:
+            path=Path(f)
+            if f.startswith('audio_25k/') and path.suffix=='.wav':audio_sets[path.parent.name].add(path.stem)
+        maps={}
+        for group,names in annotation_sets.items():
+            choices=[a for a,s in audio_sets.items() if s==names]
+            assert len(names)==1000 and len(choices)==1,(group,choices)
+            maps[group]=choices[0]
+        assert len(maps)==len(set(maps.values()))==34
         for row in selected:
-            name=row[0].replace('alignments/','audio_25k/').replace('.align','.wav')
-            if name not in info:
-                missing.append(name);continue
-            members.append((info[name],row))
+            path=Path(row[0]);sp=maps[path.parent.name];name='audio_25k/'+sp+'/'+path.stem+'.wav'
+            if name not in info:missing.append(name);continue
+            members.append((info[name],(*row,sp,name)))
     assert len(members)>2000,(len(members),missing[:5])
     members.sort(key=lambda p:p[0].header_offset)
     observations=[];bad=[]
     def decode(row,info,contents):
-        path,a0,b,label,last=row
+        path,a0,b,label,last,sp,audio_path=row
         hz,x=wavfile.read(io.BytesIO(contents))
         assert x.ndim==1 and int(hz)==25000
         n=len(x);s=round(a0*hz/25000);e=round(b*hz/25000)
@@ -101,8 +116,8 @@ def main(a):
             bad.append([path,n,last,s,e]);return
         cut=x[s:e]
         h=hashlib.sha256(str((hz,cut.shape,cut.dtype)).encode()+cut.tobytes()).hexdigest()
-        observations.append((features(cut,hz),NAMES.index(label),Path(path).parent.name,path,s,e,n,last,h,
-                             hashlib.sha256(contents).hexdigest(),info.CRC))
+        observations.append((features(cut,hz),NAMES.index(label),sp,path,s,e,n,last,h,
+                             hashlib.sha256(contents).hexdigest(),info.CRC,audio_path))
     stream(members,decode)
     known=set()
     for f in a.known:
@@ -115,14 +130,14 @@ def main(a):
     for o in sorted(observations,key=lambda r:r[3]):
         if o[8] in known:duplicate.append([o[3],o[8]]);continue
         known.add(o[8]);kept.append(o)
-    x,y,sp,path,starts,ends,n,last,pcm,wav,crc=map(np.asarray,zip(*kept))
+    x,y,sp,path,starts,ends,n,last,pcm,wav,crc,audio_paths=map(np.asarray,zip(*kept))
     np.savez_compressed(a.out/'GRID.npz',x=x,y=y,speaker=sp,record=path)
     with (a.out/'segments.tsv').open('w') as f:
         tab=csv.writer(f,delimiter='\t',lineterminator='\n');tab.writerow(['source_aligned_path','label','speaker','start_sample',
-            'end_sample','wave_length','terminal_tick','pcm_sha256','full_wav_sha256','wav_zip_crc'])
-        tab.writerows(zip(path,y,sp,starts,ends,n,last,pcm,wav,crc))
+            'end_sample','wave_length','terminal_tick','pcm_sha256','full_wav_sha256','wav_zip_crc','audio_path'])
+        tab.writerows(zip(path,y,sp,starts,ends,n,last,pcm,wav,crc,audio_paths))
     info=dict(source_record='10.5281/zenodo.3625687',full_zip_md5=MD5,full_bytes=BYTES,alignment_zip_md5='df892a5adea6595339b331cc065501f9',
-         selected=len(selected),no_unique_digit=rejected,missing_wav=missing,timing_rejections=bad,duplicate=duplicate,speakers=sorted(set(sp)),
+         speaker_folder_map=maps,matched_direct_folders=sorted(k for k,v in maps.items() if k==v),selected=len(selected),no_unique_digit=rejected,missing_wav=missing,timing_rejections=bad,duplicate=duplicate,speakers=sorted(set(sp)),
          clips=len(x),labels=np.bincount(y,minlength=10).tolist(),speaker_counts={s:int((sp==s).sum()) for s in sorted(set(sp))},
          duration_ms_quantiles=np.quantile((ends-starts)/25,[0,.05,.5,.95,1]).tolist(),
          terminal_sample_minus_tick=np.quantile(n-last,[0,.5,1]).tolist(),sha=hashlib.sha256((a.out/'GRID.npz').read_bytes()).hexdigest(),
