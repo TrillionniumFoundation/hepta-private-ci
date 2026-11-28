@@ -13,12 +13,16 @@ use std::time::Duration;
 use std::time::Instant;
 
 use crate::AgentdError;
+use crate::PairedRecordPinsV1;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 19] = [
+const FLAGS: [&str; 22] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
+    "--root-paired-training-handoff-fd",
+    "--paired-failure-record-digest",
+    "--paired-correction-record-digest",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -47,6 +51,7 @@ enum Profile {
 pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
     pub(super) learning_handoff: Option<UnixDatagram>,
+    pub(super) paired_training: Option<PairedInputs>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -56,6 +61,11 @@ pub(super) struct LaunchInputs {
     pub(super) notes: Option<UnixDatagram>,
     pub(super) notes_ui: Option<NotesUiInputs>,
     pub(super) lifetime: Duration,
+}
+
+pub(super) struct PairedInputs {
+    pub(super) handoff: UnixDatagram,
+    pub(super) records: PairedRecordPinsV1,
 }
 
 pub(super) enum PrimaryInputs {
@@ -148,6 +158,33 @@ pub(super) fn parse(
         .remove("--root-learning-handoff-fd")
         .map(descriptor_number)
         .transpose()?;
+    let paired_handoff = selected
+        .remove("--root-paired-training-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let failure_record = selected
+        .remove("--paired-failure-record-digest")
+        .map(record_digest)
+        .transpose()?;
+    let correction_record = selected
+        .remove("--paired-correction-record-digest")
+        .map(record_digest)
+        .transpose()?;
+    let paired_training = match (paired_handoff, failure_record, correction_record) {
+        (None, None, None) => None,
+        (Some(handoff), Some(failure_record_digest), Some(correction_record_digest)) => Some((
+            handoff,
+            PairedRecordPinsV1 {
+                failure_record_digest,
+                correction_record_digest,
+            },
+        )),
+        _ => {
+            return Err(invalid(
+                "paired training requires its distinct handoff and both canonical pins",
+            ));
+        }
+    };
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -178,6 +215,11 @@ pub(super) fn parse(
     if profile == Profile::Notes && (notes.is_none() || notes_ui.is_none()) {
         return Err(invalid(
             "original Notes profile requires its real application and UI capabilities",
+        ));
+    }
+    if paired_training.is_some() && (profile == Profile::Desktop || notes_ui.is_none()) {
+        return Err(invalid(
+            "paired training requires the original Notes thread deployment",
         ));
     }
     let desktop_handoff = selected
@@ -225,6 +267,7 @@ pub(super) fn parse(
     let numbers = [
         Some(handoff),
         learning_handoff,
+        paired_handoff,
         Some(control),
         Some(app_server),
         payload,
@@ -262,6 +305,14 @@ pub(super) fn parse(
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
+    let paired_training = paired_training
+        .map(|(handoff, records)| {
+            Ok::<_, AgentdError>(PairedInputs {
+                handoff: UnixDatagram::from(take_descriptor(handoff)?),
+                records,
+            })
+        })
+        .transpose()?;
     let control = take_descriptor(control)?;
     let app_server = take_descriptor(app_server)?;
     let primary = match profile {
@@ -305,6 +356,7 @@ pub(super) fn parse(
         Some(LaunchInputs {
             handoff,
             learning_handoff,
+            paired_training,
             uid,
             gid,
             control,
@@ -317,6 +369,28 @@ pub(super) fn parse(
         }),
         ordinary,
     ))
+}
+
+fn record_digest(value: OsString) -> Result<codex_hepta_types::Digest32, AgentdError> {
+    let value = value
+        .to_str()
+        .ok_or_else(|| invalid("paired record digest must be UTF-8"))?;
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(invalid(
+            "paired record digest must be canonical lowercase SHA256",
+        ));
+    }
+    let digest: codex_hepta_types::Digest32 = value
+        .parse()
+        .map_err(|_| invalid("paired record digest is invalid"))?;
+    if digest.is_zero() {
+        return Err(invalid("paired record digest must be nonzero"));
+    }
+    Ok(digest)
 }
 
 fn descriptor_number(value: OsString) -> Result<i32, AgentdError> {
