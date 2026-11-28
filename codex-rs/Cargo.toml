@@ -663,6 +663,7 @@ strip = false
 [profile.ci-test]
 # Reduce binary size to reduce disk pressure.
 debug = "limited"
+strip = "debuginfo"
 inherits = "test"
 opt-level = 0
 
