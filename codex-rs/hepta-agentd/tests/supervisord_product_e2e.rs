@@ -408,9 +408,10 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         .await
         .context("supervisord fixture stage=after_agent_a_upgrade helper=assert_peers_unchanged")?;
 
-    let before_daemon_restart = snapshot_all(&client, &agents)
-        .await
-        .context("supervisord fixture stage=before_daemon_restart helper=snapshot_all")?;
+    // Preserve the already-validated healthy identities across the daemon restart.
+    let before_daemon_restart = std::iter::once(upgraded_a.clone())
+        .chain(peer_status_baseline.iter().cloned())
+        .collect::<Vec<_>>();
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
     daemon.kill()?;
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
@@ -785,22 +786,6 @@ async fn assert_peers_unchanged(
         assert_agentd_endpoint(peer, expected).await?;
     }
     Ok(())
-}
-
-async fn snapshot_all(
-    client: &SupervisordClient,
-    agents: &[AgentFixture],
-) -> Result<Vec<SupervisordAgentStatus>> {
-    let mut statuses = Vec::new();
-    for agent in agents {
-        statuses.push(
-            client
-                .snapshot(agent.agent_id.clone())
-                .await
-                .context("supervisord fixture helper=snapshot_all method=Snapshot")?,
-        );
-    }
-    Ok(statuses)
 }
 
 async fn assert_agentd_endpoints(
