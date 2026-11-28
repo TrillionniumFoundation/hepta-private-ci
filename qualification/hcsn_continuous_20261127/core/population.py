@@ -11,7 +11,7 @@ from torch import nn
 from he_xiong import Published
 
 class BoundaryPopulation(nn.Module):
-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step"):
+    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None):
         super().__init__()
         if boundary_path not in ("step", "linear_log"):
             raise ValueError("boundary_path must be step or linear_log")
@@ -36,7 +36,24 @@ class BoundaryPopulation(nn.Module):
         self.prices=Published()
         self.sender=nn.Linear(input_size,width,dtype=torch.float64)
         self.recurrent=nn.Linear(width,width,bias=False,dtype=torch.float64)
-        self.feedback=nn.Parameter(torch.tensor([.15,.15],dtype=torch.float64).repeat(width,1))
+        self.signed_forces = signed_force_gains is not None
+        if self.signed_forces:
+            gains = torch.as_tensor(signed_force_gains, dtype=torch.float64)
+            if gains.shape != (2,) or not torch.isfinite(gains).all() or (gains <= 0).any():
+                raise ValueError("signed_force_gains requires two finite positive gains")
+            initial_feedback = gains + torch.log(-torch.expm1(-gains))
+        else:
+            initial_feedback = torch.tensor([.15,.15], dtype=torch.float64)
+        self.feedback = nn.Parameter(initial_feedback.repeat(width,1))
+
+    def signed_drift(self, mass, previous_values):
+        alive = mass.sum(-1)
+        reset = (self.grid * self.reset_weights).sum()
+        conditional = (mass * self.grid).sum(-1) / torch.where(alive > 0, alive, 1.)
+        margin = torch.where(alive > 0, conditional, reset)
+        strength = torch.nn.functional.softplus(self.feedback)
+        channels = previous_values.clamp_min(0).tanh() * strength
+        return channels[..., 0] * (reset - margin) - channels[..., 1]
     def initial(self,batch):
         zero=self.grid.new_zeros(batch,self.width)
         return (self.reset_weights.expand(batch,self.width,-1),zero,zero,zero.unsqueeze(-1).expand(-1,-1,2))
@@ -118,9 +135,14 @@ class BoundaryPopulation(nn.Module):
     def step(self,frame,state,price_basis=None):
         frame=frame.to(self.sender.weight)
         mass,refractory,old_b,old_value=state
-        u=self.sender(frame)+self.recurrent(old_b)+(old_value.tanh()*self.feedback).sum(-1)
+        u=self.sender(frame)+self.recurrent(old_b)
+        if not self.signed_forces:
+            u=u+(old_value.tanh()*self.feedback).sum(-1)
         P=self.prices.p.P0*(1+.28*u.tanh());b=torch.log(self.prices.boundary(P)/self.prices.B0)
         mu=None if self.physical_gain is None else (self.prices.mu-self.physical_gain*u.tanh())[...,None]
+        if self.signed_forces:
+            baseline = self.prices.mu if mu is None else mu.squeeze(-1)
+            mu = (baseline + self.signed_drift(mass,old_value))[...,None]
         shift=old_b-b
         transport_mu=mu
         if self.boundary_path=="linear_log":
@@ -168,13 +190,13 @@ class BoundaryPopulation(nn.Module):
         return torch.stack(outputs),state
 
 class ContinuousSpikingNetwork(nn.Module):
-    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step"):
+    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None):
         super().__init__()
         if port not in ('boundary','priced','augmented'):raise ValueError('unknown message port')
         self.port=port
-        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path)
+        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains)
         channels={'boundary':1,'priced':4,'augmented':4+len(self.first.probe_horizons)}[port]
-        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path)
+        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains)
         self.head=nn.Linear(width*(4+len(self.second.probe_horizons)),outputs,dtype=torch.float64)
         self.channels=channels
     def forward(self,frames,state=None):
