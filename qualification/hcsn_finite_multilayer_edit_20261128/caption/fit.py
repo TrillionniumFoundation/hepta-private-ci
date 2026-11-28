@@ -105,7 +105,8 @@ def run(a):
     data=panels(a.parents,a.fresh,False)
     words,phys=sites(net);bias=torch.zeros(words.weight.shape[0])
     cache=out/'parent.json'
-    if not cache.exists():
+    made_parent_eval=not cache.exists()
+    if made_parent_eval:
         ws=time.perf_counter();cs=time.process_time()
         dn=nll(score(net,data['dev'],bias));do=nll(score(net,data['old_dev'],bias))
         write(cache,{'new':dn,'old':do,'wall':time.perf_counter()-ws,'cpu':time.process_time()-cs,
@@ -181,7 +182,7 @@ def run(a):
     for f in out.glob(a.arm+'-iteration*.npz'):
         if f.name not in keep:f.unlink()
     write(out/(a.arm+'.json'),dict(arch=a.arch,seed=a.seed,arm=a.arm,steps=steps,accepted_forward_steps=accepted,
-        times=list(final),setup=initial_loading,parent=parent['sha'],site_shapes=[list(s.weight.shape) for s in model_sites],
+        times=list(final),setup=initial_loading,setup_measured_parent_eval=made_parent_eval,parent=parent['sha'],site_shapes=[list(s.weight.shape) for s in model_sites],
         optimizer_coefficients=sum(p.numel() for p in params) if opt else None,picks=selected,trace=record))
     print(a.arch,a.seed,a.arm,steps,list(final),flush=True)
 
