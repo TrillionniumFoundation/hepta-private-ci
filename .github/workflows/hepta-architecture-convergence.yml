@@ -222,6 +222,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-terminal-runtime.json" --minimum-tests 17 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(terminal_learning_tests)'
+      - name: Original paired Agentd launcher descriptor controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-agentd-launcher.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(production_launcher::inputs::tests::paired::)'
       - name: Original paired sealed purpose and startup binding controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

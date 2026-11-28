@@ -107,6 +107,24 @@ impl RootPairedTrainingHandoffV1 {
 }
 
 impl AgentdRootPairedTrainingInputsV1 {
+    /// Compose only with an already installed real terminal owner and its live
+    /// Evaluator exchange. The raw Root plan and canonical pins stay distinct.
+    pub(crate) fn install_original_terminal_consumer(
+        self,
+        mut config: AgentdConfig,
+        records: crate::PairedRecordPinsV1,
+        session_end: Instant,
+    ) -> Result<AgentdConfig, AgentdError> {
+        let mut owner = config
+            .take_terminal_learning_bootstrap()
+            .ok_or_else(|| refused("original terminal owner factory has not been installed"))?;
+        owner.require_identity(config.identity())?;
+        owner.require_original_paired_policy(&self.plan, records)?;
+        let (config, delivery) = self.install_original_consumer(config)?;
+        owner.install_original_paired_delivery(delivery, session_end)?;
+        config.with_terminal_learning_bootstrap(owner)
+    }
+
     pub(crate) fn install_original_consumer(
         self,
         config: AgentdConfig,

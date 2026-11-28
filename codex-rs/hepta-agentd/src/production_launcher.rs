@@ -45,6 +45,10 @@ struct RootStartup {
     bootstrap: File,
     root_pidfd: OwnedFd,
     learning: Option<crate::RootLearningHandoffV1>,
+    paired_training: Option<(
+        crate::RootPairedTrainingHandoffV1,
+        crate::PairedRecordPinsV1,
+    )>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -61,6 +65,11 @@ pub struct AgentdProductionStartup(Startup);
 pub struct AgentdProductionLaunch {
     root: AgentdRootProductionInputs,
     inputs: RuntimeInputs,
+    paired_training: Option<(
+        crate::AgentdRootPairedTrainingInputsV1,
+        crate::PairedRecordPinsV1,
+    )>,
+    session_end: Instant,
 }
 
 struct RuntimeInputs {
@@ -84,6 +93,7 @@ impl AgentdProductionStartup {
                 let LaunchInputs {
                     handoff,
                     learning_handoff,
+                    paired_training,
                     uid,
                     gid,
                     control,
@@ -111,6 +121,17 @@ impl AgentdProductionStartup {
                         )
                     })
                     .transpose()?;
+                let paired_training = paired_training
+                    .map(|inputs| {
+                        Ok::<_, AgentdError>((
+                            crate::receive_root_paired_training_handoff(
+                                inputs.handoff,
+                                remaining(bootstrap_deadline)?,
+                            )?,
+                            inputs.records,
+                        ))
+                    })
+                    .transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
@@ -121,6 +142,7 @@ impl AgentdProductionStartup {
                     bootstrap,
                     root_pidfd,
                     learning,
+                    paired_training,
                     control,
                     app_server,
                     lifetime,
@@ -152,6 +174,7 @@ impl AgentdProductionStartup {
                     bootstrap,
                     root_pidfd,
                     learning,
+                    paired_training,
                     control,
                     app_server,
                     lifetime,
@@ -188,7 +211,29 @@ impl AgentdProductionStartup {
                         .await?;
                     config = config.with_root_learning_inputs(inputs)?;
                 }
-                Ok((config, Some(AgentdProductionLaunch { root, inputs })))
+                let paired_training = match paired_training {
+                    Some((handoff, records)) => Some((
+                        handoff
+                            .connect_original_paired_training(
+                                &root,
+                                config.identity(),
+                                deadline,
+                                session_end,
+                            )
+                            .await?,
+                        records,
+                    )),
+                    None => None,
+                };
+                Ok((
+                    config,
+                    Some(AgentdProductionLaunch {
+                        root,
+                        inputs,
+                        paired_training,
+                        session_end,
+                    }),
+                ))
             }
         }
     }
@@ -233,6 +278,18 @@ impl AgentdProductionLaunch {
                     ))
                 })
                 .transpose()?;
+            if self.paired_training.is_some()
+                && !notes_ui.as_ref().is_some_and(|(deployment, _, _)| {
+                    matches!(
+                        &deployment.interaction,
+                        crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 { .. }
+                    )
+                })
+            {
+                return Err(AgentdError::Invalid(
+                    "paired training requires the original retained thread tool mode".into(),
+                ));
+            }
             let release = notes_ui
                 .as_mut()
                 .and_then(|(deployment, _, _)| deployment.startup_release.take());
@@ -425,6 +482,10 @@ impl AgentdProductionLaunch {
             }
             if let Some(deadline) = android_deadline {
                 remaining(deadline)?;
+            }
+            if let Some((paired, records)) = self.paired_training {
+                config =
+                    paired.install_original_terminal_consumer(config, records, self.session_end)?;
             }
             let result = crate::run(config, arg0_paths).await;
             // Keep the authenticated Root feed and original checkpoint/grant
