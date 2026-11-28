@@ -8,9 +8,9 @@ def content(p):return json.loads(p.read_text())
 def data(p):
     with np.load(p) as f:return dict(f)
 def run(a):
-    seeds=(271,577,911);archs=('literal','smooth');groups=('old','A','B')
-    methods=('keep','joint','receiver','bp','lora','ridge','wrong');rungs=(3,15,60)
-    reference=data(a.cold/'targets.npz');agg={};val={};timing={};choices={}
+    seeds=(271,577,911);archs=('literal','smooth');groups=('old','A','B','C')
+    methods=('keep','joint','receiver','bp','lora','ridge','wrong','lm_joint','lm_receiver','lbfgs');rungs=(3,15,60)
+    reference=data(a.cold/'targets.npz');agg={};val={};timing={};choices={};macro={};mic={}
     wpre=content(a.prior/'data.json')['wall_seconds'];fresh=content(a.fresh/'preparation.json')['splits']
     for arch in archs:
         for seed in seeds:
@@ -22,14 +22,14 @@ def run(a):
                     choices[key]=None if params is None else params[str(b)]['selection']
                     elapsed=0 if params is None else params[str(b)]['wall_upper']
                     tm=timer[ident]['both'][1]+elapsed
-                    timing[key]=dict(adaptation_wall_upper_s=elapsed, warm_parent_both_evaluations_s=tm+parent['study_prep']['wall'],
+                    timing[key]=dict(all_three_cold_s=timer[ident]['all_three'][1]+elapsed+parent['study_prep']['wall']+parent['parent_fit']['wall']+wpre+sum(fresh[g]['wall'] for g in ('A','B'))+content(a.fresh/'third.json')['extraction_and_features_wall'],adaptation_wall_upper_s=elapsed, warm_parent_both_evaluations_s=tm+parent['study_prep']['wall'],
                                      full_from_waveform_s=tm+parent['study_prep']['wall']+parent['parent_fit']['wall']+wpre+sum(fresh[g]['wall'] for g in ('A','B')))
                     for g in groups:
                         z=pred[ident+'_'+g]; y=reference[g+'_y']; s=reference[g+'_speaker']
                         correctness=z.argmax(1)==y
                         by=np.array([correctness[s==sp].mean() for sp in np.unique(s)])
                         agg[key+(g,)]=by
-                        val[key+(g,)]=float(by.mean())
+                        val[key+(g,)]=float(by.mean());mic[key+(g,)]=float(correctness.mean());macro[key+(g,)]=float(np.mean([correctness[y==label].mean() for label in range(10)]))
     def boot(v):
         rng=np.random.default_rng(440334);idx=rng.integers(v.shape[-1],size=(10000,v.shape[-1]))
         # Conditional on fixed parent models; resample independent speaker clusters.
@@ -52,7 +52,7 @@ def run(a):
                 cells={g:[val[k+(g,)] for k in keys] for g in groups}
                 times={k:[timing[x][k] for x in keys] for k in timing[keys[0]]}
                 summary.append(dict(arch=arch,method=m,rung=b,seed_accuracies=cells,avg={g:float(np.mean(v)) for g,v in cells.items()},contrasts=contrasts,
-                                    passes=int(sum(checks)),quality_gate=all(checks) and all(contrasts[g]['vs_keep']['ci'][0]>0 for g in ('A','B')),
+                                    third_domain_gate=(min(val[(arch,s,m,b,'C')]-val[(arch,s,'keep',b,'C')] for s in seeds)>=.02-1e-12 and contrasts['C']['vs_keep']['ci'][0]>0),third_equal_class=[macro[k+('C',)] for k in keys],third_micro=[mic[k+('C',)] for k in keys],passes=int(sum(checks)),quality_gate=all(checks) and all(contrasts[g]['vs_keep']['ci'][0]>0 for g in ('A','B')),
                                     dev_picks=[choices[k] for k in keys],times=times,median_cold_s=float(np.median(times['full_from_waveform_s']))))
     (a.out/'summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
     for row in summary:

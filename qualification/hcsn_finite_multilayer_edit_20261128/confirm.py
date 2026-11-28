@@ -44,16 +44,16 @@ def cold(a):
     seal=json.loads(a.seal.read_text())
     for name,dig in seal['candidates'].items():assert sha(a.models/name)==dig
     assert sha(a.law)==seal['physical_table']
-    for name in ('A','B'):
+    for name in ('A','B','C'):
         f=a.fresh/(name+'.npz');assert sha(f)==seal['fresh'][f.name]
     assert sha(a.prior/'old_test.npz')==seal['data']['old_test.npz']
     a.out.mkdir(parents=True,exist_ok=True)
     reference={}
-    for key,path in [('old',a.prior/'old_test.npz'),('A',a.fresh/'A.npz'),('B',a.fresh/'B.npz')]:
+    for key,path in [('old',a.prior/'old_test.npz'),('A',a.fresh/'A.npz'),('B',a.fresh/'B.npz'),('C',a.fresh/'C.npz')]:
         with np.load(path) as f:
             for k in ('y','speaker','record'):reference[key+'_'+k]=f[k]
     np.savez_compressed(a.out/'targets.npz',**reference)
-    methods=('keep','joint','receiver','bp','lora','ridge','wrong')
+    methods=('keep','joint','receiver','bp','lora','ridge','wrong','lm_joint','lm_receiver','lbfgs')
     for arch in ('literal','smooth'):
         for seed in (271,577,911):
             fold=a.models/f'{arch}_{seed}';records={};times={}
@@ -66,11 +66,12 @@ def cold(a):
                         if name=='ridge':corr=data
                         else:m=[data['sender'],data['receiver']]
                     ident=f'{name}_{b}';times[ident]={}
-                    for key,path in [('old',a.prior/'old_test.npz'),('A',a.fresh/'A.npz'),('B',a.fresh/'B.npz')]:
+                    for key,path in [('old',a.prior/'old_test.npz'),('A',a.fresh/'A.npz'),('B',a.fresh/'B.npz'),('C',a.fresh/'C.npz')]:
                         with np.load(path) as f:x=f['x'].astype('float64')
                         records[ident+'_'+key]=predict(x,p,m,tab,corr)
                         if key=='A':times[ident]['through_A']=(time_pair()-t).tolist()
-                    times[ident]['both']=(time_pair()-t).tolist()
+                        if key=='B':times[ident]['both']=(time_pair()-t).tolist()
+                    times[ident]['all_three']=(time_pair()-t).tolist()
             np.savez_compressed(a.out/f'{arch}_{seed}.npz',**records)
             (a.out/f'{arch}_{seed}.json').write_text(json.dumps(times,indent=2)+'\n')
     (a.out/'complete.json').write_text(json.dumps({p.name:sha(p) for p in a.out.iterdir() if p.name!='complete.json'},indent=2)+'\n')
