@@ -8,6 +8,8 @@ from pathlib import Path
 import sys
 import time
 
+from archive import COLD_SCHEMA, retain_cold_index, retain_cold_scores
+
 import numpy as np
 import torch
 from torch.nn import functional as F
@@ -190,6 +192,7 @@ def freeze(out):
 
 def cold(root, out, data, chosen):
     from encoder import AVText
+
     rows = data.test
     y = data.y[rows]
     summaries, losses = {}, {}
@@ -200,6 +203,7 @@ def cold(root, out, data, chosen):
             cfg = chosen[key]
             needed = {r["file"]: r for r in [cfg["best"], *cfg["gates"].values()] if r}
             labels = {}
+            score_index = {}
             for name, cfgrow in needed.items():
                 p = out / key / name
                 if digest(p) != cfgrow["sha256"]:
@@ -207,37 +211,65 @@ def cold(root, out, data, chosen):
                 n.load_state_dict(torch.load(p, map_location="cpu", weights_only=True))
                 scores = inference(n, data, rows)
                 loss = F.cross_entropy(scores, y, reduction="none").numpy()
-                labels[name] = dict(nll=float(loss.mean()), top1=float((scores.argmax(1) == y).float().mean()))
+                labels[name] = dict(
+                    nll=float(loss.mean()),
+                    top1=float((scores.argmax(1) == y).float().mean()),
+                )
+                arrays = {
+                    "ids": data.names[rows],
+                    "y": y.numpy(),
+                    "scores": scores.numpy(),
+                }
                 if name == cfg["best"]["file"]:
                     losses[key] = loss
-                    arrays = {"ids": data.names[rows], "y": y.numpy(), "scores": scores.numpy()}
                     if arm == "literal":
                         for m in n.mixer:
                             m.kind = "no_wire"
                         ablated = inference(n, data, rows)
-                        losses[key + "-nowire"] = F.cross_entropy(ablated, y, reduction="none").numpy()
+                        losses[key + "-nowire"] = F.cross_entropy(
+                            ablated, y, reduction="none"
+                        ).numpy()
                         arrays["no_wire_scores"] = ablated.numpy()
                         for m in n.mixer:
                             m.kind = "literal"
-                    with (out / key / "cold.npz").open("wb") as f:
-                        np.savez_compressed(f, **arrays)
-            summaries[key] = dict(chosen=labels[cfg["best"]["file"]], gates={
-                g: (dict(cold=labels[r["file"]], development=r) if r else None) for g,r in cfg["gates"].items()})
+                score_index[name] = retain_cold_scores(
+                    out / key, cfgrow, arrays, best=name == cfg["best"]["file"]
+                )
+            retain_cold_index(out / key, score_index)
+            summaries[key] = dict(
+                chosen=labels[cfg["best"]["file"]],
+                gates={
+                    g: (dict(cold=labels[r["file"]], development=r) if r else None)
+                    for g, r in cfg["gates"].items()
+                },
+            )
     actors = data.actors[rows]
     who = np.unique(actors)
     counts = np.array([(actors == a).sum() for a in who])
     ix = np.random.default_rng(66541).integers(len(who), size=(4000, len(who)))
     contrasts = {}
     for arm in ("smooth", "lif", "sdpa", "literal-nowire"):
+
         def difference(seed):
-            other = f"literal-{seed}-nowire" if arm == "literal-nowire" else f"{arm}-{seed}"
+            other = (
+                f"literal-{seed}-nowire" if arm == "literal-nowire" else f"{arm}-{seed}"
+            )
             return losses[f"literal-{seed}"] - losses[other]
+
         delta = np.stack([difference(s) for s in SEEDS]).mean(0)
         sums = np.array([delta[actors == a].sum() for a in who])
         bootstrap = sums[ix].sum(1) / counts[ix].sum(1)
-        contrasts[arm] = dict(literal_minus_control_clip_nll=float(delta.mean()),
-                              actor_cluster_ci95=np.quantile(bootstrap,[.025,.975]).tolist())
-    return dict(cells=summaries, contrasts=contrasts, test_actors=len(who), clips=len(rows))
+        contrasts[arm] = dict(
+            literal_minus_control_clip_nll=float(delta.mean()),
+            actor_cluster_ci95=np.quantile(bootstrap, [0.025, 0.975]).tolist(),
+        )
+    return dict(
+        cells=summaries,
+        contrasts=contrasts,
+        test_actors=len(who),
+        clips=len(rows),
+        cold_evidence_schema=COLD_SCHEMA,
+    )
 
 
 def main():

@@ -1,0 +1,137 @@
+{
+  "status": "PASS_ENGINEERING_RETENTION_ONLY",
+  "base_commit": "cba2602af7c090323ba47d98d45ccaef5bb7edbb",
+  "first_observation": {
+    "errors": [],
+    "failures": [],
+    "head": "f2d08345463dbd7b8294ea4ed72146f3de9ca834",
+    "passed": true,
+    "seconds": 0.7916890589999639,
+    "skips": [],
+    "source_unchanged": true,
+    "tests": 5
+  },
+  "strict_profile_observation": {
+    "source_commit": "d0e1f5baa4fb88f0c45bb5f72b24486890d258de",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "execution_wall_seconds": 0.3324472920003245,
+    "clean_before_and_after": true,
+    "source_unchanged": true,
+    "archives": {
+      "roundtrip.tar.gz": {
+        "bytes": 8371,
+        "sha256": "c6d3f774e89053195b16fd5edf5bd38ef5b3b23018c0fc297621fb241d3dc354"
+      }
+    },
+    "record_count": 10,
+    "after_format_execution": false,
+    "scientific_budget_used": false
+  },
+  "archives": {
+    "first-observation.tar.gz": {
+      "bytes": 27868,
+      "sha256": "10f2fce67c5208c24611dc3531c118c8e04c39519b3b50c7c1e8069d4b50a597",
+      "members": 18
+    },
+    "strict-profile.tar.gz": {
+      "bytes": 28038,
+      "sha256": "4a5fec5e8ddf98d095952b301076889c15a72f915e0f38e07c7227ee0487f610",
+      "members": 19
+    }
+  },
+  "archive_roundtrip": {
+    "control": "archive_roundtrip",
+    "members": 101,
+    "archive_bytes": 8371,
+    "archive_sha256": "c6d3f774e89053195b16fd5edf5bd38ef5b3b23018c0fc297621fb241d3dc354",
+    "mismatches": 0
+  },
+  "refusals": [
+    {
+      "control": "legacy_recovery",
+      "status": "UNKNOWN",
+      "complete": false,
+      "members": 65,
+      "missing_gate_scores_created": false
+    },
+    {
+      "control": "missing_scores",
+      "refusal": "[Errno 2] No such file or directory: '/tmp/tmp2c806jpv/cell-0/cold-step1.npz'"
+    },
+    {
+      "control": "corrupt_scores",
+      "refusal": "cold score binding mismatch"
+    },
+    {
+      "control": "missing_gate_index",
+      "refusal": "cold index does not cover the sealed selections"
+    },
+    {
+      "control": "missing_whole_index",
+      "refusal": "declared cold index is missing"
+    },
+    {
+      "control": "removed_schema_and_index",
+      "refusal": "pinned collector requires current cold evidence schema"
+    },
+    {
+      "control": "wrong_checkpoint",
+      "refusal": "cold score binding mismatch"
+    },
+    {
+      "control": "changed_gate_digest",
+      "refusal": "sealed checkpoint is absent from verified history"
+    },
+    {
+      "control": "shadowed_best_digest",
+      "refusal": "sealed checkpoint is absent from verified history"
+    }
+  ],
+  "format": {
+    "files": {
+      "archive.py": {
+        "before_sha256": "492fec8000916b7598b34f0f86251b402f46e48b9af1c6946d2c173c29efe6f6",
+        "after_sha256": "771de11afb4b0c52cdd81095012625686f966106f6b6a8669fa6bae3ecf87f87",
+        "ast_identical": true,
+        "formatted_range": "27-153",
+        "format_check_exit": 0
+      },
+      "study.py": {
+        "before_sha256": "191e8a846fa5acb0c2d5e5c9b0c19ccc4db93588990dfee14a54e81a57bf62d4",
+        "after_sha256": "b7f892fdd2e38507d4761bb3f5ba0e4a5d848bc4b6e8f457f3dbc6dc2f105f38",
+        "ast_identical": true,
+        "formatted_range": "193-270",
+        "format_check_exit": 0
+      },
+      "publish_results.py": {
+        "before_sha256": "2bc3862335ad382e399e898399872872be0f4b70fc321bdd6c5b041ed45e6bac",
+        "after_sha256": "2bc3862335ad382e399e898399872872be0f4b70fc321bdd6c5b041ed45e6bac",
+        "ast_identical": true,
+        "formatted_range": "86-146",
+        "format_check_exit": 0
+      },
+      "test_archive_retention.py": {
+        "before_sha256": "84e4948f51c9957cda647a5f8a265af2a3156fb66cdd0d185d3ed563d2796e45",
+        "after_sha256": "3400b52f8b9dba2ea3a86774829e791850b3a06e4e30f2cc267aec3638052d14",
+        "ast_identical": true,
+        "formatted_range": null,
+        "format_check_exit": 0
+      }
+    },
+    "just_fmt_exit": 0,
+    "ruff": "0.15.13",
+    "tests_rerun_after_format": false,
+    "scope": "Changed function ranges and new test file; preserve unrelated historical style."
+  },
+  "unverified_scientific_scope": [
+    "No training or model forward invoked.",
+    "No historical missing score was recreated.",
+    "No active experiment, host process or remote source was changed.",
+    "No host authenticity, generalization, circuit advantage or matched-quality training advantage is established.",
+    "An older producer cannot satisfy the strict publication contract unless it already retained the required original scores; surviving legacy files are UNKNOWN for completeness."
+  ]
+}
