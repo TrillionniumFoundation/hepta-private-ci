@@ -1,0 +1,234 @@
+name: Codex HIA production cache dates
+
+on:
+  pull_request:
+    paths:
+      - hia/**
+      - codex-rs/models-manager/**
+      - codex-rs/core-plugins/**
+      - codex-rs/core/Cargo.toml
+      - codex-rs/Cargo.lock
+      - scripts/format.py
+      - scripts/run-nextest.py
+      - .github/workflows/codex-hia-datetime-cache.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cache:
+    name: production-cache (${{ matrix.gate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [differential, owners]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_BUILD_JOBS: "4"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the producing source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out the unchanged pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
+          path: Hepta
+          persist-credentials: false
+
+      - name: Check out immutable original callers and dependency lock
+        if: matrix.gate == 'differential'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 756f7a31ad4373809a00da65a91ba1ca4571f6cb
+          path: original
+          persist-credentials: false
+          sparse-checkout: |
+            codex-rs/Cargo.lock
+            codex-rs/models-manager/src/cache.rs
+            codex-rs/core-plugins/src/remote/catalog_cache.rs
+            codex-rs/core-plugins/src/remote/catalog_cache_tests.rs
+          sparse-checkout-cone-mode: false
+
+      - name: Select the formal Rust compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustup component add --toolchain 1.96.1 clippy rustfmt
+          echo "RUSTUP_TOOLCHAIN=1.96.1" >> "$GITHUB_ENV"
+          echo "RUSTC=$(rustup which --toolchain 1.96.1 rustc)" >> "$GITHUB_ENV"
+          echo "CACHE_CARGO=$(rustup which --toolchain 1.96.1 cargo)" >> "$GITHUB_ENV"
+          echo "CODEX_HIA_NATIVE_LIB_DIR=$RUNNER_TEMP/cache-native" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/cache-cargo-target" >> "$GITHUB_ENV"
+          rustc +1.96.1 -vV > "$RUNNER_TEMP/cache-toolchain.log"
+          cargo +1.96.1 --version >> "$RUNNER_TEMP/cache-toolchain.log"
+
+      - name: Rebuild native compiler fixed point and all production modules
+        id: build
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build.py --hepta-root "$GITHUB_WORKSPACE/Hepta" \
+            --output "$RUNNER_TEMP/cache-native" \
+            2>&1 | tee "$RUNNER_TEMP/cache-build.log"
+
+      - name: Run the full original Chrono and native buffer differential
+        if: matrix.gate == 'differential'
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_datetime_cache.py \
+            --build "$RUNNER_TEMP/cache-native" \
+            --original-lock "$GITHUB_WORKSPACE/original/codex-rs/Cargo.lock" \
+            --cargo "$CACHE_CARGO" --rustc "$RUSTC" \
+            --output "$RUNNER_TEMP/cache-differential" \
+            2>&1 | tee "$RUNNER_TEMP/cache-differential.log"
+
+      - name: Replay exact production methods and unchanged original TTL assertions
+        if: matrix.gate == 'differential'
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_datetime_cache_callers.py \
+            --build "$RUNNER_TEMP/cache-native" \
+            --differential "$RUNNER_TEMP/cache-differential" \
+            --original-repo "$GITHUB_WORKSPACE/original" --rustc "$RUSTC" \
+            --output "$RUNNER_TEMP/cache-callers" \
+            2>&1 | tee "$RUNNER_TEMP/cache-callers.log"
+
+      - name: Install pinned repository test runners
+        if: matrix.gate == 'owners'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Bind the original native compiler policy
+        id: policy
+        if: matrix.gate == 'owners'
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/prepare_unified_diff_policy.py \
+            --repo "$GITHUB_WORKSPACE/codex" --rustc "$RUSTC" \
+            --config "$RUNNER_TEMP/cache-policy/config.json" \
+            --receipt-root "$RUNNER_TEMP/cache-policy/receipts" \
+            --bind-input "$RUNNER_TEMP/cache-native/build.json" \
+            --report "$RUNNER_TEMP/cache-policy/configuration-report.json" \
+            --github-env "$GITHUB_ENV" \
+            2>&1 | tee "$RUNNER_TEMP/cache-policy.log"
+
+      - name: Preserve the complete source and original nextest configuration
+        id: source
+        if: matrix.gate == 'owners'
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cache-owners"
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py snapshot \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/cache-owners/source-before.json"
+          python3 - <<'PY'
+          import json, os, pathlib, tomllib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "cache-owners"
+          original = pathlib.Path(".config/nextest.toml").read_text()
+          settings = tomllib.loads(original)
+          assert "store" not in settings
+          for mode in ("default", "native"):
+              store = root / mode / "nextest"
+              configured = original + "\n[store]\ndir = " + json.dumps(str(store)) + "\n"
+              actual = tomllib.loads(configured)
+              assert actual.pop("store") == {"dir": str(store)}
+              assert actual == settings
+              (root / (mode + ".toml")).write_text(configured)
+          PY
+
+      - name: Run complete original crate suites with default behavior
+        if: matrix.gate == 'owners'
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test --locked \
+            -p codex-models-manager -p codex-core-plugins --profile default \
+            --config-file "$RUNNER_TEMP/cache-owners/default.toml" \
+            2>&1 | tee "$RUNNER_TEMP/cache-owners/default.log"
+
+      - name: Run the same complete crate suites through native HIA
+        if: ${{ always() && matrix.gate == 'owners' && steps.policy.outcome == 'success' && steps.source.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-models-manager -p codex-core-plugins \
+            --features codex-models-manager/hia-native,codex-core-plugins/hia-native \
+            --profile default --config-file "$RUNNER_TEMP/cache-owners/native.toml" \
+            2>&1 | tee "$RUNNER_TEMP/cache-owners/native.log"
+
+      - name: Require both complete test inventories and actual scoped fix
+        if: matrix.gate == 'owners'
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, xml.etree.ElementTree as ET
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "cache-owners"
+          observed = {}
+          for mode in ("default", "native"):
+              suites = ET.parse(root / mode / "nextest/default/junit.xml").getroot()
+              cases = list(suites.iter("testcase"))
+              assert cases
+              assert all(case.find(tag) is None for case in cases for tag in ("failure", "error", "skipped"))
+              assert all(int(suite.get(key, "0")) == 0 for suite in suites.iter("testsuite")
+                         for key in ("failures", "errors", "skipped"))
+              observed[mode] = sorted((case.get("classname"), case.get("name")) for case in cases)
+          assert observed["default"] == observed["native"]
+          (root / "test-inventories.json").write_text(json.dumps({"passed": True, "cases": observed}, indent=2) + "\n")
+          PY
+          CODEX_HIA_POLICY_FIX_REPORT="$RUNNER_TEMP/cache-owners/fix.json" \
+            just fix --locked --all-targets -p codex-models-manager -p codex-core-plugins \
+            --features codex-models-manager/hia-native,codex-core-plugins/hia-native \
+            2>&1 | tee "$RUNNER_TEMP/cache-owners/fix.log"
+          python3 - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "cache-owners"
+          report = json.loads((root / "fix.json").read_bytes())
+          assert report["passed"] and report["all_subcompilers_succeeded"] and report["source_inputs_unchanged"]
+          records = [json.loads(line) for line in pathlib.Path(report["stdout"]["path"]).read_text().splitlines()]
+          for crate in ("models-manager", "core-plugins"):
+              manifest = str(pathlib.Path(os.environ["GITHUB_WORKSPACE"]) / "codex/codex-rs" / crate / "Cargo.toml")
+              owners = [row for row in records if row.get("reason") == "compiler-artifact"
+                        and row["manifest_path"] == manifest and row["target"]["kind"] == ["lib"]]
+              assert len(owners) == 2 and {row["profile"]["test"] for row in owners} == {False, True}
+              assert all(not row["fresh"] and "hia-native" in row["features"] for row in owners)
+          PY
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py unchanged \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --before "$RUNNER_TEMP/cache-owners/source-before.json" \
+            --report "$RUNNER_TEMP/cache-owners/source-after.json"
+
+      - name: Preserve complete native and original execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hia-datetime-cache-${{ matrix.gate }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/cache-*.log
+            ${{ runner.temp }}/cache-native/**
+            ${{ runner.temp }}/cache-differential/*.json
+            ${{ runner.temp }}/cache-differential/*.gz
+            ${{ runner.temp }}/cache-differential/*.stdout
+            ${{ runner.temp }}/cache-differential/*.stderr
+            ${{ runner.temp }}/cache-differential/target/debug/codex-hia-datetime-cache-oracle
+            ${{ runner.temp }}/cache-callers/**
+            ${{ runner.temp }}/cache-owners/**
+            ${{ runner.temp }}/cache-policy/**
