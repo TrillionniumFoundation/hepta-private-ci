@@ -101,8 +101,29 @@ async fn enqueue_pending_patch(app: &mut App, thread_id: ThreadId) -> Result<()>
 }
 
 async fn drain_pending_patch(app: &mut App, tui: &mut crate::tui::Tui) -> Result<()> {
-    app.drain_active_thread_events_until(tui, Instant::now() + Duration::from_secs(/*secs*/ 1))
-        .await
+    // The fixture has already queued every event. A frame deadline can stop
+    // after the item notification, before its following approval request.
+    let queued_events = app
+        .active_thread_rx
+        .as_ref()
+        .expect("pending patch fixture should have an active receiver")
+        .len();
+    assert!(
+        queued_events > 0,
+        "pending patch fixture should have queued events"
+    );
+    // An expired deadline processes one queued event per call.
+    for _ in 0..queued_events {
+        app.drain_active_thread_events_until(tui, Instant::now())
+            .await?;
+    }
+    assert!(
+        app.active_thread_rx
+            .as_ref()
+            .is_some_and(tokio::sync::mpsc::Receiver::is_empty),
+        "pending patch fixture should be fully drained"
+    );
+    Ok(())
 }
 
 fn open_patch(app: &mut App, rx: &mut UnboundedReceiver<AppEvent>) -> ApplyPatchApprovalRequest {
