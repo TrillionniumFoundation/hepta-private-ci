@@ -10,7 +10,7 @@ from train import Data, apply, atomic_json, digest
 from model import Classifier
 
 
-def confirm(root,results,out,budget,matched_step=0):
+def confirm(root,results,out,budget,matched_step=0,device="cpu"):
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     manifest=results/f'seal-{budget}.json'; rows=json.loads(manifest.read_text())
     assert len(rows)==21 and len({(x['arm'],x['seed']) for x in rows})==21
@@ -36,19 +36,20 @@ def confirm(root,results,out,budget,matched_step=0):
             continue
         started=time.perf_counter()
         model=Classifier(info['arm'])
-        apply(model,torch.load(chosen,map_location='cpu',weights_only=True));model.eval()
+        apply(model,torch.load(chosen,map_location='cpu',weights_only=True));model.to(device);model.eval()
+        if device=='cuda':torch.cuda.synchronize()
         init_wall=time.perf_counter()-started
         kwargs={};timings={}
         with torch.inference_mode():
             for name,x in streams.items():
                 stamp=time.perf_counter()
-                kwargs[name]=torch.cat([model(batch) for batch in x.split(48)]).numpy()
+                kwargs[name]=torch.cat([model(batch.to(device)).cpu() for batch in x.split(48)]).numpy()
                 timings[name]=time.perf_counter()-stamp
                 assert kwargs[name].shape==(len(y),20) and np.isfinite(kwargs[name]).all()
         tmp=probs.with_suffix('.tmp')
         with tmp.open('wb') as h:np.savez_compressed(h,row=row,y=y,speaker=speaker,**kwargs)
         os.replace(tmp,probs)
-        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,
+        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,
                     checkpoint_sha256=digest(chosen),score_sha256=digest(probs),seal_sha256=digest(manifest),
                     input_setup_wall_s=common,model_restore_wall_s=init_wall,forward_wall_s=timings))
         print(folder.name,budget,matched_step,flush=True)
@@ -57,4 +58,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser()
     for k in ('data','runs','out'):p.add_argument(k,type=Path)
     p.add_argument('rung',type=int);p.add_argument('--matched-step',type=int,default=0)
-    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step)
+    p.add_argument('--device',choices=['cpu','cuda'],default='cpu')
+    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step,a.device)
