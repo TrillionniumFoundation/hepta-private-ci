@@ -28,10 +28,11 @@ def init(src,zipfile):
 def derive(f,rows,B):
     events=[];ts=[]
     for i in rows:
-        times=f['spikes/times'][int(i)]*1.e6
+        times=np.asarray(f['spikes/times'][int(i)],dtype=np.float64)*1.e6
+        if not np.isfinite(times).all():raise ValueError('invalid event timestamps')
         times=times.astype(np.int64,copy=False)
         delta=np.diff(times).astype(np.float32)/1000.
-        assert (delta>=0).all()
+        assert (delta>=0).all() and delta.sum()>0
         ts.append(delta);events.append(f['spikes/units'][int(i)][:-1].astype(np.int32))
     lens=np.array([len(e) for e in events],dtype=np.int32);L=(int(lens.max())//8192+1)*8192
     x=-np.ones((B,L),dtype=np.int32);t=np.zeros((B,L),dtype=np.float32);c=t.copy()

@@ -1,0 +1,762 @@
+{
+ "targets": {
+  "0.6": {
+   "literal": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "smooth": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "fixed": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "no_feedback": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "lif": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "cnn": {
+    "reached_all": true,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.8152417540550232,
+      "costs": {
+       "fit_wall_s": 77.87890671607602,
+       "fit_cpu_s": 30.00011953699964,
+       "selection_and_checkpoint_accounted_s": 0.2256455949991505,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.14989640900239465,
+       "forward_natural_s": 0.3428728090002551,
+       "test_all_views_s": 1.448036082998442,
+       "prediction_write_hash_s": 0.15414923799835378,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 81.72572032007702,
+      "from_original_files_natural_wall_s": 154.28874072907638,
+      "complete_observed_panel_wall_s": 155.54805324107292
+     },
+     {
+      "seed": 311,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7669944167137146,
+      "costs": {
+       "fit_wall_s": 76.25600170997677,
+       "fit_cpu_s": 30.003654948999795,
+       "selection_and_checkpoint_accounted_s": 0.15433263900013117,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.023777162001351826,
+       "forward_natural_s": 0.24698557000010624,
+       "test_all_views_s": 1.3621755949934595,
+       "prediction_write_hash_s": 0.24852017399825854,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 79.80949587197756,
+      "from_original_files_natural_wall_s": 152.37251628097692,
+      "complete_observed_panel_wall_s": 153.73622647996854
+     },
+     {
+      "seed": 557,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.773449182510376,
+      "costs": {
+       "fit_wall_s": 103.12579270002243,
+       "fit_cpu_s": 30.00238275599861,
+       "selection_and_checkpoint_accounted_s": 0.21861274499678984,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.0023224369979288895,
+       "forward_natural_s": 0.24946710499716573,
+       "test_all_views_s": 1.348399595994124,
+       "prediction_write_hash_s": 0.1430722520017298,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 106.72459377801351,
+      "from_original_files_natural_wall_s": 179.28761418701288,
+      "complete_observed_panel_wall_s": 180.52961893001157
+     }
+    ]
+   },
+   "attention": {
+    "reached_all": true,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.6691014766693115,
+      "costs": {
+       "fit_wall_s": 68.40272429099787,
+       "fit_cpu_s": 30.006228765999985,
+       "selection_and_checkpoint_accounted_s": 3.550905882000734,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.03629972600174369,
+       "forward_natural_s": 1.3913422190016718,
+       "test_all_views_s": 6.211701208005252,
+       "prediction_write_hash_s": 0.16344148799907998,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 76.50967090900122,
+      "from_original_files_natural_wall_s": 149.07269131800058,
+      "complete_observed_panel_wall_s": 154.05649179500324
+     },
+     {
+      "seed": 311,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7394506931304932,
+      "costs": {
+       "fit_wall_s": 48.680248552987905,
+       "fit_cpu_s": 30.006683046000035,
+       "selection_and_checkpoint_accounted_s": 0.3378740419939277,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.011388678001821972,
+       "forward_natural_s": 1.055071868999221,
+       "test_all_views_s": 5.386038144995837,
+       "prediction_write_hash_s": 0.13944103800167795,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 53.212981932982075,
+      "from_original_files_natural_wall_s": 125.77600234198144,
+      "complete_observed_panel_wall_s": 130.24640965597973
+     },
+     {
+      "seed": 557,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7406268119812012,
+      "costs": {
+       "fit_wall_s": 76.54807314097343,
+       "fit_cpu_s": 30.01664112000006,
+       "selection_and_checkpoint_accounted_s": 0.5350777770017885,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.010692813000787282,
+       "forward_natural_s": 1.0614733900001738,
+       "test_all_views_s": 5.162215643002128,
+       "prediction_write_hash_s": 0.10995079799977248,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 81.28371591197538,
+      "from_original_files_natural_wall_s": 153.84673632097474,
+      "complete_observed_panel_wall_s": 158.05742937197647
+     }
+    ]
+   }
+  },
+  "0.7": {
+   "literal": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "smooth": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "fixed": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "no_feedback": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "lif": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "cnn": {
+    "reached_all": true,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.8152417540550232,
+      "costs": {
+       "fit_wall_s": 77.87890671607602,
+       "fit_cpu_s": 30.00011953699964,
+       "selection_and_checkpoint_accounted_s": 0.2256455949991505,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.14989640900239465,
+       "forward_natural_s": 0.3428728090002551,
+       "test_all_views_s": 1.448036082998442,
+       "prediction_write_hash_s": 0.15414923799835378,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 81.72572032007702,
+      "from_original_files_natural_wall_s": 154.28874072907638,
+      "complete_observed_panel_wall_s": 155.54805324107292
+     },
+     {
+      "seed": 311,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7669944167137146,
+      "costs": {
+       "fit_wall_s": 76.25600170997677,
+       "fit_cpu_s": 30.003654948999795,
+       "selection_and_checkpoint_accounted_s": 0.15433263900013117,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.023777162001351826,
+       "forward_natural_s": 0.24698557000010624,
+       "test_all_views_s": 1.3621755949934595,
+       "prediction_write_hash_s": 0.24852017399825854,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 79.80949587197756,
+      "from_original_files_natural_wall_s": 152.37251628097692,
+      "complete_observed_panel_wall_s": 153.73622647996854
+     },
+     {
+      "seed": 557,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.773449182510376,
+      "costs": {
+       "fit_wall_s": 103.12579270002243,
+       "fit_cpu_s": 30.00238275599861,
+       "selection_and_checkpoint_accounted_s": 0.21861274499678984,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.0023224369979288895,
+       "forward_natural_s": 0.24946710499716573,
+       "test_all_views_s": 1.348399595994124,
+       "prediction_write_hash_s": 0.1430722520017298,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 106.72459377801351,
+      "from_original_files_natural_wall_s": 179.28761418701288,
+      "complete_observed_panel_wall_s": 180.52961893001157
+     }
+    ]
+   },
+   "attention": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7394506931304932,
+      "costs": {
+       "fit_wall_s": 48.680248552987905,
+       "fit_cpu_s": 30.006683046000035,
+       "selection_and_checkpoint_accounted_s": 0.3378740419939277,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.011388678001821972,
+       "forward_natural_s": 1.055071868999221,
+       "test_all_views_s": 5.386038144995837,
+       "prediction_write_hash_s": 0.13944103800167795,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 53.212981932982075,
+      "from_original_files_natural_wall_s": 125.77600234198144,
+      "complete_observed_panel_wall_s": 130.24640965597973
+     },
+     {
+      "seed": 557,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.7406268119812012,
+      "costs": {
+       "fit_wall_s": 76.54807314097343,
+       "fit_cpu_s": 30.01664112000006,
+       "selection_and_checkpoint_accounted_s": 0.5350777770017885,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.010692813000787282,
+       "forward_natural_s": 1.0614733900001738,
+       "test_all_views_s": 5.162215643002128,
+       "prediction_write_hash_s": 0.10995079799977248,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 81.28371591197538,
+      "from_original_files_natural_wall_s": 153.84673632097474,
+      "complete_observed_panel_wall_s": 158.05742937197647
+     }
+    ]
+   }
+  },
+  "0.8": {
+   "literal": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "smooth": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "fixed": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "no_feedback": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "lif": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "cnn": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": 30,
+      "chosen_weights_rung": 30,
+      "observed_rungs": [
+       30
+      ],
+      "reported_validation": 0.8152417540550232,
+      "costs": {
+       "fit_wall_s": 77.87890671607602,
+       "fit_cpu_s": 30.00011953699964,
+       "selection_and_checkpoint_accounted_s": 0.2256455949991505,
+       "training_data_setup_s": 0.9287207429988484,
+       "test_data_setup_s": 2.199678048000351,
+       "restore_s": 0.14989640900239465,
+       "forward_natural_s": 0.3428728090002551,
+       "test_all_views_s": 1.448036082998442,
+       "prediction_write_hash_s": 0.15414923799835378,
+       "cold_preprocessing_sum_s": 72.56302040899936
+      },
+      "warm_natural_wall_s": 81.72572032007702,
+      "from_original_files_natural_wall_s": 154.28874072907638,
+      "complete_observed_panel_wall_s": 155.54805324107292
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   },
+   "attention": {
+    "reached_all": false,
+    "per_seed": [
+     {
+      "seed": 137,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 311,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     },
+     {
+      "seed": 557,
+      "chosen_rung": null,
+      "observed_rungs": [
+       30
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "qualified_comparisons": {},
+ "summary": "Fixed-rung qualification. Data acquisition and queue waiting are not in these measured data-to-prediction times. The input preparation sum is sequential-equivalent if prepared concurrently. Training receipt overhead is accumulated as recorded. Uninstrumented serialization is explicitly null."
+}

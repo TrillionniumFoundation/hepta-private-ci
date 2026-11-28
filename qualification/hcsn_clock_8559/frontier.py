@@ -27,7 +27,7 @@ def evaluate(root,out):
             for seed in SEEDS:
                 observed=[];answer=None
                 for r in RUNGS:
-                    if not (root/'runs'/f'seal-{r}.json').exists():break
+                    if not (root/'runs'/f'seal-{r}.json').exists() or not (root/f'cold-{r}'/'complete.json').exists():break
                     val=get(root,arm,seed,r)
                     if val is None:break
                     d,c=val;observed.append(r)

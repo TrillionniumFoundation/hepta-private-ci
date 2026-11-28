@@ -21,3 +21,7 @@
 - [两层语音写入的实际拟合证据](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/9db378b9a7d1f6d317eca0ddc2afa2d6abed9aba/qualification/hcsn_finite_multilayer_edit_20261128)
 - [SHD 高速算子的源代码、梯度和实测耗时](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b7db73a68f25c6ef9255e7cb06e47ac55de9d7d/qualification/hcsn_clock_8559/fused/RESULTS.md)
 - [全部 21 个 CPU 首档权重与原始回执](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/dafdaac79117872feff10ef519f232a2aee00698/qualification/hcsn_shd_cpu_8559/runs)
+
+## 已开启的第一档语音冷测
+
+原始 2,264 段录音，三种子，单核 CPU 30 秒/模型。按说话人等权，原式 9.73%，同宽平滑 8.26%，固定壁 4.93%，关闭直接价格反馈 11.39%，LIF 46.20%，Transformer 86.48%，CNN 89.68%。两位全新说话人上的平均值依次为 9.50%、8.12%、4.73%、11.26%、44.55%、78.56%、81.25%。相对平滑模型的差为 +1.47 点，边际 95% 区间 [−0.06,+2.96] 点，三个预定门均未通过。三种子同时达到 60% 开发准确率的是 CNN 与 Transformer，达到 70% 的只有 CNN，80% 尚无人共同达到。独立优化实现 V1 的三个种子冷测为 28.48%、27.33%、27.97%，同一组已训权重在两套推理引擎上自然输入的标签全一致。[原始 21 模型](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/996ebaee42951428c55de61b4c9e8bc9ada0d654/qualification/hcsn_shd_cpu_8559/cold-30) · [快速实现](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/68510b44a9390f8ba1646c3c3707eaacec91056a/qualification/hcsn_shd_cpu_8559)
