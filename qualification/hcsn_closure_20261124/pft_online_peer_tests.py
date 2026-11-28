@@ -82,8 +82,8 @@ def worker(database, contract, initial, control, crash_after_commit):
     if crash_after_commit:
         original = StatisticsLedger.append
 
-        def exit_before_ack(self, packet, expected_head):
-            result = original(self, packet, expected_head)
+        def exit_before_ack(self, packet, expected_head, **limits):
+            result = original(self, packet, expected_head, **limits)
             if result["status"] == "accepted":
                 os._exit(71)
             return result

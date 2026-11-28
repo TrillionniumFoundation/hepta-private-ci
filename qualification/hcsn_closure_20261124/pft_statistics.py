@@ -193,20 +193,29 @@ class StatisticsLedger:
         material = dict(contract_sha256=self.contract_hash, batches=rows)
         return dict(head=digest(material), revision=len(rows), material=material)
 
-    def append(self, packet, expected_head):
+    def append(self, packet, expected_head, *, max_batches=None):
         validate_packet(packet, self.contract)
+        if max_batches is not None and (
+            type(max_batches) is not int or max_batches <= 0
+        ):
+            raise ValueError("batch bound must be a positive integer")
         body, packet_hash = packet["body"], packet["payload_sha256"]
         try:
             with self.connect() as db:
                 db.execute("BEGIN IMMEDIATE")
+                state = self.state(db)
+                if max_batches is not None and state["revision"] > max_batches:
+                    raise ValueError("research exchange batch bound exceeded")
                 previous = db.execute(
                     "SELECT digest FROM batches WHERE id=?", (body["batch_id"],)
                 ).fetchone()
                 if previous:
                     if previous[0] != packet_hash:
                         raise ValueError("batch ID conflicts with different bytes")
-                    return dict(status="idempotent", **self.state(db))
-                if self.state(db)["head"] != expected_head:
+                    return dict(status="idempotent", **state)
+                if max_batches is not None and state["revision"] >= max_batches:
+                    raise ValueError("research exchange batch bound exceeded")
+                if state["head"] != expected_head:
                     raise ValueError("stale expected head")
                 db.execute(
                     "INSERT INTO batches VALUES (?,?,?)",

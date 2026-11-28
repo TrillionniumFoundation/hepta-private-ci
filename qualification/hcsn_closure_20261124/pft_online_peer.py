@@ -260,13 +260,9 @@ class PeerService(socketserver.TCPServer):
             or set(arguments) != {"packet", "expected_head"}
         ):
             raise ValueError("unsupported peer operation")
-        packet = arguments["packet"]
-        validate_packet(packet, self.ledger.contract)
-        state = _inventory(self.ledger)
-        known = dict(state["material"]["batches"])
-        if state["revision"] >= MAX_BATCHES and packet["body"]["batch_id"] not in known:
-            raise ValueError("research exchange batch bound exceeded")
-        return self.ledger.append(packet, arguments["expected_head"])
+        return self.ledger.append(
+            arguments["packet"], arguments["expected_head"], max_batches=MAX_BATCHES
+        )
 
     def sync(self, address):
         """Push missing contributions; uncertainty remains retryable by batch ID."""
