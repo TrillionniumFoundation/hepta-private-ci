@@ -247,10 +247,22 @@ def training_graph(record, graph, cells, budget, generate, verify, directory):
     return result
 
 
-def fit_bundle(records, models, graphs, budget, materials, out, *, parent=None):
+def fit_bundle(
+    records, models, graphs, budget, materials, out, *, parent=None, router_plan=None
+):
     """Fit with actual local generations and retain every graph-search observation."""
     from contextlib import closing
 
+    plan = (
+        circuit_router.RouterPlan(execution_binding())
+        if router_plan is None
+        else router_plan
+    )
+    circuit_router._validate_plan(plan)
+    require(
+        plan.execution_binding_digest == execution_binding(),
+        "router execution binding differs",
+    )
     cells = _registry(models, budget)
     for graph in graphs:
         _check_graph(cells, graph, budget)
@@ -265,7 +277,7 @@ def fit_bundle(records, models, graphs, budget, materials, out, *, parent=None):
             backend.generate,
             data.verify_answer,
             out,
-            plan=circuit_router.RouterPlan(execution_binding()),
+            plan=plan,
             execution_profile=PROFILE,
         )
     training_inputs = []
