@@ -1,0 +1,183 @@
+{
+  "schema": "codex.hia.datetime-cache-buffer-contract.v1",
+  "revision": 1,
+  "status": "Native TimeDelta conversion, elapsed-date arithmetic and original model/plugin freshness policies; UTC clock and serialized date types still use the original boundary. Whole-product retirement remains open.",
+  "module": "datetime_cache",
+  "source_sha256": "cfbb42f3d642580fed4152e54f381e0af840aae96b5080411fb4d2b6344b8f29",
+  "core_sha256": "6c14c25ba443a0f630826dc0df0a2e56b82bd93c33ba7b8bbff6560f13cd4924",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "TimeDelta::from_std",
+      "TimeDelta::zero",
+      "DateTime::from_timestamp",
+      "DateTime::signed_duration_since",
+      "TimeDelta::PartialOrd"
+    ],
+    "oracle_registry_packages": 43,
+    "source_files": {
+      "src/time_delta.rs": {
+        "bytes": 57500,
+        "sha256": "31c15727ca89f4aa1a5e7a3ef8a9814c1bf5a30a7baf20f90b1a21b20cd00ed3"
+      }
+    }
+  },
+  "entry": {
+    "symbol": "f0",
+    "static_symbol": "codex_hia_datetime_cache",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32"
+  },
+  "caller_preconditions": [
+    "Source and output are live disjoint readable/writable ranges; pointers and advertised lengths are real allocated capacities.",
+    "No alignment is required. Source is not concurrently modified; native retains no pointers or mutable global state.",
+    "Workspace is empty and is never accessed."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed timestamp seconds use two's-complement bits",
+    "fields": [
+      "version=1",
+      "operation: 0 duration admission before clock; 1 models freshness; 2 plugins freshness",
+      "fetched seconds (required zero for operation 0)",
+      "fetched nanos (required zero for operation 0)",
+      "now seconds (required zero for operation 0)",
+      "now nanos (required zero for operation 0)",
+      "canonical unsigned std Duration seconds",
+      "canonical std Duration nanos (less than 1e9)"
+    ],
+    "mutation": "All eight words loaded before output writes; source never changed."
+  },
+  "workspace": {
+    "bytes_exact": 0
+  },
+  "output": {
+    "bytes_required": 32,
+    "fields": [
+      "version=1",
+      "valid timestamp operands",
+      "valid TimeDelta::from_std result",
+      "freshness boolean"
+    ],
+    "tail": "Bytes beyond the 32-byte result remain unchanged.",
+    "invalid_value": "Invalid timestamp operands publish [1,0,0,0]; invalid duration publishes [1,1,0,0]; operation 0 publishes [1,1,1,0] on admission. All semantic values return status zero."
+  },
+  "return_codes": {
+    "0": "Complete 32-byte decision result",
+    "4294967294": "Output capacity below 32; checked before input/metadata; no writes",
+    "4294967295": "Malformed source size, version, operation, nonempty workspace or nonzero unused preflight date words; no writes"
+  },
+  "policy_semantics": {
+    "models": "Zero TTL is stale. Otherwise a valid TTL admits age <= TTL, including negative age. The actual caller preserves rejection of zero/invalid TTL before reading Utc::now.",
+    "plugins": "Missing fetched_at is stale. With valid timestamps and TTL, require zero <= age <= TTL. The actual caller retains the original three-hour TTL.",
+    "duration": "Original symmetric TimeDelta millisecond limit; canonical std transport rejects noncanonical nanos instead of normalizing them.",
+    "difference": "Exact original Chrono date difference, including leap-second corrections based on seconds within each day."
+  },
+  "qualified_helper_copies": [
+    {
+      "function": "floor_div",
+      "source": "hia/datetime_arithmetic.hepta",
+      "sha256": "79449137e26f68948cd3b16a0a40be73feee90f16038cd579444cef211d6113c"
+    },
+    {
+      "function": "timestamp_valid",
+      "source": "hia/datetime_arithmetic.hepta",
+      "sha256": "91236c7139f53f90185bb2d30e1c23cd905fab1e6c5bb21cf2df2749963f0fbd"
+    },
+    {
+      "function": "delta_valid",
+      "source": "hia/datetime_arithmetic.hepta",
+      "sha256": "91f2245983a0bdfa59c171b5a12ba1c7adce4756cc58cbedc079c7085009a7ee"
+    },
+    {
+      "function": "difference",
+      "source": "hia/datetime_arithmetic.hepta",
+      "sha256": "ff4a4dc5dff5c1f1ad2bb6992b2b243351168356f4c298dd8237f704ce23ef34"
+    }
+  ],
+  "production_callers": [
+    {
+      "path": "codex-rs/models-manager/src/cache.rs",
+      "original_bytes": 8406,
+      "original_sha256": "97d64ab915c9736f409ceef9c0e71f018c7bfeb4c14060d4bda0453ba835a152",
+      "current_bytes": 9548,
+      "current_sha256": "a6edbdfe1e82e84b553935141e886f6492d11bf1bd96a7e0087e295e955a82b9"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/remote/catalog_cache.rs",
+      "original_bytes": 6488,
+      "original_sha256": "b63fcdc3d534df9676fb26a9dcadfca13918db9cb2235798dc9a40d05a8dd04c",
+      "current_bytes": 7234,
+      "current_sha256": "c179bebd2b09350be70212cdab4f297b0669153f1c46217bcbae526b7e8678e2"
+    }
+  ],
+  "unchanged_original_test_files": [
+    {
+      "path": "codex-rs/models-manager/src/manager_tests.rs",
+      "bytes": 49636,
+      "sha256": "d6b777b8901e7f65f8b1e8e7510d812b1892c430048d27cb5ab35b8fe72eab4a"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/remote/catalog_cache_tests.rs",
+      "bytes": 4685,
+      "sha256": "173641bb85bf92092e5fdaa017a2bd927fc4ab169901c4bb45bd57823c745817"
+    }
+  ],
+  "transport": {
+    "path": "hia/datetime_cache.rs",
+    "bytes": 1720,
+    "sha256": "7abf50b11caf82def97d2c1dd071c1d2e501584f224042fd8601273752cffff1"
+  },
+  "differential_corpus": {
+    "total_cases": 557470,
+    "operations": {
+      "0": 46312,
+      "1": 255579,
+      "2": 255579
+    },
+    "input_bytes": 31218320,
+    "input_sha256": "1aa56071c14cf1ec4eb112007ae5d3fd78ef9169f5a89bbb6d837c983184b0f4",
+    "original_output_bytes": 17839040,
+    "original_output_sha256": "6f218df83ffce6234a459a32f597bd9e6ed02cad35919d93d5b31e2bf002482f",
+    "original_result_counts": {
+      "0,1,0,0": 23692,
+      "0,1,1,0": 22620,
+      "1,0,0,0": 58907,
+      "1,1,0,0": 42003,
+      "1,1,1,0": 36078,
+      "1,1,1,1": 118591,
+      "2,0,0,0": 58907,
+      "2,1,0,0": 42003,
+      "2,1,1,0": 146682,
+      "2,1,1,1": 7987
+    },
+    "buffer_control_groups": {
+      "frame_sizes": 536,
+      "metadata": 15,
+      "unused_preflight_dates": 24,
+      "short_capacity_by_operation": 96,
+      "workspace_by_operation": 27
+    },
+    "buffer_control_calls": 698,
+    "native_calls_required": 2230578
+  },
+  "whole_product_qualified": false,
+  "legacy_retirement": false,
+  "caller_replay_observations": {
+    "input_cases": 557470,
+    "model_cases": 238490,
+    "plugin_cases": 196672,
+    "transport_only_cases": 122308,
+    "clock_reads": 153193
+  }
+}
