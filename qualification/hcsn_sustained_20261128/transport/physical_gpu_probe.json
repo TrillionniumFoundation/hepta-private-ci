@@ -1,0 +1,25 @@
+{
+  "rog": {
+    "ubuntu_device_probe": [
+      "0000:c4:00.0 0x1002 0x1586 amdgpu",
+      "/sys/class/drm/card1/device/gpu_busy_percent 90",
+      "NVIDIA kernel module False"
+    ],
+    "pty_receipt": "dpty-6e780d9000990ef896aa12da6555792adc9aff0311efd816bee0dff943910de8",
+    "created_unix_ms": 1795862543120
+  },
+  "desktop": {
+    "query": [
+      "smi /usr/bin/nvidia-smi",
+      "0000:02:00.0 0x10de 0x2882 nvidia",
+      "0, NVIDIA GeForce RTX 4060, 3936 MiB, 8188 MiB, 9 %, P2",
+      "",
+      "GPU-a33875b7-7eb7-679e-df08-19227d3decee, 9243, 434 MiB",
+      "GPU-a33875b7-7eb7-679e-df08-19227d3decee, 3476275, 149 MiB",
+      "GPU-a33875b7-7eb7-679e-df08-19227d3decee, 2276858, 2530 MiB"
+    ],
+    "pty_receipt": "dpty-2dbf350174da0d9fcf90a93cb3b7f1e07698cfac4e883012bc48a49eaf469bbe",
+    "created_unix_ms": 1795862556426
+  },
+  "disposition": "ROG AMD device busy; desktop NVIDIA has active compute clients; no physical GPU job launched."
+}

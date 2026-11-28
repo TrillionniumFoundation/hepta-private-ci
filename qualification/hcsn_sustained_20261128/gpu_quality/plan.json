@@ -1,0 +1,55 @@
+{
+  "request_id": "hcsn-native-quality-energy-1140569-20261128",
+  "provider": "colab",
+  "account": "qiqian",
+  "source_sha256": "9ead4fbf75f2289725f57ab8ac7bcb4e1e9d20196215f26657872ef8218a02d9",
+  "accelerator": "T4",
+  "scientific_timeout_s": 600,
+  "artifact": "gpu_quality.json",
+  "observed_at": "2026-11-28T11:17:57.923100+00:00",
+  "eligibility": [
+    {
+      "provider": "kaggle",
+      "account": "qiqian",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "kaggle",
+      "account": "sunfo",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "kaggle",
+      "account": "tomas",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "qiqian",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "sunfo",
+      "ready": false,
+      "blockers": [
+        "EXISTING_RUNTIME_REQUIRES_EXPLICIT_BINDING",
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "colab",
+      "account": "tomas",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    }
+  ]
+}

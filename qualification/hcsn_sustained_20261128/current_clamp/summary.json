@@ -1,0 +1,390 @@
+{
+  "cohorts": {
+    "ephys_records": {
+      "cells": 72,
+      "levels": 174,
+      "metrics": {
+        "constant": {
+          "cell_mae": 14.338209994646004,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 14.338209994646004,
+          "finite_fixed_noise_minus": -9.342409868611478,
+          "finite_fixed_noise_minus_ci95": [
+            -12.293555630873186,
+            -6.625398208563982
+          ],
+          "finite_fitted_noise_minus": -9.45525895785557,
+          "finite_fitted_noise_minus_ci95": [
+            -12.476972955472139,
+            -6.681958986212401
+          ]
+        },
+        "fixed": {
+          "cell_mae": 7.358570237764768,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 7.358570237764768,
+          "finite_fixed_noise_minus": -2.3627701117302404,
+          "finite_fixed_noise_minus_ci95": [
+            -3.6391826702625334,
+            -1.206540846064354
+          ],
+          "finite_fitted_noise_minus": -2.4756192009743314,
+          "finite_fitted_noise_minus_ci95": [
+            -3.772141916293224,
+            -1.2932358324568227
+          ]
+        },
+        "fixed_subtracted": {
+          "cell_mae": 5.008897245917849,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 5.008897245917849,
+          "finite_fixed_noise_minus": -0.013097119883320272,
+          "finite_fixed_noise_minus_ci95": [
+            -1.099009446892365,
+            1.039540706741928
+          ],
+          "finite_fitted_noise_minus": -0.1259462091274116,
+          "finite_fitted_noise_minus_ci95": [
+            -1.1722644042710026,
+            0.8789126959664324
+          ]
+        },
+        "interpolate": {
+          "cell_mae": 3.7174672067901233,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 3.7174672067901233,
+          "finite_fixed_noise_minus": 1.2783329192444057,
+          "finite_fixed_noise_minus_ci95": [
+            0.2912550343421859,
+            2.4045841004370945
+          ],
+          "finite_fitted_noise_minus": 1.1654838300003143,
+          "finite_fitted_noise_minus_ci95": [
+            0.22131948770271384,
+            2.240494270402574
+          ]
+        },
+        "lif": {
+          "cell_mae": 4.444271607579198,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 4.444271607579198,
+          "finite_fixed_noise_minus": 0.5515285184553309,
+          "finite_fixed_noise_minus_ci95": [
+            -0.3662521704349811,
+            1.9676404302625774
+          ],
+          "finite_fitted_noise_minus": 0.4386794292112395,
+          "finite_fitted_noise_minus_ci95": [
+            -0.452279293449196,
+            1.8010446099687658
+          ]
+        },
+        "qvi": {
+          "cell_mae": 8.240753181742408,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 8.240753181742408,
+          "finite_fixed_noise_minus": -3.2449530557078785,
+          "finite_fixed_noise_minus_ci95": [
+            -4.806547944492495,
+            -1.8595522142246983
+          ],
+          "finite_fitted_noise_minus": -3.3578021449519704,
+          "finite_fitted_noise_minus_ci95": [
+            -4.9735671509365105,
+            -1.9375822180414912
+          ]
+        },
+        "qvi_subtracted": {
+          "cell_mae": 5.921599595055929,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 5.921599595055929,
+          "finite_fixed_noise_minus": -0.9257994690213993,
+          "finite_fixed_noise_minus_ci95": [
+            -2.2072330262376822,
+            0.12316134993200711
+          ],
+          "finite_fitted_noise_minus": -1.0386485582654905,
+          "finite_fitted_noise_minus_ci95": [
+            -2.3159274158359513,
+            -0.0007954082251186044
+          ]
+        },
+        "relu": {
+          "cell_mae": 4.393085546967883,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 4.393085546967883,
+          "finite_fixed_noise_minus": 0.6027145790666468,
+          "finite_fixed_noise_minus_ci95": [
+            -0.4523023810145729,
+            1.8431998024385052
+          ],
+          "finite_fitted_noise_minus": 0.48986548982255557,
+          "finite_fitted_noise_minus_ci95": [
+            -0.5276425732205026,
+            1.6825583888638973
+          ]
+        },
+        "softplus": {
+          "cell_mae": 4.164538920703723,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 4.164538920703723,
+          "finite_fixed_noise_minus": 0.8312612053308056,
+          "finite_fixed_noise_minus_ci95": [
+            -0.24723309955297104,
+            2.1192578375430826
+          ],
+          "finite_fitted_noise_minus": 0.7184121160867144,
+          "finite_fitted_noise_minus_ci95": [
+            -0.3334961621371733,
+            1.9706924006840576
+          ]
+        },
+        "stationary": {
+          "cell_mae": 5.05809239157213,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 5.05809239157213,
+          "finite_fixed_noise_minus": -0.06229226553759984,
+          "finite_fixed_noise_minus_ci95": [
+            -0.14524743570444415,
+            0.023084983383522703
+          ],
+          "finite_fitted_noise_minus": -0.17514135478169124,
+          "finite_fitted_noise_minus_ci95": [
+            -0.3298269921028114,
+            -0.03175019641265284
+          ]
+        },
+        "finite_fixed_noise": {
+          "cell_mae": 4.995800126034529,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 4.995800126034529,
+          "finite_fixed_noise_minus": 0.0,
+          "finite_fixed_noise_minus_ci95": [
+            0.0,
+            0.0
+          ],
+          "finite_fitted_noise_minus": -0.11284908924409137,
+          "finite_fitted_noise_minus_ci95": [
+            -0.2537601252566793,
+            0.016448650179468005
+          ]
+        },
+        "finite_fitted_noise": {
+          "cell_mae": 4.8829510367904385,
+          "zero_cell_mae": null,
+          "positive_cell_mae": 4.8829510367904385,
+          "finite_fixed_noise_minus": 0.11284908924409137,
+          "finite_fixed_noise_minus_ci95": [
+            -0.01644865017946801,
+            0.25376012525667924
+          ],
+          "finite_fitted_noise_minus": 0.0,
+          "finite_fitted_noise_minus_ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "nwb_curve_records": {
+      "cells": 36,
+      "levels": 219,
+      "metrics": {
+        "constant": {
+          "cell_mae": 10.056235960704903,
+          "zero_cell_mae": 9.127797675497899,
+          "positive_cell_mae": 13.488520230300557,
+          "finite_fixed_noise_minus": -8.227439067741868,
+          "finite_fixed_noise_minus_ci95": [
+            -10.965710381223312,
+            -5.780057618739614
+          ],
+          "finite_fitted_noise_minus": -8.18567556372453,
+          "finite_fitted_noise_minus_ci95": [
+            -10.913286311637847,
+            -5.756579661944713
+          ]
+        },
+        "fixed": {
+          "cell_mae": 8.57719691142321,
+          "zero_cell_mae": 9.524909279859513,
+          "positive_cell_mae": 8.171547699174486,
+          "finite_fixed_noise_minus": -6.748400018460176,
+          "finite_fixed_noise_minus_ci95": [
+            -9.5784877223198,
+            -4.367336872405823
+          ],
+          "finite_fitted_noise_minus": -6.70663651444284,
+          "finite_fitted_noise_minus_ci95": [
+            -9.539287765031046,
+            -4.323947675383823
+          ]
+        },
+        "fixed_subtracted": {
+          "cell_mae": 2.014530045711802,
+          "zero_cell_mae": 0.4049958406070003,
+          "positive_cell_mae": 4.949486063798271,
+          "finite_fixed_noise_minus": -0.18573315274876634,
+          "finite_fixed_noise_minus_ci95": [
+            -0.7727202435347056,
+            0.41138857457851696
+          ],
+          "finite_fitted_noise_minus": -0.1439696487314298,
+          "finite_fitted_noise_minus_ci95": [
+            -0.7329900084441902,
+            0.45414988227491127
+          ]
+        },
+        "interpolate": {
+          "cell_mae": 1.3312985581437964,
+          "zero_cell_mae": 0.11155753968253967,
+          "positive_cell_mae": 3.4939739229024958,
+          "finite_fixed_noise_minus": 0.4974983348192386,
+          "finite_fixed_noise_minus_ci95": [
+            0.035845831725034576,
+            1.1232221956879394
+          ],
+          "finite_fitted_noise_minus": 0.5392618388365752,
+          "finite_fitted_noise_minus_ci95": [
+            0.07739454119991146,
+            1.161202939662971
+          ]
+        },
+        "lif": {
+          "cell_mae": 1.8021061059054704,
+          "zero_cell_mae": 0.004372373227824109,
+          "positive_cell_mae": 4.920462691582682,
+          "finite_fixed_noise_minus": 0.026690787057565273,
+          "finite_fixed_noise_minus_ci95": [
+            -0.6450024366550472,
+            0.8126792924513464
+          ],
+          "finite_fitted_noise_minus": 0.06845429107490188,
+          "finite_fitted_noise_minus_ci95": [
+            -0.605834893886628,
+            0.8513656588782117
+          ]
+        },
+        "qvi": {
+          "cell_mae": 9.017579854113144,
+          "zero_cell_mae": 9.914940346297206,
+          "positive_cell_mae": 8.915702368294962,
+          "finite_fixed_noise_minus": -7.18878296115011,
+          "finite_fixed_noise_minus_ci95": [
+            -10.110156392621436,
+            -4.6886738404817
+          ],
+          "finite_fitted_noise_minus": -7.147019457132773,
+          "finite_fitted_noise_minus_ci95": [
+            -10.052862667176809,
+            -4.6539049451553
+          ]
+        },
+        "qvi_subtracted": {
+          "cell_mae": 1.9232977026785827,
+          "zero_cell_mae": 0.3895279166544608,
+          "positive_cell_mae": 4.828606410834546,
+          "finite_fixed_noise_minus": -0.09450080971554752,
+          "finite_fixed_noise_minus_ci95": [
+            -0.49683832336358846,
+            0.38415786280596737
+          ],
+          "finite_fitted_noise_minus": -0.05273730569821099,
+          "finite_fitted_noise_minus_ci95": [
+            -0.45733016390166736,
+            0.4204784277140153
+          ]
+        },
+        "relu": {
+          "cell_mae": 1.504491349037802,
+          "zero_cell_mae": 0.14710407914182524,
+          "positive_cell_mae": 3.9356234498292726,
+          "finite_fixed_noise_minus": 0.32430554392523325,
+          "finite_fixed_noise_minus_ci95": [
+            -0.14287600598659486,
+            0.9534255039059859
+          ],
+          "finite_fitted_noise_minus": 0.36606904794256984,
+          "finite_fitted_noise_minus_ci95": [
+            -0.10834986587057767,
+            0.998906982345944
+          ]
+        },
+        "softplus": {
+          "cell_mae": 1.4935869271313262,
+          "zero_cell_mae": 0.21801306622968913,
+          "positive_cell_mae": 3.778021438566734,
+          "finite_fixed_noise_minus": 0.3352099658317089,
+          "finite_fixed_noise_minus_ci95": [
+            -0.13998935453805228,
+            0.9560699616833611
+          ],
+          "finite_fitted_noise_minus": 0.37697346984904545,
+          "finite_fitted_noise_minus_ci95": [
+            -0.09753105810395915,
+            1.0034074308704053
+          ]
+        },
+        "stationary": {
+          "cell_mae": 1.8123446171152944,
+          "zero_cell_mae": 0.11827510872195685,
+          "positive_cell_mae": 5.214918357994454,
+          "finite_fixed_noise_minus": 0.016452275847741102,
+          "finite_fixed_noise_minus_ci95": [
+            -0.013780204512427932,
+            0.045901311607180764
+          ],
+          "finite_fitted_noise_minus": 0.058215779865077644,
+          "finite_fitted_noise_minus_ci95": [
+            0.004794732225874661,
+            0.1272553370991714
+          ]
+        },
+        "finite_fixed_noise": {
+          "cell_mae": 1.8287968929630354,
+          "zero_cell_mae": 0.16392438126613604,
+          "positive_cell_mae": 5.196461965650011,
+          "finite_fixed_noise_minus": 0.0,
+          "finite_fixed_noise_minus_ci95": [
+            0.0,
+            0.0
+          ],
+          "finite_fitted_noise_minus": 0.041763504017336535,
+          "finite_fitted_noise_minus_ci95": [
+            -0.019300931882408858,
+            0.1165851626071987
+          ]
+        },
+        "finite_fitted_noise": {
+          "cell_mae": 1.8705603969803717,
+          "zero_cell_mae": 0.1534652432056726,
+          "positive_cell_mae": 5.302344799049379,
+          "finite_fixed_noise_minus": -0.041763504017336535,
+          "finite_fixed_noise_minus_ci95": [
+            -0.11658516260719871,
+            0.019300931882408834
+          ],
+          "finite_fitted_noise_minus": 0.0,
+          "finite_fitted_noise_minus_ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "archive_sha256": {
+    "ephys_records": "8a8d66b01622f1c686d85faaefb6ec267ca314d28c89e2ca13e54d1a95748173",
+    "nwb_curve_records": "5418ceb3cff7dc563490807f5051243c454d8055bef5c5a5e0ab44d719578d07"
+  },
+  "training_seal_sha256": "b07727292643e2265d8b55c85ab8d10e74a28f73d6b7b78eec72fc65066b2d64",
+  "held_predictions_sha256": "22854edeb01d8e32805504108b58a19eb39f70782488a358c8b9a213e78f9346",
+  "source_sha256": "b1fcc53892ed84340d52829d95a891948357f640d9a7ca6d67bf70008fb74ce9",
+  "jacobian_errors": [
+    1.124790927065078e-09,
+    1.0319783916301617e-10,
+    1.1609415651037125e-09,
+    7.63784535617873e-10
+  ],
+  "wall_s": 7.6545090670006175
+}

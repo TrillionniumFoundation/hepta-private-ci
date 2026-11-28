@@ -1,0 +1,32 @@
+{
+  "objects": 37284,
+  "labels": {
+    "A": "compiled-object",
+    "B": "compressed-or-archive",
+    "C": "document-container",
+    "D": "generic-binary-label",
+    "E": "model-checkpoint-or-serialized-state",
+    "F": "numerical-array-or-table",
+    "G": "other",
+    "H": "raw-media",
+    "I": "split-payload",
+    "J": "text-encoded-payload"
+  },
+  "by_representative_filename": {
+    "compressed-or-archive": 12576,
+    "split-payload": 9122,
+    "model-checkpoint-or-serialized-state": 523,
+    "generic-binary-label": 2566,
+    "text-encoded-payload": 5470,
+    "raw-media": 453,
+    "numerical-array-or-table": 5394,
+    "other": 1165,
+    "compiled-object": 7,
+    "document-container": 8
+  },
+  "uncompressed_sha256": "f7ffeff917e14c37d857e9992af35ae2c2b2b6668a6f59f015b25dcb38360a37",
+  "uncompressed_bytes": 1603212,
+  "packed_sha256": "8e9e583d49b5281e0f3746007e273751833f13d562beaf0d7c21f2dbd1d70a62",
+  "packed_bytes": 890053,
+  "rule": "Git blob IDs outside both source/text cohorts, exact subtraction from all frozen branch-head objects. Format label is provisional, drawn from one shortest representative path."
+}

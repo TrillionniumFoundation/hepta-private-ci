@@ -1,0 +1,8 @@
+{
+ "entries": [],
+ "tiers": [],
+ "elapsed_s": 2.179453099,
+ "errors": {},
+ "complete": false,
+ "error": "Traceback (most recent call last):\n  File \"/tmp/tmphlx9kdgu/ingress.py\", line 61, in main\n    rep['decoder']=decoder(root/'env/ffmpeg');save();original.download=fetch\n                   ~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/tmphlx9kdgu/ingress.py\", line 49, in decoder\n    assert sha(b)==FFMPEG;path.write_bytes(b);path.chmod(0o700)\n                          ~~~~~~~~~~~~~~~~^^^\n  File \"/usr/lib/python3.13/pathlib/_abc.py\", line 642, in write_bytes\n    return f.write(view)\n           ~~~~~~~^^^^^^\nOSError: [Errno 27] File too large\n"
+}

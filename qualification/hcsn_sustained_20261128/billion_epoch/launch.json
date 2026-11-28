@@ -1,0 +1,37 @@
+{
+  "source_commit": "d1342aecbed59c9ae1dc20b776b3253b175d6272",
+  "session": "dpty-9ae49d3a47ccc77b55a0fca890507a2d8b2b83c03f675027f97c8018f89996ab",
+  "native": {
+    "source_sha256": "24a6179e3217d2d8b646d701dfee45a7177220fb695430776ef5408531f75a05",
+    "inputs": {
+      "src/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+      "src/hcsn_temporal.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+      "src/law4.npz": "de7378f3c170750fb16d1280bcaa376a8904a207da32d268cac82525469e2ea4",
+      "data/data.npz": "18423277257e2e487521d83a8c116bc7cf5599411f4ff769e569bd849beae6ad"
+    },
+    "torch": "2.13.0+rocm10.0.0",
+    "device": "cpu",
+    "opened_unix": 1795866533.5118313
+  },
+  "first": {
+    "at": 1795866551.6227272,
+    "step": 1,
+    "seen": 16,
+    "wall_s": 12.977337991353124,
+    "cumulative_training_s": 12.977337991353124,
+    "training_loss": 2.76953125,
+    "grad_norm": 0.5185491442680359,
+    "peak_rss_bytes": 18181406720,
+    "gradient_scalar_count": 1016475200
+  },
+  "observed": {
+    "at": 1795866629.2404883,
+    "step": 8,
+    "seen": 128,
+    "wall_s": 11.080354582052678,
+    "cumulative_training_s": 90.59196350630373,
+    "training_loss": 2.76904296875,
+    "grad_norm": 0.024932563304901123,
+    "peak_rss_bytes": 18546085888
+  }
+}

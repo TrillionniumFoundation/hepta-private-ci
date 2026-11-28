@@ -1,0 +1,57 @@
+{
+  "request_id": "hcsn-billion-native-crema-1140569-20261128",
+  "source_sha256": "64eb711581cff493584d84ceffa8b5a3c5f2a46cb9032f0eb9581fd6b5e78f5f",
+  "size": 192165,
+  "artifact": "result.json",
+  "timeout_s": 600,
+  "release_prerequisite": "released",
+  "release_time": "2026-11-28T11:25:12.354490+00:00",
+  "observed_at": "2026-11-28T11:25:50.898517+00:00",
+  "candidates": [
+    {
+      "account": "qiqian",
+      "provider": "kaggle",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "account": "sunfo",
+      "provider": "kaggle",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "account": "tomas",
+      "provider": "kaggle",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "account": "qiqian",
+      "provider": "colab",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "account": "sunfo",
+      "provider": "colab",
+      "ready": false,
+      "blockers": [
+        "EXISTING_RUNTIME_REQUIRES_EXPLICIT_BINDING",
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "account": "tomas",
+      "provider": "colab",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    }
+  ],
+  "provider": "colab",
+  "account": "qiqian"
+}

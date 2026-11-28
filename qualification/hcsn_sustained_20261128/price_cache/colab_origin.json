@@ -1,0 +1,301 @@
+{
+  "schema": "price-cache-colab-reconciliation-v1",
+  "request_id": "hcsn-price-native-1140569-20261128",
+  "provider": "colab",
+  "account": "qiqian",
+  "provider_request_id": "hc-fe9a7463af925e55b914af4fdb0c0e51ff96f303",
+  "source_sha256": "cc77d3d5c81465678d3673f867b026457267e765cdde0f1b5aa8d4adf4bca40c",
+  "router_version": "0.1.4-integrity-retirement+adoption-v1",
+  "intent": {
+    "accelerator": "T4",
+    "artifacts": [
+      "cloud_result.json"
+    ],
+    "kaggle_internet": false,
+    "kaggle_private": true,
+    "requested_account": "qiqian",
+    "requested_provider": "colab",
+    "source_sha256": "cc77d3d5c81465678d3673f867b026457267e765cdde0f1b5aa8d4adf4bca40c",
+    "timeout": 600
+  },
+  "state": "RECONCILIATION_REQUIRED",
+  "updated_at": "2026-11-28T11:03:03.086395+00:00",
+  "effects": {
+    "allocate": {
+      "at": "2026-11-28T11:01:54.754693+00:00",
+      "status": "unknown"
+    }
+  },
+  "events": [
+    {
+      "at": "2026-11-28T11:01:09.964240+00:00",
+      "event": "planned_and_reserved"
+    },
+    {
+      "at": "2026-11-28T11:01:48.546015+00:00",
+      "event": "execution_reservation_claimed"
+    },
+    {
+      "at": "2026-11-28T11:01:54.754720+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:02:56.130200+00:00",
+      "event": "effect_response_received",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:02:56.144957+00:00",
+      "error_code": "ALLOCATION_NOT_CONFIRMED",
+      "event": "execution_needs_observation"
+    },
+    {
+      "at": "2026-11-28T11:03:03.086419+00:00",
+      "event": "observed_original_binding"
+    }
+  ],
+  "receipts": {
+    "allocate": {
+      "adapter_output": {
+        "returncode": 0,
+        "schema": 1,
+        "stderr": {
+          "bytes": 0,
+          "hash_status": "full",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1810,
+          "hash_status": "full",
+          "sha256": "cd74da53d0630e4644aff5d908df79ed36ebdcd5794e4022db58ac99f82af4e8"
+        }
+      },
+      "allocation_evidence": {
+        "events": [
+          {
+            "at": "2026-11-28T11:02:10.234887+00:00",
+            "phase": "begin",
+            "seq": 1,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.236902+00:00",
+            "phase": "parameters_ready",
+            "seq": 2,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.239142+00:00",
+            "phase": "dispatch_intent",
+            "seq": 3,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.919208+00:00",
+            "http_status": 200,
+            "phase": "response",
+            "response_body_bytes": 149,
+            "response_body_sha256": "6022e4f07e469d3754deecd7a6060b7a3bdf5d2bb33d1d6e402eb1d517f4ec7f",
+            "response_body_state": "hashed",
+            "seq": 4,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.925646+00:00",
+            "phase": "dispatch_intent",
+            "seq": 5,
+            "stage": "ASSIGNMENT_POST"
+          },
+          {
+            "at": "2026-11-28T11:02:55.973569+00:00",
+            "exception_class": "requests.exceptions.ReadTimeout",
+            "phase": "exception",
+            "seq": 6,
+            "stage": "ASSIGNMENT_POST"
+          }
+        ],
+        "first_failure": {
+          "at": "2026-11-28T11:02:55.973569+00:00",
+          "exception_class": "requests.exceptions.ReadTimeout",
+          "phase": "exception",
+          "seq": 6,
+          "stage": "ASSIGNMENT_POST"
+        },
+        "persistence_failed": false,
+        "program_sha256": "c6f3b95ec086525e288759acfa014647ca427fc38a0fa7bd56ce1159afc384a3",
+        "schema": 1,
+        "sdk_client_sha256": "7081d2c9decbc9a4cafb4ab89202c7e7a644f72bd74a7e846bffce5344839a06"
+      },
+      "error_code": "ALLOCATION_UNCONFIRMED",
+      "kernel_submit_attempts": 0,
+      "key": "hc-fe9a7463af925e55b914af4fdb0c0e51ff96f303",
+      "owned_kernel": false,
+      "owned_runtime": false,
+      "phase": "allocation_unknown",
+      "runtime_submit_attempts": 1,
+      "updated_at": "2026-11-28T11:02:55.979145+00:00"
+    },
+    "allocation_origin": {
+      "adapter_output": {
+        "returncode": 0,
+        "schema": 1,
+        "stderr": {
+          "bytes": 0,
+          "hash_status": "full",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1810,
+          "hash_status": "full",
+          "sha256": "cd74da53d0630e4644aff5d908df79ed36ebdcd5794e4022db58ac99f82af4e8"
+        }
+      },
+      "allocation_evidence": {
+        "events": [
+          {
+            "at": "2026-11-28T11:02:10.234887+00:00",
+            "phase": "begin",
+            "seq": 1,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.236902+00:00",
+            "phase": "parameters_ready",
+            "seq": 2,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.239142+00:00",
+            "phase": "dispatch_intent",
+            "seq": 3,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.919208+00:00",
+            "http_status": 200,
+            "phase": "response",
+            "response_body_bytes": 149,
+            "response_body_sha256": "6022e4f07e469d3754deecd7a6060b7a3bdf5d2bb33d1d6e402eb1d517f4ec7f",
+            "response_body_state": "hashed",
+            "seq": 4,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.925646+00:00",
+            "phase": "dispatch_intent",
+            "seq": 5,
+            "stage": "ASSIGNMENT_POST"
+          },
+          {
+            "at": "2026-11-28T11:02:55.973569+00:00",
+            "exception_class": "requests.exceptions.ReadTimeout",
+            "phase": "exception",
+            "seq": 6,
+            "stage": "ASSIGNMENT_POST"
+          }
+        ],
+        "first_failure": {
+          "at": "2026-11-28T11:02:55.973569+00:00",
+          "exception_class": "requests.exceptions.ReadTimeout",
+          "phase": "exception",
+          "seq": 6,
+          "stage": "ASSIGNMENT_POST"
+        },
+        "persistence_failed": false,
+        "program_sha256": "c6f3b95ec086525e288759acfa014647ca427fc38a0fa7bd56ce1159afc384a3",
+        "schema": 1,
+        "sdk_client_sha256": "7081d2c9decbc9a4cafb4ab89202c7e7a644f72bd74a7e846bffce5344839a06"
+      },
+      "error_code": "ALLOCATION_UNCONFIRMED",
+      "kernel_submit_attempts": 0,
+      "key": "hc-fe9a7463af925e55b914af4fdb0c0e51ff96f303",
+      "owned_kernel": false,
+      "owned_runtime": false,
+      "phase": "allocation_unknown",
+      "runtime_submit_attempts": 1,
+      "updated_at": "2026-11-28T11:02:55.979145+00:00"
+    },
+    "provision_observation": {
+      "adapter_output": {
+        "returncode": 0,
+        "schema": 1,
+        "stderr": {
+          "bytes": 0,
+          "hash_status": "full",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1823,
+          "hash_status": "full",
+          "sha256": "efa36957e0f5c4594358ed61e8801e27fd1ee7421ccb5213ab33943fa058ddf3"
+        }
+      },
+      "allocation_evidence": {
+        "events": [
+          {
+            "at": "2026-11-28T11:02:10.234887+00:00",
+            "phase": "begin",
+            "seq": 1,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.236902+00:00",
+            "phase": "parameters_ready",
+            "seq": 2,
+            "stage": "SDK_PARAMETERS"
+          },
+          {
+            "at": "2026-11-28T11:02:10.239142+00:00",
+            "phase": "dispatch_intent",
+            "seq": 3,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.919208+00:00",
+            "http_status": 200,
+            "phase": "response",
+            "response_body_bytes": 149,
+            "response_body_sha256": "6022e4f07e469d3754deecd7a6060b7a3bdf5d2bb33d1d6e402eb1d517f4ec7f",
+            "response_body_state": "hashed",
+            "seq": 4,
+            "stage": "ASSIGNMENT_GET"
+          },
+          {
+            "at": "2026-11-28T11:02:10.925646+00:00",
+            "phase": "dispatch_intent",
+            "seq": 5,
+            "stage": "ASSIGNMENT_POST"
+          },
+          {
+            "at": "2026-11-28T11:02:55.973569+00:00",
+            "exception_class": "requests.exceptions.ReadTimeout",
+            "phase": "exception",
+            "seq": 6,
+            "stage": "ASSIGNMENT_POST"
+          }
+        ],
+        "first_failure": {
+          "at": "2026-11-28T11:02:55.973569+00:00",
+          "exception_class": "requests.exceptions.ReadTimeout",
+          "phase": "exception",
+          "seq": 6,
+          "stage": "ASSIGNMENT_POST"
+        },
+        "persistence_failed": false,
+        "program_sha256": "c6f3b95ec086525e288759acfa014647ca427fc38a0fa7bd56ce1159afc384a3",
+        "schema": 1,
+        "sdk_client_sha256": "7081d2c9decbc9a4cafb4ab89202c7e7a644f72bd74a7e846bffce5344839a06"
+      },
+      "error_code": "ALLOCATION_NOT_OBSERVED_NO_RESUBMIT",
+      "kernel_submit_attempts": 0,
+      "key": "hc-fe9a7463af925e55b914af4fdb0c0e51ff96f303",
+      "owned_kernel": false,
+      "owned_runtime": false,
+      "phase": "allocation_unknown",
+      "runtime_submit_attempts": 1,
+      "updated_at": "2026-11-28T11:03:02.885425+00:00"
+    }
+  },
+  "notes": "The SDK assignment response is unknown. A provider runtime acknowledgement, a submitted kernel and a model GPU result have not been evidenced."
+}

@@ -1,0 +1,146 @@
+{
+  "results": {
+    "step-314": {
+      "selected": {
+        "nll": 0.10406312420896688,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.10406312420896688,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      }
+    },
+    "linear_log-314": {
+      "selected": {
+        "nll": 0.09110608442366533,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.09110608442366533,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      }
+    },
+    "linear_physical-314": {
+      "selected": {
+        "nll": 0.139949718637819,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.139949718637819,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      }
+    },
+    "step-159": {
+      "selected": {
+        "nll": 0.05648185170767942,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.05648185170767942,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      }
+    },
+    "linear_log-159": {
+      "selected": {
+        "nll": 0.05028499180591907,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.05028499180591907,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      }
+    },
+    "linear_physical-159": {
+      "selected": {
+        "nll": 0.04210114741640488,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.04210114741640488,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      }
+    },
+    "step-271": {
+      "selected": {
+        "nll": 0.0529238351950621,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.0529238351950621,
+        "balanced_accuracy": 0.9864864864864865,
+        "step": 64
+      }
+    },
+    "linear_log-271": {
+      "selected": {
+        "nll": 0.04607136033356459,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.04607136033356459,
+        "balanced_accuracy": 1.0,
+        "step": 64
+      }
+    },
+    "linear_physical-271": {
+      "selected": {
+        "nll": 0.07127303649800604,
+        "balanced_accuracy": 0.972972972972973,
+        "step": 64
+      },
+      "final": {
+        "nll": 0.07127303649800604,
+        "balanced_accuracy": 0.972972972972973,
+        "step": 64
+      }
+    }
+  },
+  "selected_means": {
+    "step": {
+      "nll": 0.07115627037056947,
+      "balanced_accuracy": 0.9954954954954954
+    },
+    "linear_log": {
+      "nll": 0.062487478854383,
+      "balanced_accuracy": 1.0
+    },
+    "linear_physical": {
+      "nll": 0.0844413008507433,
+      "balanced_accuracy": 0.981981981981982
+    }
+  },
+  "selected_minus_step_nll_ci95": {
+    "linear_log": [
+      -0.008668791516186467,
+      -0.012287816169844562,
+      -0.005405821888446777
+    ],
+    "linear_physical": [
+      0.013285030480173841,
+      -0.02449875712297473,
+      0.07641677327657395
+    ]
+  },
+  "seal_sha256": "6cc678c7213f9fc17ad2323236136face9f6542849ed67c1f8ae1043d070326a",
+  "scores_sha256": "7a9f96b0014e86e35b3d7afb917fddebb4b235304743c6277c824ac4d02bfe70",
+  "split": [
+    229,
+    58,
+    73
+  ],
+  "torch": "2.13.0+rocm10.0.0"
+}

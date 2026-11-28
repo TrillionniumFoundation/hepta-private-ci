@@ -1,0 +1,393 @@
+{
+  "schema": "hepta-hcsn-github-read-v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "observation_window_utc": [
+    "2026-11-28T10:28:00Z",
+    "2026-11-28 10:37:22 UTC"
+  ],
+  "clock_note": "Start rounded down; remote reads were made in this window. Branch pagination is non-atomic.",
+  "branch_inventory": {
+    "endpoint": "GET /repos/TrillionniumFoundation/hepta-private-ci/branches?per_page=100&page=N",
+    "unique_names": 8396,
+    "different_tips": 8002,
+    "branches_matching_hcsn_ignore_case": 913,
+    "refs_with_research_hcsn_prefix": 564,
+    "duplicate_names": 0,
+    "failed_pages": 0,
+    "encoding": "UTF-8; <sha> TAB refs/heads/<short-name> LF. Ascending short-name UTF-8 bytes.",
+    "bytes": 830970,
+    "sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+    "gzip_file": "refs.tsv.gz",
+    "gzip_bytes": 308465,
+    "gzip_sha256": "6aa00c9272f798772d76ab8857d26dc2ccfc7ea0b9e618c5ee74225c1769647b"
+  },
+  "tree_coverage": {
+    "main": {
+      "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "tree": "75dc1c1f65375c97da259d947c465a04f030461d",
+      "strategy": "single recursive Git-tree response; truncated=false",
+      "entries": 9843,
+      "blob_paths": 8665,
+      "distinct_blobs": 8589,
+      "filename_hcsn_or_rollover_risk": 0,
+      "listing_sha256": "77ffd4b785541b362a0405e36cea6086e707ba9fed822ff732feb34a56e6257b",
+      "listing_byte_length": 1027769,
+      "hash_encoding": "UTF-8, path TAB type TAB full Git SHA TAB size-or-zero LF, sorted by line."
+    },
+    "pr7199": {
+      "commit": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "strategy": "root plus recursive, falling back to nonrecursive child enumeration on truncated/oversize responses; 629 processed subtree units",
+      "entries": 69812,
+      "unique_paths": 69812,
+      "blob_paths": 60225,
+      "distinct_blobs": 55038,
+      "hcsn_named_paths": 14496,
+      "hcsn_named_blob_paths": 12215,
+      "failed_subtrees": 0,
+      "listing_sha256": "31d295c3cbd665c38a20a2d4eb4edb8c829e102ec90e3e9f1a01e207118c598e",
+      "listing_byte_length": 9572280,
+      "hash_encoding": "UTF-8, path TAB type TAB full Git SHA TAB size-or-zero LF, sorted by line."
+    }
+  },
+  "previous_cross_branch_content_scan": {
+    "as_of": "2026-11-27 20:56 America/New_York",
+    "sha": "49f839b0382fc806545ecab53bffc3002ba6fac7",
+    "file": "qualification/hcsn_clock_8559/audit/SNAPSHOT.json",
+    "branches": 8336,
+    "tips": 7943,
+    "distinct_roots": 7874,
+    "unique_blobs": 205832,
+    "text_or_structured_result_objects": 157283,
+    "screened_bytes": 3312891741,
+    "source_or_document_objects": 96698,
+    "independently_rerun_here": false
+  },
+  "pr_stack": [
+    {
+      "number": 7067,
+      "head": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+      "base": "research/hcsn-finite-marked-renewal-20261123",
+      "branch": "research/hcsn-independent-populations-20261124",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7067"
+    },
+    {
+      "number": 7149,
+      "head": "8b538954e3db0763b9eb24b6159d17b80f286f26",
+      "base": "research/hcsn-independent-populations-20261124",
+      "branch": "research/hcsn-boundary-transfer-20261126-a620",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7149"
+    },
+    {
+      "number": 7170,
+      "head": "cf5aa0c954e92fbecd3a53494ccefaa37a2bb7d0",
+      "base": "research/hcsn-boundary-transfer-20261126-a620",
+      "branch": "research/hcsn-feedback-editing-closure-20261127-c889",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7170"
+    },
+    {
+      "number": 7183,
+      "head": "c511a75b04eb24719f9d5e424d190b071c78f261",
+      "base": "research/hcsn-feedback-editing-closure-20261127-c889",
+      "branch": "research/hcsn-heldout-20261127-ebee",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7183"
+    },
+    {
+      "number": 7187,
+      "head": "b3fdc981568ab9ce122d2fb569372651e0b4b314",
+      "base": "research/hcsn-heldout-20261127-ebee",
+      "branch": "research/hcsn-continuous-acceptance-9c415-20261127",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7187"
+    },
+    {
+      "number": 7199,
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "base": "research/hcsn-continuous-acceptance-9c415-20261127",
+      "branch": "research/hcsn-7187-pretrained-strict-20261127-c6bc",
+      "state": "open",
+      "merged": false,
+      "link": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7199"
+    }
+  ],
+  "sampled_current_heads": [
+    {
+      "branch": "research/hcsn-full-audit-8559",
+      "sha": "49f839b0382fc806545ecab53bffc3002ba6fac7"
+    },
+    {
+      "branch": "research/hcsn-raw-encoder-confirmation-8559",
+      "sha": "93196613f9b1893288b8460688d146596c17ddd3"
+    },
+    {
+      "branch": "research/hcsn-finite-multilayer-edit-8559",
+      "sha": "81d9753a4d9f28e24df1321da95f17fa746dbdb0"
+    },
+    {
+      "branch": "research/hcsn-cremad-billion-local-20261128-e0bf",
+      "sha": "4fe813c380cfa05013a39e770b0b75477c547b3e"
+    },
+    {
+      "branch": "research/hcsn-flickr-gpu-final-e0bf-20261127",
+      "sha": "d1401b33db5f80dafdacdf6e71841f193da56ebb"
+    },
+    {
+      "branch": "research/hcsn-gas-from-scratch-20261127-e0bf",
+      "sha": "2ed352a60ec941a5f0726875066cf7054a37f37d"
+    },
+    {
+      "branch": "research/hcsn-independent-audiomnist-edit-20261127-e0bf",
+      "sha": "7dcce23693ad3d8a06283c41acd6715fcdee3990"
+    },
+    {
+      "branch": "research/hcsn-reachable-ports-20261127-e0bf",
+      "sha": "fff9a90720deaf848ad30991158f2b6180e61f4f"
+    },
+    {
+      "branch": "research/hcsn-shd-cpu-results-8559",
+      "sha": "d08aeb11e9f1aa7220022be2b212a013734d4e96"
+    },
+    {
+      "branch": "research/hcsn-shd-rtx4060-clock-8559",
+      "sha": "15bc4cc6889bad22aa037eec1c9232e0e58dd366"
+    }
+  ],
+  "limitations": [
+    "Current branch membership and the two enumerated trees count paths and Git identities. Their bytes were not all interpreted individually.",
+    "Historical cross-branch scan was read from its commit. Counts do not transfer automatically to a newer roster.",
+    "Full current Git history including unreferenced objects is outside head inventory.",
+    "Historical run outcomes are kept separate from new experiments. Merging and CI status do not establish task-level scientific benefit."
+  ],
+  "pr7199_workflows": [
+    {
+      "name": "v8-canary",
+      "run": 46089559268,
+      "conclusion": "success",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559268"
+    },
+    {
+      "name": "Learning artifacts qualification",
+      "run": 46089559259,
+      "conclusion": "success",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559259"
+    },
+    {
+      "name": "Hepta architecture convergence",
+      "run": 46089559256,
+      "conclusion": "success",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559256"
+    },
+    {
+      "name": "Hepta VERIFY-1 engineering validation",
+      "run": 46089559282,
+      "conclusion": "failure",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559282"
+    },
+    {
+      "name": "HCSN continuous pretrained strict validation",
+      "run": 46089559302,
+      "conclusion": "success",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559302"
+    },
+    {
+      "name": "blocking-ci",
+      "run": 46089559307,
+      "conclusion": "failure",
+      "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559307"
+    }
+  ],
+  "current_all_heads_tree_inventory": {
+    "branches": 8396,
+    "tips": 8002,
+    "roots": 7933,
+    "reference_table_sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+    "unique_trees": 78832,
+    "tree_path_pairs": 80237,
+    "unique_blobs": 207082,
+    "distinct_gitlinks": 0,
+    "primary_source_docs": 97234,
+    "data_like_including_primary": 158089,
+    "elapsed_s": 21.736802872037515,
+    "receipt_sha256": "fb35bca0a0010a308e57ed5e39c4bc1bc8fa1ff14d8d4d2d3e42375d41a75e91",
+    "completed_utc": "2026-11-28T10:44:22Z",
+    "receipt": "all_heads_inventory.json"
+  },
+  "atomic_ref_cross_check": {
+    "observed_utc": "2026-11-28T10:44:07.788332Z",
+    "atomic_count": 8398,
+    "atomic_sha256": "88ea0e62e0db51f4f079a57b09094826a876461d44de8c33fb545fbde1dade01",
+    "original_names_missing": 0,
+    "original_shas_changed": 0,
+    "additional_names": [
+      "research/hcsn-sustained-boundary-20261128-1140569",
+      "research/hcsn-sustained-boundary-20261128-1140569-results"
+    ]
+  },
+  "cremad_post_git_host_qualification": {
+    "source_sha256": "1120cf42a453fde43cb73d497fae48a32da4a9a85cd128bf4a549b8576e08404",
+    "cold_clips": 1311,
+    "actors": 16,
+    "num_logits_independently_rescored": 1510272,
+    "max_abs_error": 8.881784197001252e-16,
+    "recount_utc": "2026-11-28T10:49:01Z",
+    "original_summary": "../billion_recovery/original/SUMMARY.json",
+    "origin_seal": "../billion_recovery/original/seal.json",
+    "early_development_checkpoint_replay": "../billion_recovery/original/INDEPENDENT_DEVELOPMENT_REPLAY.json",
+    "fresh_recount": "cremad_independent_recount.json",
+    "experiment_origin": "Earlier single-seed CPU native four-arm experiment on ai395; source Git branch 93196613f9b1893288b8460688d146596c17ddd3 records early observations only."
+  },
+  "current_tag_tree_inventory": {
+    "branches": 2231,
+    "tips": 386,
+    "roots": 373,
+    "reference_table_sha256": "99c333a49971c96040e3b5f563eb65b7f62202301f3fe62d7a8e9caf20a598c8",
+    "unique_trees": 5673,
+    "tree_path_pairs": 5695,
+    "unique_blobs": 20823,
+    "distinct_gitlinks": 0,
+    "primary_source_docs": 16055,
+    "data_like_including_primary": 19019,
+    "elapsed_s": 0.9833868842106313,
+    "named_tags": 2231,
+    "distinct_peeled_targets": 386,
+    "blob_oids_already_in_heads": 15617,
+    "tag_only_blob_oids": 5206,
+    "tag_only_project_text_oids": 5073,
+    "tag_only_path_sha256": "24d9254d1a12af02bf09773c6b9102954149093841a577248300c93b51359625",
+    "tag_only_text_sha256": "f19c3db9b530cf61301841860ca9b0555a2e43bb7fe3544eb8b1072fcc50f2b9",
+    "tag_refs_sha256": "49143b44a0b856746b5312bbd3e468d840d4fe3e90a4fe40169bdbd25ced9319",
+    "head_observation": [
+      "ref: refs/heads/main\tHEAD",
+      "732e934ba496d90fbe042b8d41d479ef901643e5\tHEAD"
+    ]
+  },
+  "post_cutoff_history": {
+    "frozen_branch_sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+    "cutoff_utc": "2026-11-28T01:56:00Z",
+    "rule": "Raw-commit parent traversal starting at every frozen tip dated on/after cutoff, following all parents until the first earlier-dated commit on each path. First-parent tree diff for each retained commit.",
+    "post_cutoff_tip_count": 70,
+    "post_cutoff_ref_names": 73,
+    "post_cutoff_commits": 237,
+    "distinct_examined_commit_objects": 271,
+    "pre_cutoff_frontier_commits": 34,
+    "first_parent_path_change_events": 1840,
+    "change_operations": {
+      "A": 1306,
+      "M": 528,
+      "D": 6
+    },
+    "distinct_after_oids_including_superseded": 1611,
+    "current_eligible_changed_oids": 1039,
+    "current_eligible_standard": 1007,
+    "current_eligible_additional": 32,
+    "changes_sha256": "593c2ff0788682bfd91bf81366909671127caba8cc962d9a099baf80565fc938",
+    "current_changed_text_sha256": "2ae9c64fbb5c85c5da1cfb01a785d9617b257cb584dbbbb54dd51a7d9b0ce2c5",
+    "limitation": "Commit timestamp and first-parent changes are distinct from the historical ref service push time. Exact old individual refs cannot be deduced solely from historical aggregate counts."
+  },
+  "post_cutoff_current_text_verified": {
+    "markers": {
+      "hcsn": "hcsn|hepta[ _-]*continuous[ _-]*spik|hepta[ _-]*\u8fde\u7eed\u8109\u51b2",
+      "paper": "he[ _\u2013\u2014-]*(?:(?:and|&)[ _-]*)?xiong|rollover risk and credit risk|rollover[ _-]*(?:loss|risk)",
+      "boundary": "free[ _-]*boundar|smooth[ _-]*past|\u81ea\u7531\u8fb9\u754c|\u5149\u6ed1\u7c98\u8d34|\u5149\u6ed1\u8d34\u5408",
+      "hit": "first[ _-]*(?:passage|hitt?ing)|brownian bridge|\u9996\u8fbe|\u9996\u6b21\u7a7f\u8d8a",
+      "neural": "spiking|neuron|\u795e\u7ecf\u5143|\u8109\u51b2\u7f51\u7edc",
+      "kinetic": "refractory|regenerati(?:ve|on)|renewal|\u4e0d\u5e94\u671f|\u590d\u4f4d",
+      "editing": "weight[ _-]*edit|model[ _-]*edit|knowledge[ _-]*edit|forward[ _-]*projection|\u6743\u91cd\u7f16\u8f91|\u524d\u5411\u6295\u5f71",
+      "multimodal": "multi[ _-]*modal|omni[ _-]*modal|\u5168\u6a21\u6001|\u591a\u6a21\u6001|image[ _-]*(?:text|caption)|audio[ _-]*visual",
+      "speed": "time[ _-]*to[ _-]*(?:quality|target)|wall[ _-]*(?:time|clock)|\u540c\u8d28\u91cf|\u7aef\u5230\u7aef\u65f6\u95f4"
+    },
+    "counts": {
+      "hcsn": 31,
+      "paper": 11,
+      "boundary": 6,
+      "hit": 8,
+      "neural": 67,
+      "kinetic": 46,
+      "editing": 1,
+      "multimodal": 7,
+      "speed": 36
+    },
+    "total": {
+      "objects": 1039,
+      "bytes": 45643258,
+      "binary": 8,
+      "primary": 713
+    }
+  },
+  "additional_text_full_verification": {
+    "markers": {
+      "hcsn": "hcsn|hepta[ _-]*continuous[ _-]*spik|hepta[ _-]*\u8fde\u7eed\u8109\u51b2",
+      "paper": "he[ _\u2013\u2014-]*(?:(?:and|&)[ _-]*)?xiong|rollover risk and credit risk|rollover[ _-]*(?:loss|risk)",
+      "boundary": "free[ _-]*boundar|smooth[ _-]*past|\u81ea\u7531\u8fb9\u754c|\u5149\u6ed1\u7c98\u8d34|\u5149\u6ed1\u8d34\u5408",
+      "hit": "first[ _-]*(?:passage|hitt?ing)|brownian bridge|\u9996\u8fbe|\u9996\u6b21\u7a7f\u8d8a",
+      "neural": "spiking|neuron|\u795e\u7ecf\u5143|\u8109\u51b2\u7f51\u7edc",
+      "kinetic": "refractory|regenerati(?:ve|on)|renewal|\u4e0d\u5e94\u671f|\u590d\u4f4d",
+      "editing": "weight[ _-]*edit|model[ _-]*edit|knowledge[ _-]*edit|forward[ _-]*projection|\u6743\u91cd\u7f16\u8f91|\u524d\u5411\u6295\u5f71",
+      "multimodal": "multi[ _-]*modal|omni[ _-]*modal|\u5168\u6a21\u6001|\u591a\u6a21\u6001|image[ _-]*(?:text|caption)|audio[ _-]*visual",
+      "speed": "time[ _-]*to[ _-]*(?:quality|target)|wall[ _-]*(?:time|clock)|\u540c\u8d28\u91cf|\u7aef\u5230\u7aef\u65f6\u95f4"
+    },
+    "counts": {
+      "hcsn": 1293,
+      "paper": 11,
+      "boundary": 50,
+      "hit": 75,
+      "neural": 1846,
+      "kinetic": 443,
+      "editing": 19,
+      "multimodal": 218,
+      "speed": 115
+    },
+    "total": {
+      "objects": 11709,
+      "bytes": 665285384,
+      "binary": 268,
+      "primary": 0
+    }
+  },
+  "remaining_branch_object_classes": {
+    "objects": 37284,
+    "labels": {
+      "A": "compiled-object",
+      "B": "compressed-or-archive",
+      "C": "document-container",
+      "D": "generic-binary-label",
+      "E": "model-checkpoint-or-serialized-state",
+      "F": "numerical-array-or-table",
+      "G": "other",
+      "H": "raw-media",
+      "I": "split-payload",
+      "J": "text-encoded-payload"
+    },
+    "by_representative_filename": {
+      "compressed-or-archive": 12576,
+      "split-payload": 9122,
+      "model-checkpoint-or-serialized-state": 523,
+      "generic-binary-label": 2566,
+      "text-encoded-payload": 5470,
+      "raw-media": 453,
+      "numerical-array-or-table": 5394,
+      "other": 1165,
+      "compiled-object": 7,
+      "document-container": 8
+    },
+    "uncompressed_sha256": "f7ffeff917e14c37d857e9992af35ae2c2b2b6668a6f59f015b25dcb38360a37",
+    "uncompressed_bytes": 1603212,
+    "packed_sha256": "8e9e583d49b5281e0f3746007e273751833f13d562beaf0d7c21f2dbd1d70a62",
+    "packed_bytes": 890053,
+    "rule": "Git blob IDs outside both source/text cohorts, exact subtraction from all frozen branch-head objects. Format label is provisional, drawn from one shortest representative path."
+  }
+}

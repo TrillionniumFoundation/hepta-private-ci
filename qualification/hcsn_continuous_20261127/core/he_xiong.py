@@ -8,6 +8,14 @@ from dataclasses import dataclass
 def cdf(x):
     return .5*math.erfc(-x/math.sqrt(2))
 
+
+def _average_slope_at_nearby_roots(derivative, left, right):
+    """Two-point Gauss average of a derivative on a short spectral interval."""
+    half = (right - left) / 2
+    midpoint = left + half
+    offset = half / math.sqrt(3)
+    return (derivative(midpoint - offset) + derivative(midpoint + offset)) / 2
+
 @dataclass(frozen=True)
 class Law:
     r:float=.08
@@ -37,7 +45,17 @@ class Published(nn.Module):
         s=p.sigma*math.sqrt(p.m)
         def small(y):
             return self.disc*(cdf(y*s)-math.exp(p.r*p.m)*cdf(-self.z*s))/(self.z+y)
+        # Eq. 12 and A7 have removable divided differences when the two
+        # discount roots coincide. With fixed contract coefficients the
+        # branch is independent of all trainable inputs (margin, principal).
+        self._close_discount_roots = abs(self.z-self.zb) <= 1e-4 * max(1., abs(self.z))
         def big(y):
+            if self._close_discount_roots and y == -self.zb:
+                def derivative(v):
+                    pdf = math.exp(-.5*(v*s)**2)/math.sqrt(2*math.pi)
+                    factor = math.exp(.5*(self.z-v)*(self.z+v)*s*s)
+                    return s*pdf + v*s*s*factor*cdf(-self.z*s)
+                return _average_slope_at_nearby_roots(derivative, -self.z, y)
             return (cdf(y*s)-math.exp((self.z**2-y**2)*s*s/2)*cdf(-self.z*s))/(self.z+y)
         t=small(self.a)+small(-self.a)
         u=big(self.zb)+big(-self.zb)
@@ -77,7 +95,32 @@ class Published(nn.Module):
         full=coeff*torch.exp(-j*X)+k(y,j)
         tail=k(y,-self.eta)
         # y=[a,-a,zb,-zb]. Each pair forms the two summands in (A5).
-        aux=(full[...,::2]+tail[...,1::2])/(self.z-y[::2])+(full[...,1::2]+tail[...,::2])/(self.z+y[::2])
+        if self._close_discount_roots:
+            # N(u) = K(x;a,u,gamma) + k(x;a,-u,-eta) vanishes at u=z.
+            # N(zb)/(z-zb) = -average[N'] from z to zb. Differentiate only
+            # the spectral argument; x and P keep their ordinary Torch graph.
+            def k_slope(v, root):
+                shifted = (-x + v*s*s)/s
+                scale = torch.exp(-(self.a+v)*x)
+                first = (torch.exp(.5*((root-self.a)**2-v*v)*s*s-root*x)
+                         * torch.special.ndtr((-x+(root-self.a)*s*s)/s))
+                return (-v*s*s*first + x*scale*torch.special.ndtr(shifted)
+                        - s*scale*torch.exp(-.5*shifted.square())/math.sqrt(2*math.pi))
+
+            def numerator_slope(v):
+                factor = math.exp(.5*(self.z-v)*(self.z+v)*s*s)
+                coeff_slope = (s*math.exp(-.5*(v*s)**2)/math.sqrt(2*math.pi)
+                               + v*s*s*factor*cdf(self.z*s))
+                return (coeff_slope*torch.exp(-j*x) + k_slope(v,j)
+                        - k_slope(-v,-self.eta))
+
+            regular = ((full[...,0]+tail[...,1])/(self.z-self.a)
+                       + (full[...,1]+tail[...,0])/(self.z+self.a))
+            discounted = ((full[...,3]+tail[...,2])/(self.z+self.zb)
+                          - _average_slope_at_nearby_roots(numerator_slope, self.z, self.zb))
+            aux = torch.stack((regular, discounted), dim=-1)
+        else:
+            aux=(full[...,::2]+tail[...,1::2])/(self.z-y[::2])+(full[...,1::2]+tail[...,::2])/(self.z+y[::2])
         adj=P/p.m-self.c/self.q
         equity_cost=(1-p.tax)*p.C+(1-self.disc)*adj
         decay=torch.exp(-j*x)

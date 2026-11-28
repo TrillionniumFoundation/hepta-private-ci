@@ -1,0 +1,66 @@
+{
+  "request": "hcsn-lowband-full-crema-1140569-20261128",
+  "provider": "colab",
+  "account": "qiqian",
+  "source_sha256": "741044e0003a1eba716572477a4f1b6cba63ddd0130835473eda160ed88914f4",
+  "source_bytes": 145795,
+  "protocol_freeze": "71145f64a6409f772753e6e4fa1971b13706c362",
+  "timeout_s": 600,
+  "artifacts": [
+    "result.json",
+    "cold.npz",
+    "weights.zip"
+  ],
+  "observed_at": "2026-11-28T11:49:41.935913+00:00",
+  "candidates": [
+    {
+      "provider": "kaggle",
+      "account": "qiqian",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "kaggle",
+      "account": "sunfo",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "kaggle",
+      "account": "tomas",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "qiqian",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "sunfo",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "colab",
+      "account": "tomas",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    }
+  ],
+  "preflight": [
+    "literal 26312 4.468435",
+    "smooth 26312 4.53697",
+    "lif 26312 5.007805",
+    "sdpa 24736 5.033993",
+    "all preflights use training and development only"
+  ]
+}

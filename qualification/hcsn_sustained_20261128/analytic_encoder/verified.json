@@ -1,0 +1,47 @@
+{
+  "table_sha256": "de7378f3c170750fb16d1280bcaa376a8904a207da32d268cac82525469e2ea4",
+  "knot_count": 4097,
+  "knot_max_abs": 6.556510925292969e-07,
+  "random_interpolation_max": 9.834766387939453e-07,
+  "prices_max_abs": 2.384185791015625e-07,
+  "kappa_abs": 0.0,
+  "max_mass_error": 1.1920928955078125e-07,
+  "away_from_contacts_count": 1443,
+  "away_from_contacts_derivative_median": 0.0007656514644622803,
+  "away_from_contacts_derivative_max": 0.0064771175384521484,
+  "outside_table_range_max_abs": 0.19715356826782227,
+  "stream": {
+    "False": {
+      "stream_value_max": 4.470348358154297e-08,
+      "stream_four_gradient_max": 5.960464477539063e-08,
+      "law_partials": [
+        {
+          "analytic": 0.24302037060260773,
+          "finite": 0.24286657571792603,
+          "error": 0.00015379488468170166
+        },
+        {
+          "analytic": 0.0012316646752879024,
+          "finite": 0.0013783574104309082,
+          "error": 0.00014669273514300585
+        }
+      ]
+    },
+    "True": {
+      "stream_value_max": 4.842877388000488e-08,
+      "stream_four_gradient_max": 2.086162567138672e-07,
+      "law_partials": [
+        {
+          "analytic": 0.14643828570842743,
+          "finite": 0.14638900756835938,
+          "error": 4.92781400680542e-05
+        },
+        {
+          "analytic": -0.006906370632350445,
+          "finite": -0.007152557373046875,
+          "error": 0.0002461867406964302
+        }
+      ]
+    }
+  }
+}

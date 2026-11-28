@@ -1,0 +1,29 @@
+{
+  "protocol": "Additional independent 32-contract sweep",
+  "contracts": 32,
+  "margins_per_contract": 6,
+  "device": "cpu",
+  "threads": 1,
+  "torch": "2.13.0+rocm10.0.0",
+  "numpy": "2.5.2",
+  "python": "3.14.4",
+  "max_abs_error": {
+    "boundary": 1.8594903394841822e-11,
+    "equity": 3.4146552252423135e-10,
+    "margin_gradient": 2.3349788769166935e-9,
+    "principal_gradient": 5.1419979385514125e-12
+  },
+  "legacy_error": "ZeroDivisionError",
+  "positive_premium_max_logit_difference": 0,
+  "positive_premium_max_input_and_parameter_gradient_difference": 0,
+  "source_sha256": {
+    "original.py": "f5d944a8d9929a7d37001a451168dda43e3f7de6b6e5ac1c2010df5f5f31bfa7",
+    "he_xiong.py": "c57bd784765e1c7a49a5f3b4282b06c2d4f020cd71e2d69ee67da93a7c83ba35",
+    "test_he_xiong_zero_premium.py": "f63d74497a1399c26fdebf19f161669ae5d20ceb6c0740e1ef191c049771baea"
+  },
+  "host": "ai395",
+  "session_id": "dpty-7e8feacae67e8fe7ef08d889f153e62d0e072df33a39a4800c108865b01bf4bb",
+  "exit_code": 0,
+  "unittest_passed": 4,
+  "predecessor_attempt": "Initial additional SciPy-based target check encountered ModuleNotFoundError before tests. The executed target oracle uses NumPy, 64-point Gauss-Legendre quadrature and a fourth-order Runge–Kutta solve."
+}

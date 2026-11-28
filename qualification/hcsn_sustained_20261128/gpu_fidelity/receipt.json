@@ -1,0 +1,146 @@
+{
+ "request_id": "hcsn-public-rematerialize-1140569-20261128",
+ "provider": "colab",
+ "account": "qiqian",
+ "provider_request_id": "hc-3b305aa86b4eaf6e3db2c7f5694ab3ef1015f885",
+ "adapter_job_id": "250fd2ad-8142-4d23-9770-c54aceb26473",
+ "source_sha256": "88e5973f3624652c385d3043d988c17c8e7f591168ecb824102c68cac8b219ab",
+ "created_at": "2026-11-28T12:17:37.734145+00:00",
+ "updated_at": "2026-11-28T12:21:22.401878+00:00",
+ "state": "COLLECTED",
+ "outcome": {
+  "accelerator_execution_verification": "requires_task_specific_artifact",
+  "accelerator_requested": "T4",
+  "compute_succeeded": true,
+  "provider_terminal_state": "succeeded"
+ },
+ "artifacts": {
+  "ingress.json": {
+   "sha256": "77d4a6c7566eda8a6014125b201c49a904a8e0480481c24050a3f666bbf7b610",
+   "size": 663
+  },
+  "mismatches.npz": {
+   "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+   "size": 22
+  },
+  "result.json": {
+   "sha256": "b6369814db8a78e0cd0e112fa730c7ee0f4a530b14554ea19e07a891596f6ad2",
+   "size": 378
+  },
+  "scores.npz": {
+   "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+   "size": 22
+  },
+  "stderr": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "size": 0
+  },
+  "stdout": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "size": 0
+  }
+ },
+ "missing": [],
+ "effects": {
+  "allocate": {
+   "at": "2026-11-28T12:18:18.937078+00:00",
+   "status": "confirmed"
+  },
+  "bind": {
+   "at": "2026-11-28T12:18:38.853952+00:00",
+   "status": "confirmed"
+  },
+  "release": {
+   "at": "2026-11-28T12:21:06.047987+00:00",
+   "status": "confirmed"
+  },
+  "run": {
+   "at": "2026-11-28T12:19:10.748097+00:00",
+   "status": "confirmed"
+  },
+  "submit_local": {
+   "at": "2026-11-28T12:19:09.527276+00:00",
+   "status": "confirmed"
+  }
+ },
+ "events": [
+  {
+   "at": "2026-11-28T12:17:37.734166+00:00",
+   "event": "planned_and_reserved"
+  },
+  {
+   "at": "2026-11-28T12:18:11.618748+00:00",
+   "event": "execution_reservation_claimed"
+  },
+  {
+   "at": "2026-11-28T12:18:18.937105+00:00",
+   "event": "effect_intent_persisted",
+   "stage": "allocate"
+  },
+  {
+   "at": "2026-11-28T12:18:38.838937+00:00",
+   "event": "effect_response_received",
+   "stage": "allocate"
+  },
+  {
+   "at": "2026-11-28T12:18:38.853976+00:00",
+   "event": "effect_intent_persisted",
+   "stage": "bind"
+  },
+  {
+   "at": "2026-11-28T12:19:09.519916+00:00",
+   "event": "effect_response_received",
+   "stage": "bind"
+  },
+  {
+   "at": "2026-11-28T12:19:09.527307+00:00",
+   "event": "effect_intent_persisted",
+   "stage": "submit_local"
+  },
+  {
+   "at": "2026-11-28T12:19:10.739216+00:00",
+   "event": "effect_response_received",
+   "stage": "submit_local"
+  },
+  {
+   "at": "2026-11-28T12:19:10.742769+00:00",
+   "event": "adapter_job_bound"
+  },
+  {
+   "at": "2026-11-28T12:19:10.748115+00:00",
+   "event": "effect_intent_persisted",
+   "stage": "run"
+  },
+  {
+   "at": "2026-11-28T12:19:59.130607+00:00",
+   "event": "effect_response_received",
+   "stage": "run"
+  },
+  {
+   "at": "2026-11-28T12:20:12.363366+00:00",
+   "event": "observed_original_binding"
+  },
+  {
+   "at": "2026-11-28T12:20:57.950035+00:00",
+   "event": "observed_original_binding"
+  },
+  {
+   "at": "2026-11-28T12:21:06.033006+00:00",
+   "event": "artifacts_verified_and_retained"
+  },
+  {
+   "at": "2026-11-28T12:21:06.048001+00:00",
+   "event": "effect_intent_persisted",
+   "stage": "release"
+  },
+  {
+   "at": "2026-11-28T12:21:22.393838+00:00",
+   "event": "effect_response_received",
+   "stage": "release"
+  },
+  {
+   "at": "2026-11-28T12:21:22.401899+00:00",
+   "event": "complete_and_resources_reconciled"
+  }
+ ]
+}

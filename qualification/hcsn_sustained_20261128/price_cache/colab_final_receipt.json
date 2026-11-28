@@ -1,0 +1,167 @@
+{
+  "request_id": "hcsn-price-native-1140569-20261128",
+  "provider": "colab",
+  "account": "qiqian",
+  "provider_request_id": "hc-fe9a7463af925e55b914af4fdb0c0e51ff96f303",
+  "adapter_job_id": "96b6c397-382c-4e99-8c20-9f9fdc58cc67",
+  "source_sha256": "cc77d3d5c81465678d3673f867b026457267e765cdde0f1b5aa8d4adf4bca40c",
+  "created_at": "2026-11-28T11:01:09.964215+00:00",
+  "updated_at": "2026-11-28T11:12:37.961033+00:00",
+  "state": "COLLECTED",
+  "origin_file": "colab_origin.json",
+  "outcome": {
+    "accelerator_execution_verification": "requires_task_specific_artifact",
+    "accelerator_requested": "T4",
+    "compute_succeeded": true,
+    "provider_terminal_state": "succeeded"
+  },
+  "effects": {
+    "allocate": {
+      "at": "2026-11-28T11:01:54.754693+00:00",
+      "status": "confirmed"
+    },
+    "bind": {
+      "at": "2026-11-28T11:09:48.574050+00:00",
+      "status": "confirmed"
+    },
+    "release": {
+      "at": "2026-11-28T11:12:24.373249+00:00",
+      "status": "confirmed"
+    },
+    "run": {
+      "at": "2026-11-28T11:10:14.852515+00:00",
+      "status": "confirmed"
+    },
+    "submit_local": {
+      "at": "2026-11-28T11:10:13.662200+00:00",
+      "status": "confirmed"
+    }
+  },
+  "events": [
+    {
+      "at": "2026-11-28T11:01:09.964240+00:00",
+      "event": "planned_and_reserved"
+    },
+    {
+      "at": "2026-11-28T11:01:48.546015+00:00",
+      "event": "execution_reservation_claimed"
+    },
+    {
+      "at": "2026-11-28T11:01:54.754720+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:02:56.130200+00:00",
+      "event": "effect_response_received",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:02:56.144957+00:00",
+      "error_code": "ALLOCATION_NOT_CONFIRMED",
+      "event": "execution_needs_observation"
+    },
+    {
+      "at": "2026-11-28T11:03:03.086419+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:04:15.411560+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:07:52.992736+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:09:42.580258+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:09:48.574078+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "bind"
+    },
+    {
+      "at": "2026-11-28T11:10:13.653296+00:00",
+      "event": "effect_response_received",
+      "stage": "bind"
+    },
+    {
+      "at": "2026-11-28T11:10:13.662221+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "submit_local"
+    },
+    {
+      "at": "2026-11-28T11:10:14.839365+00:00",
+      "event": "effect_response_received",
+      "stage": "submit_local"
+    },
+    {
+      "at": "2026-11-28T11:10:14.846256+00:00",
+      "event": "adapter_job_bound"
+    },
+    {
+      "at": "2026-11-28T11:10:14.852529+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "run"
+    },
+    {
+      "at": "2026-11-28T11:11:28.165718+00:00",
+      "event": "effect_response_received",
+      "stage": "run"
+    },
+    {
+      "at": "2026-11-28T11:11:44.096184+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:12:20.279064+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:12:24.360348+00:00",
+      "event": "artifacts_verified_and_retained"
+    },
+    {
+      "at": "2026-11-28T11:12:24.373280+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "release"
+    },
+    {
+      "at": "2026-11-28T11:12:37.942432+00:00",
+      "event": "effect_response_received",
+      "stage": "release"
+    },
+    {
+      "at": "2026-11-28T11:12:37.961059+00:00",
+      "event": "complete_and_resources_reconciled"
+    }
+  ],
+  "artifact_manifest": {
+    "cloud_result.json": {
+      "sha256": "a0a8d3ba9425cecbd648032043d923a0e25713ad5465f4198290cd5cf44836c2",
+      "size": 10482
+    },
+    "stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  },
+  "missing_expected_artifacts": [],
+  "release": {
+    "phase": "released",
+    "actual_spec": {
+      "accelerator": "T4",
+      "shape": "STANDARD",
+      "variant": "GPU"
+    },
+    "runtime_submit_attempts": 1,
+    "kernel_submit_attempts": 1,
+    "release_submit_attempts": 1
+  }
+}

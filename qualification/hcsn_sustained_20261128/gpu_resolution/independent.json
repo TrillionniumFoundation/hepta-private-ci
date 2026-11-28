@@ -1,0 +1,118 @@
+{
+  "source_sha256": "75a5627766c09e4bce3fbda24b438e54e45c0c5065afc07b6e8f7b30adbe3229",
+  "raw_sha256": "e13e096a295f5f613b61458d6c429cb5a322e3d4b52ed819e2ed43cb4612f917",
+  "arrays_checked": 168,
+  "array_elements_checked": 133976,
+  "pairs": [
+    {
+      "kind": "operator",
+      "dtype": "float64",
+      "atoms": 256,
+      "numeric_pass": true,
+      "max_scaled_error": 8.549507359517142e-15,
+      "recomputed_ratios": {
+        "wall": 0.47004084860029965,
+        "cuda_event": 0.4688078817289449
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float64",
+      "atoms": 512,
+      "numeric_pass": true,
+      "max_scaled_error": 1.998174097492021e-14,
+      "recomputed_ratios": {
+        "wall": 0.7421775970622926,
+        "cuda_event": 0.7407622761664487
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float64",
+      "atoms": 1024,
+      "numeric_pass": true,
+      "max_scaled_error": 4.224288010159947e-14,
+      "recomputed_ratios": {
+        "wall": 2.090348841340377,
+        "cuda_event": 2.091861343308781
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float64",
+      "atoms": 2048,
+      "numeric_pass": true,
+      "max_scaled_error": 4.765430648097718e-14,
+      "recomputed_ratios": {
+        "wall": 7.32005172739453,
+        "cuda_event": 7.348205695637601
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float32",
+      "atoms": 256,
+      "numeric_pass": true,
+      "max_scaled_error": 3.943517452068808e-06,
+      "recomputed_ratios": {
+        "wall": 0.5400699486182774,
+        "cuda_event": 0.5383911535424818
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float32",
+      "atoms": 512,
+      "numeric_pass": true,
+      "max_scaled_error": 1.0016815972155578e-05,
+      "recomputed_ratios": {
+        "wall": 0.5946528975415435,
+        "cuda_event": 0.5945878514854728
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float32",
+      "atoms": 1024,
+      "numeric_pass": true,
+      "max_scaled_error": 1.9060923233585475e-05,
+      "recomputed_ratios": {
+        "wall": 0.9306293172232756,
+        "cuda_event": 0.9302926600979335
+      }
+    },
+    {
+      "kind": "operator",
+      "dtype": "float32",
+      "atoms": 2048,
+      "numeric_pass": true,
+      "max_scaled_error": 4.8327131782144394e-05,
+      "recomputed_ratios": {
+        "wall": 3.1138100824218955,
+        "cuda_event": 3.1216396783394953
+      }
+    },
+    {
+      "kind": "network",
+      "dtype": "float64",
+      "atoms": 256,
+      "numeric_pass": true,
+      "max_scaled_error": 5.826778908912697e-15,
+      "recomputed_ratios": {
+        "wall": 0.673377806936875,
+        "cuda_event": 0.6732712369491607
+      }
+    },
+    {
+      "kind": "network",
+      "dtype": "float64",
+      "atoms": 1024,
+      "numeric_pass": true,
+      "max_scaled_error": 2.2764604739248856e-14,
+      "recomputed_ratios": {
+        "wall": 0.9628506200686302,
+        "cuda_event": 0.962557403569949
+      }
+    }
+  ]
+}

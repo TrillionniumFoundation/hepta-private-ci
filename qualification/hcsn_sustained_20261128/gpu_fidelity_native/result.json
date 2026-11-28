@@ -1,0 +1,106 @@
+{
+ "request_id": "hcsn-native-decoder-fidelity-1140569-20261128",
+ "terminal": true,
+ "torch": "2.14.1+cu130",
+ "cuda": "13.0",
+ "device": "Tesla T4",
+ "dot": 140.0,
+ "decoded": 671,
+ "input_errors": 1,
+ "ingress_elapsed": 161.41581530199997,
+ "tier_checks": [
+  {
+   "n": 48,
+   "decoded": 48,
+   "verified": true,
+   "ids": "1905584b55bf50dbbbfa18967d8bc21137e47fb61051c54df1c97664c02dda7e",
+   "images": "281068d73d82969a5d37335db7429ffa8ff5ba637d9fb0a708e2411e7220bb04",
+   "audio": "2ec0964d68efc5dd5e53ad1658ba628a617359b0647100e306e2c1c291c6801d"
+  },
+  {
+   "n": 168,
+   "decoded": 168,
+   "verified": true,
+   "ids": "78f896adaf9c35bc0f9f67d9061ce06e18161d2c8317f73fc26b0f2fc58718fa",
+   "images": "2007af49e37c98ea789d751bcaa86a6e3dcf5b77d06f2f5e17808343295f51ec",
+   "audio": "8047d87762bcbe2c4fef6759edfca2b84bf7ca9ad30131f0c056713c3620d84f"
+  },
+  {
+   "n": 672,
+   "decoded": 671,
+   "verified": false
+  }
+ ],
+ "ingress_terminal": true,
+ "experiment": {
+  "qualified_tier": 168,
+  "split": [
+   96,
+   24,
+   48
+  ],
+  "models": {
+   "literal": {
+    "train_steps": 12,
+    "train_examples": 288,
+    "train_s": 2.835954644000026,
+    "train_last_loss": 3.0091583728790283,
+    "params": 731168,
+    "development": {
+     "nll": 4.191268692021075,
+     "top1": 0.0
+    },
+    "cold": {
+     "nll": 4.570758455428256,
+     "top1": 0.041666666666666664
+    }
+   },
+   "smooth": {
+    "train_steps": 12,
+    "train_examples": 288,
+    "train_s": 2.290314787999989,
+    "train_last_loss": 2.937370777130127,
+    "params": 731168,
+    "development": {
+     "nll": 4.282253241119144,
+     "top1": 0.0
+    },
+    "cold": {
+     "nll": 4.619497127448135,
+     "top1": 0.0625
+    }
+   },
+   "lif": {
+    "train_steps": 12,
+    "train_examples": 288,
+    "train_s": 1.3464211130000194,
+    "train_last_loss": 3.0358777046203613,
+    "params": 731168,
+    "development": {
+     "nll": 4.25710327006092,
+     "top1": 0.0
+    },
+    "cold": {
+     "nll": 4.491930480815364,
+     "top1": 0.0
+    }
+   },
+   "sdpa": {
+    "train_steps": 12,
+    "train_examples": 288,
+    "train_s": 0.6572848049999607,
+    "train_last_loss": 2.7989959716796875,
+    "params": 673056,
+    "development": {
+     "nll": 4.294047941991287,
+     "top1": 0.0
+    },
+    "cold": {
+     "nll": 4.247255593735876,
+     "top1": 0.10416666666666666
+    }
+   }
+  }
+ },
+ "wall_s": 175.471436952
+}

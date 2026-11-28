@@ -1,0 +1,244 @@
+{
+  "post_cutoff_fulltext.tsv.gz": {
+    "bytes": 114896,
+    "sha256": "8562a5fa5fd56d7e284f3170544d368da7f4bfb8d940c3bba895b59420a9a6d0",
+    "gzip_bytes": 41806,
+    "gzip_sha256": "34931ae15e280f0f8017c26a74f59ff0100a400826d8ba86cdac45a993ccb672"
+  },
+  "post_cutoff_changes.jsonl.gz": {
+    "bytes": 385910,
+    "sha256": "593c2ff0788682bfd91bf81366909671127caba8cc962d9a099baf80565fc938",
+    "gzip_bytes": 87103,
+    "gzip_sha256": "a7cc15475f9d6e3b9adf69e2d0399eec37339c5bfbd24457cf8b494389f4d309"
+  },
+  "post_cutoff_commits.json.gz": {
+    "bytes": 75606,
+    "sha256": "eeae72a1af48b42e541f51f997ade092c6ab12904ee300b1b583ecabc201a8fc",
+    "gzip_bytes": 23660,
+    "gzip_sha256": "e2886ad373b8655e81ee22d379b9f3de40edf52d1561328634c79ed86380a610"
+  },
+  "tag_refs.json.gz": {
+    "bytes": 379486,
+    "sha256": "8bf24d6712e8f8840d82e5475289e1eb802406c67b97b1acaeabbc476cfd523d",
+    "gzip_bytes": 82654,
+    "gzip_sha256": "1696ff18a788392ec38602902ed31183c626b127fb9cd23b82a492d3aea31f2d"
+  },
+  "post_cutoff_totals": {
+    "markers": {
+      "hcsn": "hcsn|hepta[ _-]*continuous[ _-]*spik|hepta[ _-]*\u8fde\u7eed\u8109\u51b2",
+      "paper": "he[ _\u2013\u2014-]*(?:(?:and|&)[ _-]*)?xiong|rollover risk and credit risk|rollover[ _-]*(?:loss|risk)",
+      "boundary": "free[ _-]*boundar|smooth[ _-]*past|\u81ea\u7531\u8fb9\u754c|\u5149\u6ed1\u7c98\u8d34|\u5149\u6ed1\u8d34\u5408",
+      "hit": "first[ _-]*(?:passage|hitt?ing)|brownian bridge|\u9996\u8fbe|\u9996\u6b21\u7a7f\u8d8a",
+      "neural": "spiking|neuron|\u795e\u7ecf\u5143|\u8109\u51b2\u7f51\u7edc",
+      "kinetic": "refractory|regenerati(?:ve|on)|renewal|\u4e0d\u5e94\u671f|\u590d\u4f4d",
+      "editing": "weight[ _-]*edit|model[ _-]*edit|knowledge[ _-]*edit|forward[ _-]*projection|\u6743\u91cd\u7f16\u8f91|\u524d\u5411\u6295\u5f71",
+      "multimodal": "multi[ _-]*modal|omni[ _-]*modal|\u5168\u6a21\u6001|\u591a\u6a21\u6001|image[ _-]*(?:text|caption)|audio[ _-]*visual",
+      "speed": "time[ _-]*to[ _-]*(?:quality|target)|wall[ _-]*(?:time|clock)|\u540c\u8d28\u91cf|\u7aef\u5230\u7aef\u65f6\u95f4"
+    },
+    "counts": {
+      "hcsn": 31,
+      "paper": 11,
+      "boundary": 6,
+      "hit": 8,
+      "neural": 67,
+      "kinetic": 46,
+      "editing": 1,
+      "multimodal": 7,
+      "speed": 36
+    },
+    "total": {
+      "objects": 1039,
+      "bytes": 45643258,
+      "binary": 8,
+      "primary": 713
+    }
+  },
+  "post_cutoff_hcsn_marker_files": [
+    {
+      "oid": "c2d64a3bd4d5a8aaf46621e976ab7797470dc0f8",
+      "representative_path": ".github/workflows/pft-online-regression.yml",
+      "bytes": 5696,
+      "flags": 1
+    },
+    {
+      "oid": "0f4ab4125256d3b71c7ec008e8ba7c8574e5bc43",
+      "representative_path": "qualification/hcsn_clock_8559/STATUS.zh.md",
+      "bytes": 6164,
+      "flags": 397
+    },
+    {
+      "oid": "aa464f87c017727dd77dcc6f23ad834b72690743",
+      "representative_path": "qualification/hcsn_clock_8559/STATUS.zh.md",
+      "bytes": 5091,
+      "flags": 397
+    },
+    {
+      "oid": "23afbb297e43aec30a1a05d0fc54c770babc478b",
+      "representative_path": "qualification/hcsn_clock_8559/audit/SNAPSHOT.json",
+      "bytes": 939,
+      "flags": 385
+    },
+    {
+      "oid": "3de1b0e76afba48b8d0cb309529487489a8b28d5",
+      "representative_path": "qualification/hcsn_clock_8559/event_ssm/TIMESTAMP_CORRECTION.md",
+      "bytes": 852,
+      "flags": 1
+    },
+    {
+      "oid": "3f289fb93d121d3b2e639eb6992c009b55cdd486",
+      "representative_path": "qualification/hcsn_clock_8559/fused/native.py",
+      "bytes": 3457,
+      "flags": 1
+    },
+    {
+      "oid": "c94299688b317bbd06c1e8da2c6e8b9eaf8d4569",
+      "representative_path": "qualification/hcsn_clock_8559/fused/native_v2.py",
+      "bytes": 3180,
+      "flags": 1
+    },
+    {
+      "oid": "d2d3a13f53319fee7896b1fda408d8baa40adbea",
+      "representative_path": "qualification/hcsn_clock_8559/fused/population.cpp",
+      "bytes": 4919,
+      "flags": 33
+    },
+    {
+      "oid": "310170c6c955b2f0199b958367caa9dd000fa5e4",
+      "representative_path": "qualification/hcsn_clock_8559/meld/supervisor.py",
+      "bytes": 4443,
+      "flags": 1
+    },
+    {
+      "oid": "6392a14dfdd3a20eabd08503fd7f68d65577373e",
+      "representative_path": "qualification/hcsn_clock_8559/ops/CLOUD_RECONCILIATION.json",
+      "bytes": 963,
+      "flags": 1
+    },
+    {
+      "oid": "5a00ae0da0af00f6990cdd08a05ebcf90757c410",
+      "representative_path": "qualification/hcsn_clock_8559/ops/observe.py",
+      "bytes": 3221,
+      "flags": 1
+    },
+    {
+      "oid": "2004e6fdf20f59104849d10bb11fd293e78f1348",
+      "representative_path": "qualification/hcsn_clock_8559/vector/supervisor.py",
+      "bytes": 3038,
+      "flags": 1
+    },
+    {
+      "oid": "ff50620db935bfd19f87e9f20a44a6a58740e95b",
+      "representative_path": "qualification/hcsn_closure_20261124/pft_admission_validation/BASELINE.json",
+      "bytes": 2161,
+      "flags": 1
+    },
+    {
+      "oid": "2956de5495f7d36fc8a26f8a05e984ac05af2f10",
+      "representative_path": "qualification/hcsn_closure_20261124/pft_online_peer_tests.py",
+      "bytes": 14198,
+      "flags": 1
+    },
+    {
+      "oid": "74d5457c2ec9559d66f227e3e917b8abb52659c4",
+      "representative_path": "qualification/hcsn_closure_20261124/pft_online_regression.py",
+      "bytes": 7840,
+      "flags": 1
+    },
+    {
+      "oid": "c464c926d9c867ec3486e83d45bbed123f560ccf",
+      "representative_path": "qualification/hcsn_closure_20261124/pft_statistics.py",
+      "bytes": 10146,
+      "flags": 1
+    },
+    {
+      "oid": "f577c9e695e328cc93756f1ee7562a1bcc26de1b",
+      "representative_path": "qualification/hcsn_cross_corpus_8559/boundary_only/BINARY_SPIKE_CONTROL.md",
+      "bytes": 1586,
+      "flags": 1
+    },
+    {
+      "oid": "2aaccfc5678f3589f829967cad0bda9834cc307e",
+      "representative_path": "qualification/hcsn_cross_corpus_8559/boundary_only/NATURAL_IMAGE_ADDENDUM.md",
+      "bytes": 1835,
+      "flags": 1
+    },
+    {
+      "oid": "725f22265f4742cd7625e5c39bb975caa01f6340",
+      "representative_path": "qualification/hcsn_cross_corpus_8559/boundary_only/acquire_rsitmd.py",
+      "bytes": 2228,
+      "flags": 1
+    },
+    {
+      "oid": "da5dde060b512b68307ad793fedcf4c437c38e0a",
+      "representative_path": "qualification/hcsn_cross_corpus_8559/boundary_only/nocaps.py",
+      "bytes": 4428,
+      "flags": 1
+    },
+    {
+      "oid": "af0d80f7daceb6024ff66828b3923922bcefa330",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/PRIMARY_RESULTS.md",
+      "bytes": 6352,
+      "flags": 1
+    },
+    {
+      "oid": "4699253ed6fcde06d6c505cb3f13c0b6d0a38792",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/scratch_caption/PROTOCOL.md",
+      "bytes": 7522,
+      "flags": 449
+    },
+    {
+      "oid": "f9312cdf77b2e24c97d0ca1baa68f068db3a69db",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/scratch_cifar/PROTOCOL.md",
+      "bytes": 5425,
+      "flags": 131
+    },
+    {
+      "oid": "b972429f1738abb6ab7de0d30c8e19b7798a7a1f",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/teacher_grid/HISTORICAL_CURVATURE_TREES.json",
+      "bytes": 3352,
+      "flags": 1
+    },
+    {
+      "oid": "31e906f8353099773d8458d6ca295d17008e9b9b",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/teacher_grid/NAMED_REPO_SCREEN.json",
+      "bytes": 1987,
+      "flags": 17
+    },
+    {
+      "oid": "75e11b8f6380315046e18dbf2f0044e8cb046aef",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/teacher_grid/replay_historical.py",
+      "bytes": 2264,
+      "flags": 1
+    },
+    {
+      "oid": "96cde7aaa8b96a5ee2360a80ff4ecf45fb78f10f",
+      "representative_path": "qualification/hcsn_finite_multilayer_edit_20261128/teacher_grid/search_named.py",
+      "bytes": 2463,
+      "flags": 17
+    },
+    {
+      "oid": "6b6e4019dbe8ded13766c9f69ab07d0151e5ff36",
+      "representative_path": "qualification/hcsn_query_intervention_20261127/resonance/INTEGRATION.md",
+      "bytes": 6318,
+      "flags": 7
+    },
+    {
+      "oid": "538a29b33b7f9d409d27419754d9ec6ab419df02",
+      "representative_path": "qualification/hcsn_query_intervention_20261127/resonance/stationary.py",
+      "bytes": 8977,
+      "flags": 5
+    },
+    {
+      "oid": "b20dc8a51da27761976c1c4e2e33c9275cd3b400",
+      "representative_path": "qualification/hcsn_query_intervention_20261127/visual/PROTOCOL.md",
+      "bytes": 4803,
+      "flags": 49
+    },
+    {
+      "oid": "7098e2eeb2a2db1fb3c43e5542ea8a9c0030fbeb",
+      "representative_path": "qualification/hcsn_query_intervention_20261127/visual/extract.py",
+      "bytes": 6675,
+      "flags": 1
+    }
+  ]
+}

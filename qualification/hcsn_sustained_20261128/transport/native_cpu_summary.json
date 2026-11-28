@@ -1,0 +1,663 @@
+{
+  "request": "hcsn-fft-native-1140569-20261128",
+  "payload_sha256": "d653278e737e59020faf599b13f5c49bb986b7350f09b8b4a4d3b8052fe2640e",
+  "device_request": "cpu",
+  "started_unix": 1795862199.721611,
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "measurements": {
+    "float64": {
+      "passed": true,
+      "result": {
+        "source_commit": "b3fdc981568ab9ce122d2fb569372651e0b4b314",
+        "device": "cpu",
+        "dtype": "float64",
+        "torch": "2.13.0+rocm10.0.0",
+        "hardware": "x86_64",
+        "rocm": "7.15.26333",
+        "cuda_version": null,
+        "native_equivalence": [
+          {
+            "atoms": 12,
+            "port": "boundary",
+            "tolerances": 2e-10,
+            "logits": 5.551115123125783e-16,
+            "last_states": 2.6645352591003757e-15,
+            "frames_gradient": 9.215718466126788e-19,
+            "parameter_gradients": {
+              "first.feedback": 1.0842021724855044e-18,
+              "first.sender.weight": 4.7704895589362195e-18,
+              "first.sender.bias": 1.0842021724855044e-18,
+              "first.recurrent.weight": 6.505213034913027e-19,
+              "second.feedback": 4.336808689942018e-18,
+              "second.sender.weight": 4.336808689942018e-18,
+              "second.sender.bias": 1.734723475976807e-17,
+              "second.recurrent.weight": 1.3010426069826053e-18,
+              "head.weight": 1.1102230246251565e-16,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 12,
+            "port": "priced",
+            "tolerances": 2e-10,
+            "logits": 6.661338147750939e-16,
+            "last_states": 3.552713678800501e-15,
+            "frames_gradient": 4.052205619664573e-18,
+            "parameter_gradients": {
+              "first.feedback": 1.6263032587282567e-18,
+              "first.sender.weight": 1.8756697583999227e-17,
+              "first.sender.bias": 8.131516293641283e-18,
+              "first.recurrent.weight": 1.4094628242311558e-18,
+              "second.feedback": 1.0408340855860843e-17,
+              "second.sender.weight": 6.505213034913027e-17,
+              "second.sender.bias": 1.8648277366750676e-17,
+              "second.recurrent.weight": 6.451002926288751e-18,
+              "head.weight": 1.3877787807814457e-16,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 12,
+            "port": "augmented",
+            "tolerances": 2e-10,
+            "logits": 4.163336342344337e-16,
+            "last_states": 2.6645352591003757e-15,
+            "frames_gradient": 1.5178830414797062e-18,
+            "parameter_gradients": {
+              "first.feedback": 4.336808689942018e-18,
+              "first.sender.weight": 1.8214596497756474e-17,
+              "first.sender.bias": 4.336808689942018e-18,
+              "first.recurrent.weight": 1.1384122811097797e-18,
+              "second.feedback": 1.734723475976807e-17,
+              "second.sender.weight": 6.071532165918825e-17,
+              "second.sender.bias": 1.9081958235744878e-17,
+              "second.recurrent.weight": 5.421010862427522e-18,
+              "head.weight": 9.71445146547012e-17,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "boundary",
+            "tolerances": 2e-10,
+            "logits": 1.7763568394002505e-15,
+            "last_states": 7.105427357601002e-15,
+            "frames_gradient": 7.589415207398531e-19,
+            "parameter_gradients": {
+              "first.feedback": 2.8189256484623115e-18,
+              "first.sender.weight": 4.119968255444917e-18,
+              "first.sender.bias": 3.2526065174565133e-18,
+              "first.recurrent.weight": 5.421010862427522e-19,
+              "second.feedback": 2.949029909160572e-17,
+              "second.sender.weight": 1.0842021724855044e-17,
+              "second.sender.bias": 1.214306433183765e-17,
+              "second.recurrent.weight": 2.710505431213761e-18,
+              "head.weight": 3.677613769070831e-16,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "priced",
+            "tolerances": 2e-10,
+            "logits": 1.7763568394002505e-15,
+            "last_states": 7.549516567451064e-15,
+            "frames_gradient": 5.637851296924623e-18,
+            "parameter_gradients": {
+              "first.feedback": 1.3010426069826053e-17,
+              "first.sender.weight": 3.9898639947466563e-17,
+              "first.sender.bias": 2.168404344971009e-17,
+              "first.recurrent.weight": 5.854691731421724e-18,
+              "second.feedback": 2.688821387764051e-17,
+              "second.sender.weight": 6.765421556309548e-17,
+              "second.sender.bias": 2.42861286636753e-17,
+              "second.recurrent.weight": 9.324138683375338e-18,
+              "head.weight": 3.625572064791527e-16,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "augmented",
+            "tolerances": 2e-10,
+            "logits": 9.43689570931383e-16,
+            "last_states": 7.993605777301127e-15,
+            "frames_gradient": 2.168404344971009e-18,
+            "parameter_gradients": {
+              "first.feedback": 6.5052130349130266e-18,
+              "first.sender.weight": 2.2551405187698492e-17,
+              "first.sender.bias": 9.540979117872439e-18,
+              "first.recurrent.weight": 7.589415207398531e-19,
+              "second.feedback": 1.6479873021779667e-17,
+              "second.sender.weight": 8.673617379884035e-17,
+              "second.sender.bias": 7.806255641895632e-18,
+              "second.recurrent.weight": 6.071532165918825e-18,
+              "head.weight": 5.273559366969494e-16,
+              "head.bias": 0.0
+            }
+          }
+        ],
+        "timing": [
+          {
+            "atoms": 8,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.6653345369377348e-16,
+              0.0,
+              8.881784197001252e-16,
+              1.5543122344752192e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0003820471465587616,
+                0.0003617480397224426,
+                0.00033431779593229294,
+                0.00035472773015499115,
+                0.00033532921224832535
+              ],
+              "fft": [
+                0.0008293511345982552,
+                0.0008071418851613998,
+                0.0008074119687080383,
+                0.0008072522468864918,
+                0.0008005616255104542
+              ]
+            },
+            "dense_over_fft_median": 0.43942612922187335
+          },
+          {
+            "atoms": 12,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              2.220446049250313e-16,
+              0.0,
+              1.3322676295501878e-15,
+              1.4432899320127035e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.00037720706313848495,
+                0.0003715767525136471,
+                0.0003508077934384346,
+                0.00036886800080537796,
+                0.0003423779271543026
+              ],
+              "fft": [
+                0.0008374904282391071,
+                0.0008259313181042671,
+                0.0008255806751549244,
+                0.0008331909775733948,
+                0.0008625900372862816
+              ]
+            },
+            "dense_over_fft_median": 0.4427172289835374
+          },
+          {
+            "atoms": 32,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.5959455978986625e-16,
+              0.0,
+              1.887379141862766e-15,
+              1.3322676295501878e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0005001318641006947,
+                0.00048109283670783043,
+                0.00045648403465747833,
+                0.0004816432483494282,
+                0.0004466450773179531
+              ],
+              "fft": [
+                0.0008954987861216068,
+                0.0008924691937863827,
+                0.000882699154317379,
+                0.0008755987510085106,
+                0.0008753091096878052
+              ]
+            },
+            "dense_over_fft_median": 0.5450246942627647
+          },
+          {
+            "atoms": 64,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.734723475976807e-16,
+              0.0,
+              1.8318679906315083e-15,
+              1.6653345369377348e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0008687903173267841,
+                0.0008594999089837074,
+                0.0008301110938191414,
+                0.0008533899672329426,
+                0.0008305809460580349
+              ],
+              "fft": [
+                0.0009613861329853535,
+                0.0009446567855775356,
+                0.0009419266134500504,
+                0.000934096984565258,
+                0.0009345076978206635
+              ]
+            },
+            "dense_over_fft_median": 0.9060047301425964
+          },
+          {
+            "atoms": 128,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.717376241217039e-16,
+              0.0,
+              2.831068712794149e-15,
+              1.1102230246251565e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0023656971752643585,
+                0.0023865867406129837,
+                0.0023639369755983353,
+                0.002391725778579712,
+                0.0023556072264909744
+              ],
+              "fft": [
+                0.001073773019015789,
+                0.0010505029931664467,
+                0.001058673020452261,
+                0.0010348837822675705,
+                0.0010553430765867233
+              ]
+            },
+            "dense_over_fft_median": 2.2416380300856185
+          },
+          {
+            "atoms": 256,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              2.645453300864631e-16,
+              0.0,
+              9.072603779358701e-15,
+              1.9984014443252818e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.01870144298300147,
+                0.01898461300879717,
+                0.01927934307605028,
+                0.01887806598097086,
+                0.015321241691708565
+              ],
+              "fft": [
+                0.0017617382109165192,
+                0.0013606920838356018,
+                0.0017943368293344975,
+                0.00133571308106184,
+                0.0018100161105394363
+              ]
+            },
+            "dense_over_fft_median": 10.715590922643276
+          },
+          {
+            "atoms": 512,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.1102230246251565e-16,
+              0.0,
+              1.2004286453759505e-14,
+              1.817990202823694e-15
+            ],
+            "time_seconds": {
+              "dense": [
+                0.10660446435213089,
+                0.10451813787221909,
+                0.11014027986675501,
+                0.1089831911958754,
+                0.10893460270017385
+              ],
+              "fft": [
+                0.0025410507805645466,
+                0.0019080927595496178,
+                0.002472063060849905,
+                0.0018344358541071415,
+                0.002367546781897545
+              ]
+            },
+            "dense_over_fft_median": 46.011594589427624
+          }
+        ]
+      }
+    },
+    "float32": {
+      "passed": true,
+      "result": {
+        "source_commit": "b3fdc981568ab9ce122d2fb569372651e0b4b314",
+        "device": "cpu",
+        "dtype": "float32",
+        "torch": "2.13.0+rocm10.0.0",
+        "hardware": "x86_64",
+        "rocm": "7.15.26333",
+        "cuda_version": null,
+        "native_equivalence": [
+          {
+            "atoms": 12,
+            "port": "boundary",
+            "tolerances": 0.0004,
+            "logits": 2.086162567138672e-07,
+            "last_states": 1.430511474609375e-06,
+            "frames_gradient": 1.4551915228366852e-09,
+            "parameter_gradients": {
+              "first.feedback": 1.3969838619232178e-09,
+              "first.sender.weight": 3.026798367500305e-09,
+              "first.sender.bias": 2.3283064365386963e-09,
+              "first.recurrent.weight": 4.656612873077393e-10,
+              "second.feedback": 9.313225746154785e-09,
+              "second.sender.weight": 1.0477378964424133e-09,
+              "second.sender.bias": 5.587935447692871e-09,
+              "second.recurrent.weight": 2.3283064365386963e-09,
+              "head.weight": 8.940696716308594e-08,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 12,
+            "port": "priced",
+            "tolerances": 0.0004,
+            "logits": 1.7881393432617188e-07,
+            "last_states": 1.430511474609375e-06,
+            "frames_gradient": 2.735760062932968e-09,
+            "parameter_gradients": {
+              "first.feedback": 6.51925802230835e-09,
+              "first.sender.weight": 1.1641532182693481e-08,
+              "first.sender.bias": 4.190951585769653e-09,
+              "first.recurrent.weight": 9.89530235528946e-10,
+              "second.feedback": 7.450580596923828e-09,
+              "second.sender.weight": 2.2351741790771484e-08,
+              "second.sender.bias": 1.1175870895385742e-08,
+              "second.recurrent.weight": 3.259629011154175e-09,
+              "head.weight": 5.960464477539063e-08,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 12,
+            "port": "augmented",
+            "tolerances": 0.0004,
+            "logits": 3.725290298461914e-07,
+            "last_states": 1.9073486328125e-06,
+            "frames_gradient": 9.968061931431293e-10,
+            "parameter_gradients": {
+              "first.feedback": 2.0954757928848267e-09,
+              "first.sender.weight": 4.190951585769653e-09,
+              "first.sender.bias": 1.1641532182693481e-09,
+              "first.recurrent.weight": 5.820766091346741e-10,
+              "second.feedback": 3.259629011154175e-09,
+              "second.sender.weight": 2.1187588572502136e-08,
+              "second.sender.bias": 9.313225746154785e-09,
+              "second.recurrent.weight": 2.510205376893282e-09,
+              "head.weight": 5.960464477539063e-08,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "boundary",
+            "tolerances": 0.0004,
+            "logits": 4.76837158203125e-07,
+            "last_states": 3.0994415283203125e-06,
+            "frames_gradient": 5.529727786779404e-10,
+            "parameter_gradients": {
+              "first.feedback": 4.511093720793724e-10,
+              "first.sender.weight": 2.852175384759903e-09,
+              "first.sender.bias": 6.402842700481415e-10,
+              "first.recurrent.weight": 2.8194335754960775e-10,
+              "second.feedback": 1.4435499906539917e-08,
+              "second.sender.weight": 5.180481821298599e-09,
+              "second.sender.bias": 9.313225746154785e-09,
+              "second.recurrent.weight": 1.3969838619232178e-09,
+              "head.weight": 2.682209014892578e-07,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "priced",
+            "tolerances": 0.0004,
+            "logits": 8.046627044677734e-07,
+            "last_states": 3.337860107421875e-06,
+            "frames_gradient": 2.0954757928848267e-09,
+            "parameter_gradients": {
+              "first.feedback": 5.122274160385132e-09,
+              "first.sender.weight": 1.30385160446167e-08,
+              "first.sender.bias": 6.05359673500061e-09,
+              "first.recurrent.weight": 1.7462298274040222e-09,
+              "second.feedback": 9.313225746154785e-09,
+              "second.sender.weight": 8.568167686462402e-08,
+              "second.sender.bias": 1.1175870895385742e-08,
+              "second.recurrent.weight": 5.587935447692871e-09,
+              "head.weight": 2.5331974029541016e-07,
+              "head.bias": 0.0
+            }
+          },
+          {
+            "atoms": 64,
+            "port": "augmented",
+            "tolerances": 0.0004,
+            "logits": 5.364418029785156e-07,
+            "last_states": 3.2186508178710938e-06,
+            "frames_gradient": 1.57160684466362e-09,
+            "parameter_gradients": {
+              "first.feedback": 2.0954757928848267e-09,
+              "first.sender.weight": 5.3551048040390015e-09,
+              "first.sender.bias": 2.3283064365386963e-09,
+              "first.recurrent.weight": 5.238689482212067e-10,
+              "second.feedback": 1.5832483768463135e-08,
+              "second.sender.weight": 2.7008354663848877e-08,
+              "second.sender.bias": 2.7008354663848877e-08,
+              "second.recurrent.weight": 5.471520125865936e-09,
+              "head.weight": 2.086162567138672e-07,
+              "head.bias": 0.0
+            }
+          }
+        ],
+        "timing": [
+          {
+            "atoms": 8,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              7.450580596923828e-08,
+              0.0,
+              4.172325134277344e-07,
+              9.5367431640625e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0004087458364665508,
+                0.0004979120567440987,
+                0.00042181508615612984,
+                0.0003904360346496105,
+                0.00036989711225032806
+              ],
+              "fft": [
+                0.0009690257720649242,
+                0.0010085050016641617,
+                0.0009254668839275837,
+                0.0008946582674980164,
+                0.0011273911222815514
+              ]
+            },
+            "dense_over_fft_median": 0.42181110993110416
+          },
+          {
+            "atoms": 12,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              1.4156103134155273e-07,
+              0.0,
+              1.043081283569336e-06,
+              5.066394805908203e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0004154648631811142,
+                0.0004019457846879959,
+                0.00037262681871652603,
+                0.0004035350866615772,
+                0.0003655371256172657
+              ],
+              "fft": [
+                0.001105091068893671,
+                0.0009441268630325794,
+                0.0008989991620182991,
+                0.0008841590024530888,
+                0.0009447471238672733
+              ]
+            },
+            "dense_over_fft_median": 0.4257328124283291
+          },
+          {
+            "atoms": 32,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              8.195638656616211e-08,
+              0.0,
+              1.080334186553955e-06,
+              4.76837158203125e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.00045916391536593437,
+                0.00045274384319782257,
+                0.0004615830257534981,
+                0.0004465552046895027,
+                0.00042923493310809135
+              ],
+              "fft": [
+                0.0009428467601537704,
+                0.0009277067147195339,
+                0.0009374171495437622,
+                0.0009317081421613693,
+                0.0009262668900191784
+              ]
+            },
+            "dense_over_fft_median": 0.485928825466257
+          },
+          {
+            "atoms": 64,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              5.587935447692871e-08,
+              0.0,
+              1.1026859283447266e-06,
+              4.76837158203125e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0006558671593666077,
+                0.0006399368867278099,
+                0.0008155610412359238,
+                0.0006398269906640053,
+                0.0006069792434573174
+              ],
+              "fft": [
+                0.0010321643203496933,
+                0.0009932052344083786,
+                0.0010659419931471348,
+                0.0010251738131046295,
+                0.000986156053841114
+              ]
+            },
+            "dense_over_fft_median": 0.6242228181676133
+          },
+          {
+            "atoms": 128,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              8.381903171539307e-08,
+              0.0,
+              2.053275238722563e-06,
+              8.344650268554688e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0013592718169093132,
+                0.0013661319389939308,
+                0.0014611892402172089,
+                0.001363552175462246,
+                0.0013127736747264862
+              ],
+              "fft": [
+                0.0010527931153774261,
+                0.0010588630102574825,
+                0.001096211839467287,
+                0.001038143876940012,
+                0.0012677758932113647
+              ]
+            },
+            "dense_over_fft_median": 1.287751259844909
+          },
+          {
+            "atoms": 256,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              5.029141902923584e-08,
+              0.0,
+              2.726912498474121e-06,
+              4.76837158203125e-07
+            ],
+            "time_seconds": {
+              "dense": [
+                0.0071841878816485405,
+                0.0065848492085933685,
+                0.006220831070095301,
+                0.013810275122523308,
+                0.015444197226315737
+              ],
+              "fft": [
+                0.0013547730632126331,
+                0.0011477796360850334,
+                0.0015163570642471313,
+                0.0012176069431006908,
+                0.003541294950991869
+              ]
+            },
+            "dense_over_fft_median": 5.3028718068931475
+          },
+          {
+            "atoms": 512,
+            "rows": 8,
+            "max_abs_live_flow_massgrad_shiftgrad": [
+              6.51925802230835e-08,
+              0.0,
+              6.556510925292969e-06,
+              5.304813385009766e-06
+            ],
+            "time_seconds": {
+              "dense": [
+                0.08615106297656894,
+                0.08745634695515037,
+                0.06259728083387017,
+                0.08379751583561301,
+                0.05980177875608206
+              ],
+              "fft": [
+                0.004638916812837124,
+                0.004010139033198357,
+                0.0048095411621034145,
+                0.003960549831390381,
+                0.004001718945801258
+              ]
+            },
+            "dense_over_fft_median": 20.896411606152927
+          }
+        ]
+      }
+    }
+  },
+  "passed": true,
+  "framework": "2.13.0+rocm10.0.0",
+  "cuda_available": false,
+  "ended_unix": 1795862205.8537886
+}
