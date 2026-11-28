@@ -28,6 +28,16 @@ pub struct PrivateDirectory {
 impl PrivateDirectory {
     /// Opens or creates one directory. Its parent must already exist.
     pub fn open_or_create(path: &Path) -> io::Result<Self> {
+        Self::create_directory(path, nt::Disposition::OpenOrCreate)
+    }
+
+    /// Atomically creates a private directory and refuses any existing entry.
+    /// Its parent must already exist; no existing ACL is repaired or replaced.
+    pub fn create_new_directory(path: &Path) -> io::Result<Self> {
+        Self::create_directory(path, nt::Disposition::CreateNew)
+    }
+
+    fn create_directory(path: &Path, disposition: nt::Disposition) -> io::Result<Self> {
         let identity = CurrentIdentity::read()?;
         let descriptor = OwnerSecurityDescriptor::new(
             &identity.user,
@@ -37,7 +47,7 @@ impl PrivateDirectory {
             path,
             nt::Access::ReadWrite,
             nt::Kind::Directory,
-            nt::Disposition::OpenOrCreate,
+            disposition,
             Some(&descriptor),
         )?;
         if !snapshot::snapshot(&file, &identity)?.is_directory() {
