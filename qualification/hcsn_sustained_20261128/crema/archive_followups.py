@@ -29,7 +29,16 @@ def prepare(base, kind, destination):
                 path=base/key/r["weights"]
                 if sha(path)!=r["sha256"]:raise ValueError(str(path))
                 names+= [key+"/"+r["weights"],f"{key}/dev-{r['epoch']}.npz",f"{key}/cold-{r['epoch']}.npz"]
-    else:
+    elif kind=="billion_epoch":
+        verification=json.loads((base/"verification.json").read_text())
+        if (not verification["verified"] or verification["final_fits"]!=6
+                or verification["terminal_sha256"]!=sha(base/"terminal.json")):
+            raise ValueError("six complete independently verified end states required")
+        names=["session.json","seal.json","terminal.json","verification.json"]
+        for key in sorted(result["cells"]):
+            names.extend(key+"/"+name for name in ("fit.json","progress.json","steps.jsonl","cold.json","cold.npz",
+                         "dev-16.npz","dev-128.npz","dev-312.npz"))
+    elif kind=="null_space":
         seal=base/"fits.json";assert sha(seal)==result["fit_seal_sha256"]
         fits=json.loads(seal.read_text());names=["fits.json","terminal.json"]
         for seed,arms in fits.items():
@@ -37,6 +46,8 @@ def prepare(base, kind, destination):
             for r in arms.values():
                 if sha(base/r["weights"])!=r["sha256"]:raise ValueError(r["weights"])
                 names.append(r["weights"])
+    else:
+        raise ValueError("unknown archive kind "+kind)
     names=sorted(set(names))
     if not all(re.fullmatch(r"[.A-Za-z0-9/_-]+",n) and ".." not in n for n in names):raise ValueError("file list")
     brief={n:{"bytes":(base/n).stat().st_size,"sha256":sha(base/n)} for n in names}
