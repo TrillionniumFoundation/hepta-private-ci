@@ -574,6 +574,7 @@ async fn exec_windows_sandbox(
     windows_sandbox_filesystem_overrides: Option<&WindowsSandboxFilesystemOverrides>,
 ) -> Result<RawExecToolCallOutput> {
     use crate::config::find_codex_home;
+    use codex_windows_sandbox::ResolvedWindowsSandboxPermissions;
     use codex_windows_sandbox::run_windows_sandbox_capture_for_permission_profile_elevated;
     use codex_windows_sandbox::run_windows_sandbox_capture_with_filesystem_overrides;
 
@@ -635,7 +636,6 @@ async fn exec_windows_sandbox(
     let command_path = command.first().cloned();
     let sandbox_level = windows_sandbox_level;
     let proxy_enforced = network.is_some();
-    let use_elevated = windows_sandbox_uses_elevated_backend(sandbox_level);
     let additional_deny_write_paths = windows_sandbox_filesystem_overrides
         .map(|overrides| overrides.additional_deny_write_paths.clone())
         .unwrap_or_default();
@@ -648,6 +648,26 @@ async fn exec_windows_sandbox(
         .is_some_and(|overrides| overrides.read_roots_include_platform_defaults);
     let elevated_write_roots_override = windows_sandbox_filesystem_overrides
         .and_then(|overrides| overrides.write_roots_override.clone());
+    let use_elevated = if windows_sandbox_uses_elevated_backend(sandbox_level) {
+        true
+    } else {
+        if proxy_enforced {
+            return Err(CodexErr::Io(io::Error::other(
+                "managed networking requires the elevated Windows sandbox backend",
+            )));
+        }
+        let permissions =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &permission_profile,
+                &workspace_roots,
+            )
+            .map_err(|err| CodexErr::Io(io::Error::other(err)))?;
+        let has_overrides = elevated_read_roots_override.is_some()
+            || elevated_write_roots_override.is_some()
+            || !additional_deny_read_paths.is_empty()
+            || !additional_deny_write_paths.is_empty();
+        permissions.requires_elevated_filesystem(&cwd, &env, has_overrides)
+    };
     let spawn_res = tokio::task::spawn_blocking(move || {
         if use_elevated {
             run_windows_sandbox_capture_for_permission_profile_elevated(

@@ -84,18 +84,18 @@ fn select_windows_sandbox_backend(
             request.permission_profile,
             request.workspace_roots,
         )?;
-    let requires_elevated_filesystem = !permissions.has_full_disk_read_access()
-        || permissions.uses_write_capabilities_for_cwd(request.cwd, &request.env_map)
-        || request.read_roots_override.is_some()
+    let has_overrides = request.read_roots_override.is_some()
         || request.write_roots_override.is_some()
         || !request.deny_read_paths_override.is_empty()
         || !request.deny_write_paths_override.is_empty();
 
-    Ok(if requires_elevated_filesystem {
-        WindowsSandboxBackend::Elevated
-    } else {
-        WindowsSandboxBackend::RestrictedToken
-    })
+    Ok(
+        if permissions.requires_elevated_filesystem(request.cwd, &request.env_map, has_overrides) {
+            WindowsSandboxBackend::Elevated
+        } else {
+            WindowsSandboxBackend::RestrictedToken
+        },
+    )
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(

@@ -138,6 +138,9 @@ pub(crate) fn prepare_legacy_spawn_context(
         command,
         options,
     )?;
+    if common.uses_write_capabilities || common.permissions.has_full_disk_write_access() {
+        anyhow::bail!("write-capable filesystem policies require the elevated Windows sandbox");
+    }
     if common.permissions.should_apply_network_block() {
         apply_no_network_to_env(env_map)?;
     }
