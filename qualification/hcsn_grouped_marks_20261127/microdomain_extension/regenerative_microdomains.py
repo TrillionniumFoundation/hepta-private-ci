@@ -77,3 +77,22 @@ def repeated_count_bounds(distance: Tensor, reset: Tensor, copies: int, drift: f
         lower.append(initial[:remaining-ceil_shift+1].sum() if remaining>=ceil_shift else initial.new_zeros(()))
     lo,hi=torch.stack(lower),torch.stack(upper)
     return CountInterval(lo.sum(),hi.sum(),lo,hi)
+
+
+def repeated_content_release(bounds: CountInterval, fraction: Tensor) -> tuple[Tensor, Tensor]:
+    """Bound the expected fraction of a fixed value written after N partial-release events.
+
+    Per event, h <- (1-fraction)*h + fraction*value. The value and fraction stay fixed
+    within the evaluated horizon. The case fraction=1 recovers the first-hit port.
+    """
+    if (fraction.ndim!=0 or fraction.dtype!=bounds.lower.dtype or fraction.device!=bounds.lower.device
+            or not torch.isfinite(fraction) or float(fraction.detach())<0 or float(fraction.detach())>1):
+        raise ValueError('the per-event fraction must be a scalar in [0,1] on the count device and dtype')
+    # Explicit recurrence handles zero and one cleanly, including the derivative at either endpoint.
+    retention = torch.ones_like(fraction)
+    weights = []
+    for _ in range(len(bounds.per_event_lower)):
+        weights.append(fraction*retention)
+        retention = retention*(1-fraction)
+    weights = torch.stack(weights)
+    return (weights@bounds.per_event_lower, weights@bounds.per_event_upper)
