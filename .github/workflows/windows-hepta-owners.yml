@@ -45,8 +45,7 @@ jobs:
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          tool: nextest
-          version: 0.9.103
+          tool: nextest@0.9.103
 
       - name: Configure original verified sandbox V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
@@ -114,6 +113,13 @@ jobs:
           import tomllib
 
           output = Path(os.environ["RUNNER_TEMP"]) / "windows-hepta-owners"
+          for name, expected in (
+              ("rustc.txt", ["rustc", "1.96.1"]),
+              ("cargo.txt", ["cargo", "1.96.1"]),
+              ("nextest.txt", ["cargo-nextest", "0.9.103"]),
+          ):
+              if (output / name).read_text().split()[:2] != expected:
+                  raise RuntimeError("the original tool version differs: " + name)
           original = Path("codex-rs/.config/nextest.toml").read_text()
           settings = tomllib.loads(original)
           assert "store" not in settings
