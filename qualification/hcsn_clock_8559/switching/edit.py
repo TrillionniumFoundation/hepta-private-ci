@@ -50,7 +50,7 @@ def main(out):
                     return np.r_[np.asarray(info['smooth_residual'])/5.,np.asarray(info['equity_at_100'])-target[2:]]
                 answer=least_squares(f,np.zeros(4),bounds=((LOW-BASE)/SCALE,(HIGH-BASE)/SCALE),
                           max_nfev=120,ftol=1e-11,xtol=1e-11,gtol=1e-11,jac='3-point',diff_step=2e-5)
-                return BASE+SCALE*answer.x
+                return np.clip(BASE+SCALE*answer.x,LOW,HIGH)
             candidates['joint_finite']=clocked(joint)
             for name,(theta,clock) in candidates.items():
                 admitted=bool(np.all(theta>=LOW) and np.all(theta<=HIGH))

@@ -1,0 +1,20 @@
+{
+  "original_request_id": "hcsn-8559-shdclock-gpu-v1",
+  "requested_accelerator": "T4",
+  "source_sha256": "884a3176e3a02243dced756a4a06484987e2351f8130b0de1332c5b9ec0d7cc1",
+  "original_provider": "colab",
+  "first_failure_stage": "ASSIGNMENT_POST",
+  "first_failure_class": "requests.exceptions.ReadTimeout",
+  "positive_allocation_acknowledgement": false,
+  "independent_current_absence_observations": 2,
+  "actual_kernel_submissions": 0,
+  "current_owned_kernel": false,
+  "current_owned_runtime": false,
+  "scheduler_final_state": "REJECTED",
+  "provider_terminal_state": "allocation_absent",
+  "outcome": "ALLOCATION_ABSENCE_RECONCILED",
+  "historical_allocation_outcome": "unknown",
+  "compute_succeeded": false,
+  "original_request_must_not_be_replayed": true,
+  "separate_native_training": "A distinct synchronized RTX 4060 full SHD training matrix reuses hash-verified original SHD counts. Its weight updates and timings are independently recorded."
+}
