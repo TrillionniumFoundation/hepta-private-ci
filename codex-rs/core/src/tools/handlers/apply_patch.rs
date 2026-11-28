@@ -283,14 +283,38 @@ async fn effective_patch_permissions(
     environment: &TurnEnvironment,
     action: &ApplyPatchAction,
     cwd: &PathUri,
-) -> std::io::Result<(
+) -> (
     Vec<PathUri>,
     crate::tools::handlers::EffectiveAdditionalPermissions,
     codex_protocol::permissions::FileSystemSandboxPolicy,
-)> {
+) {
     let environment_id = environment.selection.environment_id.as_str();
     let file_paths = file_paths_for_action(action);
-    let native_cwd = cwd.to_abs_path()?;
+    let base_file_system_sandbox_policy = environment
+        .permission_profile_with_workspace_roots()
+        .file_system_sandbox_policy();
+    let native_cwd = match cwd.to_abs_path() {
+        Ok(cwd) => cwd,
+        Err(_) => {
+            return patch_permissions_without_path_matching(
+                action,
+                base_file_system_sandbox_policy,
+            );
+        }
+    };
+    let native_file_paths = match file_paths
+        .iter()
+        .map(PathUri::to_abs_path)
+        .collect::<Result<Vec<_>, _>>()
+    {
+        Ok(paths) => paths,
+        Err(_) => {
+            return patch_permissions_without_path_matching(
+                action,
+                base_file_system_sandbox_policy,
+            );
+        }
+    };
     let granted_permissions = merge_permission_profiles(
         session
             .granted_session_permissions(environment_id)
@@ -301,17 +325,10 @@ async fn effective_patch_permissions(
             .await
             .as_ref(),
     );
-    let base_file_system_sandbox_policy = environment
-        .permission_profile_with_workspace_roots()
-        .file_system_sandbox_policy();
     let file_system_sandbox_policy = effective_file_system_sandbox_policy(
         &base_file_system_sandbox_policy,
         granted_permissions.as_ref(),
     );
-    let native_file_paths = file_paths
-        .iter()
-        .map(PathUri::to_abs_path)
-        .collect::<Result<Vec<_>, _>>()?;
     let effective_additional_permissions = apply_granted_turn_permissions(
         session,
         environment_id,
@@ -321,22 +338,24 @@ async fn effective_patch_permissions(
     )
     .await;
 
-    Ok((
+    (
         file_paths,
         effective_additional_permissions,
         file_system_sandbox_policy,
-    ))
+    )
 }
 
 fn patch_permissions_without_path_matching(
     action: &ApplyPatchAction,
+    file_system_sandbox_policy: codex_protocol::permissions::FileSystemSandboxPolicy,
 ) -> (
     Vec<PathUri>,
     crate::tools::handlers::EffectiveAdditionalPermissions,
     codex_protocol::permissions::FileSystemSandboxPolicy,
 ) {
-    // TODO(anp): Make permission matching operate on PathUri. Until then, foreign paths skip
-    // permission matching; a managed turn still fails closed at the platform sandbox boundary.
+    // Keep the selected environment's policy when its paths cannot be projected onto this
+    // host. An unavailable path comparison must not turn a managed policy into full-disk
+    // access before the approval decision. The executor still enforces its own sandbox.
     (
         file_paths_for_action(action),
         crate::tools::handlers::EffectiveAdditionalPermissions {
@@ -344,7 +363,7 @@ fn patch_permissions_without_path_matching(
             additional_permissions: None,
             permissions_preapproved: false,
         },
-        codex_protocol::permissions::FileSystemSandboxPolicy::unrestricted(),
+        file_system_sandbox_policy,
     )
 }
 
@@ -563,8 +582,7 @@ async fn execute_verified_patch(
 ) -> Result<String, FunctionCallError> {
     let (file_paths, effective_additional_permissions, file_system_sandbox_policy) =
         effective_patch_permissions(tool_ctx.session.as_ref(), &turn_environment, &action, cwd)
-            .await
-            .unwrap_or_else(|_| patch_permissions_without_path_matching(&action));
+            .await;
     let apply = apply_patch::prepare_apply_patch(
         tool_ctx.step_context.turn.as_ref(),
         turn_environment.permission_profile(),
