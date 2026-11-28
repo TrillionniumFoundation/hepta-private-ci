@@ -1,0 +1,18 @@
+{
+  "unique_selected_blobs": 7394,
+  "bytes": 56680068,
+  "expressions": {
+    "named_fastest_or_first_to_hit": "fastest.{0,32}(?:passage|hitt?|searcher)|(?:minimum|earliest).{0,20}(?:of.{0,4}(?:n|k).{0,15}hitting|independent.{0,15}(?:first|hit))|first.{0,14}(?:of|among).{0,24}independent.{0,16}(?:path|chain|particle|walker|unit)",
+    "survival_power": "(?:s_live|p_live|surviv(?:al|or))\\s*(?:\\.pow\\(|\\*\\*|\\^)\\s*\\(?\\s*(?:n|k|copies|2|3)\\b",
+    "renewal_or_repeat_reset": "\\brenewal\\b|repeated.{0,15}(?:hit|fire|reset|spik)|regenerati(?:on|ve)",
+    "rounding_waits": "(?:round(?:ing|ed)|floor|ceil).{0,35}(?:wait.{0,6}time|interarrival|inter.arrival|inter.spike interval)|(?:wait.{0,6}time|interarrival|inter.spike interval).{0,35}(?:round(?:ing|ed)|floor|ceil)"
+  },
+  "counts": {
+    "named_fastest_or_first_to_hit": 0,
+    "survival_power": 0,
+    "renewal_or_repeat_reset": 801,
+    "rounding_waits": 0
+  },
+  "joint_reset_and_multi_searcher_matches": [],
+  "limits": "Lexical signals over prior selected code and narratives. Unrelated wording or code without matching names may conceal an equivalent implementation."
+}
