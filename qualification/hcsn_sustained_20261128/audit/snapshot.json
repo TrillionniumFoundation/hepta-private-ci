@@ -209,5 +209,45 @@
       "head": "4d49c92a68531af85219d4779ded3e02bb9dba54",
       "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46089559307"
     }
-  ]
+  ],
+  "current_all_heads_tree_inventory": {
+    "branches": 8396,
+    "tips": 8002,
+    "roots": 7933,
+    "reference_table_sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+    "unique_trees": 78832,
+    "tree_path_pairs": 80237,
+    "unique_blobs": 207082,
+    "distinct_gitlinks": 0,
+    "primary_source_docs": 97234,
+    "data_like_including_primary": 158089,
+    "elapsed_s": 21.736802872037515,
+    "receipt_sha256": "fb35bca0a0010a308e57ed5e39c4bc1bc8fa1ff14d8d4d2d3e42375d41a75e91",
+    "completed_utc": "2026-11-28T10:44:22Z",
+    "receipt": "all_heads_inventory.json"
+  },
+  "atomic_ref_cross_check": {
+    "observed_utc": "2026-11-28T10:44:07.788332Z",
+    "atomic_count": 8398,
+    "atomic_sha256": "88ea0e62e0db51f4f079a57b09094826a876461d44de8c33fb545fbde1dade01",
+    "original_names_missing": 0,
+    "original_shas_changed": 0,
+    "additional_names": [
+      "research/hcsn-sustained-boundary-20261128-1140569",
+      "research/hcsn-sustained-boundary-20261128-1140569-results"
+    ]
+  },
+  "cremad_post_git_host_qualification": {
+    "source_sha256": "1120cf42a453fde43cb73d497fae48a32da4a9a85cd128bf4a549b8576e08404",
+    "cold_clips": 1311,
+    "actors": 16,
+    "num_logits_independently_rescored": 1510272,
+    "max_abs_error": 8.881784197001252e-16,
+    "recount_utc": "2026-11-28T10:49:01Z",
+    "original_summary": "../billion_recovery/original/SUMMARY.json",
+    "origin_seal": "../billion_recovery/original/seal.json",
+    "early_development_checkpoint_replay": "../billion_recovery/original/INDEPENDENT_DEVELOPMENT_REPLAY.json",
+    "fresh_recount": "cremad_independent_recount.json",
+    "experiment_origin": "Earlier single-seed CPU native four-arm experiment on ai395; source Git branch 93196613f9b1893288b8460688d146596c17ddd3 records early observations only."
+  }
 }

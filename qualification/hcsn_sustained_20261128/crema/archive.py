@@ -76,7 +76,7 @@ def publish(path,kind,repo,files):
         run(["read-tree",base],repo)
         entries=b"".join((f"100644 blob {oid}\t{PREFIX}{kind}/{dest}\0").encode() for dest,oid in listing)
         run(["update-index","-z","--index-info"],repo,entries)
-        tree=run(["write-tree"],repo)
+        tree=run(["write-tree","--missing-ok"],repo)
         if tree==run(["rev-parse",base+"^{tree}"],repo):
             return base
         commit=run(["-c","user.name=HCSN Research Runner","-c","user.email=hcsn-research@users.noreply.github.com",

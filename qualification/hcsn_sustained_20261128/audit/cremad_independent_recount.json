@@ -1,0 +1,130 @@
+{
+  "actors": 16,
+  "checksums": {
+    "lif": {
+      "cold_logits_bytes": 992938,
+      "cold_logits_sha256": "86c6d51a3152e83e78e293e84a511465d22d1534defa5f994f441d2cfec00e14",
+      "cold_result_sha256": "4682db59c484f62dcbe435b7797697e1914326fdb9f9503cd989ea5477d62744",
+      "fit_sha256": "a68398511b1ade14f09a48576478c7e95a06897e8ebc4302ef5dcf37da9858f6"
+    },
+    "literal": {
+      "cold_logits_bytes": 1077628,
+      "cold_logits_sha256": "8589b83dd91a0c749f9e0337995176e8f6d146bd3174b4064a6726470208bb69",
+      "cold_result_sha256": "94f8bf4c8d98695a94c6db94480e2ab22ac1e014ce0700810de2e84935070ae9",
+      "fit_sha256": "b399d5b0aa24481e2e34b4560c8817fe85f10ef10e4bd44ecf4bb87bbc4a7b60"
+    },
+    "sdpa": {
+      "cold_logits_bytes": 601751,
+      "cold_logits_sha256": "ebaed1e492507068da165dce4875626d67446af9d4c384c56887a66c27779194",
+      "cold_result_sha256": "77ec1c181e9c20a87c6b227c5c635fcb94cd019dea9d0584fb1244d2e061ff04",
+      "fit_sha256": "a62a6677c1bdd5d75d62f62b78cdf9e949529e4ea6f257b952d005546d47637c"
+    },
+    "smooth": {
+      "cold_logits_bytes": 979818,
+      "cold_logits_sha256": "3eb7893d57e0aa3586f9c07c24c2d0d73d68a9606f975843cc9bcb6e2cd1157a",
+      "cold_result_sha256": "d836c6a1adf776bb3dd57ebb3880819d3f17ee0a27761cf014cc229956d7ff53",
+      "fit_sha256": "ab7330a01668b640376da8ef8b72c67f6b40dab32e48590b91a80ee95d15db2f"
+    }
+  },
+  "classes": 72,
+  "clips": 1311,
+  "max_abs_metric_difference_from_host_summary": 8.881784197001252e-16,
+  "methods": 4,
+  "modes": 4,
+  "nll_formula": "Independent Python standard library NPY parsing and math.fsum-based shifted logsumexp in double precision",
+  "original_seal_sha256": "20415d4553d0470a3dde573b77c4d011821d3f78566ac7f522de64b45d44be46",
+  "recovered": {
+    "lif": {
+      "aligned": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.27591036826599
+      },
+      "audio_swapped": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.27606198371594
+      },
+      "both_swapped": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.276060326459701
+      },
+      "video_swapped": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.275916798068336
+      }
+    },
+    "literal": {
+      "aligned": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.275643757520268
+      },
+      "audio_swapped": {
+        "joint_correct": 17,
+        "joint_top1": 0.012967200610221205,
+        "nll": 4.276343200671305
+      },
+      "both_swapped": {
+        "joint_correct": 17,
+        "joint_top1": 0.012967200610221205,
+        "nll": 4.276151227919614
+      },
+      "video_swapped": {
+        "joint_correct": 15,
+        "joint_top1": 0.011441647597254004,
+        "nll": 4.275457534821472
+      }
+    },
+    "sdpa": {
+      "aligned": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.276666942674169
+      },
+      "audio_swapped": {
+        "joint_correct": 14,
+        "joint_top1": 0.010678871090770405,
+        "nll": 4.276667959204232
+      },
+      "both_swapped": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.276667838880696
+      },
+      "video_swapped": {
+        "joint_correct": 16,
+        "joint_top1": 0.012204424103737605,
+        "nll": 4.276666843387111
+      }
+    },
+    "smooth": {
+      "aligned": {
+        "joint_correct": 18,
+        "joint_top1": 0.013729977116704805,
+        "nll": 4.275749528179072
+      },
+      "audio_swapped": {
+        "joint_correct": 14,
+        "joint_top1": 0.010678871090770405,
+        "nll": 4.27617134005947
+      },
+      "both_swapped": {
+        "joint_correct": 14,
+        "joint_top1": 0.010678871090770405,
+        "nll": 4.276157114469561
+      },
+      "video_swapped": {
+        "joint_correct": 18,
+        "joint_top1": 0.013729977116704805,
+        "nll": 4.275733510680764
+      }
+    }
+  },
+  "retained_finite_logit_values_recounted": 1510272,
+  "run_utc": "2026-11-28T10:49:01Z",
+  "scope": "Read-only repeat scoring from original per-clip prediction arrays. Model fitting and checkpoint inference were performed by the original campaign.",
+  "source_summary_sha256": "1120cf42a453fde43cb73d497fae48a32da4a9a85cd128bf4a549b8576e08404"
+}
