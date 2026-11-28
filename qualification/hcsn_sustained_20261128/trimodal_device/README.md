@@ -20,3 +20,5 @@ First-pass costs include startup under the fixed arm order. Their ordering diffe
 T4 was requested by the HeptaRuntime router. Registered private notebook 148105349 version 1 reached COMPLETE, all three files including the manifest were collected, and the router closed the request as COLLECTED. The worker observed Torch 2.11.0+cpu, no CUDA devices, no nvidia-smi and no loadable libcuda.so.1. The CUDA-only worker therefore executed zero training updates. The 53-byte empty output archive and the original result are preserved. This is a completed diagnostic for that particular allocation. The AMD result above is from a separate physical host.
 
 [Kaggle result](kaggle/result.json) · [Sanitized receipt](kaggle/receipt.json) · [Empty output archive](kaggle/raw.tar.gz) · [Exact private script served](kaggle/task.py) · [Data-preserving project packer](build.py) · [Worker](worker.py).
+
+[Matched hardware latency, cached inference and energy telemetry](meter/README.md) includes a CPU replay of all four native GPU checkpoints and per-actor uncertainty.

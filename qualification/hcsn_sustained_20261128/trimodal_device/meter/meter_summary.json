@@ -1,0 +1,84 @@
+{
+  "idle_PPT_W": [
+    84.25129174427327,
+    84.8310637174024
+  ],
+  "idle_occupied_gpu": [
+    1.0,
+    22.517241379310345
+  ],
+  "idle_cpu_fraction": [
+    0.32571047957371224,
+    0.3610216546363132
+  ],
+  "active_cpu_fraction": [
+    0.3586977216475218,
+    0.40123017157656204
+  ],
+  "groups": {
+    "stream_1": {
+      "financial": {
+        "throughput": 1243.331285742434,
+        "latency_median_ms": 14.116361504420638,
+        "latency_p95_ms": 18.276533321477473,
+        "mean_ppt_w": 84.52308288747727,
+        "mean_gpu_busy": 75.07,
+        "peak_allocated_bytes": 171847168.0,
+        "gross_mJ_per_unit": 68.00415960440216,
+        "matched_idle_deltas_mJ_per_unit": [
+          -0.031155627117010216,
+          0.08307712039836976,
+          0.08417977474821797,
+          -0.009500904098238503
+        ]
+      },
+      "sdpa_matched": {
+        "throughput": 1531.9726495629423,
+        "latency_median_ms": 9.070557891391218,
+        "latency_p95_ms": 19.992173614446074,
+        "mean_ppt_w": 84.57974108171001,
+        "mean_gpu_busy": 73.94999999999999,
+        "peak_allocated_bytes": 171757568.0,
+        "gross_mJ_per_unit": 55.17828236169835,
+        "matched_idle_deltas_mJ_per_unit": [
+          -0.15750087543732394,
+          0.13130452559484732,
+          -0.0230702683856146,
+          0.056958603521873284
+        ]
+      }
+    },
+    "train_96": {
+      "financial": {
+        "throughput": 15046.167646060394,
+        "latency_median_ms": 6.2828948721289635,
+        "latency_p95_ms": 7.632541167549787,
+        "mean_ppt_w": 84.51475559483012,
+        "mean_gpu_busy": 76.17346938775509,
+        "peak_allocated_bytes": 204316672.0,
+        "gross_mJ_per_unit": 5.620499391133697,
+        "matched_idle_deltas_mJ_per_unit": [
+          -0.013994479108932872,
+          0.00722207373232069,
+          -0.012183350287879119,
+          -0.0022792695775241795
+        ]
+      },
+      "sdpa_matched": {
+        "throughput": 14070.693220017305,
+        "latency_median_ms": 6.989910383708775,
+        "latency_p95_ms": 8.421195321716368,
+        "mean_ppt_w": 84.55273126878768,
+        "mean_gpu_busy": 79.36734693877551,
+        "peak_allocated_bytes": 189985792.0,
+        "gross_mJ_per_unit": 6.011398989230589,
+        "matched_idle_deltas_mJ_per_unit": [
+          -0.014000917575529551,
+          0.0061519623921017265,
+          -0.0007701354002288723,
+          -0.004396620320317277
+        ]
+      }
+    }
+  }
+}
