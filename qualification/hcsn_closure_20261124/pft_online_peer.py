@@ -213,9 +213,11 @@ class PeerService(socketserver.TCPServer):
 
     def __init__(self, database, contract, address=("127.0.0.1", 0), *, codec=None):
         address = _loopback(address)
-        if codec is not None and (getattr(codec, "contract_hash", None) != digest(contract)
-                or not callable(getattr(codec, "encode", None))
-                or not callable(getattr(codec, "decode", None))):
+        if codec is not None and (
+            getattr(codec, "contract_hash", None) != digest(contract)
+            or not callable(getattr(codec, "encode", None))
+            or not callable(getattr(codec, "decode", None))
+        ):
             raise ValueError("peer codec is not bound to this representation contract")
         self.codec = codec
         self.ledger = StatisticsLedger(database, contract)
@@ -268,7 +270,9 @@ class PeerService(socketserver.TCPServer):
 
     def sync(self, address):
         """Push missing contributions; uncertainty remains retryable by batch ID."""
-        remote = rpc(address, self.ledger.contract_hash, "inventory", {}, codec=self.codec)
+        remote = rpc(
+            address, self.ledger.contract_hash, "inventory", {}, codec=self.codec
+        )
         known = _checked_state(remote, self.ledger.contract_hash)
         sent = 0
         for batch_id, packet_hash in _inventory(self.ledger)["material"]["batches"]:
