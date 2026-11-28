@@ -58,6 +58,10 @@ mod protected_host;
 mod reconcile;
 pub use protected_host::AgentdProtectedCheckpointInputs;
 
+#[cfg(target_os = "linux")]
+#[path = "production_terminal_owner.rs"]
+mod terminal_owner;
+
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
 /// Implementations must bound their synchronous work. The original host runs
@@ -276,6 +280,8 @@ pub struct AgentdProductionWriterHost {
     // exposing ProductionDurableWriter's crate-private raw-store handle.
     cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
     mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
+    #[cfg(target_os = "linux")]
+    terminal_owner_claimed: std::sync::atomic::AtomicBool,
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -402,6 +408,8 @@ impl AgentdProductionWriterHost {
                 runtime_store,
             )),
             mutation: Some(mutation),
+            #[cfg(target_os = "linux")]
+            terminal_owner_claimed: std::sync::atomic::AtomicBool::default(),
             dispatchers: BTreeMap::new(),
             grants: None,
             previous_notes: None,
@@ -439,6 +447,8 @@ impl AgentdProductionWriterHost {
                 runtime_store,
             )),
             mutation: None,
+            #[cfg(target_os = "linux")]
+            terminal_owner_claimed: std::sync::atomic::AtomicBool::default(),
         })
     }
 

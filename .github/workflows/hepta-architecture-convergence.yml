@@ -372,6 +372,11 @@ jobs:
           observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
           print(json.dumps(observation, sort_keys=True))
           PYCODE
+      - name: Original production terminal owner assembly
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/original-terminal-owner.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(production_composition::terminal_owner_tests::)'
       - name: Verify unchanged reviewed source
         run: |
           set -euo pipefail

@@ -87,6 +87,7 @@ pub struct AgentdSharedReplayHostV1 {
     source: Arc<CognitiveStore>,
     consumer: FederationConsumerAccess,
     purpose: SharedExperiencePurposeV1,
+    original_writer: Option<Arc<codex_hepta_memory::ProductionDurableWriter>>,
 }
 
 impl AgentdSharedReplayHostV1 {
@@ -110,7 +111,37 @@ impl AgentdSharedReplayHostV1 {
                 parameter_scope,
                 artifact_consumer,
             },
+            original_writer: None,
         })
+    }
+
+    /// Only the original product-host factory supplies this recovered Memory
+    /// object and its retained writer. Path equality alone grants no access.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn from_original_production_owner(
+        source: Arc<CognitiveStore>,
+        consumer: FederationConsumerAccess,
+        parameter_scope: String,
+        artifact_consumer: AgentId,
+        writer: Arc<codex_hepta_memory::ProductionDurableWriter>,
+    ) -> Result<Self, SharedTerminalCellError> {
+        if writer.owner_agent_id() != source.owner_agent_id()
+            || writer.database_path() != source.path()
+        {
+            return Err(SharedTerminalCellError::Binding("original Memory writer"));
+        }
+        let mut replay = Self::new(source, consumer, parameter_scope, artifact_consumer)?;
+        replay.original_writer = Some(writer);
+        Ok(replay)
+    }
+
+    async fn require_original_writer(&self) -> Result<(), SharedTerminalCellError> {
+        if let Some(writer) = self.original_writer.as_ref() {
+            writer.verify_current_authority().await.map_err(|_| {
+                SharedTerminalCellError::Binding("original production writer is not current")
+            })?;
+        }
+        Ok(())
     }
 
     pub fn consumer_agent_id(&self) -> &AgentId {
@@ -135,10 +166,13 @@ impl AgentdSharedReplayHostV1 {
         &self,
         policy_id: &Sha256Digest,
     ) -> Result<SharedExperienceUseV1, SharedTerminalCellError> {
-        Ok(self
+        self.require_original_writer().await?;
+        let source = self
             .source
             .read_shared_experience(&self.consumer, policy_id, &self.purpose)
-            .await?)
+            .await?;
+        self.require_original_writer().await?;
+        Ok(source)
     }
 
     /// Synchronous bounded work, so a shared ledger guard never crosses an await.

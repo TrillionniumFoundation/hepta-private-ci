@@ -878,13 +878,18 @@ impl AgentdConfig {
         bootstrap: crate::TerminalLearningRuntimeBootstrapV1,
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
+        self.require_terminal_learning_unconfigured()?;
+        self.terminal_learning_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn require_terminal_learning_unconfigured(&self) -> Result<(), AgentdError> {
         if self.terminal_learning_bootstrap.is_some() {
             return Err(AgentdError::Invalid(
                 "terminal learning owner already configured".into(),
             ));
         }
-        self.terminal_learning_bootstrap = Some(bootstrap);
-        Ok(self)
+        Ok(())
     }
 
     pub(crate) fn take_terminal_learning_bootstrap(
