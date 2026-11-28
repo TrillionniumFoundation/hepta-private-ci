@@ -252,6 +252,7 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     let mut file = open_private(&directory, "registry.json", Access::Create).must("legacy file");
     file.write_all(&bytes).must("legacy bytes");
     file.sync_all().must("legacy sync");
+    drop(file);
     directory.sync_all().must("legacy directory sync");
     let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("migration");
     assert_eq!(owner.registry().must("registry"), &core);
