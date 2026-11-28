@@ -24,7 +24,7 @@ def main(root):
                     clock='cpu' if mode.startswith('cpu') else 'wall';budget=int(mode[len(clock):]);opts=sorted((row for row in history if row[clock]<=budget),key=lambda r:(r['nll'],r[clock]))
                 choice=opts[0] if opts else None;assert choice==state
                 if state is None:continue
-                key=state['sha'];path=root/'cold'/(key+'.npz');assert manifest[path.name]==sha(path)
+                key=state['sha'];path=root/'cold'/(arm+'-'+key+'.npz');assert manifest[path.name]==sha(path)
                 with np.load(path) as z:
                     labels=z['rows'];counts=z['counts'];assert counts.sum()==11756 and len(labels)==964
                     per[ident][mode]=(z['matched'],z['shifted'],counts);identities[ident][mode]={'state':key,'dev_nll':state['nll'],'step':state['step'],'train_tokens':state['train_tokens'],'cpu_s':state['cpu'],'wall_s':state['wall'],'heldout_nll':float(z['matched'].sum()/counts.sum())}

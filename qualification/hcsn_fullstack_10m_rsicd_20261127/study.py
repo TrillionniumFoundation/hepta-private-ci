@@ -72,11 +72,11 @@ def confirm():
             ident=f'{arm}-{s}';out=ROOT/'runs'/ident;model=net(arm,s,d)
             for mode,rec in selection[ident].items():
                 if rec is None:continue
-                key=rec['sha'];path=raw/(key+'.npz')
+                key=rec['sha'];identity=arm+'-'+key;path=raw/(identity+'.npz')
                 if path.exists():continue
                 assert sha(out/rec['state'])==key;model.load_state_dict(torch.load(out/rec['state'],weights_only=True,map_location='cpu'))
                 t=time.perf_counter();a,n=eval_rows(model,d,ids);b,k=eval_rows(model,d,ids,perm);assert np.array_equal(n,k)
-                tmp=raw/(key+'.tmp.npz');np.savez_compressed(tmp,matched=a,shifted=b,counts=n,rows=ids,seconds=time.perf_counter()-t);tmp.replace(path)
+                tmp=raw/(identity+'.tmp.npz');np.savez_compressed(tmp,matched=a,shifted=b,counts=n,rows=ids,seconds=time.perf_counter()-t);tmp.replace(path)
             print('cold',ident,flush=True)
     write(ROOT/'cold_manifest.json',{f.name:sha(f) for f in raw.glob('*.npz')})
 if __name__=='__main__':
