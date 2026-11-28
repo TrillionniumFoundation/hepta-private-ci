@@ -430,3 +430,31 @@ fn encode_project_path(path: &Path) -> String {
         .trim_start_matches('/')
         .replace('/', "-")
 }
+
+#[test]
+fn resolves_unique_project_below_multiple_punctuated_ancestors() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root
+        .path()
+        .join("parent-dir")
+        .join("child-dir")
+        .join("workspace");
+    fs::create_dir_all(&project).expect("project root");
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[test]
+fn rejects_ambiguous_project_below_punctuated_ancestor() {
+    let root = TempDir::new().expect("tempdir");
+    let parent = root.path().join("parent-dir");
+    let nested = parent.join("workspace").join("nested");
+    let merged = parent.join("workspace-nested");
+    fs::create_dir_all(&nested).expect("nested project");
+    fs::create_dir_all(&merged).expect("merged project");
+    let encoded = encode_project_path(&nested);
+    assert_eq!(encoded, encode_project_path(&merged));
+    assert_eq!(decode_cur_project_path(&encoded), None);
+}

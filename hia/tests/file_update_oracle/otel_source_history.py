@@ -69,14 +69,17 @@ def _crate(repo, history):
 
 def restore_predecessor(repo, actual, predecessor_identity):
     history, history_binding = _history()
-    if _pair_identity(actual) != history["current_files"]:
-        raise RuntimeError("unreviewed or mixed workspace dependency source pair")
     if predecessor_identity != history["predecessor_files"]:
         raise RuntimeError("OTEL source predecessor differs from the complete OAuth2 pair")
     physical = {p: _read(Path(repo) / p) for p in ROOT_FILES}
     if {p: row[0] for p, row in physical.items()} != actual:
         raise RuntimeError("OTEL source input differs from physical current pair")
     restored = dict(actual)
+    external_admission = None
+    if _pair_identity(actual) != history["current_files"]:
+        from .external_migration_source_history import restore_predecessor as restore_external
+        external_admission = restore_external(repo, actual, history["current_files"])
+        restored = external_admission["restored"]
     blocks = restored[ROOT_FILES[1]].split(b"\n[[package]]\n")
     after = history["lock_inverse"]["after"].encode()
     if blocks.count(after) != 1:
@@ -98,6 +101,10 @@ def restore_predecessor(repo, actual, predecessor_identity):
               "bazel_lock": bazel_binding, "history": history_binding, "helper": helper_binding,
               "unchanged_lock_packages": history["unchanged_lock_packages"],
               "dependency_graph_equivalence_claimed": False}
+    if external_admission is not None:
+        report["external_migration_source_history"] = external_admission["report"]
+        report["workspace_variant"] = external_admission["report"]["source_variant"]
+        report["projected_otel_files"] = history["current_files"]
     return {"restored": restored, "report": report}
 
 
@@ -113,3 +120,6 @@ def verify_predecessor(admission):
     history, _ = _history()
     if _crate(report["repo"], history) != report["crate"]:
         raise RuntimeError("captured OTEL crate identity changed")
+    if "external_migration_source_history" in report:
+        from .external_migration_source_history import verify_predecessor as verify_external
+        verify_external({"report": report["external_migration_source_history"]})

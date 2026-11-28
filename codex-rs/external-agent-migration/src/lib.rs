@@ -20,6 +20,8 @@ mod source;
 mod source_cla;
 mod source_cur;
 mod subagents;
+#[cfg(test)]
+mod test_support;
 mod utils;
 
 use std::io;

@@ -8,6 +8,7 @@ on:
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/core/**
+      - codex-rs/external-agent-migration/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -42,6 +43,7 @@ on:
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/core/**
+      - codex-rs/external-agent-migration/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -1396,6 +1398,83 @@ jobs:
             -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \
             2>&1 | tee "$RUNNER_TEMP/hia-core-network-domains.log"
 
+      - name: Test the complete external migration crate on the current graph
+        if: ${{ always() && matrix.shard == 'owners' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hia-external-migration"
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py snapshot \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-external-migration/source-before.json"
+          # Preserve the full test configuration while keeping reports outside the producer.
+          python3 - <<'PYCONFIG'
+          import json, os, pathlib, tomllib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-external-migration"
+          original = pathlib.Path(".config/nextest.toml").read_text()
+          settings = tomllib.loads(original)
+          assert "store" not in settings
+          configured = original + "\n[store]\ndir = " + json.dumps(str(root / "nextest")) + "\n"
+          actual = tomllib.loads(configured)
+          assert actual.pop("store") == {"dir": str(root / "nextest")}
+          assert actual == settings
+          (root / "nextest.toml").write_text(configured)
+          PYCONFIG
+          # The pinned nextest version does not inherit JUnit output for local.
+          junit_path="$RUNNER_TEMP/hia-external-migration/nextest/default/junit.xml"
+          rm -f "$junit_path"
+          test_status=0
+          just test --locked -p codex-external-agent-migration --profile default \
+            --config-file "$RUNNER_TEMP/hia-external-migration/nextest.toml" \
+            2>&1 | tee "$RUNNER_TEMP/hia-external-migration/tests.log" || test_status=$?
+          if test -f "$junit_path"; then
+            cp "$junit_path" "$RUNNER_TEMP/hia-external-migration/tests.xml"
+          fi
+          test "$test_status" -eq 0
+          python3 - <<'PYTEST'
+          import json, os, pathlib, xml.etree.ElementTree as ET
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-external-migration"
+          suites = ET.parse(root / "tests.xml").getroot()
+          cases = list(suites.iter("testcase"))
+          assert len(cases) == 171, len(cases)
+          assert all(case.find(tag) is None for case in cases for tag in ("failure", "error", "skipped"))
+          assert all(int(suite.get(key, "0")) == 0 for suite in suites.iter("testsuite")
+                     for key in ("failures", "errors", "skipped"))
+          with (root / "test-count.json").open("x") as stream:
+              json.dump({"passed": True, "tests": len(cases), "failed": 0, "skipped": 0}, stream)
+          PYTEST
+
+      - name: Run the actual scoped external migration fix without source drift
+        if: ${{ always() && matrix.shard == 'owners' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          CODEX_HIA_POLICY_FIX_REQUIRE_NATIVE=0 \
+          CODEX_HIA_POLICY_FIX_REPORT="$RUNNER_TEMP/hia-external-migration/fix.json" \
+            just fix --locked --all-targets -p codex-external-agent-migration \
+            2>&1 | tee "$RUNNER_TEMP/hia-external-migration/fix.log"
+          python3 - <<'PYFIX'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-external-migration"
+          report = json.loads((root / "fix.json").read_bytes())
+          assert report["schema"] == "codex.hia.actual-policy-fix.v1"
+          assert report["passed"] and report["all_subcompilers_succeeded"] and report["source_inputs_unchanged"]
+          assert report["arguments"] == ["--locked", "--all-targets", "-p", "codex-external-agent-migration"]
+          records = [json.loads(line) for line in pathlib.Path(report["stdout"]["path"]).read_text().splitlines()]
+          manifest = str(pathlib.Path(os.environ["GITHUB_WORKSPACE"]) / "codex/codex-rs/external-agent-migration/Cargo.toml")
+          owners = [row for row in records if row.get("reason") == "compiler-artifact"
+                    and row["manifest_path"] == manifest and row["target"]["name"] == "codex_external_agent_migration"]
+          assert {row["profile"]["test"] for row in owners} == {False, True}, owners
+          assert all(row["fresh"] is False for row in owners), owners
+          PYFIX
+          just fmt 2>&1 | tee "$RUNNER_TEMP/hia-external-migration/format.log"
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py unchanged \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --before "$RUNNER_TEMP/hia-external-migration/source-before.json" \
+            --report "$RUNNER_TEMP/hia-external-migration/source-after.json"
+          git diff --exit-code
+          git diff --cached --exit-code
+
       - name: Test actual protocol allowed-prefix consumer with HIA enabled
         if: ${{ always() && matrix.shard == 'owners' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -1766,6 +1845,7 @@ jobs:
             {0}/hia-installed-execpolicy.json
             {0}/hia-installed-execpolicy.log
             {0}/hia-core-execpolicy.log
+            {0}/hia-external-migration/**
             {0}/hia-policy-summary-abi.json
             {0}/hia-policy-summary-abi.log
             {0}/hia-policy-summary.json
@@ -1895,6 +1975,20 @@ jobs:
           assert report["passed"] and report["tests"] == 14, report
           assert not report["errors"] and not report["failures"], report
           PY
+      - name: Verify complete external migration source transition and current custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_external_migration_dependency_sources.py \
+            --repo "$GITHUB_WORKSPACE/codex" --original-root "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-dependency-external-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-dependency-external-controls.log"
+          python3 - <<'PY'
+          import json, os, pathlib
+          report = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-dependency-external-controls.json").read_bytes())
+          assert report["passed"] and report["tests"] == 14, report
+          assert not report["errors"] and not report["failures"], report
+          PY
       - name: Preserve dependency source control evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -1909,6 +2003,8 @@ jobs:
             ${{ runner.temp }}/hia-dependency-oauth2-controls.log
             ${{ runner.temp }}/hia-dependency-otel-controls.json
             ${{ runner.temp }}/hia-dependency-otel-controls.log
+            ${{ runner.temp }}/hia-dependency-external-controls.json
+            ${{ runner.temp }}/hia-dependency-external-controls.log
 
   native-required:
     name: native-components
