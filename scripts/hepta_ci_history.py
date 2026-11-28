@@ -45,14 +45,37 @@ def fetch_environment(repository):
     return environment
 
 
+def snapshot_lacks_objects(repository, commit):
+    objects = git(
+        repository,
+        "rev-list",
+        "--objects",
+        "--no-object-names",
+        "--missing=print",
+        "--max-count=1",
+        commit,
+    )
+    return any(line.startswith("?") for line in objects.splitlines())
+
+
 def prepare(repository, commits, *, full_history=False, with_blobs=False):
     commits = list(dict.fromkeys(commits))
     if not commits or any(
         re.fullmatch(r"[0-9a-f]{40}", commit) is None for commit in commits
     ):
         raise ValueError("comparison inputs must be exact SHA-1 commits")
+    refetch = False
     if full_history:
         selected = commits
+        if with_blobs:
+            refetch = "true" == git(
+                repository,
+                "config",
+                "--type=bool",
+                "--default=false",
+                "--get",
+                "remote.origin.promisor",
+            )
     else:
         selected = []
         for commit in commits:
@@ -60,10 +83,17 @@ def prepare(repository, commits, *, full_history=False, with_blobs=False):
                 git(repository, "cat-file", "-e", f"{commit}^{{commit}}")
             except subprocess.CalledProcessError:
                 selected.append(commit)
+                continue
+            if with_blobs and snapshot_lacks_objects(repository, commit):
+                selected.append(commit)
+                refetch = True
     if selected:
         arguments = ["fetch", "--no-tags", "--no-recurse-submodules"]
-        if not with_blobs:
-            arguments.append("--filter=blob:none")
+        arguments.append("--no-filter" if with_blobs else "--filter=blob:none")
+        if refetch:
+            # With an advertised commit already present, normal negotiation can
+            # incorrectly rely on blobs deliberately omitted by a prior fetch.
+            arguments.append("--refetch")
         if full_history:
             if git(repository, "rev-parse", "--is-shallow-repository") == "true":
                 arguments.append("--unshallow")
