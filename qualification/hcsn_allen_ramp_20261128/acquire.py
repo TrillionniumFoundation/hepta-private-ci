@@ -40,20 +40,20 @@ def version(f):
                 try:return tuple(map(int,label(v[i+1]).split(".")[:2]))
                 except ValueError:pass
     return (0,0)
-def window(f,row):
+def window(f,row,kind="ramp"):
     n=row["sweep_number"];name="Sweep_"+str(n)
     current=f["stimulus/presentation/"+name];voltage=f["acquisition/timeseries/"+name]
     stim=current["data"];v=voltage["data"]
     if label(stim.attrs["unit"]) not in ("amps","ampere","amp","amperes","a"):raise ValueError("non-ampere current")
     if label(v.attrs["unit"]) not in ("volts","volt","v"):raise ValueError("non-volt response")
-    if "ramp" not in label(voltage["aibs_stimulus_name"][()]):raise ValueError("not an NWB Ramp")
+    if kind not in label(voltage["aibs_stimulus_name"][()]):raise ValueError("NWB stimulus mismatch: "+kind)
     dt=current["starting_time"];vr=voltage["starting_time"]
     rate=float(scalar(dt.attrs["rate"]));t0=float(scalar(dt[()]));assert abs(float(scalar(vr[()]))-t0)<1e-7 and abs(rate-float(scalar(vr.attrs["rate"])))<1e-5
     width=round(rate*.002)
     if rate<10000 or abs(width-rate*.002)>1e-6:raise ValueError("sample rate")
     exp=f.get(f"epochs/Experiment_{n}/stimulus")
     if exp is None:raise ValueError("no experimental sampling interval")
-    ra=int(exp["idx_start"][()]);rb=ra+int(exp["count"][()])
+    ra=int(scalar(exp["idx_start"][()]));rb=ra+int(scalar(exp["count"][()]))
     start=max(ra,round(row["stimulus_start_time"]*rate))
     stop=min(rb,len(v),len(stim),round((row["stimulus_start_time"]+row["stimulus_duration"])*rate),start+round(30*rate))
     bins=(stop-start)//width
@@ -67,7 +67,7 @@ def window(f,row):
     if not np.all(np.isfinite(sp)) or not np.all(np.diff(sp)>0):raise ValueError("invalid official spikes")
     orig=np.asarray(stim[start:stop]);converted=version(f)>=(1,1);scale=(float(scalar(stim.attrs["conversion"])) if converted else 1.)*1e12
     x=np.mean(orig.astype(float).reshape(bins,width),axis=1)*scale
-    if not np.isfinite(x).all() or np.ptp(x)<=0 or abs(x).max()>5000:raise ValueError("invalid sampled current")
+    if not np.isfinite(x).all() or (kind=="ramp" and np.ptp(x)<=0) or abs(x).max()>5000:raise ValueError("invalid sampled current")
     lo=start/rate;hi=stop/rate;times=sp[(sp>=lo)&(sp<hi)]-lo
     indices=np.floor(times/.002).astype(int)
     if np.any(indices<0) or np.any(indices>=bins):raise ValueError("time alignment at bin edge")
