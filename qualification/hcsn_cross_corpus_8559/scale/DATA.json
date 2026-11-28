@@ -1,0 +1,53 @@
+{
+  "counts": {
+    "rs_train": 6308,
+    "nw_train": 25188,
+    "rs_dev": 742,
+    "nw_dev": 3149,
+    "rs_test": 964,
+    "nw_test": 3149,
+    "ucm": 2099,
+    "sydney": 613
+  },
+  "exclusions": {
+    "rs_train/near": 2,
+    "rs_train/missing_primary": 1,
+    "nw_train/near": 5,
+    "nw_train/exact": 7,
+    "nw_dev/exact": 1,
+    "nw_test/near": 1,
+    "ucm/near": 1
+  },
+  "oov": {
+    "rs_train": 0.0,
+    "nw_train": 0.0,
+    "rs_dev": 0.006805326419985859,
+    "nw_dev": 0.00038466542593210655,
+    "rs_test": 0.009015818172002376,
+    "nw_test": 0.000462774843108041,
+    "ucm": 0.020107926955613014,
+    "sydney": 0.0045442395081529
+  },
+  "vocab": 3503,
+  "raw_files": {
+    "rsicd_author": "5e342037d469d074711676bdb9c02b6942a624530b1959d24d2734e68af9cede",
+    "rsicd_pixels": "d79c414bb32c3ffb88f1714c20b6bdb531a68a7a95999370c86aea7367b768b1",
+    "rsicd_roster": "80c9f4256fef2cf37031660858dd90f07d1bb554535a0545a46e744d00f508d2",
+    "NWPU/validation-00000-of-00001.parquet": "09f69a4f478b7d1dfe324f3d24a561714286da442e043274f7f56ddebbe3c6fa",
+    "NWPU/train-00001-of-00002.parquet": "c1f598dcece611d2390bbeb148ba77628a92c4e87abdc0b132ba05e3219eb3c2",
+    "NWPU/train-00000-of-00002.parquet": "564d8fed48000e425bb19550c8120a2c188aa443f8e5fc74b2bd22509d396457",
+    "NWPU/test-00000-of-00001.parquet": "ddc9145fb8a93ed25f0d820886d8f6a0bdc07300d10a7d57d531cfcd00e5dad9",
+    "UCM/test.parquet": "2bfc7b1c1d38fdfc6b6c6b8b8435c570b6b3b39e678855e5281e32c7b1822da9",
+    "UCM/train.parquet": "bb9884ae4a0aadeaf3a244f7ef4d7f290544415b7b085d7e07020584d3242fca",
+    "UCM/validation.parquet": "331019cc6bdb1288c466da204bfeef80edabec0f7d120de48894056b736adc45",
+    "sydney": "56c719de915c75986bc4d85c708eed447d50b8ae757bcd1e95a26487f8b7b3a6"
+  },
+  "arrays": {
+    "groups.npy": "8cd86bab11bfec1ce94fe2042f4cae499510d971efd32a8e870e6a5e24dbe4de",
+    "ids.npy": "aa3170aba40ccaae4509c15bcecf90ec1c889bb7acf1bfa107c5ff3e255e521b",
+    "pixels.npy": "a85162895bd4f5be240e41fcdfe1ee305c84315b474499567c29a8a438bd6eab",
+    "splits.npy": "e12825ef6934b93de58db2e6ac16c02cc40d8aa06ce97a3d0192b167701d46a2",
+    "tokens.npy": "01f53213ea9c44a2a006d34c8c60a4e5593e5448626ba258d937d6337642627c"
+  },
+  "elapsed_s": 170.4197670930007
+}
