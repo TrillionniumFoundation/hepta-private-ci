@@ -4,10 +4,6 @@ use super::*;
 use crate::CompactedItem;
 use crate::RolloutItem;
 use crate::RolloutLine;
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Timelike;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::GitInfo;
 use codex_protocol::protocol::SessionMeta;
@@ -215,9 +211,8 @@ fn builder_from_items_falls_back_to_filename() {
     })];
 
     let builder = builder_from_items(items.as_slice(), path.as_path()).expect("builder");
-    let naive = NaiveDateTime::parse_from_str("2026-01-27T12-34-56", "%Y-%m-%dT%H-%M-%S")
-        .expect("timestamp");
-    let created_at = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc)
+    let created_at = codex_utils_time::Timestamp::parse_filename_timestamp("2026-01-27T12-34-56")
+        .expect("timestamp")
         .with_nanosecond(0)
         .expect("nanosecond");
     let expected = ThreadMetadataBuilder::new(

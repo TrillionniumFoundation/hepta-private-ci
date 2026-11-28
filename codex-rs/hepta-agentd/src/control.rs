@@ -181,7 +181,21 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
             )));
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
+        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {
+            // Windows can refuse an absent rendezvous. Check the directory
+            // entry itself so a dangling link does not count as absence.
+            match tokio::fs::symlink_metadata(socket_path).await {
+                Ok(_) => {}
+                Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+                Err(error) => {
+                    return Err(io_context(
+                        "inspect agentd control socket",
+                        socket_path,
+                        error,
+                    ));
+                }
+            }
+        }
         Err(_error) if !socket_path.exists() => return Ok(()),
         Err(error) => {
             return Err(io_context(

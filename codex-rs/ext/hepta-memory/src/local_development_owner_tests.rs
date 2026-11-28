@@ -223,13 +223,22 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let store = CognitiveStore::open(&fleet.layout().agent(&owner_id))
         .await
         .expect("store");
+    let other_temp = TempDir::new().expect("other temp");
+    let other_root = other_temp.path().join("fleet");
+    fs::create_dir_all(&other_root).expect("other fleet root");
+    let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
+    let other_store = CognitiveStore::open(&other_fleet.layout().agent(&owner_id))
+        .await
+        .expect("other store");
     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
     let checkpoint = checkpoint(current_fence.clone());
+    // A deadline one Unix second ahead can be nearly immediate. Leave time
+    // for real SQLite writes before checking the same persisted expiry.
     let expires_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 4;
     let lease = match store
         .acquire_local_lease_bound(
             "lease:e21-owner",
@@ -254,13 +263,6 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .await
         .expect("intent");
 
-    let other_temp = TempDir::new().expect("other temp");
-    let other_root = other_temp.path().join("fleet");
-    fs::create_dir_all(&other_root).expect("other fleet root");
-    let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
-    let other_store = CognitiveStore::open(&other_fleet.layout().agent(&owner_id))
-        .await
-        .expect("other store");
     let owner = HeptaLocalDevelopmentLifecycleOwner::qualification_only();
     assert!(!owner.runtime_registered());
     assert!(!owner.production_caller());
@@ -269,7 +271,7 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)
     ));
 
-    for _ in 0..120 {
+    for _ in 0..200 {
         if SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")

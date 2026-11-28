@@ -407,13 +407,26 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("final-use-token-bound physical turn start");
+    // The only physical TurnStart path consumes the entered-use proof inside
+    // its typed helper; a helper name alone cannot prove the actual RPC.
+    assert!(source.contains("async fn send_authorized_turn_start("));
+    assert!(source.contains("_entered: EnteredUseToken,"));
+    assert!(source.contains(".request_typed_observed(ClientRequest::TurnStart {"));
+    let final_use_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("verified final-use token entry");
+    let no_replay_boundary = source
+        .find("drop(pre_effect_abort);")
+        .expect("drop pre-effect proof at physical send boundary");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    assert!(revalidation < final_use_entry);
+    assert!(final_use_entry < no_replay_boundary);
+    assert!(no_replay_boundary < turn_start);
     assert!(durable_stop < turn_start);
 }
 
@@ -442,6 +455,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -450,8 +465,28 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // This is a physical Agentd/App Server integration test: a real
+    // source-built Codex CLI is required for hidden exec-server helpers.
+    // Never substitute the Rust test harness for the Codex executable.
+    let codex_executable = if let Some(path) = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE") {
+        std::path::PathBuf::from(path)
+    } else if codex_utils_cargo_bin::runfiles_available() {
+        let binary_name = format!("codex{}", std::env::consts::EXE_SUFFIX);
+        codex_utils_cargo_bin::resolve_bazel_runfile(
+            Some("codex-rs/cli"),
+            std::path::Path::new(&binary_name),
+        )?
+    } else {
+        return Err("real source-built Codex executable path is not configured".into());
+    };
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        &codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
