@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "kind": "hxcurve",
+    "seed": 557,
+    "threads": 1,
+    "device": "cpu",
+    "device_name": "x86_64",
+    "torch": "2.15.0+cpu",
+    "parameter_count": 1144579,
+    "float_dtype": "float32",
+    "vocab": 33278,
+    "context": 128,
+    "batch": 32,
+    "learning_rate": 0.003,
+    "weight_decay": 0.01
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "cumulative_targets": 2088627,
+      "train_nll": 6.643835356774905,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.198939362935998,
+        "ppl": 492.2266902583175
+      },
+      "train_seconds": 21.74620488300934,
+      "cumulative_train_seconds": 21.74620488300934
+    },
+    {
+      "epoch": 2,
+      "cumulative_targets": 4177254,
+      "train_nll": 6.283311174840699,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.05653281434269,
+        "ppl": 426.8927515466159
+      },
+      "train_seconds": 21.237620543000958,
+      "cumulative_train_seconds": 42.9838254260103
+    }
+  ],
+  "selected_epoch": 2,
+  "test": {
+    "targets": 245568,
+    "nll": 5.986219772355624,
+    "ppl": 397.9075820259959
+  },
+  "cut_test": {
+    "targets": 245568,
+    "nll": 9.1653491229349,
+    "ppl": 9560.058477642026
+  },
+  "timed": [
+    {
+      "clock": 15,
+      "actual_seconds": 15.00861757999155,
+      "tokens": 1417216,
+      "step": 346,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.296821519780195,
+        "ppl": 542.843747002416
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.23255367934485,
+        "ppl": 509.05378520381
+      }
+    }
+  ],
+  "total_training_seconds": 42.9838254260103,
+  "total_process_training_seconds": 42.96305176799998,
+  "tok_per_training_second": 97181.99714891516,
+  "overall_seconds": 50.18580603599548,
+  "model_sha256": "44bc522a8fdf4c23d6ec9a367a9495759368107750d908b63d0b11a5d9b787af"
+}
