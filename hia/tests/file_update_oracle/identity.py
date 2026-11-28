@@ -6,6 +6,7 @@ import subprocess
 import tomllib
 from .dependencies import ROOT_FILES, admit_workspace_sources
 from .exec_server_source_history import LOCAL_FILE, CURRENT_TREE, reverse_local_file_source, reverse_platform_tree
+from .exec_server_fixture_source_history import CURRENT_TREE as FIXTURE_TREE, reverse_fixture_tree
 
 BASE = "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095"
 CRATE = "codex-rs/apply-patch"
@@ -273,7 +274,10 @@ def producer_inputs(producer, original_root, original_manifest):
         actual = git(producer, "rev-parse", f"HEAD:{relative}").decode().strip()
         if actual != expected:
             pin = _EXEC_SERVER_TEST_PROJECTION
-            if (relative, expected, actual) == (pin["dependency"], pin["original_tree"], CURRENT_TREE):
+            if (relative, expected, actual) == (pin["dependency"], pin["original_tree"], FIXTURE_TREE):
+                projections[relative] = reverse_fixture_tree(
+                    producer, relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
+            elif (relative, expected, actual) == (pin["dependency"], pin["original_tree"], CURRENT_TREE):
                 projections[relative] = reverse_platform_tree(
                     producer, relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
             else:
