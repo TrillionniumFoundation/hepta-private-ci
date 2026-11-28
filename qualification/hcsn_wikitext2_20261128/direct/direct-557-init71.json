@@ -1,0 +1,259 @@
+{
+  "seed": 557,
+  "erased_initialization_seed": 71,
+  "parameters": 1144579,
+  "named_parameter_writes": {
+    "emb.weight": {
+      "shape": [
+        33278,
+        32
+      ],
+      "sha256": "f6ae1cf3551032803b549b535e6dab50f2ef7b5197b59a81bdf5eeb6bfd38dbe"
+    },
+    "pos": {
+      "shape": [
+        128,
+        32
+      ],
+      "sha256": "ce7ea406bdc3154435f7ba5df1beea348478c4de0dfe6af9da1dd03f81299b61"
+    },
+    "head.prior.weight": {
+      "shape": [
+        259,
+        128
+      ],
+      "sha256": "83f04a88fbaa5579140c111b4bbb5eceea0d017901b6d5a59f07079c9cddbf16"
+    },
+    "blocks.0.pre.weight": {
+      "shape": [
+        32
+      ],
+      "sha256": "189bec35af76ffa9389ae9bded2af431c0c2bd897a98e8a48173ad39bcf9283b"
+    },
+    "blocks.0.pre.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "1a2c8ed9b76ab33906011f189114c6daf8590b2c314757ae59b709d9577b6706"
+    },
+    "blocks.0.qkv.weight": {
+      "shape": [
+        96,
+        32
+      ],
+      "sha256": "8ffcda3c447a109725eb4701a488fc93237837dba9292223b8fa3b31efa713ef"
+    },
+    "blocks.0.qkv.bias": {
+      "shape": [
+        96
+      ],
+      "sha256": "6c3b48842ce1026c65b9b41c9e8661263f53cff96ea6155d286f3dbd897f1acb"
+    },
+    "blocks.0.out.weight": {
+      "shape": [
+        32,
+        32
+      ],
+      "sha256": "2cd60b75dbdfb95a640968ca90a53ca1ee8f5a01eb476a7fddf5d5542ad93272"
+    },
+    "blocks.0.out.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "aea58490a62d350fc6364a2f0c755d3dd09a004b0a7d6b97a8135e534b995dfc"
+    },
+    "blocks.0.ff.0.weight": {
+      "shape": [
+        32
+      ],
+      "sha256": "09ad3553f1253c0359a06741b021004dc7840acd5fcb5c0c75b804f9d46c962c"
+    },
+    "blocks.0.ff.0.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "ca3a76edbb16a763693bf5c614f1ad11ef1101197666ef176555cd859b61e7c8"
+    },
+    "blocks.0.ff.1.weight": {
+      "shape": [
+        64,
+        32
+      ],
+      "sha256": "ff68547c5291fb465079c39bfc4e02552c03d32d439c94160eaed045f8dee51a"
+    },
+    "blocks.0.ff.1.bias": {
+      "shape": [
+        64
+      ],
+      "sha256": "9dd6d2ede0d719fe661c0bc891e6c4b3a5838920e5fae366681a2ce645b764c1"
+    },
+    "blocks.0.ff.3.weight": {
+      "shape": [
+        32,
+        64
+      ],
+      "sha256": "cd7080c8af853f670e1202ccdb6ce39e382a54caff6739a8fa2f2ba9a56e2dae"
+    },
+    "blocks.0.ff.3.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "b002def65f636b491cf4e296e82f85d2704ac462299185fea21af33b2404c897"
+    },
+    "blocks.1.pre.weight": {
+      "shape": [
+        32
+      ],
+      "sha256": "e6c635132f6d568729a1af3eeb22f4c125207ce59cfeb3d3ebdb5008beb6d69e"
+    },
+    "blocks.1.pre.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "f3e9ba7c440d03c05ceb28a3e9d7211d8137006aea457e57155cda5e554b2852"
+    },
+    "blocks.1.qkv.weight": {
+      "shape": [
+        96,
+        32
+      ],
+      "sha256": "9fcb7448016f44b4d03adc3fcd617d557e081bcff22478fb9815ef98f0abad9d"
+    },
+    "blocks.1.qkv.bias": {
+      "shape": [
+        96
+      ],
+      "sha256": "101dadf30452bdfe4ed0699eec2c0a57a50989bbda79b1fe26508efd8aa9aef3"
+    },
+    "blocks.1.out.weight": {
+      "shape": [
+        32,
+        32
+      ],
+      "sha256": "7095929c6eca0af8ebf153bc3fd9b965ca208db832dbda7f8e7f9cf9c617679c"
+    },
+    "blocks.1.out.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "25a101978bad74ef640e190a838e37ac24bc936b8901c6151c869de83474082f"
+    },
+    "blocks.1.ff.0.weight": {
+      "shape": [
+        32
+      ],
+      "sha256": "1b1484f43fe610eac4d0d285c04960f7c3acd276bc57af3eb4f5122dcfd01855"
+    },
+    "blocks.1.ff.0.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "86875eb676f1095db70a9765b053acdde40bbeccfe2067972174ffb51a0f380d"
+    },
+    "blocks.1.ff.1.weight": {
+      "shape": [
+        64,
+        32
+      ],
+      "sha256": "fb6750be0b6e7c368cda7c6128053862a502dfe42bb96076b6c456504ebd5397"
+    },
+    "blocks.1.ff.1.bias": {
+      "shape": [
+        64
+      ],
+      "sha256": "34f36424c4a9d7ed0f545cc15754925a2cc3cfadc5555fc04391bd12c332639d"
+    },
+    "blocks.1.ff.3.weight": {
+      "shape": [
+        32,
+        64
+      ],
+      "sha256": "2ccc072c3413902b24b5729f1d74a3b879976702d762c847a94fb2926d431e1e"
+    },
+    "blocks.1.ff.3.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "d585ec93f59cc1889385dbd16bce3afa2ea5e202d369e8ebbbf5272d44c88741"
+    },
+    "norm.weight": {
+      "shape": [
+        32
+      ],
+      "sha256": "1060b2a4982a0eec26140b8dcca0215b4f902d516d9bea67422c0025d9abb563"
+    },
+    "norm.bias": {
+      "shape": [
+        32
+      ],
+      "sha256": "3044a94ee5a287609c68a315da4457d416905d4a5325d7e98371876ac22d302b"
+    },
+    "head.root.weight": {
+      "shape": [
+        387,
+        32
+      ],
+      "sha256": "be4c968d237a7aed0644e9b9611d668c3d148678ac712079d5f3cda3317d95b9"
+    },
+    "head.root.bias": {
+      "shape": [
+        387
+      ],
+      "sha256": "fa4324a5ece18481d724f1ce7a811ab167b5a98dc4730df7eddc1f8f3f295f3b"
+    },
+    "head.condition.weight": {
+      "shape": [
+        259,
+        32
+      ],
+      "sha256": "c8520671173cf1b81eb4d4b316f8f2870c72910c91be397e078616e6e8969e38"
+    },
+    "head.rank.weight": {
+      "shape": [
+        128,
+        32
+      ],
+      "sha256": "b8bffcdc88898d4e165fd32872c8f8648e25d54acef536329e092699cfc5169c"
+    },
+    "head.rank.bias": {
+      "shape": [
+        128
+      ],
+      "sha256": "1a1fced940bcd2bf7eaba4c1fa940ddb490973c954c29554ca76fb17dce5168b"
+    }
+  },
+  "state_hash": "ccad3773e91176ffc90abcee7b0c43c57fbcac453a92e2d279f960259bd773bf",
+  "training_target_exposures": [
+    2088627,
+    125312,
+    125312,
+    125312,
+    125312,
+    125312,
+    125312,
+    125312,
+    125312,
+    543027,
+    543104
+  ],
+  "training_seconds": 4.039956421998795,
+  "scores": {
+    "valid": {
+      "targets": 217645,
+      "nll": 6.629661534170785,
+      "ppl": 757.2258321941576
+    },
+    "test": {
+      "targets": 245568,
+      "nll": 6.574023424389776,
+      "ppl": 716.2458145056715
+    },
+    "cut_test": {
+      "targets": 245568,
+      "nll": 7.877067851462392,
+      "ppl": 2636.131686883463
+    }
+  },
+  "backprop_calls": 0,
+  "optimizer_steps": 0
+}

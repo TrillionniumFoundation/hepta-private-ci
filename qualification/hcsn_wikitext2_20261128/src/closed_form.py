@@ -1,7 +1,18 @@
 """Closed-form He–Xiong equity and credit operators from the killed diffusion resolvent."""
 from dataclasses import dataclass
 import math
-from scipy.special import log_ndtr, ndtr
+try:
+    from scipy.special import log_ndtr, ndtr
+except ModuleNotFoundError:
+    # Scalar alternative for the torch-only runtime used by the language model.
+    import torch
+
+    def log_ndtr(x):
+        return torch.special.log_ndtr(torch.tensor(x, dtype=torch.float64)).item()
+
+    def ndtr(x):
+        return .5 * math.erfc(-x / math.sqrt(2.))
+
 
 
 @dataclass(frozen=True)
