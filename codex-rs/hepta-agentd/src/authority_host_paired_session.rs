@@ -13,6 +13,28 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 impl PreparedHostAuthoritySession {
+    /// Explicit Root administrative registration, without human consent or
+    /// material access. The existing late human/effect checks remain mandatory.
+    pub fn with_original_paired_enrollment_intent(self, intent_file: &Path) -> io::Result<Self> {
+        if !self.fresh_filesystem {
+            return Err(io::Error::other(
+                "paired enrollment requires the original fresh session",
+            ));
+        }
+        let paired = self
+            .paired_training
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original paired plan required before enrollment"))?;
+        self.service.register_original_paired_enrollment_intent(
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+            paired,
+            intent_file,
+        )?;
+        Ok(self)
+    }
+
     /// Retain two already held descriptors under this same Root writer.
     /// No content is read and no enrollment, policy or effect is created.
     pub fn with_original_paired_training_plan(

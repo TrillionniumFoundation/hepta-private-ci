@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.root-paired-enrollment.source-freeze.v1",
+  "base": "3871fbb62d4c3f69d07ce8651d488309c5363be8",
+  "prospective_protocol_commit": "6051a6f9c69bceeaaf59e41b602bec90b73abe4b",
+  "qualification_status": "SOURCE_ONLY_NATIVE_CONTROLS_PENDING",
+  "native_gate_executed": false,
+  "added_native_budget_seconds": 0,
+  "test_environment": "Linux with actual non-Root uid; no simulated Root positive result",
+  "claim_boundary": "Administrative enrollment metadata only; no human consent, material use, fit, model utility, adoption or payment",
+  "parent_fence_limit": "Precheck and CAS are separate; failed postchecks report uncertain and never roll back or blind retry",
+  "checker_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+  "callers_sha256": "cc36935937906e7e3cec6787eca989fc78ecaf303b46e33c3e5539013f1843bb",
+  "source_sha256": {
+    "codex-rs/hepta-agentd/src/authority_host_paired_enrollment.rs": "88b2f35ec94cf45c222505a36858c375daca68762a3668dc0e235aa50a113842",
+    "codex-rs/hepta-agentd/src/authority_host_paired_session.rs": "1e424bb7a8c5431ba4cf6f1f2ed052fa9dfcf9e40095a4b38101c2becb20c2ba",
+    "codex-rs/hepta-agentd/src/authority_host_paired_startup.rs": "fd88a52a2e7e9743a85e50ced8613ad5983a3f3e3ade414aed5e5ed384f8f5e9",
+    "codex-rs/hepta-agentd/src/authority_host_writer.rs": "b8d543f15d41696f48b4c2756ec51e1697fbeb1481a0f6f574d3b5c17ce44167",
+    "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs": "a3d37311c441d6d317dcb3607b7627dc627fc34de99ccad63727f9c7c29dde42",
+    "codex-rs/hepta-agentd/src/deployment_paired.rs": "e225f9dbced36a5f9e4376246aefba3c9c70bad6d3426e6034b8590fa8fcbc73",
+    "codex-rs/hepta-agentd/src/deployment_paired_enrollment.rs": "5cf53a9be05af1e2c11a976e4b239de1bac48f6f3a672c1baceca97c7a306e56",
+    "codex-rs/hepta-agentd/src/deployment_paired_enrollment_root.rs": "4a82fed0c79c98cf4d50825190487af56e439f7fcd593142529b283cc1a33ecc",
+    "codex-rs/hepta-agentd/src/deployment_paired_enrollment_tests.rs": "da9e40e38616c7928dbe648552e6e616987e874a6707ffc73444bd9486f7951c",
+    "codex-rs/hepta-agentd/src/deployment_paired_tests.rs": "120e70f4d52f591e63f852220edb910fd890fec05f99de4afe83b7ec5c2d634e"
+  },
+  "pending_control_functions": [
+    "original_first_enrollment_is_exact_and_does_not_authorize_material_use",
+    "expired_pruned_enrollment_cannot_be_recreated_after_reopen",
+    "revoked_parents_and_foreign_original_registry_cannot_register",
+    "wrong_policy_revision_deadline_and_actual_non_root_refuse_without_writes"
+  ],
+  "evidence": "EVIDENCE.json.gz#sha256=35c2768b88c8a17c3b7d62f63da7850097a81c9884cd16ec486dc6cfd89217fc",
+  "actual_just_fmt": "V1 nine files and V2 three files, both exit0; seven V1 postimages remain final",
+  "source_guard_scope": "6 changed/new boundaries + 13 related protected rows; fresh 6265 baseline raw SHA recheck + exact overlay = 6269 source files",
+  "whole_manifest_pass_claim": false,
+  "required_integration": "Root CI repair #7238 has the separate original sealed-bytes caller correction; preserve both changes on integration"
+}
