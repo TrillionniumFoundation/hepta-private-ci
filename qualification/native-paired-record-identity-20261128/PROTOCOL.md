@@ -20,9 +20,13 @@ the Python data.record_digest definition (UTF-8, sorted object keys, compact
 separators, ensure_ascii=False, allow_nan=False). Stage 1 supports an explicit
 integer-only JSON subprofile: null, booleans, Unicode strings, arrays, objects,
 signed i64 and unsigned u64 integers. Reject every JSON floating-point number,
-nonfinite number, out-of-range integer, duplicate key, invalid UTF-8, excessive
+nonfinite number, negative-zero spelling, out-of-range integer, duplicate key, invalid UTF-8, excessive
 nesting and trailing value. Do not floatcast, quantize, exclude a self-digest
 field or silently claim general Python/Rust numeric equivalence.
+Inspect numeric lexemes outside JSON strings before Serde deserialization,
+because the workspace exec-server-protocol enables arbitrary_precision and can
+present numbers as private maps. Literal object keys resembling those private
+tags remain ordinary data. Validate this behavior in the actual native build.
 
 Project only the declared record/task/lineage/project/source identities,
 train/evaluation flags, timestamps and verified-outcome references. Require

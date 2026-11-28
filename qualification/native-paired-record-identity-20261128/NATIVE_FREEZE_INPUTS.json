@@ -1,0 +1,55 @@
+{
+  "base_commit": "abcb9b20385d0588d0342529906af658b3012711",
+  "test_filter": "paired_record_identity",
+  "expected_new_tests": 8,
+  "native_execution_started": false,
+  "production_callers": 0,
+  "closed_consumer_pending": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/paired_record_identity.rs",
+      "bytes": 11853,
+      "sha256": "facd0da3db72b7380fbe3dc49f3e8920d272013093dac59efd2fef6fae6a4542"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/paired_record_identity_tests.rs",
+      "bytes": 8853,
+      "sha256": "1637a6e550978853200f0895a682bed49031052424ad986a4371e74b4e9fdafb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/paired_material_client.rs",
+      "bytes": 7134,
+      "sha256": "80d5c95f105b13776c0daab59f21a1cd3e46240e51a44f372234cbcad44db995"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/paired_preparation.rs",
+      "bytes": 16809,
+      "sha256": "f1f0eb74d3ad12944d9d5833cf8ebfd2695696fe1209681ff9a23f938fd4968d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 47303,
+      "sha256": "a553b6854e420078fb481d54416399b6c0f4e36195ce116a33fa4245a59d1bef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 8496,
+      "sha256": "487fa7a31f362de085b0f40e14bb560da2be1b8f41ed43878257662acb7745c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/fixtures/paired-record-canonical-v1.json",
+      "bytes": 815,
+      "sha256": "ac628e442e34732d9c4293e16485fea865bd4bcc90b0b56bc9762ec0addca739"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/fixtures/paired-record-correction-v1.json",
+      "bytes": 1324,
+      "sha256": "eae445c5e6ceeaeeb8a390509109d2f48b6d7270e96bef715e9e1e09188e47ed"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/fixtures/paired-record-failure-v1.json",
+      "bytes": 1319,
+      "sha256": "e1bf2515221b599cb1ec30681df7b77908891e52259bf35e8f865960603023ac"
+    }
+  ]
+}
