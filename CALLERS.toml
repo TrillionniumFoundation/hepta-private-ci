@@ -3378,7 +3378,7 @@ symbol = "PreparedHostAuthoritySession::with_original_paired_training_plan"
 call_pattern = "(?:\\.\\s*|PreparedHostAuthoritySession\\s*::\\s*)with_original_paired_training_plan\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/authority_host_paired_session.rs"
 definition_markers = ["pub fn with_original_paired_training_plan("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3387,7 +3387,7 @@ symbol = "PreparedHostAuthoritySession::seal_paired_training_bootstrap"
 call_pattern = "(?:\\.\\s*|PreparedHostAuthoritySession\\s*::\\s*)seal_paired_training_bootstrap\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/authority_host_paired_session.rs"
 definition_markers = ["pub fn seal_paired_training_bootstrap("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3439,7 +3439,7 @@ id = "root_paired_original_purpose_send"
 symbol = "send_root_paired_training_handoff"
 definition_path = "codex-rs/hepta-agentd/src/root_production_paired_handoff.rs"
 definition_markers = ["pub fn send_root_paired_training_handoff(", "libc::getuid()", "libc::geteuid()", "peer.pid as u32 != std::process::id()", "require_root_pin(root_pidfd, std::process::id())?", "PAIRED_TRAINING_FRAME"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3479,3 +3479,9 @@ path = "codex-rs/hepta-agentd/src/root_production_paired_inputs.rs"
 required = ["paired-training-v1.sock", "AgentdRootPairedTrainingInputsV1", "RootPairedTrainingHandoffV1", "OriginalPairedTrainingDelivery"]
 forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected", "UnixStream::pair(", "authority_lease_put"]
 required_function_order = [{ function = "fn connect_original_paired_training(", sequence = ["remaining(startup_deadline)?", "Duration::from_secs(30)", "remaining(session_end)?", "Duration::from_secs(300)", "length > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND", "validate_sealed(&self.bootstrap, length)?", "self.bootstrap.rewind()?", "read_to_end(&mut bytes)?", "validate_sealed(&self.bootstrap, length)?", "bytes.len() as u64 != length", "serde_json::from_slice(&bytes)?", "validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?", "validate_lane_paths(", "let connect_end", ".min(startup_deadline)", ".min(session_end)", "tokio::time::timeout_at(", "tokio::net::UnixStream::connect(&bundle.socket_path)", "AgentdPairedMaterialClient::from_original_root(", "remaining(session_end)?", "self.root_pidfd", "remaining(startup_deadline)?", "Ok(AgentdRootPairedTrainingInputsV1"] }, { function = "fn validate_binding(", sequence = ["let socket", "let proof = original.writer_proof.sha256()?", "bundle.schema_version != 1", "bundle.operation != HOST_AUTHORITY_PAIRED_TRAINING_BOOTSTRAP_V1", "bundle.root != original.root", "bundle.consumer != original.consumer", "bundle.root.pid != root_pid", "bundle.root.uid != 0", "bundle.registered_identity.identity()? != *expected", "original.registered_identity.identity()? != *expected", "bundle.writer_proof_digest != proof.as_str()", "bundle.socket_path != socket", "bundle\n        .profile\n        .require_binding(expected, proof.as_str())?"] }, { function = "fn install_original_consumer(", sequence = ["config.identity() != &self.identity", "config.with_original_paired_training_consumer(self.plan, self.client)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+required = ["--paired-training-profile", "--paired-training-failure-fd", "--paired-training-correction-fd", "--root-paired-training-handoff-fd", "paired_slots.iter().any(|provided| !provided)", "command != \"serve-fresh-session\"", "native_profile.is_none()", "original_login.is_none()", "handoff.is_none()", "root_fd.is_none()"]
+forbidden = ["UnixStream::pair(", "File::open(", "read_to_end("]
+required_function_order = [{ function = "fn run(", sequence = ["let paired_profile = options", "let paired_slots = [", "command !=", "original_login.is_none()", "handoff.is_none()", "root_fd.is_none()", "let mut claimed =", "let paired_handoff = paired_handoff\n            .as_deref()", "inherited_descriptor(fd, &mut claimed)", "let paired_failure = paired_failure\n            .as_deref()", "inherited_descriptor(fd, &mut claimed)", "let paired_correction = paired_correction\n            .as_deref()", "inherited_descriptor(fd, &mut claimed)", "let owner = std::io::stdin().as_fd().try_clone_to_owned()?", "PreparedHostAuthoritySession::prepare_fresh_from_registered(", "prepared.with_original_logind_session(", ".with_original_paired_training_plan(", "std::fs::File::from(failure)", "std::fs::File::from(correction)", "prepared.handoff_fresh_agent_filesystem()?", "send_root_production_handoff(", "prepared.with_registered_learning(&profile)?", "prepared.seal_learning_bootstrap()", "prepared.seal_paired_training_bootstrap()", "let ready = ||", "(learning_handoff, learning_bootstrap, root_fd.as_ref())", "send_root_learning_handoff(", "(paired_handoff, paired_bootstrap, root_fd.as_ref())", "send_root_paired_training_handoff(", "prepared.launch_native_with_ready("] }]

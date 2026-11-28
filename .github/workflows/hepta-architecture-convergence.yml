@@ -242,6 +242,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-late-admission.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(deployment_issuer::paired::tests::materials::admission)'
+      - name: Original paired Root CLI descriptor controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-cli.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --bin hepta-authority-host --retries 0 --test-threads 1 -E 'test(paired_tests)'
       - name: Original paired training startup metadata controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
