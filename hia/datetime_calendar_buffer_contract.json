@@ -1,0 +1,97 @@
+{
+  "schema": "codex.hia.datetime-calendar-buffer-contract.v1",
+  "revision": 1,
+  "status": "UTC timestamp construction and Gregorian calendar component; production integration, RFC3339, serde formatting and Local timezone conversion are separate gates.",
+  "module": "datetime_calendar",
+  "source_sha256": "163293b2aa228828cae3280613769f3665124c07cf8a490aef0c7c7865722f0c",
+  "core_sha256": "104e04854c42b849568531a82513300b55eae2a2de21338b7c36748698348337",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": ["DateTime::from_timestamp", "DateTime::timestamp", "DateTime::timestamp_subsec_nanos", "Datelike::year", "Datelike::month", "Datelike::day", "Timelike::num_seconds_from_midnight"],
+    "oracle_registry_packages": 43
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed seconds use two's-complement bits",
+    "fields": [
+      {"offset": 0, "name": "version", "required": 1},
+      {"offset": 8, "name": "operation", "required": 0},
+      {"offset": 16, "name": "unix_seconds", "type": "i64 bits"},
+      {"offset": 24, "name": "nanoseconds", "type": "u64"},
+      {"offset": 32, "name": "reserved0", "required": 0},
+      {"offset": 40, "name": "reserved1", "required": 0},
+      {"offset": 48, "name": "reserved2", "required": 0},
+      {"offset": 56, "name": "reserved3", "required": 0}
+    ],
+    "mutation": "Never modified."
+  },
+  "workspace": {"bytes_exact": 0, "mutation": "Never modified."},
+  "output": {
+    "bytes_written_on_success": 64,
+    "byte_order": "eight little-endian u64 words; signed values use two's-complement bits",
+    "fields": [
+      {"offset": 0, "name": "version", "value": 1},
+      {"offset": 8, "name": "valid", "value": "1 for a valid constructor result; otherwise 0"},
+      {"offset": 16, "name": "unix_seconds", "value": "original seconds when valid; otherwise 0"},
+      {"offset": 24, "name": "nanoseconds", "value": "original nanoseconds when valid; otherwise 0"},
+      {"offset": 32, "name": "year", "value": "signed Gregorian year when valid; otherwise 0"},
+      {"offset": 40, "name": "month", "value": "1 through 12 when valid; otherwise 0"},
+      {"offset": 48, "name": "day", "value": "1 through 31 when valid; otherwise 0"},
+      {"offset": 56, "name": "second_of_day", "value": "0 through 86399 when valid; otherwise 0"}
+    ],
+    "tail": "All bytes after offset 64 remain unchanged. Errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "unix_seconds_minimum": -8334601228800,
+    "unix_seconds_maximum": 8210266876799,
+    "years": [-262143, 262142],
+    "ordinary_nanoseconds": "0 <= nanoseconds < 1000000000",
+    "leap_nanoseconds": "1000000000 <= nanoseconds < 2000000000 only when Euclidean seconds modulo 60 equals 59",
+    "leap_second_rules": "Match the original constructor, including leap fractions on the last second of any minute. Do not apply an external leap-second table or normalize the fraction.",
+    "calendar": "Proleptic Gregorian calendar, including year zero and negative years, with floor division across negative days and 400-year eras.",
+    "invalid_values": "Return success with [1,0,0,0,0,0,0,0]; never saturate, wrap an invalid timestamp into range, or trap."
+  },
+  "status_precedence": [
+    {"status": 4294967294, "condition": "output capacity is less than 64; checked before source/workspace frame validation"},
+    {"status": 4294967295, "condition": "source length is not 64, workspace length is nonzero, version is not 1, operation is not 0, or any reserved word is nonzero"},
+    {"status": 0, "condition": "valid frame; exactly 64 output bytes are written for either a valid or invalid timestamp"}
+  ],
+  "differential_corpus": {
+    "calendar_days": 146097,
+    "seeded_full_range_cases": 20000,
+    "boundary_cases": 230,
+    "total_constructor_cases": 166327,
+    "input_sha256": "0163a7110651216e7319569dca2907be596c53ccc20d9d318a8eff4b8ef57fa5",
+    "original_output_sha256": "d27ed39a54138b4c1f2589f7448452a28c38b50c2383443068f9fdfcbebd56c7",
+    "boundary_controls": "Unaligned buffers, both zero and nonzero fills, exact and excess capacity, all shorter output capacities, truncated/oversized frames, invalid metadata and nonempty workspace; compare all bytes and surrounding guards."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "rfc3339_or_serde_qualified": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}
