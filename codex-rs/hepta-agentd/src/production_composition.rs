@@ -250,3 +250,7 @@ mod notes_tests;
 #[cfg(test)]
 #[path = "objective_sender_host_tests.rs"]
 mod objective_sender_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "production_terminal_owner_tests.rs"]
+mod terminal_owner_tests;
