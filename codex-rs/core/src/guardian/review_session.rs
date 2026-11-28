@@ -938,6 +938,15 @@ async fn run_review_on_session(
             guardian_model_provider_id: params.spawn_config.model_provider_id.clone(),
             had_prior_review_context: had_prior_review_context(&prompt_mode),
         });
+    // The previous review may have emitted its terminal event before its
+    // turn releases admission. Wait inside this review's existing deadline,
+    // then let normal Core routing decide whether the next review may start.
+    if let Some(completion) = review_session.session.pending_admission_fence_completion()
+        && let Err(outcome) =
+            run_before_review_deadline(deadline, params.external_cancel.as_ref(), completion).await
+    {
+        return (outcome, false, analytics_result);
+    }
     if send_followup_reminder {
         append_guardian_followup_reminder(review_session).await;
     }
