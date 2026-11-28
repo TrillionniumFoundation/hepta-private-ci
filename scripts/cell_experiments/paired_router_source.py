@@ -312,6 +312,7 @@ def _fit(root, plan, owner, *, engineering=False):
                     root,
                     staged,
                     parent=d(parent),
+                    router_plan=circuit_router.RouterPlan(**parent["router"]["plan"]),
                 )
                 os.rename(staged, search)
                 paired_source.sync_directory(op)
