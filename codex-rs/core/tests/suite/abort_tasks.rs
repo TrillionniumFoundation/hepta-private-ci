@@ -195,11 +195,8 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
             config.cwd = cwd;
         })
         .with_model("gpt-5.4");
-    if let Some(url) = test.executor_environment().exec_server_url() {
-        replacement = replacement.with_exec_server_url(url);
-    }
     let resumed = replacement
-        .resume(&server, Arc::clone(&test.home), rollout_path)
+        .resume_in_same_environment(&server, &test)
         .await
         .expect("resume the suspended root on a replacement runtime");
     let expected_epoch = resumed

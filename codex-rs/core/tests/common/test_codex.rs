@@ -145,14 +145,29 @@ pub fn local_selections(cwd: AbsolutePathBuf) -> TurnEnvironmentSelections {
     TurnEnvironmentSelections::new(cwd.clone(), vec![local(cwd)])
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TestEnv {
     environment: codex_exec_server::Environment,
     exec_server_url: Option<String>,
     cwd: AbsolutePathBuf,
     selection: TurnEnvironmentSelection,
     local_cwd_temp_dir: Option<Arc<TempDir>>,
-    remote_container_name: Option<String>,
+    _remote_workspace: Option<Arc<RemoteTestWorkspace>>,
+}
+
+#[derive(Debug)]
+struct RemoteTestWorkspace {
+    container: String,
+    cwd: AbsolutePathBuf,
+}
+
+impl Drop for RemoteTestWorkspace {
+    fn drop(&mut self) {
+        if let Some(path) = self.cwd.as_path().to_str() {
+            let _ =
+                docker_command_capture_stdout(["exec", &self.container, "rm", "-rf", "--", path]);
+        }
+    }
 }
 
 impl TestEnv {
@@ -182,7 +197,7 @@ impl TestEnv {
             cwd,
             selection,
             local_cwd_temp_dir: Some(local_cwd_temp_dir),
-            remote_container_name: None,
+            _remote_workspace: None,
         })
     }
 
@@ -205,15 +220,6 @@ impl TestEnv {
 
     fn local_cwd_temp_dir(&self) -> Option<Arc<TempDir>> {
         self.local_cwd_temp_dir.clone()
-    }
-}
-
-impl Drop for TestEnv {
-    fn drop(&mut self) {
-        if let Some(container_name) = &self.remote_container_name {
-            let script = format!("rm -rf {}", self.cwd.as_path().display());
-            let _ = docker_command_capture_stdout(["exec", container_name, "sh", "-lc", &script]);
-        }
     }
 }
 
@@ -258,13 +264,19 @@ pub async fn test_env() -> Result<TestEnv> {
             } else {
                 cwd_uri.to_abs_path()?
             };
+            let remote_workspace = remote_env.docker_container_name().map(|container| {
+                Arc::new(RemoteTestWorkspace {
+                    container: container.to_owned(),
+                    cwd: cwd.clone(),
+                })
+            });
             Ok(TestEnv {
                 environment,
                 exec_server_url: Some(websocket_url),
                 cwd,
                 selection,
                 local_cwd_temp_dir: None,
-                remote_container_name: remote_env.docker_container_name().map(str::to_owned),
+                _remote_workspace: remote_workspace,
             })
         }
         TestEnvironment::Local => TestEnv::local().await,
@@ -599,6 +611,28 @@ impl TestCodexBuilder {
         previous.codex.shutdown_and_wait().await?;
         self.resume(server, Arc::clone(&previous.home), rollout_path)
             .await
+    }
+
+    /// Resumes a stopped thread without changing the executor or its workspace.
+    pub async fn resume_in_same_environment(
+        &mut self,
+        server: &MockServer,
+        previous: &TestCodex,
+    ) -> Result<TestCodex> {
+        let rollout_path = previous
+            .session_configured
+            .rollout_path
+            .clone()
+            .context("rollout path")?;
+        let base_url = format!("{}/v1", server.uri());
+        Box::pin(self.build_with_home_and_base_url(
+            base_url,
+            Arc::clone(&previous.home),
+            Some(rollout_path),
+            previous.executor_environment().clone(),
+            /*include_local_environment*/ false,
+        ))
+        .await
     }
 
     async fn build_with_home_and_base_url(

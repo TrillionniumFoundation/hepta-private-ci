@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::AgentRoleConfig;
@@ -7,6 +8,7 @@ use codex_protocol::openai_models::ReasoningEffort;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
+use core_test_support::responses::ResponseMock;
 use core_test_support::responses::assert_parent_turn;
 use core_test_support::responses::assert_root_turn;
 use core_test_support::responses::ev_assistant_message;
@@ -90,6 +92,30 @@ fn request_has_input_type(request: &wiremock::Request, input_type: &str) -> bool
                 .iter()
                 .any(|item| item.get("type").and_then(Value::as_str) == Some(input_type))
         })
+}
+
+async fn spawned_child_id(
+    request: &ResponseMock,
+    parent: codex_protocol::ThreadId,
+) -> Result<codex_protocol::ThreadId> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        if let Some(thread_id) = request.requests().into_iter().find_map(|request| {
+            let body = request.body_json();
+            if body["client_metadata"]["x-codex-parent-thread-id"] != json!(parent) {
+                return None;
+            }
+            body["client_metadata"]["thread_id"]
+                .as_str()
+                .and_then(|thread_id| codex_protocol::ThreadId::from_string(thread_id).ok())
+        }) {
+            return Ok(thread_id);
+        }
+        if Instant::now() >= deadline {
+            anyhow::bail!("timed out waiting for child of {parent}");
+        }
+        sleep(Duration::from_millis(10)).await;
+    }
 }
 
 async fn mount_root_collaboration_call(
@@ -263,29 +289,14 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     })
     .await;
 
-    let deadline = Instant::now() + Duration::from_secs(2);
-    let worker_thread_id = loop {
-        if let Some(thread_id) = initial_child_request
-            .requests()
-            .into_iter()
-            .find_map(|request| {
-                let body = request.body_json();
-                if body["client_metadata"]["x-codex-parent-thread-id"] != json!(root_thread_id) {
-                    return None;
-                }
-                body["client_metadata"]["thread_id"]
-                    .as_str()
-                    .and_then(|thread_id| codex_protocol::ThreadId::from_string(thread_id).ok())
-            })
-        {
-            break thread_id;
-        }
-        if Instant::now() >= deadline {
-            anyhow::bail!("timed out waiting for spawned worker");
-        }
-        sleep(Duration::from_millis(10)).await;
-    };
-    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;
+    let worker_thread_id = spawned_child_id(&initial_child_request, root_thread_id)
+        .await
+        .context("find the original worker")?;
+    let worker_thread = initial
+        .thread_manager
+        .get_thread(worker_thread_id)
+        .await
+        .context("look up the original worker")?;
     wait_for_event(worker_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -332,7 +343,7 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         &sibling_spawn_args,
     )
     .await;
-    mount_sse_once_match(
+    let sibling_request = mount_sse_once_match(
         &server,
         |request: &wiremock::Request| {
             request_has_model(request, ROLE_MODEL)
@@ -349,15 +360,15 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     initial.submit_turn(SIBLING_PROMPT).await?;
 
     let grandchild = nested_mock.last_request().expect("grandchild").body_json();
-    let nested_id = &grandchild["client_metadata"]["thread_id"];
-    let sibling_thread_id = initial
-        .thread_manager
-        .list_thread_ids()
+    let sibling_thread_id = spawned_child_id(&sibling_request, root_thread_id)
         .await
-        .into_iter()
-        .find(|id| ![root_thread_id, worker_thread_id].contains(id) && &json!(id) != nested_id)
-        .ok_or_else(|| anyhow::anyhow!("spawned sibling should be registered"))?;
-    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;
+        .context("find the second worker")?;
+    assert_ne!(worker_thread_id, sibling_thread_id);
+    let sibling_thread = initial
+        .thread_manager
+        .get_thread(sibling_thread_id)
+        .await
+        .context("look up the second worker")?;
     wait_for_event(sibling_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -421,7 +432,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut resume_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &resumed_model_provider_base_url);
     });
-    let resumed = resume_builder.restart(&server, &initial).await?;
+    initial.codex.shutdown_and_wait().await?;
+    let resumed = resume_builder
+        .resume_in_same_environment(&server, &initial)
+        .await?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,
