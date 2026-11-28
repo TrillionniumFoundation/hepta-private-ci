@@ -2240,7 +2240,8 @@ async fn stdio_image_responses_resize_large_image() -> anyhow::Result<()> {
     let server_name = "rmcp";
     let namespace = format!("mcp__{server_name}");
 
-    let original_dimensions = (3000, 2000);
+    // Keep 3:2 and exceed both high-detail limits with fewer input pixels.
+    let original_dimensions = (2100, 1400);
     let image = ImageBuffer::from_pixel(
         original_dimensions.0,
         original_dimensions.1,

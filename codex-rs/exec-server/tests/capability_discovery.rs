@@ -27,8 +27,10 @@ use codex_protocol::permissions::NetworkSandboxPolicy;
 #[cfg(unix)]
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
+#[cfg(unix)]
+use common::CAPABILITY_TRACE_ENV;
 use common::exec_server::exec_server;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use common::exec_server::exec_server_with_env;
 #[cfg(target_os = "linux")]
 use fake_bwrap::write_fake_bwrap;
@@ -228,12 +230,19 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
         }
         let helper_path = std::env::join_paths(path_entries)?;
         (
-            exec_server_with_env([("PATH", helper_path.as_os_str())], &[]).await?,
+            exec_server_with_env(
+                [
+                    ("PATH", helper_path.as_os_str()),
+                    (CAPABILITY_TRACE_ENV, std::ffi::OsStr::new("1")),
+                ],
+                &[],
+            )
+            .await?,
             fake_bwrap,
         )
     };
     #[cfg(not(target_os = "linux"))]
-    let mut server = exec_server().await?;
+    let mut server = exec_server_with_env([(CAPABILITY_TRACE_ENV, "1")], &[]).await?;
     initialize(&mut server).await?;
     let response = discover_roots(
         &mut server,
@@ -323,7 +332,7 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
         assert!(std::fs::read_to_string(&launch_log)?.lines().count() > 2);
 
         server.shutdown().await?;
-        server = exec_server().await?;
+        server = exec_server_with_env([(CAPABILITY_TRACE_ENV, "1")], &[]).await?;
         initialize(&mut server).await?;
     }
 
@@ -464,6 +473,201 @@ async fn sandboxed_discovery_follows_only_permitted_external_symlinks() -> anyho
         );
     }
 
+    server.shutdown().await?;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn mixed_policies_preserve_root_order_without_reading_other_root() -> anyhow::Result<()> {
+    let workspace = tempfile::tempdir()?;
+    let first = workspace.path().join("first");
+    let second = workspace.path().join("second");
+    let first_contents = "---\nname: first\ndescription: First policy only.\n---\n";
+    let second_contents = "---\nname: second\ndescription: Second policy only.\n---\n";
+    write_file(&first.join("skills/own/SKILL.md"), first_contents)?;
+    write_file(&second.join("skills/own/SKILL.md"), second_contents)?;
+    std::os::unix::fs::symlink(second.join("skills/own"), first.join("skills/foreign"))?;
+    std::os::unix::fs::symlink(first.join("skills/own"), second.join("skills/foreign"))?;
+    let sandbox = |path: &std::path::Path| -> anyhow::Result<FileSystemSandboxContext> {
+        let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+            AbsolutePathBuf::from_absolute_path(path)?.into(),
+            FileSystemAccessMode::Read,
+        )]);
+        Ok(FileSystemSandboxContext::from_permission_profile_with_cwd(
+            PermissionProfile::from_runtime_permissions(&policy, NetworkSandboxPolicy::Restricted),
+            PathUri::from_host_native_path(path)?,
+        ))
+    };
+    let first_sandbox = sandbox(&first)?;
+    let second_sandbox = sandbox(&second)?;
+    let first_uri = PathUri::from_host_native_path(&first)?;
+    let second_uri = PathUri::from_host_native_path(&second)?;
+    let first_skill = first_uri.join("skills/own/SKILL.md")?;
+    let second_skill = second_uri.join("skills/own/SKILL.md")?;
+    let mut server = exec_server().await?;
+    initialize(&mut server).await?;
+    let response = discover_roots(
+        &mut server,
+        vec![
+            CapabilityRootDiscoverRequest {
+                id: "duplicate".to_string(),
+                path: first_uri.clone(),
+                sandbox: Some(first_sandbox.clone()),
+            },
+            CapabilityRootDiscoverRequest {
+                id: "duplicate".to_string(),
+                path: second_uri.clone(),
+                sandbox: Some(second_sandbox),
+            },
+            CapabilityRootDiscoverRequest {
+                id: "repeat-first".to_string(),
+                path: first_uri.clone(),
+                sandbox: Some(first_sandbox),
+            },
+        ],
+    )
+    .await?;
+    assert_eq!(
+        response
+            .roots
+            .into_iter()
+            .map(|root| (
+                root.id,
+                root.path,
+                root.skills
+                    .into_iter()
+                    .map(|skill| (skill.instructions.path, skill.instructions.contents))
+                    .collect::<Vec<_>>(),
+                root.error,
+            ))
+            .collect::<Vec<_>>(),
+        vec![
+            (
+                "duplicate".to_string(),
+                first_uri.clone(),
+                vec![(first_skill.clone(), first_contents.to_string())],
+                None,
+            ),
+            (
+                "duplicate".to_string(),
+                second_uri,
+                vec![(second_skill, second_contents.to_string())],
+                None,
+            ),
+            (
+                "repeat-first".to_string(),
+                first_uri,
+                vec![(first_skill, first_contents.to_string())],
+                None,
+            ),
+        ]
+    );
+    server.shutdown().await?;
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn mixed_helper_failure_falls_back_and_oversized_batch_does_not_launch() -> anyhow::Result<()>
+{
+    let workspace = tempfile::tempdir()?;
+    let root = workspace.path().join("root");
+    let contents = "---\nname: fallback\ndescription: Fallback skill.\n---\n";
+    write_file(&root.join("skills/own/SKILL.md"), contents)?;
+    let root_uri = PathUri::from_host_native_path(&root)?;
+    let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+        AbsolutePathBuf::from_absolute_path(&root)?.into(),
+        FileSystemAccessMode::Read,
+    )]);
+    let sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(
+        PermissionProfile::from_runtime_permissions(&policy, NetworkSandboxPolicy::Restricted),
+        root_uri.clone(),
+    );
+    let fake_bin = tempfile::tempdir()?;
+    let fake_bwrap = write_fake_bwrap(fake_bin.path())?;
+    let mut path_entries = vec![fake_bin.path().to_path_buf()];
+    if let Some(path) = std::env::var_os("PATH") {
+        path_entries.extend(std::env::split_paths(&path));
+    }
+    let helper_path = std::env::join_paths(path_entries)?;
+    let mut server = exec_server_with_env([("PATH", helper_path.as_os_str())], &[]).await?;
+    initialize(&mut server).await?;
+    let requests = vec![
+        CapabilityRootDiscoverRequest {
+            id: "sandboxed".to_string(),
+            path: root_uri.clone(),
+            sandbox: Some(sandbox),
+        },
+        CapabilityRootDiscoverRequest {
+            id: "missing".to_string(),
+            path: PathUri::from_host_native_path(&workspace.path().join("missing"))?,
+            sandbox: None,
+        },
+    ];
+    let summary = |response: CapabilityRootsDiscoverResponse| {
+        response
+            .roots
+            .into_iter()
+            .map(|root| {
+                (
+                    root.id,
+                    root.path,
+                    root.skills
+                        .into_iter()
+                        .map(|skill| (skill.instructions.path, skill.instructions.contents))
+                        .collect::<Vec<_>>(),
+                    root.error,
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    let baseline = summary(discover_roots(&mut server, requests.clone()).await?);
+    assert_eq!(baseline.len(), 2);
+    assert_eq!(baseline[0].0, "sandboxed");
+    assert_eq!(baseline[0].1, root_uri);
+    assert_eq!(
+        baseline[0].2,
+        vec![(root_uri.join("skills/own/SKILL.md")?, contents.to_string())]
+    );
+    assert_eq!(baseline[0].3, None);
+    assert_eq!(baseline[1].0, "missing");
+    assert_eq!(baseline[1].1, requests[1].path);
+    assert!(baseline[1].2.is_empty());
+    assert!(baseline[1].3.is_some());
+    let launch_log = fake_bwrap.with_file_name("bwrap.log");
+    assert_eq!(std::fs::read_to_string(&launch_log)?.lines().count(), 1);
+
+    std::fs::write(fake_bwrap.with_file_name("bwrap.fail-once"), "")?;
+    let fallback = summary(discover_roots(&mut server, requests.clone()).await?);
+    assert_eq!(fallback, baseline);
+    let launches = std::fs::read_to_string(&launch_log)?.lines().count();
+    assert!(launches > 2);
+
+    let mut oversized = vec![requests[0].clone(); 128];
+    oversized.push(requests[1].clone());
+    let request_id = server
+        .send_request(
+            CAPABILITY_ROOTS_DISCOVER_METHOD,
+            serde_json::to_value(CapabilityRootsDiscoverParams { roots: oversized })?,
+        )
+        .await?;
+    let response = server.next_event().await?;
+    let JSONRPCMessage::Error(error) = response else {
+        anyhow::bail!("expected oversized discovery error, received {response:?}");
+    };
+    assert_eq!(error.id, request_id);
+    assert_eq!(
+        (error.error.code, error.error.message),
+        (
+            -32600,
+            "capability root discovery accepts at most 128 roots".to_string(),
+        )
+    );
+    assert_eq!(
+        std::fs::read_to_string(&launch_log)?.lines().count(),
+        launches
+    );
     server.shutdown().await?;
     Ok(())
 }

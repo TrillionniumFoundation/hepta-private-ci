@@ -10,12 +10,22 @@ use tokio::sync::Mutex as TokioMutex;
 use tokio::sync::Notify;
 use tokio::sync::oneshot;
 
+#[path = "streaming_sse_routes.rs"]
+mod routes;
+pub use routes::StreamingSseRoute;
+pub use routes::start_routed_streaming_sse_server;
+pub use routes::start_routed_streaming_sse_server_with_delays;
+
 /// Streaming SSE chunk payload gated by a per-chunk signal.
 #[derive(Debug)]
 pub struct StreamingSseChunk {
     pub gate: Option<oneshot::Receiver<()>>,
     pub body: String,
 }
+
+/// Records a complete request body before this server admits a response.
+/// A failure returns HTTP 500 without a successful request or completion record.
+pub type StreamingSseRequestObserver = Arc<dyn Fn(&[u8]) -> anyhow::Result<()> + Send + Sync>;
 
 /// Minimal streaming SSE server for tests that need gated per-chunk delivery.
 pub struct StreamingSseServer {
@@ -59,7 +69,11 @@ impl StreamingSseServer {
 pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
-    start_streaming_sse_server_inner(responses, /*first_headers_gate*/ None).await
+    start_streaming_sse_server_inner(
+        responses, /*first_headers_gate*/ None, /*request_observer*/ None,
+        /*request_routes*/ None,
+    )
+    .await
 }
 
 /// Holds the first response before its HTTP headers, after recording its request.
@@ -70,12 +84,51 @@ pub async fn start_streaming_sse_server_with_first_headers_gate(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: oneshot::Receiver<()>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
-    start_streaming_sse_server_inner(responses, Some(first_headers_gate)).await
+    start_streaming_sse_server_inner(
+        responses,
+        Some(first_headers_gate),
+        /*request_observer*/ None,
+        /*request_routes*/ None,
+    )
+    .await
+}
+
+/// Opts this server into request capture and owned connection-task cleanup.
+/// Existing constructors retain their original detached-connection behavior.
+pub async fn start_streaming_sse_server_with_request_observer(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    request_observer: StreamingSseRequestObserver,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_inner(
+        responses,
+        /*first_headers_gate*/ None,
+        Some(request_observer),
+        /*request_routes*/ None,
+    )
+    .await
+}
+
+/// Records the first request before holding all of its response headers and SSE.
+/// Uses the existing observer failure and owned connection-task cleanup rules.
+pub async fn start_streaming_sse_server_with_first_headers_gate_and_request_observer(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    first_headers_gate: oneshot::Receiver<()>,
+    request_observer: StreamingSseRequestObserver,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_inner(
+        responses,
+        Some(first_headers_gate),
+        Some(request_observer),
+        /*request_routes*/ None,
+    )
+    .await
 }
 
 async fn start_streaming_sse_server_inner(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
+    request_observer: Option<StreamingSseRequestObserver>,
+    request_routes: Option<routes::ResponseRoutes>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
@@ -91,10 +144,12 @@ async fn start_streaming_sse_server_inner(
         completion_receivers.push(rx);
     }
 
+    let route_requests = request_routes.is_some();
     let state = Arc::new(TokioMutex::new(StreamingSseState {
         responses: VecDeque::from(responses),
         completions: VecDeque::from(completion_senders),
         first_headers_gate,
+        request_routes,
     }));
     let requests = Arc::new(TokioMutex::new(Vec::new()));
     let request_notify = Arc::new(Notify::new());
@@ -102,16 +157,20 @@ async fn start_streaming_sse_server_inner(
     let request_notify_for_task = Arc::clone(&request_notify);
     let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
 
+    let observe_requests = request_observer.is_some() || route_requests;
     let task = tokio::spawn(async move {
+        let mut connection_tasks = tokio::task::JoinSet::new();
         loop {
             tokio::select! {
                 _ = &mut shutdown_rx => break,
+                Some(_) = connection_tasks.join_next(), if observe_requests && !connection_tasks.is_empty() => {}
                 accept_res = listener.accept() => {
                     let (mut stream, _) = accept_res.expect("accept streaming SSE connection");
                     let state = Arc::clone(&state);
                     let requests = Arc::clone(&requests_for_task);
                     let request_notify = Arc::clone(&request_notify_for_task);
-                    tokio::spawn(async move {
+                    let request_observer = request_observer.clone();
+                    let connection = async move {
                         let (request, body_prefix) = read_http_request(&mut stream).await;
                         let Some((method, path)) = parse_request_line(&request) else {
                             let _ = write_http_response(&mut stream, /*status*/ 400, "bad request", "text/plain").await;
@@ -126,10 +185,16 @@ async fn start_streaming_sse_server_inner(
                                 let _ = write_http_response(&mut stream, /*status*/ 400, "bad request", "text/plain").await;
                                 return;
                             }
-                            let body = serde_json::json!({
-                                "data": [],
-                                "object": "list"
-                            })
+                            let body = if route_requests {
+                                serde_json::json!(codex_protocol::openai_models::ModelsResponse {
+                                    models: Vec::new(),
+                                })
+                            } else {
+                                serde_json::json!({
+                                    "data": [],
+                                    "object": "list"
+                                })
+                            }
                             .to_string();
                             let _ = write_http_response(&mut stream, /*status*/ 200, &body, "application/json").await;
                             return;
@@ -145,13 +210,23 @@ async fn start_streaming_sse_server_inner(
                                     return;
                                 }
                             };
+                            if let Some(observer) = &request_observer
+                                && observer(&body).is_err()
+                            {
+                                let _ = write_http_response(&mut stream, /*status*/ 500, "request capture failed", "text/plain").await;
+                                return;
+                            }
+                            let routed_body = route_requests.then(|| body.clone());
                             requests.lock().await.push(body);
                             request_notify.notify_one();
-                            let Some((chunks, completion, headers_gate)) = take_next_stream(&state).await else {
+                            let Some((chunks, completion, headers_gate, response_delay)) = take_next_stream(&state, &request, routed_body).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
                                 return;
                             };
 
+                            if let Some(delay) = response_delay {
+                                delay.await;
+                            }
                             if let Some(gate) = headers_gate
                                 && gate.await.is_err() {
                                     return;
@@ -177,9 +252,17 @@ async fn start_streaming_sse_server_inner(
                         }
 
                         let _ = write_http_response(&mut stream, /*status*/ 404, "not found", "text/plain").await;
-                    });
+                    };
+                    if observe_requests {
+                        connection_tasks.spawn(connection);
+                    } else {
+                        tokio::spawn(connection);
+                    }
                 }
             }
+        }
+        if observe_requests {
+            connection_tasks.shutdown().await;
         }
     });
 
@@ -199,20 +282,36 @@ struct StreamingSseState {
     responses: VecDeque<Vec<StreamingSseChunk>>,
     completions: VecDeque<oneshot::Sender<i64>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
+    request_routes: Option<routes::ResponseRoutes>,
 }
 
 async fn take_next_stream(
     state: &TokioMutex<StreamingSseState>,
+    headers: &str,
+    body: Option<Vec<u8>>,
 ) -> Option<(
     Vec<StreamingSseChunk>,
     oneshot::Sender<i64>,
     Option<oneshot::Receiver<()>>,
+    Option<tokio::time::Sleep>,
 )> {
     let mut guard = state.lock().await;
-    let chunks = guard.responses.pop_front()?;
-    let completion = guard.completions.pop_front()?;
+    let (chunks, completion, response_delay) = if let Some(routes) = &mut guard.request_routes {
+        let (index, delay) = routes.select(headers, body?)?;
+        (
+            guard.responses.remove(index)?,
+            guard.completions.remove(index)?,
+            delay,
+        )
+    } else {
+        (
+            guard.responses.pop_front()?,
+            guard.completions.pop_front()?,
+            None,
+        )
+    };
     let headers_gate = guard.first_headers_gate.take();
-    Some((chunks, completion, headers_gate))
+    Some((chunks, completion, headers_gate, response_delay))
 }
 
 async fn read_http_request(stream: &mut tokio::net::TcpStream) -> (String, Vec<u8>) {
@@ -770,23 +869,30 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
             ]),
             completions: VecDeque::from(vec![first_tx, second_tx]),
             first_headers_gate: None,
+            request_routes: None,
         });
 
-        let (first_chunks, first_completion, first_headers_gate) =
-            take_next_stream(&state).await.expect("first stream");
+        let (first_chunks, first_completion, first_headers_gate, first_delay) =
+            take_next_stream(&state, /*headers*/ "", /*body*/ None)
+                .await
+                .expect("first stream");
         assert_eq!(first_chunks[0].body, "first");
         assert!(first_headers_gate.is_none());
+        assert!(first_delay.is_none());
         let _ = first_completion.send(11);
         assert_eq!(first_rx.await.expect("first completion"), 11);
 
-        let (second_chunks, second_completion, second_headers_gate) =
-            take_next_stream(&state).await.expect("second stream");
+        let (second_chunks, second_completion, second_headers_gate, second_delay) =
+            take_next_stream(&state, /*headers*/ "", /*body*/ None)
+                .await
+                .expect("second stream");
         assert_eq!(second_chunks[0].body, "second");
         assert!(second_headers_gate.is_none());
+        assert!(second_delay.is_none());
         let _ = second_completion.send(22);
         assert_eq!(second_rx.await.expect("second completion"), 22);
 
-        let third = take_next_stream(&state).await;
+        let third = take_next_stream(&state, /*headers*/ "", /*body*/ None).await;
         assert!(third.is_none());
     }
 
@@ -795,5 +901,85 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
         let (server, _) = start_streaming_sse_server(Vec::new()).await;
         let shutdown = timeout(Duration::from_millis(200), server.shutdown()).await;
         assert!(shutdown.is_ok());
+    }
+
+    #[tokio::test]
+    async fn rejected_observer_does_not_admit_request_or_completion() {
+        let (server, mut completions) = start_streaming_sse_server_with_request_observer(
+            vec![vec![StreamingSseChunk {
+                gate: None,
+                body: "event: forbidden\n\n".to_string(),
+            }]],
+            Arc::new(|_| Err(anyhow::anyhow!("injected capture failure"))),
+        )
+        .await;
+        let mut completion = completions.remove(/*index*/ 0);
+        let mut stream = connect(server.uri()).await;
+        send_request(
+            &mut stream,
+            "POST /v1/responses HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 4\r\n\r\nping",
+        )
+        .await;
+        let response = timeout(Duration::from_secs(/*secs*/ 5), read_to_end(&mut stream))
+            .await
+            .expect("capture rejection response");
+        let (headers, body) = split_response(&response);
+        assert_eq!(status_code(headers), 500);
+        assert_eq!(body, "request capture failed");
+        assert!(server.requests().await.is_empty());
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Empty)
+        ));
+        server.shutdown().await;
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Closed)
+        ));
+    }
+
+    #[tokio::test]
+    async fn observed_server_shutdown_joins_a_held_chunk() {
+        let (release, gate) = oneshot::channel();
+        let observed = Arc::new(std::sync::atomic::AtomicUsize::new(/*v*/ 0));
+        let observer_count = Arc::clone(&observed);
+        let (server, mut completions) = start_streaming_sse_server_with_request_observer(
+            vec![vec![StreamingSseChunk {
+                gate: Some(gate),
+                body: "event: held\n\n".to_string(),
+            }]],
+            Arc::new(move |body| {
+                assert_eq!(body, b"ping");
+                observer_count.fetch_add(/*val*/ 1, std::sync::atomic::Ordering::AcqRel);
+                Ok(())
+            }),
+        )
+        .await;
+        let mut completion = completions.remove(/*index*/ 0);
+        let mut stream = connect(server.uri()).await;
+        send_request(
+            &mut stream,
+            "POST /v1/responses HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 4\r\n\r\nping",
+        )
+        .await;
+        let (headers, remainder) = timeout(
+            Duration::from_secs(/*secs*/ 5),
+            read_until(&mut stream, "\r\n\r\n"),
+        )
+        .await
+        .expect("held stream headers");
+        let (headers, _) = split_response(&headers);
+        assert_eq!(status_code(headers), 200);
+        assert!(remainder.is_empty());
+        assert_eq!(observed.load(std::sync::atomic::Ordering::Acquire), 1);
+        assert_eq!(server.requests().await, vec![b"ping".to_vec()]);
+        timeout(Duration::from_millis(/*millis*/ 200), server.shutdown())
+            .await
+            .expect("owned connection shutdown");
+        assert!(release.send(()).is_err());
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Closed)
+        ));
     }
 }

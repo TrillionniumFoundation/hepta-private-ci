@@ -17,6 +17,7 @@ use codex_client::TransportError;
 use codex_http_client::HttpClientFactory;
 use codex_websocket_client::WebSocketConnection;
 use codex_websocket_client::WebSocketConnector;
+use codex_websocket_client::WebSocketTlsMode;
 use futures::SinkExt;
 use futures::StreamExt;
 use http::HeaderMap;
@@ -598,7 +599,12 @@ async fn connect_websocket(
         .map_err(|err| ApiError::Stream(format!("failed to build websocket request: {err}")))?;
     request.headers_mut().extend(headers);
 
-    let connector = WebSocketConnector::new(http_client_factory)
+    let tls_mode = if url.scheme() == "ws" {
+        WebSocketTlsMode::TungsteniteDefault
+    } else {
+        WebSocketTlsMode::ExplicitCodexTls
+    };
+    let connector = WebSocketConnector::new_with_tls_mode(http_client_factory, tls_mode)
         .map_err(|err| ApiError::Stream(format!("failed to configure websocket TLS: {err}")))?;
     let response = connector.connect(request, websocket_config()).await;
 
@@ -1003,6 +1009,10 @@ fn serialize_websocket_request(request: &ResponsesWsRequest<'_>) -> Result<Strin
     serde_json::to_string(request)
         .map_err(|err| ApiError::Stream(format!("failed to encode websocket request: {err}")))
 }
+
+#[cfg(test)]
+#[path = "responses_websocket_tls_tests.rs"]
+mod tls_tests;
 
 #[cfg(test)]
 mod tests {

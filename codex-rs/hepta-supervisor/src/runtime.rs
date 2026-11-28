@@ -87,6 +87,9 @@ pub(crate) struct MatrixCompanionSlot<P> {
     pub restart_after_exit: bool,
     pub restart_exhausted: bool,
     pub last_error: Option<String>,
+    // An instance-local acknowledgment of a fully published empty Matrix window.
+    // Never restored from disk and never used for configured Matrix budgets.
+    pub empty_restart_budget_release: Option<ReleaseId>,
 }
 
 impl<P> MatrixCompanionSlot<P> {
@@ -102,6 +105,7 @@ impl<P> MatrixCompanionSlot<P> {
             restart_after_exit: false,
             restart_exhausted: false,
             last_error: None,
+            empty_restart_budget_release: None,
         }
     }
 }

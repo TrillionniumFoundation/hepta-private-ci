@@ -5487,6 +5487,12 @@ async fn chatwidget_exec_and_status_layout_vt100_snapshot() {
         Vec::new(),
     );
 
+    // This is a layout snapshot of the initial busy frame, not a wall-clock assertion.
+    let Some(status) = chat.bottom_pane.status_widget() else {
+        panic!("expected the active status indicator");
+    };
+    status.freeze_next_render_at_start();
+
     let width: u16 = 80;
     let ui_height: u16 = chat.desired_height(width);
     let vt_height: u16 = 40;

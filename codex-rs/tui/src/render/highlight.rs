@@ -52,6 +52,13 @@ mod streaming;
 
 pub(crate) use streaming::StreamingCodeHighlighter;
 
+#[cfg(test)]
+#[path = "highlight_test_support.rs"]
+mod test_support;
+
+#[cfg(test)]
+pub(crate) use test_support::lock_theme_for_test;
+
 // -- Global singletons -------------------------------------------------------
 
 static SYNTAX_SET: OnceLock<SyntaxSet> = OnceLock::new();
@@ -249,6 +256,9 @@ fn theme_lock() -> &'static RwLock<Theme> {
 
 /// Swap the active syntax theme at runtime and invalidate rendered-content caches.
 pub(crate) fn set_syntax_theme(theme: Theme) {
+    #[cfg(test)]
+    let _theme_guard = lock_theme_for_test();
+
     let mut guard = match theme_lock().write() {
         Ok(guard) => guard,
         Err(poisoned) => poisoned.into_inner(),

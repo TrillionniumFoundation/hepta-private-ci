@@ -21,6 +21,7 @@ use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
+use serde_json::Value;
 use serde_json::json;
 use std::time::Duration;
 use test_case::test_case;
@@ -53,6 +54,18 @@ fn rollout_budget_message(remaining_tokens: i64) -> String {
 
 fn wire_request_contains(request: &wiremock::Request, text: &str) -> bool {
     std::str::from_utf8(&request.body).is_ok_and(|body| body.contains(text))
+}
+
+fn wire_request_input_matches(
+    request: &wiremock::Request,
+    predicate: impl FnOnce(&[Value]) -> bool,
+) -> bool {
+    serde_json::from_slice::<Value>(&request.body).is_ok_and(|body| {
+        body.get("input")
+            .and_then(Value::as_array)
+            .map(Vec::as_slice)
+            .is_some_and(predicate)
+    })
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -189,6 +202,15 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
     const FOLLOW_UP_PROMPT: &str = "report the shared budget";
     const SPAWN_CALL_ID: &str = "spawn-budget-worker";
 
+    // The parent's follow-up can also contain the child's FINAL_ANSWER agent message.
+    let is_child_input = |input: &[Value]| {
+        input.iter().any(|item| {
+            item.get("type").and_then(Value::as_str) == Some("agent_message")
+                && item.get("author").and_then(Value::as_str) == Some("/root")
+                && item.get("recipient").and_then(Value::as_str) == Some("/root/budget_worker")
+        })
+    };
+
     let server = start_mock_server().await;
     let spawn_args = json!({
         "message": CHILD_PROMPT,
@@ -212,7 +234,7 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
     .await;
     mount_sse_once_match(
         &server,
-        |request: &wiremock::Request| wire_request_contains(request, "\"type\":\"agent_message\""),
+        move |request: &wiremock::Request| wire_request_input_matches(request, is_child_input),
         sse(vec![
             ev_response_created("child-1"),
             ev_completed_with_tokens("child-1", /*total_tokens*/ 30),
@@ -221,9 +243,13 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
     .await;
     mount_sse_once_match(
         &server,
-        |request: &wiremock::Request| {
-            wire_request_contains(request, SPAWN_CALL_ID)
-                && !wire_request_contains(request, "\"type\":\"agent_message\"")
+        move |request: &wiremock::Request| {
+            wire_request_input_matches(request, |input| {
+                input.iter().any(|item| {
+                    item.get("type").and_then(Value::as_str) == Some("function_call_output")
+                        && item.get("call_id").and_then(Value::as_str) == Some(SPAWN_CALL_ID)
+                }) && !is_child_input(input)
+            })
         },
         sse(vec![
             ev_response_created("root-2"),

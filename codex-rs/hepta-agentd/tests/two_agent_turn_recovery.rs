@@ -41,15 +41,16 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use core_test_support::responses;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_first_headers_gate_and_request_observer;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_request_observer;
 use serde_json::Value;
+use tokio::sync::oneshot;
 use tokio::time::sleep;
 use tokio::time::timeout;
-use wiremock::Mock;
 use wiremock::Request;
 use wiremock::Respond;
 use wiremock::ResponseTemplate;
-use wiremock::matchers::method;
-use wiremock::matchers::path_regex;
 
 mod support;
 
@@ -458,21 +459,21 @@ async fn start_queued_if_pending(
 
 #[derive(Default)]
 struct SequenceState {
-    requests: Mutex<Vec<Request>>,
+    requests: Mutex<Vec<Vec<u8>>>,
     calls: AtomicUsize,
     capture_failed: AtomicBool,
 }
 
 impl SequenceState {
-    fn capture_request(&self, request: &Request) -> Result<()> {
+    fn record_request_body(&self, body: &[u8]) -> Result<usize> {
         self.requests
             .lock()
             .map_err(|_| {
                 self.capture_failed.store(/*val*/ true, Ordering::Release);
                 anyhow!("request capture lock poisoned")
             })?
-            .push(request.clone());
-        Ok(())
+            .push(body.to_vec());
+        Ok(self.calls.fetch_add(/*val*/ 1, Ordering::AcqRel))
     }
 
     fn request_count(&self) -> Result<usize> {
@@ -491,10 +492,10 @@ struct DelayedFirstSequence {
 
 impl Respond for DelayedFirstSequence {
     fn respond(&self, request: &Request) -> ResponseTemplate {
-        if self.state.capture_request(request).is_err() {
-            return ResponseTemplate::new(/*s*/ 500);
-        }
-        let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
+        let index = match self.state.record_request_body(&request.body) {
+            Ok(index) => index,
+            Err(_) => return ResponseTemplate::new(/*s*/ 500),
+        };
         let body = self
             .bodies
             .get(index)
@@ -522,10 +523,10 @@ struct GatedFirstSequence {
 
 impl Respond for GatedFirstSequence {
     fn respond(&self, request: &Request) -> ResponseTemplate {
-        if self.state.capture_request(request).is_err() {
-            return ResponseTemplate::new(/*s*/ 500);
-        }
-        let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
+        let index = match self.state.record_request_body(&request.body) {
+            Ok(index) => index,
+            Err(_) => return ResponseTemplate::new(/*s*/ 500),
+        };
         let body = self
             .bodies
             .get(index)
@@ -600,42 +601,90 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let agent_a = fleet.register(AGENT_A, "workspace-a")?;
     let agent_b = fleet.register(AGENT_B, "workspace-b")?;
 
-    let model_a = responses::start_mock_server().await;
-    let model_b = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model_a.uri()).write(agent_a.layout.home_root())?;
-    MockResponsesConfig::new(&model_b.uri()).write(agent_b.layout.home_root())?;
-
     let model_a_state = Arc::new(SequenceState::default());
-    Mock::given(method("POST"))
-        .and(path_regex(".*/responses$"))
-        .respond_with(DelayedFirstSequence {
-            state: Arc::clone(&model_a_state),
-            bodies: vec![
-                final_sse("agent-a-killed-response"),
-                final_sse("agent-a-recovered-response"),
-                final_sse("agent-a-queued-response"),
-            ],
-        })
-        .mount(&model_a)
-        .await;
     let model_b_state = Arc::new(SequenceState::default());
-    Mock::given(method("POST"))
-        .and(path_regex(".*/responses$"))
-        .respond_with(GatedFirstSequence {
-            state: Arc::clone(&model_b_state),
-            bodies: vec![
-                final_sse("agent-b-original-response"),
-                final_sse("agent-b-queued-response"),
-            ],
-        })
-        .mount(&model_b)
-        .await;
+    let (a_first_release, a_first_gate) = oneshot::channel();
+    let (b_first_release, b_first_gate) = oneshot::channel();
+    let capture_a = Arc::clone(&model_a_state);
+    // Even response headers can emit a provider event and revoke recovery.
+    // Keep A before that boundary; B still holds only its terminal SSE chunk.
+    let (model_a, _) = start_streaming_sse_server_with_first_headers_gate_and_request_observer(
+        vec![
+            vec![StreamingSseChunk {
+                gate: None,
+                body: final_sse("agent-a-killed-response"),
+            }],
+            vec![StreamingSseChunk {
+                gate: None,
+                body: final_sse("agent-a-recovered-response"),
+            }],
+            vec![StreamingSseChunk {
+                gate: None,
+                body: final_sse("agent-a-queued-response"),
+            }],
+        ],
+        a_first_gate,
+        Arc::new(move |body| capture_a.record_request_body(body).map(|_| ())),
+    )
+    .await;
+    let capture_b = Arc::clone(&model_b_state);
+    let (model_b, _) = start_streaming_sse_server_with_request_observer(
+        vec![
+            gated_sse("agent-b-original-response", b_first_gate),
+            vec![StreamingSseChunk {
+                gate: None,
+                body: final_sse("agent-b-queued-response"),
+            }],
+        ],
+        Arc::new(move |body| capture_b.record_request_body(body).map(|_| ())),
+    )
+    .await;
+    // Explicitly join this fixture's connection tasks on both success and error.
+    let result = async {
+        MockResponsesConfig::new(model_a.uri()).write(agent_a.layout.home_root())?;
+        MockResponsesConfig::new(model_b.uri()).write(agent_b.layout.home_root())?;
+        run_recovery(
+            &mut fleet,
+            RecoveryScenario {
+                agent_a,
+                agent_b,
+                model_a_state,
+                model_b_state,
+                a_first_release,
+                b_first_release,
+            },
+        )
+        .await
+    }
+    .await;
+    model_a.shutdown().await;
+    model_b.shutdown().await;
+    result
+}
 
+struct RecoveryScenario {
+    agent_a: AgentFixture,
+    agent_b: AgentFixture,
+    model_a_state: Arc<SequenceState>,
+    model_b_state: Arc<SequenceState>,
+    a_first_release: oneshot::Sender<()>,
+    b_first_release: oneshot::Sender<()>,
+}
+
+async fn run_recovery(fleet: &mut FleetHarness, scenario: RecoveryScenario) -> Result<()> {
+    let RecoveryScenario {
+        agent_a,
+        agent_b,
+        model_a_state,
+        model_b_state,
+        a_first_release,
+        b_first_release,
+    } = scenario;
     fleet.start(&agent_a)?;
     fleet.start(&agent_b)?;
     let (control_a, initial_health_a) = fleet.wait_ready(&agent_a, 1).await?;
     let (control_b, initial_health_b) = fleet.wait_ready(&agent_b, 1).await?;
-    let initial_generation_b = generation(&fleet, &agent_b.agent_id)?;
+    let initial_generation_b = generation(fleet, &agent_b.agent_id)?;
 
     let mut client_a = QualificationClient::connect(&agent_a, &control_a).await?;
     let mut client_b = QualificationClient::connect(&agent_b, &control_b).await?;
@@ -665,15 +714,15 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         "durable queue changed before Agent A was killed"
     );
 
-    let cross_agent_resume = client_b
-        .resume(&thread_a.id)
-        .await
-        .expect_err("Agent B must not resume Agent A's private thread");
+    let cross_agent_resume = match client_b.resume(&thread_a.id).await {
+        Err(error) => error,
+        Ok(value) => panic!("Agent B must not resume Agent A's private thread: {value:?}"),
+    };
     assert_cross_agent_thread_not_found(&cross_agent_resume, "resume")?;
-    let cross_agent_recover = client_b
-        .recover(&thread_a.id, &original_turn_id)
-        .await
-        .expect_err("Agent B must not recover Agent A's private turn");
+    let cross_agent_recover = match client_b.recover(&thread_a.id, &original_turn_id).await {
+        Err(error) => error,
+        Ok(value) => panic!("Agent B must not recover Agent A's private turn: {value:?}"),
+    };
     assert_cross_agent_thread_not_found(&cross_agent_recover, "recovery")?;
     ensure!(model_a_state.request_count()? == 1);
     ensure!(model_b_state.request_count()? == 0);
@@ -719,14 +768,16 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     assert_user_item_once(&b_before_failure.thread.turns, B_CLIENT_ID, B_TEXT)?;
 
     fleet.supervisor.kill(&agent_a.agent_id)?;
-    wait_inactive(&mut fleet, &agent_a.agent_id).await?;
+    wait_inactive(fleet, &agent_a.agent_id).await?;
+    // The killed process never receives a fabricated terminal provider chunk.
+    drop(a_first_release);
     drop(client_a);
     drop(queue_a);
 
     let b_during_failure = control_b.health().await?;
     ensure!(b_during_failure.ready);
     ensure!(b_during_failure.process_id == initial_health_b.process_id);
-    ensure!(generation(&fleet, &agent_b.agent_id)? == initial_generation_b);
+    ensure!(generation(fleet, &agent_b.agent_id)? == initial_generation_b);
     ensure!(queue_b.list(&thread_b.id).await?.data == vec![b_queued.clone()]);
     let b_during_failure = client_b.read(&thread_b.id).await?;
     assert_turn_once_with_status(
@@ -748,7 +799,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let b_after_restart = control_b.health().await?;
     ensure!(b_after_restart.ready);
     ensure!(b_after_restart.process_id == initial_health_b.process_id);
-    ensure!(generation(&fleet, &agent_b.agent_id)? == initial_generation_b);
+    ensure!(generation(fleet, &agent_b.agent_id)? == initial_generation_b);
     ensure!(queue_b.list(&thread_b.id).await?.data == vec![b_queued.clone()]);
     let b_after_restart = client_b.read(&thread_b.id).await?;
     assert_turn_once_with_status(
@@ -832,7 +883,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let b_before_release = control_b.health().await?;
     ensure!(b_before_release.ready);
     ensure!(b_before_release.process_id == initial_health_b.process_id);
-    ensure!(generation(&fleet, &agent_b.agent_id)? == initial_generation_b);
+    ensure!(generation(fleet, &agent_b.agent_id)? == initial_generation_b);
     ensure!(queue_b.list(&thread_b.id).await?.data == vec![b_queued.clone()]);
     let b_before_release = client_b.read(&thread_b.id).await?;
     assert_turn_once_with_status(
@@ -843,6 +894,9 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     assert_user_item_once(&b_before_release.thread.turns, B_CLIENT_ID, B_TEXT)?;
     ensure!(model_b_state.request_count()? == 1);
 
+    b_first_release
+        .send(())
+        .map_err(|_| anyhow!("Agent B response gate closed before release"))?;
     let b_turn = b_turn_task
         .await
         .context("gated Agent B turn task panicked")??;
@@ -860,7 +914,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let final_health_b = control_b.health().await?;
     ensure!(final_health_b.ready);
     ensure!(final_health_b.process_id == initial_health_b.process_id);
-    ensure!(generation(&fleet, &agent_b.agent_id)? == initial_generation_b);
+    ensure!(generation(fleet, &agent_b.agent_id)? == initial_generation_b);
     ensure!(queue_b.list(&thread_b.id).await?.data.is_empty());
     let persisted_b = client_b.read(&thread_b.id).await?;
     assert_turn_once_with_status(&persisted_b.thread.turns, &b_turn_id, TurnStatus::Completed)?;
@@ -882,7 +936,8 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     ensure!(requests_a.len() == 3);
     let bodies_a = requests_a
         .iter()
-        .map(Request::body_json::<Value>)
+        .map(Vec::as_slice)
+        .map(serde_json::from_slice::<Value>)
         .collect::<Result<Vec<_>, _>>()?;
     ensure!(
         bodies_a
@@ -912,7 +967,8 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     ensure!(requests_b.len() == 2);
     let bodies_b = requests_b
         .iter()
-        .map(Request::body_json::<Value>)
+        .map(Vec::as_slice)
+        .map(serde_json::from_slice::<Value>)
         .collect::<Result<Vec<_>, _>>()?;
     ensure!(request_user_text_count(&bodies_b[0], B_TEXT) == 1);
     ensure!(
@@ -952,6 +1008,22 @@ fn text_input(text: &str) -> UserInput {
         text: text.to_string(),
         text_elements: Vec::new(),
     }
+}
+
+fn gated_sse(response_id: &str, gate: oneshot::Receiver<()>) -> Vec<StreamingSseChunk> {
+    vec![
+        StreamingSseChunk {
+            gate: None,
+            body: responses::sse(vec![responses::ev_response_created(response_id)]),
+        },
+        StreamingSseChunk {
+            gate: Some(gate),
+            body: responses::sse(vec![
+                responses::ev_assistant_message(&format!("message-{response_id}"), "done"),
+                responses::ev_completed(response_id),
+            ]),
+        },
+    ]
 }
 
 fn final_sse(response_id: &str) -> String {

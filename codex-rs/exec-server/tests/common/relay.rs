@@ -3,10 +3,16 @@ mod relay_proto;
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
+use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
+use bytes::Bytes;
 use codex_api::AuthProvider;
 use codex_exec_server::ExecServerClient;
 use codex_exec_server::NoiseChannelIdentity;
@@ -64,9 +70,122 @@ pub(crate) struct RelayTest {
     listener: TcpListener,
 }
 
+// One relay task writes these fixed scalars. Debug reads are intentionally
+// non-atomic observations; a completed send is not a peer acknowledgement.
+pub(crate) struct RelayProgress {
+    started: Instant,
+    environment_received: AtomicU64,
+    environment_forwarded: AtomicU64,
+    harness_received: AtomicU64,
+    harness_forwarded: AtomicU64,
+    forward_wait: AtomicU8,
+    last_forward_ms: AtomicU64,
+    has_forwarded: AtomicBool,
+}
+
+impl Default for RelayProgress {
+    fn default() -> Self {
+        Self {
+            started: Instant::now(),
+            environment_received: AtomicU64::default(),
+            environment_forwarded: AtomicU64::default(),
+            harness_received: AtomicU64::default(),
+            harness_forwarded: AtomicU64::default(),
+            forward_wait: AtomicU8::default(),
+            last_forward_ms: AtomicU64::default(),
+            has_forwarded: AtomicBool::default(),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+#[repr(u8)]
+enum RelayDirection {
+    EnvironmentToHarness = 1,
+    HarnessToEnvironment = 2,
+}
+
+struct RelayForwardWait<'a>(&'a AtomicU8);
+
+impl Drop for RelayForwardWait<'_> {
+    fn drop(&mut self) {
+        self.0.store(/*val*/ 0, Ordering::Relaxed);
+    }
+}
+
+impl RelayProgress {
+    fn received(&self, direction: RelayDirection) {
+        let counter = match direction {
+            RelayDirection::EnvironmentToHarness => &self.environment_received,
+            RelayDirection::HarnessToEnvironment => &self.harness_received,
+        };
+        let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |count| {
+            Some(count.saturating_add(/*rhs*/ 1))
+        });
+    }
+
+    fn forwarding(&self, direction: RelayDirection) -> RelayForwardWait<'_> {
+        self.forward_wait.store(direction as u8, Ordering::Relaxed);
+        RelayForwardWait(&self.forward_wait)
+    }
+
+    fn forwarded(&self, direction: RelayDirection) {
+        let counter = match direction {
+            RelayDirection::EnvironmentToHarness => &self.environment_forwarded,
+            RelayDirection::HarnessToEnvironment => &self.harness_forwarded,
+        };
+        let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |count| {
+            Some(count.saturating_add(/*rhs*/ 1))
+        });
+        self.last_forward_ms
+            .store(self.elapsed_ms(), Ordering::Relaxed);
+        self.has_forwarded.store(/*val*/ true, Ordering::Release);
+    }
+
+    fn elapsed_ms(&self) -> u64 {
+        u64::try_from(self.started.elapsed().as_millis()).unwrap_or(u64::MAX)
+    }
+}
+
+impl std::fmt::Debug for RelayProgress {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let forward_wait = match self.forward_wait.load(Ordering::Relaxed) {
+            0 => "none",
+            1 => "environment_to_harness",
+            2 => "harness_to_environment",
+            _ => "unknown",
+        };
+        let last_forward_age_ms = self.has_forwarded.load(Ordering::Acquire).then(|| {
+            self.elapsed_ms()
+                .saturating_sub(self.last_forward_ms.load(Ordering::Relaxed))
+        });
+        f.debug_struct("RelayProgress")
+            .field(
+                "environment_received",
+                &self.environment_received.load(Ordering::Relaxed),
+            )
+            .field(
+                "environment_forwarded",
+                &self.environment_forwarded.load(Ordering::Relaxed),
+            )
+            .field(
+                "harness_received",
+                &self.harness_received.load(Ordering::Relaxed),
+            )
+            .field(
+                "harness_forwarded",
+                &self.harness_forwarded.load(Ordering::Relaxed),
+            )
+            .field("forward_wait", &forward_wait)
+            .field("last_forward_age_ms", &last_forward_age_ms)
+            .finish()
+    }
+}
+
 pub(crate) struct RelayConnection {
     pub(crate) client: ExecServerClient,
-    captured_frames: Arc<Mutex<Vec<Vec<u8>>>>,
+    captured_frames: Arc<Mutex<Vec<Bytes>>>,
+    progress: Arc<RelayProgress>,
     relay_task: AbortOnDropHandle<Result<()>>,
 }
 
@@ -79,6 +198,7 @@ impl std::fmt::Debug for RelayConnection {
             "relay_task_finished",
             &self.relay_task.abort_handle().is_finished(),
         );
+        state.field("progress", &self.progress);
         match self.captured_frames.try_lock() {
             Ok(frames) => {
                 let sampled_tail_frames = frames.len().min(MAX_SAMPLED_FRAMES);
@@ -86,7 +206,7 @@ impl std::fmt::Debug for RelayConnection {
                     .iter()
                     .rev()
                     .take(MAX_SAMPLED_FRAMES)
-                    .map(Vec::len)
+                    .map(Bytes::len)
                     .fold(/*init*/ 0usize, usize::saturating_add);
                 state
                     .field("capture", &"ready")
@@ -171,10 +291,12 @@ impl RelayTest {
             );
         let harness_websocket = accept_websocket(&self.listener, "harness").await?;
         let captured_frames = Arc::new(Mutex::new(Vec::new()));
+        let progress = Arc::new(RelayProgress::default());
         let relay_task = AbortOnDropHandle::new(tokio::spawn(proxy_relay_frames(
             environment_websocket,
             harness_websocket,
             Arc::clone(&captured_frames),
+            Arc::clone(&progress),
         )));
         let client = timeout(TEST_TIMEOUT, client_task)
             .await
@@ -182,6 +304,7 @@ impl RelayTest {
         Ok(RelayConnection {
             client,
             captured_frames,
+            progress,
             relay_task,
         })
     }
@@ -236,7 +359,8 @@ pub(crate) async fn registered_executor_public_key(
 pub(crate) async fn proxy_relay_frames(
     mut environment: WebSocketStream<TcpStream>,
     mut harness: WebSocketStream<TcpStream>,
-    captured_frames: Arc<Mutex<Vec<Vec<u8>>>>,
+    captured_frames: Arc<Mutex<Vec<Bytes>>>,
+    progress: Arc<RelayProgress>,
 ) -> Result<()> {
     loop {
         tokio::select! {
@@ -245,38 +369,49 @@ pub(crate) async fn proxy_relay_frames(
                     break;
                 };
                 let message = message?;
+                let direction = RelayDirection::EnvironmentToHarness;
+                progress.received(direction);
                 capture_binary_frame(&captured_frames, &message);
+                let forwarding = progress.forwarding(direction);
                 harness.send(message).await?;
+                progress.forwarded(direction);
+                drop(forwarding);
             }
             message = harness.next() => {
                 let Some(message) = message else {
                     break;
                 };
                 let message = message?;
+                let direction = RelayDirection::HarnessToEnvironment;
+                progress.received(direction);
                 capture_binary_frame(&captured_frames, &message);
+                let forwarding = progress.forwarding(direction);
                 environment.send(message).await?;
+                progress.forwarded(direction);
+                drop(forwarding);
             }
         }
     }
     Ok(())
 }
 
-fn capture_binary_frame(captured_frames: &Mutex<Vec<Vec<u8>>>, message: &Message) {
+fn capture_binary_frame(captured_frames: &Mutex<Vec<Bytes>>, message: &Message) {
     if let Message::Binary(bytes) = message {
+        // Retain each complete immutable frame without copying its payload.
         captured_frames
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .push(bytes.to_vec());
+            .push(bytes.clone());
     }
 }
 
-pub(crate) fn assert_relay_data_is_encrypted(captured_frames: &Mutex<Vec<Vec<u8>>>) -> Result<()> {
+pub(crate) fn assert_relay_data_is_encrypted(captured_frames: &Mutex<Vec<Bytes>>) -> Result<()> {
     let captured_frames = captured_frames
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut data_frames = 0;
     for encoded in captured_frames.iter() {
-        let frame = RelayMessageFrame::decode(encoded.as_slice())?;
+        let frame = RelayMessageFrame::decode(encoded.as_ref())?;
         let Some(relay_message_frame::Body::Data(data)) = frame.body else {
             continue;
         };

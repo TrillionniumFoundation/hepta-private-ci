@@ -18,8 +18,12 @@ use codex_test_binary_support::TestBinaryDispatchGuard;
 use codex_test_binary_support::TestBinaryDispatchMode;
 use codex_test_binary_support::configure_test_binary_dispatch;
 use ctor::ctor;
+use tracing_subscriber::layer::SubscriberExt as _;
 
+mod capability_trace;
 pub(crate) mod exec_server;
+
+pub(crate) const CAPABILITY_TRACE_ENV: &str = "CODEX_EXEC_SERVER_TEST_CAPABILITY_TRACE";
 
 pub(crate) const DELAYED_OUTPUT_AFTER_EXIT_PARENT_ARG: &str =
     "--codex-test-delayed-output-after-exit-parent";
@@ -149,6 +153,18 @@ fn maybe_run_exec_server_from_test_binary(guard: Option<&TestBinaryDispatchGuard
     };
     if command != "exec-server" {
         return;
+    }
+
+    if env::var_os(CAPABILITY_TRACE_ENV).as_deref() == Some(std::ffi::OsStr::new("1")) {
+        let subscriber =
+            tracing_subscriber::registry().with(capability_trace::DiscoveryTrace::default());
+        let status: &[u8] = if tracing::subscriber::set_global_default(subscriber).is_ok() {
+            b"capability_trace setup=enabled\n"
+        } else {
+            b"capability_trace setup=unavailable\n"
+        };
+        // Keep the existing inherited stderr and the original child outcome.
+        let _ = std::io::stderr().write(status);
     }
 
     let Some(flag) = args.next() else {

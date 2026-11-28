@@ -301,11 +301,11 @@ impl FailDeleteOnceQueueStore {
         // requested window width; the original short-lease override follows.
         let duration_ms = lease_expires_at_ms
             .checked_sub(now_ms)
-            .expect("test dispatch window duration must fit");
+            .unwrap_or_else(|| panic!("test dispatch window duration must fit"));
         let now_ms = clock.load(Ordering::SeqCst);
         let lease_expires_at_ms = now_ms
             .checked_add(duration_ms)
-            .expect("test dispatch window timestamp must fit");
+            .unwrap_or_else(|| panic!("test dispatch window timestamp must fit"));
         (now_ms, lease_expires_at_ms)
     }
 
@@ -1125,11 +1125,21 @@ async fn completion_panic_retains_exact_authority_in_settlement_guardian() -> an
         "test-provider".to_string(),
     )
     .await?;
-    let owner_store = Arc::new(FailDeleteOnceQueueStore::panic_then_block_completion(
-        LocalQueueStore::new(Arc::clone(&primary_runtime)),
-    ));
+    // Keep the lease live until the completion panic reaches its guardian.
+    let dispatch_clock = Arc::new(AtomicI64::new(/*v*/ 1_000));
+    let owner_store = Arc::new(
+        FailDeleteOnceQueueStore::panic_then_block_completion(LocalQueueStore::new(Arc::clone(
+            &primary_runtime,
+        )))
+        .with_dispatch_clock(Arc::clone(&dispatch_clock)),
+    );
     let owner_queue: Arc<dyn QueueStore> = owner_store.clone();
-    let competing_queue: Arc<dyn QueueStore> = Arc::new(LocalQueueStore::new(competing_runtime));
+    let competing_store = FailDeleteOnceQueueStore {
+        fail_next_delete: AtomicBool::new(/*v*/ false),
+        ..FailDeleteOnceQueueStore::new(LocalQueueStore::new(competing_runtime))
+    }
+    .with_dispatch_clock(Arc::clone(&dispatch_clock));
+    let competing_queue: Arc<dyn QueueStore> = Arc::new(competing_store);
     let owner = QueuedItemService::new(
         owner_queue,
         Arc::downgrade(&test.thread_manager),
@@ -1178,6 +1188,7 @@ async fn completion_panic_retains_exact_authority_in_settlement_guardian() -> an
     })
     .await?;
     tokio::time::sleep(Duration::from_millis(400)).await;
+    dispatch_clock.fetch_add(/*val*/ 400, Ordering::SeqCst);
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
         .await

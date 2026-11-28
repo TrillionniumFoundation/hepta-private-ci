@@ -166,10 +166,24 @@ pub(crate) async fn execute_handlers_with_metadata<T: 'static>(
             let input_json = input_json.clone();
             let cwd = cwd.to_path_buf();
             let metadata = metadata.cloned();
+            let completion_observer = engine
+                .command_runtime
+                .executor_completion_observer
+                .as_ref()
+                .map(|observer| (observer.clone(), turn_id.clone()));
             engine.command_runtime.schedule_async_task(async move {
                 let result =
                     execute_handler(&task_engine, &handler, &input_json, &cwd, metadata.as_ref())
                         .await;
+                if let Some((observer, turn_id)) = completion_observer {
+                    crate::test_support::record_executor_completion(
+                        &observer,
+                        &handler,
+                        &input_json,
+                        turn_id,
+                        &result,
+                    );
+                }
                 if let Some(error) = result.error {
                     tracing::warn!(
                         source_path = %handler.source_path,

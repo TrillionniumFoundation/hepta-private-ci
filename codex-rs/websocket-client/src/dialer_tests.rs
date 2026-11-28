@@ -676,3 +676,6 @@ fn test_tls_configs() -> (Arc<ClientConfig>, TlsAcceptor, CertificateDer<'static
         certificate,
     )
 }
+
+#[path = "dialer_lazy_ca_tests.rs"]
+mod lazy_ca_tests;

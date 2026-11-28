@@ -50,6 +50,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) {
         let Some(release) = slot.active_release.clone() else {
+            slot.matrix.empty_restart_budget_release = None;
             slot.matrix.configured = false;
             reset_matrix_restart_budget(slot);
             return;
@@ -59,9 +60,17 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
             reset_matrix_restart_budget(slot);
-            let _ = self.persist_restart_budget(agent_id, slot);
+            if slot.matrix.empty_restart_budget_release.as_ref() != Some(release.release_id()) {
+                // Invalidate before every attempt, including failures after rename.
+                // Only the complete durable publication acknowledges this release.
+                slot.matrix.empty_restart_budget_release = None;
+                if self.persist_restart_budget(agent_id, slot).is_ok() {
+                    slot.matrix.empty_restart_budget_release = Some(release.release_id().clone());
+                }
+            }
             return;
         };
+        slot.matrix.empty_restart_budget_release = None;
         slot.matrix.configured = true;
         if slot.matrix.runtime.is_some() || slot.matrix.restart_exhausted {
             return;

@@ -17,6 +17,7 @@ use core_test_support::test_codex::test_codex;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
+use std::time::Duration;
 
 const TURN_STATE_HEADER: &str = "x-codex-turn-state";
 
@@ -132,6 +133,13 @@ async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<
     let mut builder = test_codex();
     let test = builder.build_with_websocket_server(&server).await?;
     // Phase 1: read-only startup prewarm does not generate a response.
+    // Capture the initial permissions before submit_turn changes them.
+    assert!(
+        server
+            .wait_for_handshakes(/*expected*/ 1, Duration::from_secs(/*secs*/ 5))
+            .await,
+        "startup prewarm should connect before changing permissions"
+    );
     // Phase 2: the full-access turn uses its own connection and mints turn state.
     test.submit_turn("run the echo command").await?;
     // Phase 3: the follow-up replays that state on the same physical connection.

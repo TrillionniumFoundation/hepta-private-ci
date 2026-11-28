@@ -234,6 +234,7 @@ async fn pending_noise_environment_connects_and_reconnects_after_ready_report() 
         environment_websocket,
         harness_websocket,
         Arc::new(Mutex::new(Vec::new())),
+        Arc::default(),
     ));
     let initial_info = timeout(TEST_TIMEOUT, initial_info)
         .await
@@ -276,6 +277,7 @@ async fn pending_noise_environment_connects_and_reconnects_after_ready_report() 
         first_reconnected_websocket,
         second_reconnected_websocket,
         Arc::new(Mutex::new(Vec::new())),
+        Arc::default(),
     ));
     assert_eq!(
         next_connection_state(&mut connection_state).await?,

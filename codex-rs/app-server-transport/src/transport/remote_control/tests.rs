@@ -1152,7 +1152,7 @@ async fn remote_control_handle_enable_disable_stops_and_restarts_connections() {
     let (transport_event_tx, _transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
     let shutdown_token = CancellationToken::new();
-    let (remote_task, remote_handle) = start_remote_control(
+    let startup = start_remote_control(
         RemoteControlStartConfig {
             remote_control_url,
             installation_id: TEST_INSTALLATION_ID.to_string(),
@@ -1164,9 +1164,16 @@ async fn remote_control_handle_enable_disable_stops_and_restarts_connections() {
         shutdown_token.clone(),
         /*app_server_client_name_rx*/ None,
         RemoteControlStartupMode::EnabledEphemeral,
+    );
+    // Keep hardware discovery outside this connection lifecycle fixture.
+    let host_device_fixture = host_device::fixture::HostDeviceKindFixture::from_profile(
+        br#"{"SPHardwareDataType":[{"machine_name":"Mac mini"}]}"#,
     )
-    .await
-    .expect("remote control should start");
+    .expect("fixed host device profile should parse");
+    let (remote_task, remote_handle) = host_device_fixture
+        .scope(startup)
+        .await
+        .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
     let enroll_request = accept_http_request(&listener).await;
@@ -1516,8 +1523,15 @@ async fn remote_control_http_mode_enrolls_before_connecting() {
     )
     .await;
 
-    let (handshake_request, mut websocket) =
-        accept_remote_control_backend_connection(&listener).await;
+    let (handshake_request, mut websocket) = accept_remote_control_backend_connection_observed(
+        &listener,
+        Some(RemoteControlAcceptDiagnostic {
+            phase: RemoteControlAcceptPhase::EnrollmentWebsocket,
+            status_rx: &status_rx,
+            remote_task: &remote_task,
+        }),
+    )
+    .await;
     expect_remote_control_status(
         &mut status_rx,
         /*expected_status*/ None,
@@ -2540,24 +2554,37 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     let (transport_event_tx, _transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
     let shutdown_token = CancellationToken::new();
-    let (remote_task, remote_handle) = start_remote_control(
-        RemoteControlStartConfig {
-            remote_control_url,
-            installation_id: TEST_INSTALLATION_ID.to_string(),
-            policy: RemoteControlPolicy::Allowed,
-        },
-        Some(state_db.clone()),
-        remote_control_auth_manager_with_home(&codex_home),
-        transport_event_tx,
-        shutdown_token.clone(),
-        /*app_server_client_name_rx*/ None,
-        RemoteControlStartupMode::EnabledEphemeral,
+    let host_device_fixture = host_device::fixture::HostDeviceKindFixture::from_profile(
+        br#"{"SPHardwareDataType":[{"machine_name":"Mac mini"}]}"#,
     )
-    .await
-    .expect("remote control should start");
+    .expect("fixed host device profile should parse");
+    let (remote_task, remote_handle) = host_device_fixture
+        .scope(start_remote_control(
+            RemoteControlStartConfig {
+                remote_control_url,
+                installation_id: TEST_INSTALLATION_ID.to_string(),
+                policy: RemoteControlPolicy::Allowed,
+            },
+            Some(state_db.clone()),
+            remote_control_auth_manager_with_home(&codex_home),
+            transport_event_tx,
+            shutdown_token.clone(),
+            /*app_server_client_name_rx*/ None,
+            RemoteControlStartupMode::EnabledEphemeral,
+        ))
+        .await
+        .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
-    let refresh_request = accept_http_request(&listener).await;
+    let refresh_request = accept_http_request_observed(
+        &listener,
+        Some(RemoteControlAcceptDiagnostic {
+            phase: RemoteControlAcceptPhase::RefreshHttp,
+            status_rx: &status_rx,
+            remote_task: &remote_task,
+        }),
+    )
+    .await;
     assert_eq!(
         refresh_request.request_line,
         "POST /backend-api/wham/remote/control/server/refresh HTTP/1.1"
@@ -2572,7 +2599,15 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     )
     .await;
 
-    let websocket_request = accept_http_request(&listener).await;
+    let websocket_request = accept_http_request_observed(
+        &listener,
+        Some(RemoteControlAcceptDiagnostic {
+            phase: RemoteControlAcceptPhase::InitialWebsocketHttp,
+            status_rx: &status_rx,
+            remote_task: &remote_task,
+        }),
+    )
+    .await;
     assert_eq!(
         websocket_request.request_line,
         "GET /backend-api/wham/remote/control/server HTTP/1.1"
@@ -2580,6 +2615,13 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     assert_eq!(
         websocket_request.headers.get("x-codex-server-id"),
         Some(&stale_enrollment.server_id)
+    );
+    assert_eq!(
+        websocket_request
+            .headers
+            .get(host_device::REMOTE_CONTROL_HOST_DEVICE_KIND_HEADER)
+            .map(String::as_str),
+        Some("mac_mini")
     );
     assert_eq!(
         websocket_request.headers.get("authorization"),
@@ -2617,6 +2659,13 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     assert_eq!(
         handshake_request.headers.get("x-codex-server-id"),
         Some(&stale_enrollment.server_id)
+    );
+    assert_eq!(
+        handshake_request
+            .headers
+            .get(host_device::REMOTE_CONTROL_HOST_DEVICE_KIND_HEADER)
+            .map(String::as_str),
+        Some("mac_mini")
     );
     assert_eq!(
         handshake_request.headers.get("authorization"),
@@ -2688,9 +2737,59 @@ async fn accept_remote_control_connection(listener: &TcpListener) -> WebSocketSt
         .expect("websocket handshake should succeed")
 }
 
-async fn accept_http_request(listener: &TcpListener) -> CapturedHttpRequest {
-    let (stream, _) = timeout(Duration::from_secs(5), listener.accept())
-        .await
+#[derive(Clone, Copy, Debug)]
+enum RemoteControlAcceptPhase {
+    EnrollmentWebsocket,
+    RefreshHttp,
+    InitialWebsocketHttp,
+}
+
+struct RemoteControlAcceptDiagnostic<'a> {
+    phase: RemoteControlAcceptPhase,
+    status_rx: &'a watch::Receiver<RemoteControlStatusChangedNotification>,
+    remote_task: &'a tokio::task::JoinHandle<()>,
+}
+
+impl RemoteControlAcceptDiagnostic<'_> {
+    fn record_timeout(&self) {
+        use std::io::Write;
+
+        let (status, environment_id_present) = {
+            let status = self.status_rx.borrow();
+            (status.status, status.environment_id.is_some())
+        };
+        let phase = self.phase;
+        let task_finished = self.remote_task.is_finished();
+        let mut line = [0_u8; 256];
+        let capacity = line.len();
+        let mut remaining = &mut line[..];
+        let _ = writeln!(
+            remaining,
+            "remote_control_accept_timeout phase={phase:?} status={status:?} environment_id_present={environment_id_present} task_finished={task_finished}"
+        );
+        let written = capacity - remaining.len();
+        // A short or failed diagnostic write must preserve the original timeout failure.
+        let _ = std::io::stderr().write(&line[..written]);
+    }
+}
+
+fn accept_http_request(
+    listener: &TcpListener,
+) -> impl std::future::Future<Output = CapturedHttpRequest> + '_ {
+    accept_http_request_observed(listener, /*diagnostic*/ None)
+}
+
+async fn accept_http_request_observed(
+    listener: &TcpListener,
+    diagnostic: Option<RemoteControlAcceptDiagnostic<'_>>,
+) -> CapturedHttpRequest {
+    let accept_result = timeout(Duration::from_secs(5), listener.accept()).await;
+    if accept_result.is_err()
+        && let Some(diagnostic) = diagnostic
+    {
+        diagnostic.record_timeout();
+    }
+    let (stream, _) = accept_result
         .expect("HTTP request should arrive in time")
         .expect("listener accept should succeed");
     let mut reader = BufReader::new(stream);
@@ -2773,11 +2872,24 @@ async fn respond_with_status_and_headers(
     stream.flush().await.expect("response should flush");
 }
 
-async fn accept_remote_control_backend_connection(
+fn accept_remote_control_backend_connection(
     listener: &TcpListener,
+) -> impl std::future::Future<Output = (CapturedWebSocketRequest, WebSocketStream<TcpStream>)> + '_
+{
+    accept_remote_control_backend_connection_observed(listener, /*diagnostic*/ None)
+}
+
+async fn accept_remote_control_backend_connection_observed(
+    listener: &TcpListener,
+    diagnostic: Option<RemoteControlAcceptDiagnostic<'_>>,
 ) -> (CapturedWebSocketRequest, WebSocketStream<TcpStream>) {
-    let (stream, _) = timeout(Duration::from_secs(5), listener.accept())
-        .await
+    let accept_result = timeout(Duration::from_secs(5), listener.accept()).await;
+    if accept_result.is_err()
+        && let Some(diagnostic) = diagnostic
+    {
+        diagnostic.record_timeout();
+    }
+    let (stream, _) = accept_result
         .expect("websocket request should arrive in time")
         .expect("listener accept should succeed");
     let captured_request = Arc::new(std::sync::Mutex::new(None::<CapturedWebSocketRequest>));

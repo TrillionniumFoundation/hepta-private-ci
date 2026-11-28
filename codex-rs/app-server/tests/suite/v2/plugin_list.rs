@@ -1,3 +1,6 @@
+#[path = "plugin_catalog_gate.rs"]
+mod catalog_gate;
+
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use std::sync::OnceLock;
@@ -2069,9 +2072,10 @@ async fn plugin_list_includes_remote_marketplaces_when_remote_plugin_enabled() -
 async fn plugin_list_honors_global_remote_catalog_cache_ttl() -> Result<()> {
     let codex_home = TempDir::new()?;
     let server = MockServer::start().await;
+    let catalog_gate = catalog_gate::CatalogGate::start(&server).await?;
     write_remote_plugin_catalog_config(
         codex_home.path(),
-        &format!("{}/backend-api/", server.uri()),
+        &format!("{}/backend-api/", catalog_gate.uri()),
     )?;
     write_chatgpt_auth(
         codex_home.path(),
@@ -2164,7 +2168,8 @@ async fn plugin_list_honors_global_remote_catalog_cache_ttl() -> Result<()> {
         codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(4),
     )?;
     server.reset().await;
-    mount_delayed_remote_plugin_list(&server, "GLOBAL", &refreshed_body).await;
+    let mut held_refresh = catalog_gate.hold_next_global_catalog();
+    mount_remote_plugin_list(&server, "GLOBAL", &refreshed_body).await;
     mount_remote_installed_plugins(&server, "GLOBAL", empty_remote_installed_plugins_body()).await;
     mount_remote_installed_plugins(&server, "WORKSPACE", empty_remote_installed_plugins_body())
         .await;
@@ -2194,6 +2199,9 @@ async fn plugin_list_honors_global_remote_catalog_cache_ttl() -> Result<()> {
         "linear@openai-curated-remote"
     );
 
+    // The refresh body stays withheld until both stale-cache reads complete.
+    timeout(DEFAULT_TIMEOUT, held_refresh.wait_until_held()).await??;
+
     let request_id = mcp
         .send_plugin_list_request(PluginListParams {
             cwds: None,
@@ -2219,11 +2227,13 @@ async fn plugin_list_honors_global_remote_catalog_cache_ttl() -> Result<()> {
     );
 
     wait_for_remote_plugin_request_count(&server, "/ps/plugins/list", /*expected_count*/ 1).await?;
+    held_refresh.release()?;
     wait_for_cached_remote_catalog_plugin_ids(codex_home.path(), &[refreshed_remote_plugin_id])
         .await?;
     sleep(Duration::from_millis(100)).await;
     wait_for_remote_plugin_request_count(&server, "/ps/plugins/list", /*expected_count*/ 1).await?;
 
+    catalog_gate.shutdown().await?;
     Ok(())
 }
 

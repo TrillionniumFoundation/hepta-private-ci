@@ -2,6 +2,9 @@ use anyhow::Context;
 use anyhow::Result;
 use codex_config::McpServerConfig;
 use codex_core::EnvironmentConfig;
+use codex_core::test_support::ExecutorHookCompletion;
+use codex_core::test_support::ExecutorHookTerminal;
+use codex_core::test_support::observe_executor_hook_completions;
 use codex_exec_server::CreateDirectoryOptions;
 use codex_exec_server::ExecServerRuntimePaths;
 use codex_features::Feature;
@@ -130,12 +133,43 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
 
     let fixture =
         executor_stop_hook_fixture(&["first-turn", "mismatched-turn", "restored-turn"]).await?;
+    let completions = observe_executor_hook_completions(&fixture.test.codex);
     let selection = fixture.attach().await?;
+    let plugin_root = fixture.test.workspace_path_uri("computer-use")?;
+    let manifest_path = plugin_root.join(".codex-plugin")?.join("plugin.json")?;
+    let manifest_relative_path = manifest_path
+        .relative_path_from(&plugin_root)
+        .context("executor hook manifest should be inside its plugin root")?;
+    let handler_id = format!(
+        "stop:0:{}:{manifest_path}:{manifest_relative_path}#hooks[0]",
+        selection.environment_id
+    );
     fixture
         .test
         .submit_text_turn("before the executor environment changes")
         .await?;
-    fixture.wait_for_hook_call().await?;
+    let ((), completion) = tokio::try_join!(
+        fixture.wait_for_hook_call(),
+        fixture.wait_for_hook_completion(&completions),
+    )?;
+    let first_turn_id = fixture.responses.requests()[0].body_json()["client_metadata"]["turn_id"]
+        .as_str()
+        .context("first response request should identify its turn")?
+        .to_string();
+    assert_eq!(
+        completion,
+        ExecutorHookCompletion {
+            session_id: Some(fixture.test.session_configured.thread_id.to_string()),
+            turn_id: Some(first_turn_id),
+            handler_id: handler_id.clone(),
+            terminal: ExecutorHookTerminal {
+                exit_code: Some(0),
+                stdout: "ok".to_string(),
+                stderr: String::new(),
+                error: None,
+            },
+        }
+    );
 
     let (executor_url, executor) =
         if let Some(executor_url) = fixture.test.executor_environment().exec_server_url() {
@@ -256,6 +290,29 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
         .test
         .submit_text_turn("when Node REPL belongs to a different executor")
         .await?;
+    let completion = fixture.wait_for_hook_completion(&completions).await?;
+    let mismatched_turn_id =
+        fixture.responses.requests()[1].body_json()["client_metadata"]["turn_id"]
+            .as_str()
+            .context("mismatched response request should identify its turn")?
+            .to_string();
+    assert_eq!(
+        completion,
+        ExecutorHookCompletion {
+            session_id: Some(fixture.test.session_configured.thread_id.to_string()),
+            turn_id: Some(mismatched_turn_id),
+            handler_id: handler_id.clone(),
+            terminal: ExecutorHookTerminal {
+                exit_code: None,
+                stdout: String::new(),
+                stderr: String::new(),
+                error: Some(format!(
+                    "MCP hook for environment `{}` cannot call server `node_repl` bound to environment `{mismatched_environment_id}`",
+                    selection.environment_id
+                )),
+            },
+        }
+    );
     assert_eq!(fixture.calls().await?.len(), 1);
 
     // The hook and its capability root are still attached. Rebinding the same
@@ -270,10 +327,36 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
         .test
         .submit_text_turn("when Node REPL returns to the original executor")
         .await?;
-    fixture.wait_for_hook_call().await?;
+    let ((), completion) = tokio::try_join!(
+        fixture.wait_for_hook_call(),
+        fixture.wait_for_hook_completion(&completions),
+    )?;
     if let Some(executor) = executor {
         executor.abort();
     }
+    let restored_turn_id =
+        fixture.responses.requests()[2].body_json()["client_metadata"]["turn_id"]
+            .as_str()
+            .context("restored response request should identify its turn")?
+            .to_string();
+    assert_eq!(
+        completion,
+        ExecutorHookCompletion {
+            session_id: Some(fixture.test.session_configured.thread_id.to_string()),
+            turn_id: Some(restored_turn_id),
+            handler_id,
+            terminal: ExecutorHookTerminal {
+                exit_code: Some(0),
+                stdout: "ok".to_string(),
+                stderr: String::new(),
+                error: None,
+            },
+        }
+    );
+    assert!(
+        completions.is_empty(),
+        "unexpected extra executor-hook terminal"
+    );
 
     let calls = fixture.calls().await?;
     assert_eq!(calls.len(), 2);
@@ -459,6 +542,16 @@ impl ExecutorStopHookFixture {
             .context("attached executor Stop hook should call turn_ended")?;
 
         Ok(())
+    }
+
+    async fn wait_for_hook_completion(
+        &self,
+        completions: &async_channel::Receiver<ExecutorHookCompletion>,
+    ) -> Result<ExecutorHookCompletion> {
+        tokio::time::timeout(Duration::from_secs(/*secs*/ 10), completions.recv())
+            .await
+            .context("executor Stop hook should finish before rebinding its server")?
+            .context("executor Stop hook completion observer should remain open")
     }
 
     async fn calls(&self) -> Result<Vec<Value>> {
