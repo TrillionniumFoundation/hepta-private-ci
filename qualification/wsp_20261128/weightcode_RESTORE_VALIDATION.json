@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.wsp.public-cloud-package-restoration-validation.v1",
+  "created_at_utc": "2026-11-28T12:18:42.193705+00:00",
+  "package_manifest_sha256": "3326d48b90977e4580efddd1f8456eee531531adc9966029c924719907852534",
+  "restore_script_sha256": "2ac2f14323d15dca1f4823d5a1d61b009d289e53f52901ba5737f41212476b5c",
+  "restore_source_unchanged": true,
+  "full_package_files_verified": 119,
+  "actual_restore_receipt": {
+    "schema": "hepta.wsp.cloud-content-restore.v1",
+    "chunk02_original_gzip_byte_exact": true,
+    "chunk02_original_archive_sha256": "eb70989a3acd8360b0f29e1ea9cea06ab7210c4e64729257ecf5bd88d9c5ea0e",
+    "chunk01_all_scientific_member_bytes_exact": true,
+    "chunk01_original_gzip_bytes_reconstructed": false,
+    "chunk01_original_gzip_sha256_reference": "e9d859e79669c88a6d183acfd2b7b626be7e36cf2b3266d1f443838b2d098707",
+    "chunk01_files": 20,
+    "chunk02_files": 33
+  },
+  "first_restore_attempt": {
+    "result": "ENOSPC while writing new redundant archive copy",
+    "scientific_sources_modified": false,
+    "partial_copy_bytes": 10747904,
+    "partial_copy_removed": true,
+    "script_modified_before_successful_retry": false
+  },
+  "second_attempt": {
+    "exit_code": 0,
+    "all_file_bytes_match": true,
+    "new_model_forwards": 0,
+    "fits": 0
+  },
+  "privacy_review": {
+    "raw_private_hepta_or_pocket4_model_and_trading_data_in_package": false,
+    "scientific_checkpoint_origin": "Only public pinned WeightCode base and public SCAN-rule trained descendants",
+    "scope": "Existing frozen CPU source/evidence, public cloud output, and execution provenance; no broad filesystem archive"
+  },
+  "original_two_raw_gzip_archives_retained": true
+}

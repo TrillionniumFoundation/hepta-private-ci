@@ -47,18 +47,118 @@
   "publication": {
     "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7263",
     "head_at_index_creation": "cd5911a17aee1670b031fe2d465abfa6cd3a44b6",
-    "branch": "research/wsp-late-information-20261128-cd3d"
+    "branch": "research/wsp-late-information-20261128-cd3d",
+    "cloud_update_parent": "e098a10db48b841b79e2fb8b96c5f1eebe42d2f1"
   },
   "reports": {
     "main": "late_information/RESEARCH_RESULT.md",
     "semantic_inventory": "late_information/semantic_inventory/INVENTORY.json",
     "gpt_transfer": "late_information/blind_alias/RESEARCH_RESULT.md",
-    "weightcode_cpu": "weightcode/README.md"
+    "weightcode_cpu": "weightcode/README.md",
+    "weightcode_cloud": "weightcode/README_CLOUD.md",
+    "weightcode_cloud_restore_validation": "weightcode_RESTORE_VALIDATION.json"
   },
   "archive_sha256": {
     "initial_science": "8408958e7e6340c51e47e695fb2c9add7eb20fbfeacdafa8b5d5b78eb91d778e",
     "gpt_alias_followup": "2043ff6b47542b605b766e9183b165e831af6dd0a3b64c3ce4fa8efb1a8114bb"
   },
   "private_data_published": false,
-  "production_activation": false
+  "production_activation": false,
+  "external_public_weightcode_cloud": {
+    "status": "COMPLETED_AND_ARCHIVE_RESTORATION_VERIFIED",
+    "independent_audit_path": "weightcode/results/cloud/independent_audit.json",
+    "independent_audit_sha256": "1434ea95bf7e497a505010dab3e7621f79c250db1da26a9522cf2600b00c1808",
+    "independent_audit_digest": "4408c72e9cc1accf7b0436caebfa791578695b98a16b2c94cfea78da3dc09be2",
+    "package_manifest_sha256": "3326d48b90977e4580efddd1f8456eee531531adc9966029c924719907852534",
+    "cpu_package_manifest_preserved_sha256": "6aa1ce0986282b424fcd985f70bb1cb1ffdd4cf3dfb03d758a1725853beecd7e",
+    "archive_sha256": "eb70989a3acd8360b0f29e1ea9cea06ab7210c4e64729257ecf5bd88d9c5ea0e",
+    "methods": [
+      {
+        "name": "published_wsp",
+        "final_new": {
+          "rows": 2568,
+          "correct": 2563,
+          "exact_match": 0.9980529595015576
+        },
+        "final_old": {
+          "rows": 1000,
+          "correct": 996,
+          "exact_match": 0.996
+        },
+        "neither_fitted_nor_wsp_probed": {
+          "rows": 1658,
+          "correct": 1654,
+          "exact_match": 0.9975874547647768
+        },
+        "changed_scalars": 257,
+        "original_discovery_costs_excluded_from_patch_application": true
+      },
+      {
+        "name": "rulegen_mixed_sparse19_sal_q3",
+        "final_new": {
+          "rows": 2568,
+          "correct": 2557,
+          "exact_match": 0.9957165109034268
+        },
+        "final_old": {
+          "rows": 1000,
+          "correct": 996,
+          "exact_match": 0.996
+        },
+        "neither_fitted_nor_wsp_probed": {
+          "rows": 1658,
+          "correct": 1647,
+          "exact_match": 0.9933655006031363
+        },
+        "completed_steps": 300,
+        "changed_scalars": 152718
+      },
+      {
+        "name": "rulegen_mixed_grad_full_q2",
+        "final_new": {
+          "rows": 2568,
+          "correct": 2561,
+          "exact_match": 0.9972741433021807
+        },
+        "final_old": {
+          "rows": 1000,
+          "correct": 992,
+          "exact_match": 0.992
+        },
+        "neither_fitted_nor_wsp_probed": {
+          "rows": 1658,
+          "correct": 1651,
+          "exact_match": 0.9957780458383595
+        },
+        "completed_steps": 100,
+        "changed_scalars": 757779
+      }
+    ],
+    "worker_costs": {
+      "total_wall_seconds": 548.7773726859998,
+      "reported_process_cpu_seconds_by_job": [
+        455.839403853,
+        238.899744973
+      ],
+      "cpu_counter_caveat": "Worker stores process_time() at completion, not a subtracted interval. Do not treat these as pure fit CPU time or infer cross-job process identity.",
+      "counts": {
+        "numpy_rows": 25174,
+        "torch_inference_rows": 130,
+        "torch_gradient_rows": 1630195,
+        "gradient_microbatches": 12836,
+        "optimizer_steps": 400
+      },
+      "backward_calls_including_one_dense_parity_call": 12837,
+      "peak_host_rss_kib": 1511380,
+      "LLM_discovery_and_original_base_training_included": false,
+      "paid_cost_measured": false
+    },
+    "scope": "Public published-data rerun. Neither the original final commands nor the 1658-command overlap-excluded subset are a newly collected independent holdout. One base checkpoint and one author-fixed seed/configuration per method.",
+    "preflight_limit": "CUDA preflight uses the 65 already-solved original rows; the independent nonzero-loss CPU gradient audit was conducted after job submission. Neither establishes bit-identical reproduction of the authors' GPU trajectory.",
+    "original_cpu_scientific_files_changed": false,
+    "reference_gpu_child_hash_equality": false,
+    "cloud_final_candidate_selection": false,
+    "cpu_vs_gpu_speedup_claim": false,
+    "release_mutation_status": "FIXED_RUNTIME_NOT_FOUND; official inventory observed zero assigned runtimes, cause not independently established"
+  }
 }

@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.wsp.colab.actual-compute.v1",
+  "account_alias": "sunfo",
+  "provision_key": "wsp-scan-20261128-cd3d-v1",
+  "profile_sha256": "97e09c0609f88e0ab507343cfd557df3888d1427a9d0e8694bb90192f8f9ff56",
+  "accelerator": {
+    "name": "Tesla T4",
+    "memory_mib": 15360,
+    "uuid": "GPU-c841a41d-c175-6462-203a-e7db2bcb4293",
+    "driver": "580.82.07",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0"
+  },
+  "public_code_sha256": "af167a45ca24cad9cf6a0f1f4e1271f1015a0b918f9f9268eea1a5104f463533",
+  "private_hepta_data_uploaded": false,
+  "jobs": [
+    {
+      "job_id": "394046b0-fcad-44cc-8693-446e7e79f0a4",
+      "status": "succeeded",
+      "exit_code": 0,
+      "worker_wall_seconds": 377.1512,
+      "cpu_seconds": 455.8394,
+      "optimizer_steps": 300,
+      "evidence_sha256": "e9d859e79669c88a6d183acfd2b7b626be7e36cf2b3266d1f443838b2d098707"
+    },
+    {
+      "job_id": "8045880a-72f9-4258-b090-f86243782516",
+      "status": "succeeded",
+      "exit_code": 0,
+      "worker_wall_seconds": 171.62617717,
+      "cpu_seconds": 238.899744973,
+      "optimizer_steps": 100,
+      "evidence_sha256": "eb70989a3acd8360b0f29e1ea9cea06ab7210c4e64729257ecf5bd88d9c5ea0e"
+    }
+  ],
+  "post_run": {
+    "observed_at": "2026-11-28T11:37:55.368656+00:00",
+    "assignments": {
+      "runtimes": [],
+      "status": "available"
+    },
+    "consumption": {
+      "assignments_count": 0,
+      "consumption_rate_hourly": 0,
+      "paid_compute_units_balance": 0,
+      "status": "available"
+    },
+    "release_request_job_id": "1a221ef9cac-ffbe-5a2d",
+    "release_reply": {
+      "status": "blocked",
+      "error_code": "FIXED_RUNTIME_NOT_FOUND"
+    },
+    "original_ledger_phase": "bound",
+    "endpoint": "gpu-t4-s-usw1b0-sn3a75esq5mt",
+    "interpretation": "Official inventory observes zero assigned runtimes and zero current consumption. The original runtime disappeared before the release request; cause unverified. No successful release mutation is claimed. Original provisioning ledger remains stale; no host configuration or ledger was rewritten."
+  },
+  "cost_limit": {
+    "maximum_jobs": 8,
+    "maximum_seconds_per_job": 600,
+    "actual_jobs": 2,
+    "optimizer_steps_total": 400,
+    "paid_cost_measured": false,
+    "recurring_automation_created": false
+  }
+}
