@@ -347,3 +347,15 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
     }
     Ok(())
 }
+
+#[cfg(windows)]
+#[test]
+fn registered_cognitive_root_opens_with_the_native_private_owner() -> Result<(), FleetRegistryError>
+{
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    codex_utils_path::open_existing_private_state_directory(record.layout.cognitive_root())?;
+    Ok(())
+}
