@@ -1,0 +1,32 @@
+{
+  "kernel_max_row_error": 2.220446049250313e-16,
+  "lif_analytic_max_error": 2.220446049250313e-16,
+  "lif_reset_silent_bin": true,
+  "modes": {
+    "dual": {
+      "exact_pre_event_prefix_bins": 81,
+      "max_independent_log_hazard_error": 7.993605777301127e-15,
+      "max_step_mass_error": 4.440892098500626e-16,
+      "minimum_raw_transition_mass": 4.074926829101173e-08
+    },
+    "equity": {
+      "exact_pre_event_prefix_bins": 81,
+      "max_independent_log_hazard_error": 8.881784197001252e-15,
+      "max_step_mass_error": 4.440892098500626e-16,
+      "minimum_raw_transition_mass": 1.650311072948772e-07
+    },
+    "loss": {
+      "exact_pre_event_prefix_bins": 81,
+      "max_independent_log_hazard_error": 8.881784197001252e-15,
+      "max_step_mass_error": 4.440892098500626e-16,
+      "minimum_raw_transition_mass": 4.074926829101173e-08
+    },
+    "no_price": {
+      "exact_pre_event_prefix_bins": 81,
+      "max_independent_log_hazard_error": 8.881784197001252e-15,
+      "max_step_mass_error": 4.440892098500626e-16,
+      "minimum_raw_transition_mass": 1.650311072948772e-07
+    }
+  },
+  "physical_model_sha256": "1c57a336efe2699cbee3467bcf4311fde5608d4751b6e15c2a89fa227bb3f357"
+}
