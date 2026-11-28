@@ -1,0 +1,192 @@
+{
+  "schema": "codex.hia.datetime-parse-buffer-contract.v1",
+  "revision": 1,
+  "status": "Strict RFC3339 UTF-8 parsing component; relaxed Serde parsing, Local timezone conversion, production integration and whole-product qualification remain separate gates.",
+  "module": "datetime_parse",
+  "source_sha256": "f343ca7635c76dc362ec119d3563008b1281e7bf1b373175455e1c54c7f8a83d",
+  "core_sha256": "a7e24a918ba3501b327f253bb94cb7c042db244d87f2f3aa5b2ad6dcbf5e86bd",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "DateTime::parse_from_rfc3339",
+      "DateTime::timestamp",
+      "DateTime::timestamp_subsec_nanos",
+      "FixedOffset::local_minus_utc",
+      "ParseError::kind"
+    ],
+    "oracle_registry_packages": 43
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state.",
+    "For a valid frame, the payload is valid UTF-8, matching the original Rust &str API. Invalid UTF-8 is outside this component contract; no implicit lossy decoding is performed."
+  ],
+  "source": {
+    "header_bytes": 32,
+    "byte_order": "four little-endian u64 words followed by UTF-8 payload bytes",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "required": 0,
+        "meaning": "DateTime::parse_from_rfc3339"
+      },
+      {
+        "offset": 16,
+        "name": "payload_length",
+        "required": "source length minus 32; byte count, not Unicode character count"
+      },
+      {
+        "offset": 24,
+        "name": "reserved",
+        "required": 0
+      },
+      {
+        "offset": 32,
+        "name": "payload",
+        "encoding": "valid UTF-8"
+      }
+    ],
+    "mutation": "Never modified.",
+    "length_validation": "Check that the source has at least 32 bytes, then subtract 32 from its actual size and compare with the declared payload length; never add an untrusted declared length."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 64,
+    "byte_order": "eight little-endian u64 words; signed values use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "valid",
+        "value": "1 when parsing succeeds; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "unix_seconds",
+        "value": "signed UTC non-leap Unix seconds on success; otherwise 0"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "value": "original timestamp_subsec_nanos, preserving leap fractions; otherwise 0"
+      },
+      {
+        "offset": 32,
+        "name": "offset_seconds",
+        "value": "signed FixedOffset local_minus_utc seconds on success; otherwise 0"
+      },
+      {
+        "offset": 40,
+        "name": "error_kind",
+        "value": "0 on success; otherwise the specified original ParseErrorKind code"
+      },
+      {
+        "offset": 48,
+        "name": "reserved0",
+        "value": 0
+      },
+      {
+        "offset": 56,
+        "name": "reserved1",
+        "value": 0
+      }
+    ],
+    "tail": "All bytes after offset 64 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "date": "Exactly four ASCII year digits, two month digits and two day digits, with Gregorian date validation including year zero.",
+    "separator": "ASCII T, t or one space between the date and time; colon separators between two-digit hour, minute and second fields.",
+    "fraction": "An optional dot requires at least one ASCII decimal digit. Scale fewer than nine digits to nanoseconds and truncate extra digits while consuming every digit.",
+    "leap_second": "Second 60 is accepted on the final second of any minute and becomes second 59 with 1000000000 added to the fraction. No historical leap-second table or carry into the next minute is applied.",
+    "offset": "Z or z, or ASCII plus/minus or Unicode U+2212 followed by two hour digits, one colon and two minute digits. Valid offsets are -23:59 through +23:59; no surrounding or trailing whitespace is trimmed.",
+    "error_order": [
+      "payload byte length below 19",
+      "fixed date lexical fields, then date range",
+      "date/time separator and fixed time lexical fields",
+      "fraction lexical scan, then time range",
+      "zone lexical fields and minute range",
+      "trailing payload bytes",
+      "whole timezone offset range"
+    ],
+    "error_kinds": {
+      "0": "success",
+      "1": "OutOfRange",
+      "2": "Impossible",
+      "3": "NotEnough",
+      "4": "Invalid",
+      "5": "TooShort",
+      "6": "TooLong",
+      "7": "BadFormat"
+    },
+    "scope": "Value fields and ParseErrorKind are qualified. Relaxed FromStr/Serde parsing, general date-format directives, Local timezone rules, and public Rust error Display adapters are not covered by this component."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is less than 64, before source or workspace validation"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source has fewer than 32 bytes, workspace is nonempty, version is not 1, operation is not 0, declared length differs from actual payload bytes, or the reserved word is nonzero"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 64 output bytes encode either the original parsed value or original error kind"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 434414,
+    "calendar_cycle_cases": 146097,
+    "input_sha256": "db44a82f42034dcb111f27739720c8b49ab543845f33b0a9b6532c5b35c8b8ab",
+    "original_output_sha256": "cce9d2846402b626a86b5ab92ca2c5e1c0654cdced99e89bdb75fa4c124db287",
+    "original_error_kinds": {
+      "0": 245327,
+      "1": 76067,
+      "4": 92661,
+      "5": 1622,
+      "6": 18737
+    },
+    "buffer_control_calls": 552,
+    "native_calls_required": 1738208,
+    "maximum_fraction_digits": 1000000,
+    "controls": "Two fills and exact/excess capacities on every semantic case; every shorter output capacity, truncated and oversized frames, invalid metadata and nonempty workspace; all inputs, outputs, tails and guards compared."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "relaxed_serde_parsing_qualified": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}

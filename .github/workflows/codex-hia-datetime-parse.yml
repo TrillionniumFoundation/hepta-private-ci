@@ -1,0 +1,99 @@
+name: Codex HIA strict RFC3339 parser component
+
+on:
+  pull_request:
+    paths:
+      - hia/datetime_parse.hepta
+      - hia/datetime_parse_buffer_contract.json
+      - hia/build_datetime_parse.py
+      - hia/tests/test_datetime_parse.py
+      - hia/tests/datetime_parse_oracle/**
+      - hia/tests/datetime_parse_cases.py
+      - hia/tests/datetime_calendar_oracle/custody.py
+      - hia/tests/test_datetime_calendar.py
+      - hia/toolchain.json
+      - .github/workflows/codex-hia-datetime-parse.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parse-component:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_BUILD_JOBS: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out the producing source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out the unchanged pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
+          path: Hepta
+          persist-credentials: false
+
+      - name: Check out the immutable original dependency lock
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 756f7a31ad4373809a00da65a91ba1ca4571f6cb
+          path: original
+          persist-credentials: false
+          sparse-checkout: codex-rs/Cargo.lock
+          sparse-checkout-cone-mode: false
+
+      - name: Select the formal Rust oracle compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          echo "RUSTUP_TOOLCHAIN=1.96.1" >> "$GITHUB_ENV"
+          echo "PARSE_RUSTC=$(rustup which --toolchain 1.96.1 rustc)" >> "$GITHUB_ENV"
+          echo "PARSE_CARGO=$(rustup which --toolchain 1.96.1 cargo)" >> "$GITHUB_ENV"
+
+      - name: Rebuild B1, B2, B3 and the parse with native HIA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build_datetime_parse.py \
+            --hepta-root "$GITHUB_WORKSPACE/Hepta" \
+            --output "$RUNNER_TEMP/parse-native" \
+            2>&1 | tee "$RUNNER_TEMP/parse-build.log"
+
+      - name: Run original Chrono value, error-kind and buffer differentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_datetime_parse.py \
+            --build "$RUNNER_TEMP/parse-native" \
+            --original-lock "$GITHUB_WORKSPACE/original/codex-rs/Cargo.lock" \
+            --cargo "$PARSE_CARGO" --rustc "$PARSE_RUSTC" \
+            --output "$RUNNER_TEMP/parse-differential" \
+            2>&1 | tee "$RUNNER_TEMP/parse-differential.log"
+
+      - name: Preserve complete component receipts and call transcripts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hia-datetime-parse-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/parse-build.log
+            ${{ runner.temp }}/parse-differential.log
+            ${{ runner.temp }}/parse-native/**
+            ${{ runner.temp }}/parse-differential/*.json
+            ${{ runner.temp }}/parse-differential/*.bin
+            ${{ runner.temp }}/parse-differential/*.gz
+            ${{ runner.temp }}/parse-differential/*.stdout
+            ${{ runner.temp }}/parse-differential/*.stderr
+            ${{ runner.temp }}/parse-differential/target/debug/codex-hia-datetime-parse-oracle
