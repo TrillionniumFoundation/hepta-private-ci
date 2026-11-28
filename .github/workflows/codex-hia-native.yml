@@ -1821,10 +1821,83 @@ jobs:
             {0}/hia-joint-*-receipt.log
             {0}/hia-native/*.link', runner.temp) }}
 
+  dependency-source-controls:
+    name: Complete dependency source history and current custody
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out actual current sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: codex
+          persist-credentials: false
+      - name: Check out immutable original dependency source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095
+          path: dependency-original
+          persist-credentials: false
+      - name: Check out independent immutable original identity
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: aeb88f596b83186456caac577080bcb2f253ad32
+          path: dependency-second-original
+          persist-credentials: false
+      - name: Check out immutable intermediate dependency source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a05499eb5d2b2088de6a192d0c42ce9ba0249882
+          path: dependency-intermediate
+          persist-credentials: false
+      - name: Check out complete pre-OAuth2 dependency source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 40990b8cdebe89f15933a89050987a17c4b6581c
+          path: dependency-predecessor
+          persist-credentials: false
+      - name: Verify immutable source controls and actual OAuth2 custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C codex fetch --no-tags "$GITHUB_WORKSPACE/dependency-original" a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095
+          git -C codex fetch --no-tags "$GITHUB_WORKSPACE/dependency-second-original" aeb88f596b83186456caac577080bcb2f253ad32
+          git -C codex fetch --no-tags "$GITHUB_WORKSPACE/dependency-intermediate" a05499eb5d2b2088de6a192d0c42ce9ba0249882
+          git -C codex fetch --no-tags "$GITHUB_WORKSPACE/dependency-predecessor" 40990b8cdebe89f15933a89050987a17c4b6581c
+          python3 -B codex/hia/tests/test_workspace_dependency_sources.py \
+            --repo "$GITHUB_WORKSPACE/codex" --original-root "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-dependency-original-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-dependency-original-controls.log"
+          python3 -B codex/hia/tests/test_oauth2_dependency_sources.py \
+            --repo "$GITHUB_WORKSPACE/codex" --original-root "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-dependency-oauth2-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-dependency-oauth2-controls.log"
+          python3 - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          for name, count in [("original", 22), ("oauth2", 15)]:
+              report = json.loads((root / f"hia-dependency-{name}-controls.json").read_bytes())
+              assert report["passed"] and report["tests"] == count, report
+              assert not report["errors"] and not report["failures"], report
+          PY
+      - name: Preserve dependency source control evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: codex-hia-dependency-source-controls
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hia-dependency-original-controls.json
+            ${{ runner.temp }}/hia-dependency-original-controls.log
+            ${{ runner.temp }}/hia-dependency-oauth2-controls.json
+            ${{ runner.temp }}/hia-dependency-oauth2-controls.log
+
   native-required:
     name: native-components
     if: ${{ always() }}
-    needs: [native-components, historical-native17]
+    needs: [native-components, historical-native17, dependency-source-controls]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -1832,10 +1905,12 @@ jobs:
         env:
           CURRENT_RESULT: ${{ needs.native-components.result }}
           HISTORICAL_RESULT: ${{ needs.historical-native17.result }}
+          DEPENDENCY_RESULT: ${{ needs.dependency-source-controls.result }}
         run: |
           set -euo pipefail
           test "$CURRENT_RESULT" = success
           test "$HISTORICAL_RESULT" = success
+          test "$DEPENDENCY_RESULT" = success
 
   historical-native17:
     name: Exact 74d1 legacy ABI and original owner gates

@@ -82,10 +82,16 @@ def admit_workspace_sources(repo, originals):
     identities = history["identities"]
     if _pair_identity(originals) != identities["original"]:
         raise RuntimeError("dependency source inverse requires the unchanged a201/aeb original pair")
-    if _pair_identity(actual) != identities["sqlx"]:
-        raise RuntimeError("unreviewed or mixed workspace dependency source pair")
     restored = actual
     observed = []
+    oauth2_admission = None
+    if _pair_identity(actual) != identities["sqlx"]:
+        from .oauth2_source_history import restore_predecessor
+        oauth2_admission = restore_predecessor(repo, actual, identities["sqlx"])
+        restored = oauth2_admission["restored"]
+        observed.append({"name": "oauth2-epoch-source", "from": "oauth2-epoch",
+                         "to": "sqlx", "complete_package_inverses": 1,
+                         "restored_files": _pair_identity(restored)})
     for transition in history["inverse"]:
         restored = _reverse(restored, transition, identities)
         observed.append({"name": transition["name"], "from": transition["after"],
@@ -95,9 +101,10 @@ def admit_workspace_sources(repo, originals):
     if restored != originals:
         raise RuntimeError("dependency source inverse differs from the actual immutable originals")
     _, helper_binding = _read(Path(__file__))
-    return {"restored": restored, "report": {
+    result = {"restored": restored, "report": {
         "schema": "codex.hia.workspace-dependency-source-admission.v1",
-        "actual_revision": history["revisions"]["sqlx"],
+        "actual_revision": (history["revisions"]["sqlx"] if oauth2_admission is None else
+                            oauth2_admission["report"]["source_variant"]),
         "original_revisions": history["revisions"]["original"],
         "actual_files": {path: row[1] for path, row in captured.items()},
         "original_files": _pair_identity(originals), "inverse": observed,
@@ -107,6 +114,9 @@ def admit_workspace_sources(repo, originals):
             "execute with the independently captured actual current dependency graph; this "
             "source inverse alone confers no behavioral or dependency qualification.",
     }}
+    if oauth2_admission is not None:
+        result["report"]["oauth2_source_history"] = oauth2_admission["report"]
+    return result
 
 
 def verify_workspace_sources(admission):
@@ -118,3 +128,7 @@ def verify_workspace_sources(admission):
         _, actual = _read(binding["path"])
         if actual != binding:
             raise RuntimeError("captured dependency source identity changed: " + binding["path"])
+
+    if "oauth2_source_history" in report:
+        from .oauth2_source_history import verify_predecessor
+        verify_predecessor({"report": report["oauth2_source_history"]})
