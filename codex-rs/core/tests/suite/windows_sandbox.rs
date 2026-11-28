@@ -3,10 +3,9 @@ use codex_core::exec::ExecCapturePolicy;
 use codex_core::exec::ExecParams;
 use codex_core::exec::process_exec_tool_call;
 use codex_core::sandboxing::SandboxPermissions;
-use codex_core::windows_sandbox::sandbox_setup_is_complete;
 use codex_features::Feature;
 use codex_protocol::config_types::WindowsSandboxLevel;
-use codex_protocol::exec_output::ExecToolCallOutput;
+use codex_protocol::error::CodexErr;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemPath;
@@ -14,18 +13,14 @@ use codex_protocol::permissions::FileSystemSandboxEntry;
 use codex_protocol::permissions::FileSystemSandboxPolicy;
 use codex_protocol::permissions::FileSystemSpecialPath;
 use codex_protocol::permissions::NetworkSandboxPolicy;
+use codex_windows_sandbox::ElevatedWindowsSandboxIsolationUnavailable;
+use codex_windows_sandbox::require_elevated_filesystem_isolation;
 use core_test_support::PathExt;
-use core_test_support::responses::ev_assistant_message;
-use core_test_support::responses::ev_completed;
-use core_test_support::responses::ev_function_call;
-use core_test_support::responses::ev_response_created;
-use core_test_support::responses::mount_sse_sequence;
-use core_test_support::responses::sse;
-use core_test_support::test_codex::TestCodexHarness;
+use core_test_support::responses::start_mock_server;
 use core_test_support::test_codex::test_codex;
 use pretty_assertions::assert_eq;
-use serde_json::json;
 use serial_test::serial;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::ffi::OsString;
 use std::path::Path;
@@ -119,6 +114,64 @@ pub(super) fn stage_windows_sandbox_helpers() -> anyhow::Result<()> {
     Ok(())
 }
 
+// The dedicated-account backend deliberately refuses execution until a replacement
+// for its FILE_DELETE_CHILD isolation mechanism has been qualified. These core
+// integration tests exercise refusal and side-effect preservation, not successful
+// sandbox execution. The native crate tests retain the typed-error assertions.
+fn elevated_unavailable_message() -> String {
+    let error = require_elevated_filesystem_isolation()
+        .expect_err("the unqualified elevated backend must refuse admission");
+    assert!(
+        error
+            .downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>()
+            .is_some(),
+        "unexpected native admission error: {error:#}"
+    );
+    error.to_string()
+}
+
+fn assert_elevated_capture_refusal(error: &CodexErr) {
+    let CodexErr::Io(io_error) = error else {
+        panic!("unexpected core elevated error variant: {error:?}");
+    };
+    assert_eq!(io_error.kind(), std::io::ErrorKind::Other);
+    let native_message = elevated_unavailable_message();
+    // The existing core exec boundary converts the native typed error into Io.
+    assert_eq!(
+        io_error.to_string(),
+        format!("windows sandbox: {native_message}")
+    );
+}
+
+type FixtureTree = BTreeMap<PathBuf, Option<Vec<u8>>>;
+
+fn fixture_tree(root: &Path) -> anyhow::Result<FixtureTree> {
+    let mut snapshot = BTreeMap::new();
+    let mut pending = vec![root.to_path_buf()];
+    while let Some(path) = pending.pop() {
+        let metadata = match std::fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound && path == root => continue,
+            Err(error) => return Err(error.into()),
+        };
+        let relative = path.strip_prefix(root)?.to_path_buf();
+        if metadata.is_dir() {
+            snapshot.insert(relative, None);
+            for entry in std::fs::read_dir(&path)? {
+                pending.push(entry?.path());
+            }
+        } else {
+            anyhow::ensure!(
+                metadata.is_file(),
+                "unexpected fixture entry: {}",
+                path.display()
+            );
+            snapshot.insert(relative, Some(std::fs::read(&path)?));
+        }
+    }
+    Ok(snapshot)
+}
+
 #[tokio::test]
 #[serial(codex_home)]
 async fn windows_restricted_token_rejects_exact_and_glob_deny_read_policy() -> anyhow::Result<()> {
@@ -208,7 +261,7 @@ async fn windows_restricted_token_rejects_exact_and_glob_deny_read_policy() -> a
 
 #[tokio::test]
 #[serial(codex_home)]
-async fn windows_elevated_does_not_create_missing_workspace_metadata() -> anyhow::Result<()> {
+async fn windows_elevated_refuses_without_creating_workspace_metadata() -> anyhow::Result<()> {
     let codex_home =
         codex_home_for_windows_sandbox_test("windows-elevated-missing-metadata-codex-home")?;
     let _codex_home_guard = EnvVarGuard::set("CODEX_HOME", codex_home.path().as_os_str());
@@ -218,13 +271,16 @@ async fn windows_elevated_does_not_create_missing_workspace_metadata() -> anyhow
     let permission_profile = PermissionProfile::workspace_write()
         .materialize_project_roots_with_workspace_roots(std::slice::from_ref(&cwd));
 
-    let output = process_exec_tool_call(
+    let before = fixture_tree(&cwd)?;
+    let sandbox_state = codex_home.path().join(".sandbox");
+    let sandbox_before = fixture_tree(&sandbox_state)?;
+    let error = process_exec_tool_call(
         ExecParams {
             command: vec![
                 "cmd.exe".to_string(),
                 "/D".to_string(),
                 "/C".to_string(),
-                "echo sandbox-ok".to_string(),
+                "echo started>blocked-command-started.txt".to_string(),
             ],
             cwd: cwd.clone(),
             expiration: 10_000.into(),
@@ -245,9 +301,12 @@ async fn windows_elevated_does_not_create_missing_workspace_metadata() -> anyhow
         /*use_legacy_landlock*/ false,
         /*stdout_stream*/ None,
     )
-    .await?;
+    .await
+    .expect_err("unqualified elevated execution must be refused before launch");
 
-    assert_eq!(output.exit_code, 0, "sandboxed command should complete");
+    assert_elevated_capture_refusal(&error);
+    assert_eq!(fixture_tree(&cwd)?, before);
+    assert_eq!(fixture_tree(&sandbox_state)?, sandbox_before);
     for name in codex_protocol::permissions::PROTECTED_METADATA_PATH_NAMES {
         let path = cwd.join(name);
         assert!(
@@ -261,7 +320,7 @@ async fn windows_elevated_does_not_create_missing_workspace_metadata() -> anyhow
 
 #[tokio::test]
 #[serial(codex_home)]
-async fn windows_elevated_enforces_deny_read_and_protects_setup_marker() -> anyhow::Result<()> {
+async fn windows_elevated_refuses_deny_read_without_changing_fixtures() -> anyhow::Result<()> {
     let codex_home = codex_home_for_windows_sandbox_test("windows-elevated-deny-read-codex-home")?;
     let _codex_home_guard = EnvVarGuard::set("CODEX_HOME", codex_home.path().as_os_str());
     stage_windows_sandbox_helpers()?;
@@ -314,17 +373,17 @@ async fn windows_elevated_enforces_deny_read_and_protects_setup_marker() -> anyh
         NetworkSandboxPolicy::Restricted,
     );
 
-    let ExecToolCallOutput {
-        exit_code,
-        stdout,
-        ..
-    } = process_exec_tool_call(
+    let before = fixture_tree(&cwd)?;
+    let user_profile_before = fixture_tree(user_profile.path())?;
+    let sandbox_state = codex_home.path().join(".sandbox");
+    let sandbox_before = fixture_tree(&sandbox_state)?;
+    let error = process_exec_tool_call(
         ExecParams {
             command: vec![
                 "cmd.exe".to_string(),
                 "/D".to_string(),
                 "/C".to_string(),
-                "(type secret.env 1>NUL 2>NUL && echo GLOB-READ || echo GLOB-DENIED) & (type %SETUP_MARKER% 1>NUL 2>NUL && echo MARKER-READ-ALLOWED || echo MARKER-READ-DENIED) & (echo tampered > %SETUP_MARKER% 2>NUL && echo MARKER-WRITE-ALLOWED || echo MARKER-WRITE-DENIED) & type public.txt & type %BUNDLED_SKILL% & (type %EXACT_SECRET% 1>NUL 2>NUL && echo EXACT-READ || echo EXACT-DENIED)".to_string(),
+                "echo started>blocked-command-started.txt & (type secret.env 1>NUL 2>NUL && echo GLOB-READ || echo GLOB-DENIED) & (type %SETUP_MARKER% 1>NUL 2>NUL && echo MARKER-READ-ALLOWED || echo MARKER-READ-DENIED) & (echo tampered > %SETUP_MARKER% 2>NUL && echo MARKER-WRITE-ALLOWED || echo MARKER-WRITE-DENIED) & type public.txt & type %BUNDLED_SKILL% & (type %EXACT_SECRET% 1>NUL 2>NUL && echo EXACT-READ || echo EXACT-DENIED)".to_string(),
             ],
             cwd: cwd.clone(),
             expiration: 10_000.into(),
@@ -352,66 +411,44 @@ async fn windows_elevated_enforces_deny_read_and_protects_setup_marker() -> anyh
         /*use_legacy_landlock*/ false,
         /*stdout_stream*/ None,
     )
-    .await?;
+    .await
+    .expect_err("managed deny-read execution must refuse the unqualified backend");
 
-    assert_eq!(exit_code, 0, "sandboxed command should complete");
-    assert!(
-        stdout.text.contains("GLOB-DENIED"),
-        "glob deny-read should block the secret: {stdout:?}"
-    );
-    assert!(
-        !stdout.text.contains("GLOB-READ"),
-        "glob deny-read should not allow the secret: {stdout:?}"
-    );
-    assert!(
-        stdout.text.contains("EXACT-DENIED"),
-        "exact deny-read should block the secret: {stdout:?}"
-    );
-    assert!(
-        !stdout.text.contains("EXACT-READ"),
-        "exact deny-read should not allow the secret: {stdout:?}"
-    );
-    assert!(
-        stdout.text.contains("public ok"),
-        "allowed reads should still work: {stdout:?}"
-    );
-    assert!(stdout.text.contains("bundled skill ok"));
-    assert!(
-        stdout.text.contains("MARKER-READ-DENIED"),
-        "sandboxed command should not read setup readiness: {stdout:?}"
-    );
-    assert!(
-        stdout.text.contains("MARKER-WRITE-DENIED"),
-        "sandboxed command should not modify setup readiness: {stdout:?}"
-    );
-    assert!(
-        !stdout.text.contains("MARKER-READ-ALLOWED"),
-        "sandboxed command must not read setup readiness: {stdout:?}"
-    );
-    assert!(
-        !stdout.text.contains("MARKER-WRITE-ALLOWED"),
-        "sandboxed command must not modify setup readiness: {stdout:?}"
-    );
-    assert!(
-        sandbox_setup_is_complete(codex_home.path()),
-        "setup should remain ready after the tamper attempt"
-    );
+    assert_elevated_capture_refusal(&error);
+    assert_eq!(fixture_tree(&cwd)?, before);
+    assert_eq!(fixture_tree(user_profile.path())?, user_profile_before);
+    assert_eq!(fixture_tree(&sandbox_state)?, sandbox_before);
     Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[serial(codex_home)]
-async fn windows_elevated_unified_exec_enforces_managed_deny_reads() -> anyhow::Result<()> {
+async fn windows_elevated_unified_exec_refuses_unqualified_session() -> anyhow::Result<()> {
     let codex_home =
         codex_home_for_windows_sandbox_test("windows-elevated-tool-runtime-deny-read-codex-home")?;
     let _codex_home_guard = EnvVarGuard::set("CODEX_HOME", codex_home.path().as_os_str());
     stage_windows_sandbox_helpers()?;
-
+    let workspace = TempDir::new()?;
+    let cwd = dunce::canonicalize(workspace.path())?.abs();
+    std::fs::write(
+        cwd.join("secret.env"),
+        "glob secret should remain private\n",
+    )?;
+    std::fs::write(
+        cwd.join("exact-secret.txt"),
+        "exact secret should remain private\n",
+    )?;
+    std::fs::write(cwd.join("public.txt"), "public ok\n")?;
+    let before = fixture_tree(&cwd)?;
+    let sandbox_state = codex_home.path().join(".sandbox");
+    let sandbox_before = fixture_tree(&sandbox_state)?;
     let configured_codex_home = dunce::canonicalize(codex_home.path())?.abs();
-    let builder = test_codex()
+    let configured_cwd = cwd.clone();
+    let mut builder = test_codex()
         .with_windows_cmd_shell()
         .with_config(move |config| {
             config.codex_home = configured_codex_home;
+            config.cwd = configured_cwd;
             config.set_windows_elevated_sandbox_enabled(true);
             config
                 .features
@@ -455,83 +492,33 @@ async fn windows_elevated_unified_exec_enforces_managed_deny_reads() -> anyhow::
                     NetworkSandboxPolicy::Restricted,
                 ))
                 .expect("set managed deny-read permission profile");
-        })
-        .with_workspace_setup(|cwd, _fs| async move {
-            std::fs::write(
-                cwd.join("secret.env"),
-                "glob secret should remain private\n",
-            )?;
-            std::fs::write(
-                cwd.join("exact-secret.txt"),
-                "exact secret should remain private\n",
-            )?;
-            std::fs::write(cwd.join("public.txt"), "public ok\n")?;
-            Ok(())
         });
-    let harness = TestCodexHarness::with_builder(builder).await?;
-
-    let command = concat!(
-        "(type secret.env 1>NUL 2>NUL && echo GLOB-READ || echo GLOB-DENIED) & ",
-        "(type exact-secret.txt 1>NUL 2>NUL && echo EXACT-READ || echo EXACT-DENIED) & ",
-        "type public.txt"
+    let server = start_mock_server().await;
+    let error = match builder.build(&server).await {
+        Ok(_) => panic!("the unqualified elevated session unexpectedly initialized"),
+        Err(error) => error,
+    };
+    let Some(CodexErr::Fatal(message)) = error.downcast_ref::<CodexErr>() else {
+        panic!("unexpected session initialization error: {error:#}");
+    };
+    let native_message = elevated_unavailable_message();
+    assert_eq!(
+        message,
+        &format!(
+            "Failed to initialize session: failed to load AGENTS.md instructions for environment \
+             `local`: fs sandbox helper failed with status exit code: 1: windows sandbox failed: \
+             {native_message}"
+        )
     );
-    let call_id = "windows-managed-deny-read-exec-command";
-    let unified_args = json!({
-        "cmd": command,
-        "yield_time_ms": 30_000,
-        "tty": false,
-        "login": false,
-    });
-    mount_sse_sequence(
-        harness.server(),
-        vec![
-            sse(vec![
-                ev_response_created("resp-windows-unified-deny-read"),
-                ev_function_call(
-                    call_id,
-                    "exec_command",
-                    &serde_json::to_string(&unified_args)?,
-                ),
-                ev_completed("resp-windows-unified-deny-read"),
-            ]),
-            sse(vec![
-                ev_assistant_message("msg-windows-deny-read", "done"),
-                ev_completed("resp-windows-deny-read-complete"),
-            ]),
-        ],
-    )
-    .await;
-
-    let permission_profile = harness
-        .test()
-        .config
-        .permissions
-        .effective_permission_profile();
-    harness
-        .submit_with_permission_profile("read the sandbox fixtures", permission_profile)
-        .await?;
-
-    let output = harness.function_call_stdout(call_id).await;
+    assert_eq!(fixture_tree(&cwd)?, before);
+    assert_eq!(fixture_tree(&sandbox_state)?, sandbox_before);
     assert!(
-        output.contains("GLOB-DENIED"),
-        "exec_command should reject glob-denied reads: {output:?}"
+        server
+            .received_requests()
+            .await
+            .expect("mock server request recording must remain enabled")
+            .is_empty(),
+        "session refusal must happen before sending a model request"
     );
-    assert!(
-        output.contains("EXACT-DENIED"),
-        "exec_command should reject exact-path-denied reads: {output:?}"
-    );
-    assert!(
-        output.contains("public ok"),
-        "exec_command should preserve allowed reads: {output:?}"
-    );
-    assert!(
-        !output.contains("GLOB-READ") && !output.contains("glob secret"),
-        "exec_command leaked glob-denied file contents: {output:?}"
-    );
-    assert!(
-        !output.contains("EXACT-READ") && !output.contains("exact secret"),
-        "exec_command leaked exact-path-denied file contents: {output:?}"
-    );
-
     Ok(())
 }
