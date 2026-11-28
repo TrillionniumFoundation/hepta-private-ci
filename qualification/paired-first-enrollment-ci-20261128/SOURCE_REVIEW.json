@@ -1,0 +1,40 @@
+{
+  "old_steps_byte_identical": true,
+  "new_step_count": 1,
+  "new_exact_tests_count": 4,
+  "runtime_dispatched": false,
+  "rust_changed": false,
+  "minimum_tests": 4,
+  "fits_expected": 0,
+  "actual_execution": "NOT_EXECUTED",
+  "base": "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893",
+  "base_workflow_git_blob": "79fe990f699c01c1c1bdd0196e5118e800142252",
+  "before_sha256": "cf903c5cdd57c966aaf370a7666de6264330b4b2d8b4b28d83c6631b0ba514e3",
+  "after_sha256": "da888ec2bfa31248d8101df7c6f3b73f24d7f52cec183083e6b877f612af178a",
+  "patch_sha256": "980b5e33c0a2f34f4d305bd05321297e81941ea684ce00b726d093fa1ae1d913",
+  "exact_tests": [
+    "deployment_issuer::paired::tests::enrollment::original_first_enrollment_is_exact_and_does_not_authorize_material_use",
+    "deployment_issuer::paired::tests::enrollment::expired_pruned_enrollment_cannot_be_recreated_after_reopen",
+    "deployment_issuer::paired::tests::enrollment::revoked_parents_and_foreign_original_registry_cannot_register",
+    "deployment_issuer::paired::tests::enrollment::wrong_policy_revision_deadline_and_actual_non_root_refuse_without_writes"
+  ],
+  "reason": "Existing original33 uses exact enumeration; late5 selects materials::admission. Neither includes sibling tests::enrollment.",
+  "yaml_parse": "PASS",
+  "only_changed_job": "qualification",
+  "actual_original_select_for_workflow_only": {
+    "effects": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "objective": true,
+    "native": true,
+    "derived": true,
+    "full_repo": true
+  },
+  "scope_original_git_blob": "553bb1f2473f58fce7587c254f817a2c5a45ea09",
+  "scope_original_sha256": "0624e919517198d5275c33af957ea2e9f141d45bc8b59c9133946cd0aadcc80b",
+  "yaml_object_after_removing_only_new_step_equals_original": true,
+  "condition": "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'",
+  "runtime_execution": "NOT_EXECUTED: first natural CI will retain named results under paired-first-enrollment.json",
+  "manual_dispatch_or_rerun": false
+}

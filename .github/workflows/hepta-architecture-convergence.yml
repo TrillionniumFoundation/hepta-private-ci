@@ -252,6 +252,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-late-admission.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(deployment_issuer::paired::tests::materials::admission)'
+      - name: Original paired first-enrollment owner controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-first-enrollment.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(=deployment_issuer::paired::tests::enrollment::original_first_enrollment_is_exact_and_does_not_authorize_material_use) | test(=deployment_issuer::paired::tests::enrollment::expired_pruned_enrollment_cannot_be_recreated_after_reopen) | test(=deployment_issuer::paired::tests::enrollment::revoked_parents_and_foreign_original_registry_cannot_register) | test(=deployment_issuer::paired::tests::enrollment::wrong_policy_revision_deadline_and_actual_non_root_refuse_without_writes)'
       - name: Original paired Root CLI descriptor controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
