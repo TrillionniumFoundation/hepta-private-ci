@@ -29,7 +29,11 @@ use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 
+#[path = "authbus_ack_readiness.rs"]
+mod ack_readiness;
+
 pub(crate) struct TextIngress {
+    ack_changed: tokio::sync::Notify,
     pub evidence: HeptaEvidenceStore,
     pub trust_file: PathBuf,
     pub checkpoint: ReplayCheckpointFile,
@@ -73,6 +77,7 @@ impl TextIngress {
             }
         }
         Ok(Self {
+            ack_changed: tokio::sync::Notify::new(),
             evidence,
             trust_file,
             checkpoint,

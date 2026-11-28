@@ -212,6 +212,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-consumer.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(notes_thread_tool::training_trigger::tests) | test(paired_preparation::training::consumer::tests)'
+      - name: Original AuthBus Ack readiness and pending-owner controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-ack.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(authbus_dispatch::tests) | test(paired_preparation::training::tests::readiness)'
       - name: Root CLI original descriptor ownership and login controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
