@@ -78,12 +78,12 @@ jobs:
         shell: bash
         run: ./scripts/check-module-bazel-lock.sh
 
-      - name: Install OpenSSH for the native operator-acceptance test action
+      - name: Install native Linux test tools
         if: runner.os == 'Linux'
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends openssh-client
+          sudo apt-get install -y --no-install-recommends openssh-client bubblewrap
           test -x /usr/bin/ssh-keygen
           dpkg-query -W -f='${Package} ${Version}\n' openssh-client
           sha256sum /usr/bin/ssh-keygen
@@ -109,6 +109,8 @@ jobs:
               -//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
               -//codex-rs/core:core-all-test
               -//codex-rs/core:core-all-wine-exec-test
+              -//codex-rs/app-server:app-server-all-test
+              -//codex-rs/app-server:app-server-all-wine-exec-test
             )
           fi
 
@@ -122,6 +124,15 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            # Darwin has a short Unix socket address limit. Use an owned,
+            # canonical temporary directory rather than the long runner alias.
+            mac_test_tmpdir="$(mktemp -d /private/tmp/bz.XXXXXX)"
+            bazel_test_args+=(
+              "--test_env=TMPDIR=${mac_test_tmpdir}"
+              "--sandbox_writable_path=${mac_test_tmpdir}"
+            )
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
@@ -148,7 +159,7 @@ jobs:
             -- \
             //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
 
-      - name: Run Core integration tests with native user namespaces
+      - name: Run Core and App Server integration tests with native user namespaces
         if: ${{ !cancelled() && runner.os == 'Linux' }}
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -160,6 +171,7 @@ jobs:
             -- \
             test \
             --strategy=TestRunner=local \
+            --test_env=PATH \
             --test_tag_filters=-argument-comment-lint \
             --test_verbose_timeout_warnings \
             --nocache_test_results \
@@ -167,7 +179,9 @@ jobs:
             --build_metadata=TAG_job=native-core-integration-test \
             -- \
             //codex-rs/core:core-all-test \
-            //codex-rs/core:core-all-wine-exec-test
+            //codex-rs/core:core-all-wine-exec-test \
+            //codex-rs/app-server:app-server-all-test \
+            //codex-rs/app-server:app-server-all-wine-exec-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

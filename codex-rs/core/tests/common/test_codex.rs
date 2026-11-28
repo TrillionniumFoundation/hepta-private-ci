@@ -352,6 +352,11 @@ pub struct TestCodexBuilder {
     models_manager: Option<SharedModelsManager>,
 }
 
+struct ResumeTestThread {
+    rollout_path: PathBuf,
+    environments: Option<Vec<TurnEnvironmentSelection>>,
+}
+
 impl TestCodexBuilder {
     pub fn with_config<T>(mut self, mutator: T) -> Self
     where
@@ -591,7 +596,10 @@ impl TestCodexBuilder {
         Box::pin(self.build_with_home_and_base_url(
             base_url,
             home,
-            Some(rollout_path),
+            Some(ResumeTestThread {
+                rollout_path,
+                environments: None,
+            }),
             test_env,
             /*include_local_environment*/ false,
         ))
@@ -628,7 +636,10 @@ impl TestCodexBuilder {
         Box::pin(self.build_with_home_and_base_url(
             base_url,
             Arc::clone(&previous.home),
-            Some(rollout_path),
+            Some(ResumeTestThread {
+                rollout_path,
+                environments: Some(previous.codex.environment_selections().await),
+            }),
             previous.executor_environment().clone(),
             /*include_local_environment*/ false,
         ))
@@ -639,7 +650,7 @@ impl TestCodexBuilder {
         &mut self,
         base_url: String,
         home: Arc<TempDir>,
-        resume_from: Option<PathBuf>,
+        resume_from: Option<ResumeTestThread>,
         test_env: TestEnv,
         include_local_environment: bool,
     ) -> anyhow::Result<TestCodex> {
@@ -697,7 +708,7 @@ impl TestCodexBuilder {
         config: Config,
         cwd: Arc<TempDir>,
         home: Arc<TempDir>,
-        resume_from: Option<PathBuf>,
+        resume_from: Option<ResumeTestThread>,
         mut test_env: TestEnv,
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
@@ -760,7 +771,7 @@ impl TestCodexBuilder {
         };
 
         let new_conversation = match (resume_from, user_shell_override) {
-            (Some(path), Some(user_shell_override)) => {
+            (Some(resume), Some(user_shell_override)) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
@@ -769,7 +780,7 @@ impl TestCodexBuilder {
                     codex_core::test_support::resume_thread_from_rollout_with_user_shell_override(
                         thread_manager.as_ref(),
                         config.clone(),
-                        path,
+                        resume.rollout_path,
                         auth_manager,
                         user_shell_override,
                         self.supports_openai_form_elicitation,
@@ -777,19 +788,36 @@ impl TestCodexBuilder {
                 )
                 .await?
             }
-            (Some(path), None) => {
+            (Some(resume), None) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if let Some(environments) = resume.environments {
+                    // A Windows executor's selection is native to that executor.
+                    // Reusing it avoids replacing the retained paths with the
+                    // Linux compatibility spelling in the thread configuration.
+                    Box::pin(
+                        codex_core::test_support::resume_thread_from_rollout_with_environments(
+                            thread_manager.as_ref(),
+                            config.clone(),
+                            resume.rollout_path,
+                            auth_manager,
+                            client_mcp_extensions(),
+                            environments,
+                        ),
+                    )
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        resume.rollout_path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(

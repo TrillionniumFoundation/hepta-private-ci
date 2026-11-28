@@ -6,6 +6,7 @@ use anyhow::Result;
 use codex_config::test_support::CloudConfigBundleFixture;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
 use codex_core::config::Config;
 use codex_core::config::Constrained;
 use codex_core::config::ThreadStoreConfig;
@@ -354,6 +355,10 @@ import sys
 import time
 
 prompt = json.load(sys.stdin).get("prompt")
+# The gated case tests only the hook started by the first prompt. A hook
+# result from the second prompt can legitimately start another sample.
+if {gated} and prompt != "finish before the async hook":
+    sys.exit(0)
 Path(r"{started_path}").write_text(prompt, encoding="utf-8")
 while {gated} and not Path(r"{release_path}").exists():
     time.sleep(0.01)
@@ -1785,12 +1790,14 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
     );
 
     let next_prompt = "observe the buffered async context";
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: next_prompt.to_string(),
             text_elements: Vec::new(),
         }]))
         .await?;
+    assert!(matches!(submission, TurnInputSubmission::Started { .. }));
 
     let mut warning_event = None;
     timeout(Duration::from_secs(5), async {

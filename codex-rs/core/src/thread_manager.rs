@@ -1578,7 +1578,7 @@ impl ThreadManager {
         .await
     }
 
-    async fn initial_history_from_rollout_path(
+    pub(crate) async fn initial_history_from_rollout_path(
         &self,
         rollout_path: PathBuf,
     ) -> CodexResult<InitialHistory> {
