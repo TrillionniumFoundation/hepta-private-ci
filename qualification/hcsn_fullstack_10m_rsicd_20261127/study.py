@@ -28,6 +28,8 @@ def eval_rows(model,d,rows,images=None):
 def fit(arm,seed):
     tick=time.perf_counter();out=ROOT/'runs'/f'{arm}-{seed}';out.mkdir(exist_ok=True,parents=True)
     if (out/'done.json').exists():return
+    store_file=ROOT/'storage.json';store=Path(json.loads(store_file.read_text())['checkpoint_root'])/out.name if store_file.exists() else out
+    store.mkdir(parents=True,exist_ok=True)
     d=Data();model=net(arm,seed,d);opt=torch.optim.AdamW(model.parameters(),lr=.0005,weight_decay=.01,foreach=False);rng=np.random.default_rng(seed)
     count=sum(p.numel() for p in model.parameters());assert count>=10_000_000
     w=time.perf_counter();c=time.process_time();hw=[];tokens=0;step=0;thresholds={k:[35,125,225] for k in ('wall','cpu')}
@@ -36,7 +38,10 @@ def fit(arm,seed):
     def observe(tags):
         losses,ns=eval_rows(model,d,d.index['development']);nll=float(losses.sum()/ns.sum());state=out/f's{step}.pt'
         new_record=not hw or nll<min(x['nll'] for x in hw);save=(step in STEPS or new_record)
-        if save:tmp=state.with_suffix('.tmp');torch.save(model.state_dict(),tmp);tmp.replace(state)
+        if save:
+            durable=store/state.name;tmp=durable.with_suffix('.tmp');torch.save(model.state_dict(),tmp);tmp.replace(durable)
+            if store!=out:
+                link=state.with_suffix('.link');link.unlink(missing_ok=True);link.symlink_to(durable.resolve());link.replace(state)
         digest=sha(state) if save else None
         entry={'step':step,'train_tokens':tokens,'nll':nll,'validation_tokens':int(ns.sum()),'state':state.name if save else None,'sha':digest,'tags':tags,**elapsed()};hw.append(entry);write(out/'history.json',hw)
         print(arm,seed,step,round(entry['cpu'],1),round(nll,5),flush=True)
