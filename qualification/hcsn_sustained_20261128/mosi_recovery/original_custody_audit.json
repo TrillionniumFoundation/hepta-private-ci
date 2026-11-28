@@ -1,0 +1,226 @@
+{
+  "historical_tip": "4f80d069218e5416be0f51323a9db46b461d07dd",
+  "branch": "research/hcsn-mosi-three-stream-20261127-e0bf",
+  "path": "qualification/hcsn_mosi_three_stream_20261127",
+  "github_tree": [
+    [
+      "file",
+      "METHODS_NOTES.md",
+      "4149",
+      "a09fc49370c5b97f281ff354773600ee4555db7b"
+    ],
+    [
+      "file",
+      "PROTOCOL.md",
+      "7309",
+      "589c188a920b25828c986cedf655f76c6af83b19"
+    ],
+    [
+      "file",
+      "REPRODUCE.md",
+      "4914",
+      "ce30a972af26d32e14ad89a2c6e2bc39931f0b91"
+    ],
+    [
+      "file",
+      "SEAL.json",
+      "17050",
+      "cb6ad6a0a8ed15189d2e8b04b7c6ee836d3c7c16"
+    ],
+    [
+      "file",
+      "SEAL_SHA.json",
+      "304",
+      "1e3a64da82aab1194fb055f95f11ed3c4deb5cb0"
+    ],
+    [
+      "file",
+      "alignment_check.json",
+      "1996",
+      "7db7be599176fd23d7b4f866d2a1b209b5f1ec4d"
+    ],
+    [
+      "file",
+      "alignment_check.py",
+      "1670",
+      "5e51d4e2651c608d9f72cb19b0829540a9efa471"
+    ],
+    [
+      "file",
+      "archive.py",
+      "4404",
+      "fcf6043f0f224cb81726b906ad7ad11ac3f93638"
+    ],
+    [
+      "file",
+      "check_law.py",
+      "2038",
+      "59888e40d55519a0637ca1c7e60f19d0d242c6c8"
+    ],
+    [
+      "file",
+      "cold.py",
+      "5167",
+      "9b06f5074e1e1f784fedfbb74d177118b1b33a3d"
+    ],
+    [
+      "file",
+      "concise.py",
+      "5434",
+      "51bb048b19f4925fe74b7e82aaf0e7bc63326d20"
+    ],
+    [
+      "file",
+      "data.json",
+      "3084",
+      "d78175bc445fce698fda37b171bc8920dd28d8ef"
+    ],
+    [
+      "file",
+      "figure.py",
+      "3456",
+      "4e44abd7e440dd91b77f98e70d112581d2502833"
+    ],
+    [
+      "file",
+      "input_audit.json",
+      "2754",
+      "ea3661a082aa0d6b6957cb17f409e20b47813f96"
+    ],
+    [
+      "file",
+      "input_audit.py",
+      "2339",
+      "48e6e23dcb8dff1a35170e455fa5ef2e8e0fae9a"
+    ],
+    [
+      "file",
+      "law.npz",
+      "993028",
+      "acb4311431ba7dbba7973cb2c34cfbbdb9746b46"
+    ],
+    [
+      "file",
+      "law_check.json",
+      "2506",
+      "e850460e1ed48007f6bfc03b07ce32de039fc9b3"
+    ],
+    [
+      "file",
+      "models.py",
+      "5205",
+      "db5cbce23f8acf263692a59e15dc869c6b58a93c"
+    ],
+    [
+      "file",
+      "official_folds.py",
+      "1459",
+      "b63fad097e4aafecd0d4e7419f994afad264d008"
+    ],
+    [
+      "file",
+      "parameter_counts.json",
+      "8194",
+      "10f30741db54f68313115af90a9d8c86764f290e"
+    ],
+    [
+      "file",
+      "prepare.py",
+      "3668",
+      "64e101e295b14e42c76d14e130aede2dee328942"
+    ],
+    [
+      "file",
+      "replay.py",
+      "2544",
+      "fd0f12f1049fa15586ecc5f155c44713d374797e"
+    ],
+    [
+      "file",
+      "source.py",
+      "1526",
+      "2b19de65c7c54b7cf88e85d598b6b5fb6fd87762"
+    ],
+    [
+      "file",
+      "table_cost.json",
+      "4996",
+      "8abe40f1da7bc1104399ec4dc2418663be0c7fff"
+    ],
+    [
+      "file",
+      "table_cost.py",
+      "2711",
+      "55d0b7761bd0df8902f2d68093e4810ebe5c356b"
+    ],
+    [
+      "file",
+      "train.py",
+      "7844",
+      "7a6a6552f3fd85b7c406f7b8af86e112d100f7bb"
+    ],
+    [
+      "file",
+      "verify.py",
+      "8275",
+      "a73af80a23980c71313b9d832f0030cfe148ab61"
+    ]
+  ],
+  "actions_runs": 0,
+  "history": [
+    "4f80d069218e5416be0f51323a9db46b461d07dd\t2026-11-28T00:13:56Z\tSeal every completed development selection and state recipe before held-out scoring",
+    "c945a15c96a22777b92da2afccf68e5940b58ee4\t2026-11-27T23:38:57Z\tVerify every MOSI alignment mask and freeze readable paired comparison and timing summaries",
+    "97c0488873d741709d52d98065d4a044f29978ca\t2026-11-27T23:30:34Z\tRebuild and byte-verify the full 247940-entry MOSI price table and charge its cold-start cost",
+    "892b3d3286d7e56500c3d3063b6986cc0357a2c5\t2026-11-27T23:23:55Z\tRecord actual model sizes, official-group and input duplicate audit, and lossless replay procedure",
+    "5db0404968a602d0a1c847be8b25d5ba42c3a0b6\t2026-11-27T23:18:19Z\tFreeze three-stream fit sources, exact gradient checks, held-video seal, perturbations and independent analysis",
+    "882d49723ac5096239abf9db5e115d2373cb4ae5\t2026-11-27T23:11:46Z\tPreregister speaker-grouped three-stream MOSI encoder, all-layer Forward Projection, budgets and perturbations"
+  ],
+  "historical_seal": {
+    "distinct_fit_histories": 63,
+    "distinct_selected_weight_objects": 103,
+    "earlier_code_commit": "5db0404968a602d0a1c847be8b25d5ba42c3a0b6",
+    "eligible_selected_prefixes": 189,
+    "full_manifest": "SEAL.json",
+    "full_manifest_sha256": "75ec41f336ab20aded67a94ac8c435861fe7fc1e2fc4276e8a5ceb5d4b31d256"
+  },
+  "test_sha256": "e84b18ceca68138a1db83a812a9c67fe837046df12537018f6f14ddc01368c8a",
+  "unpublished_inputs": [
+    "63 original fit receipt JSONs with wall times/rung decisions",
+    "103 original selected .pt files",
+    "weights_index.json and packed chunks",
+    "evidence_index.json and packed cold outputs"
+  ],
+  "prior_host_source": "REPRODUCE.md specifies Intel Xeon Platinum 8573C; no original operator host address or source path in the committed tree.",
+  "host_search": [
+    {
+      "host": "mac",
+      "traversal": "{'searched_directories': 631348, 'seconds': 55.779, 'complete_within_roots_and_exclusions': True, 'hits': []}"
+    },
+    {
+      "host": "desktop",
+      "traversal": "{'searched_directories': 282456, 'seconds': 150.001, 'complete_within_roots_and_exclusions': False, 'hits': []}"
+    },
+    {
+      "host": "ai395",
+      "traversal": "{'searched_directories': 1139727, 'seconds': 150.0, 'complete_within_roots_and_exclusions': False, 'hits': []}"
+    },
+    {
+      "host": "rog",
+      "traversal": "{'searched_directories': 185155, 'seconds': 150.0, 'complete_within_roots_and_exclusions': False, 'hits': []}"
+    },
+    {
+      "host": "pocket4",
+      "traversal": "{'searched_directories': 1670787, 'seconds': 150.0, 'complete_within_roots_and_exclusions': False, 'hits': []}"
+    },
+    {
+      "host": "x230",
+      "traversal": "{'searched_directories': 187151, 'seconds': 5.213, 'complete_within_roots_and_exclusions': True, 'hits': []}"
+    }
+  ],
+  "cloud_job_source_check": "{'inspected': 183, 'matches': []}",
+  "links": {
+    "tree": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/4f80d069218e5416be0f51323a9db46b461d07dd/qualification/hcsn_mosi_three_stream_20261127",
+    "seal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4f80d069218e5416be0f51323a9db46b461d07dd/qualification/hcsn_mosi_three_stream_20261127/SEAL.json"
+  },
+  "scope": "The four time-bounded partial host scans do not exclude further copies. Warm directories and exact filenames were searched without altering them."
+}
