@@ -1,0 +1,13 @@
+{
+  "schema": "paired-terminal-pre-native-import-review-v1",
+  "previous_formatted_source": "11569189bc15a51e3032a7cb99d8f5f08dbad6eb",
+  "native_execution_started": false,
+  "observed_failure_in_this_source": false,
+  "reason": "Explicit pretty_assertions::assert_eq avoids the glob/prelude ambiguity already reported in the separate common Root test compile; nine new criteria remain unchanged.",
+  "expected_total_tests": 13,
+  "test_sha256": {
+    "prepare": "a59b0f9fd24b88287cea08287375063792f695dfe1f5943009672c320e94a5b6",
+    "consume": "ca08549b95635952df78020b1c16ca6ff6e1bb6717fbca3c2b7de98f9e4c6766"
+  },
+  "formatter_status": "pending actual just fmt of the two modified test files"
+}

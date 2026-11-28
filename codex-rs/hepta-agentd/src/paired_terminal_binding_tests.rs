@@ -15,6 +15,7 @@ use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 const FIXTURE_NOW: u64 = 50;
 const FAILURE: &[u8] = include_bytes!("../tests/fixtures/paired-record-failure-v1.json");
