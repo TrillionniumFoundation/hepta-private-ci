@@ -632,10 +632,10 @@ async fn responses_websocket_request_prewarm_uses_caller_supplied_metadata() {
 async fn responses_websocket_request_prewarm_traces_logical_request() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let harness = websocket_harness_with_options(&server, /*runtime_metrics_enabled*/ true).await;
@@ -709,13 +709,18 @@ async fn responses_websocket_request_prewarm_traces_logical_request() {
         }
     }
 
-    let connection = server.single_connection();
-    let follow_up = connection
-        .get(1)
-        .expect("missing follow-up request")
-        .body_json();
-    assert_eq!(follow_up["previous_response_id"].as_str(), Some("warm-1"));
-    assert_eq!(follow_up["input"], serde_json::json!([]));
+    // The prewarm and the turn have different trusted request metadata.
+    // The turn must send its full logical input, not reuse the warmup response.
+    let connections = server.connections();
+    assert_eq!(connections.iter().map(Vec::len).collect::<Vec<_>>(), [1, 1]);
+    let warmup = connections[0][0].body_json();
+    assert_eq!(warmup["generate"].as_bool(), Some(false));
+    let turn = connections[1][0].body_json();
+    assert!(turn["previous_response_id"].is_null());
+    assert_eq!(
+        turn["input"][0]["content"][0]["text"].as_str(),
+        Some("hello")
+    );
 
     let rollout = replay_bundle(trace_dir.path()).expect("replay trace");
     let inference = rollout
@@ -2384,6 +2389,7 @@ fn websocket_provider_with_connect_timeout(
         requires_openai_auth: false,
         supports_websockets: true,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     }
 }
 

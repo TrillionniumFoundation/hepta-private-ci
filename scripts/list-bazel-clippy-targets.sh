@@ -36,6 +36,15 @@ else
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
 fi
 
+if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  # Expanding a manual label turns Bazel's platform skip into an analysis
+  # error. This process test only supports UnixProcessDriver (Linux/macOS).
+  manual_rust_test_targets="$(
+    printf '%s\n' "${manual_rust_test_targets}" |
+      grep -Fxv -- "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin" || true
+  )"
+fi
+
 printf '%s\n' \
   "//codex-rs/..." \
   "-//codex-rs/v8-poc:all"

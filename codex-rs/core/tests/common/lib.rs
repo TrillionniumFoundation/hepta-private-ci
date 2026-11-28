@@ -344,15 +344,27 @@ pub async fn wait_for_event_with_timeout<F>(
 where
     F: FnMut(&codex_protocol::protocol::EventMsg) -> bool,
 {
+    use codex_protocol::protocol::EventMsg;
     use tokio::time::Duration;
     use tokio::time::timeout;
+
+    // Allow for async startup work such as config I/O and tool discovery.
+    let wait_time = wait_time.max(Duration::from_secs(10));
     loop {
-        // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery)
-        let ev = timeout(wait_time.max(Duration::from_secs(10)), codex.next_event())
+        let ev = timeout(wait_time, codex.next_event())
             .await
             .expect("timeout waiting for event")
             .expect("stream ended unexpectedly");
         if predicate(&ev.msg) {
+            // The raw event precedes durable terminalization. Wait on this
+            // exact normal turn before callers submit their next operation.
+            if let EventMsg::TurnComplete(turn) = &ev.msg
+                && let Some(completion) = codex.pending_normal_turn_finish_completion(&turn.turn_id)
+            {
+                timeout(wait_time, completion)
+                    .await
+                    .expect("timeout waiting for normal turn terminalization");
+            }
             return ev.msg;
         }
     }
