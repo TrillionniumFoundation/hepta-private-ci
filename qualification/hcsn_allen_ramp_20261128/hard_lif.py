@@ -44,6 +44,8 @@ def run(mode):
         best=min(c,key=lambda v:v["development"][0])["setup"];final=fit(m,tr+dev,best["tau"],best["threshold"])
         put(out/"seal.json",dict(candidates=c,selected=final,protocol_sha256=sha(ROOT/"HARD_LIF.md"),cohort_sha256=sha(src/"cohort.json"),python_sha256=sha(Path(__file__)),c_sha256=sha(ROOT/"hard_lif.c"),library_sha256=sha(ROOT/"hard_lif.so")))
         return
+    from seal_exchange import await_joint
+    await_joint(ROOT)
     seal=json.loads((out/"seal.json").read_text());assert sha(Path(__file__))==seal["python_sha256"] and sha(ROOT/"hard_lif.so")==seal["library_sha256"] and sha(src/"cohort.json")==seal["cohort_sha256"]
     te=data.traces(source["held"]);rows,signals=evaluate(m,te,seal["selected"]);pfiles={};onsets=[]
     for sid,sw,x,y in te:
@@ -57,7 +59,7 @@ def run(mode):
     diff=np.array([dual[str(k)][2]/dual[str(k)][5]-rows[k][2]/rows[k][5] for k in ids])
     rng=np.random.default_rng(950183);draw=rng.integers(0,len(ids),(10000,len(ids)))
     o=dict(seal_sha256=sha(out/"seal.json"),source_terminal_sha256=sha(ROOT/"results/terminal.json"),metrics=summarize(rows),records=onsets,raw_archives=pfiles,
-           first_dual_minus_hard_mean_nll=float(diff.mean()),first_dual_minus_hard_actor95=np.quantile(diff[draw].mean(1),[.025,.975]).tolist(),
+           first_dual_minus_hard_mean_nll=float(diff.mean()),first_dual_minus_hard_specimen95=np.quantile(diff[draw].mean(1),[.025,.975]).tolist(),
            mean_specimen_absolute_onset_error_silence_at_end=float(np.mean([np.mean([t["absolute_error_silence_at_end"] for t in onsets if t["specimen"]==sid]) for sid in ids])),
            false_onset=sum(t["observed_first_bin_end"] is None and t["hard_first_bin_end"] is not None for t in onsets),missed_onset=sum(t["observed_first_bin_end"] is not None and t["hard_first_bin_end"] is None for t in onsets))
     put(out/"terminal.json",o)

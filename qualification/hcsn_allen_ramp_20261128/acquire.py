@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
 import hashlib
+import fcntl
 import json
 from pathlib import Path
 import subprocess
@@ -77,6 +78,9 @@ def window(f,row):
     return info,orig,times,counts,x.astype(np.float32)
 def acquire_cell(sid,rows):
     folder=ROOT/"source"/str(sid);folder.mkdir(parents=True,exist_ok=True)
+    with (folder/"acquire.lock").open("a") as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX);return acquire_locked(sid,rows,folder)
+def acquire_locked(sid,rows,folder):
     result=folder/"attempt-v2.json"
     if result.is_file():return json.loads(result.read_text())
     q=f"model::Specimen,rma::criteria,[id$eq{sid}],rma::include,ephys_result(well_known_files(well_known_file_type))"
@@ -88,10 +92,17 @@ def acquire_cell(sid,rows):
         retry=None
         for attempt in range(3):
             try:
-                expected=None
-                with urllib.request.urlopen(url,timeout=100) as res,partial.open("wb") as f:
-                    if "content-length" in res.headers:expected=int(res.headers["content-length"])
-                    while v:=res.read(1048576):f.write(v)
+                offset=partial.stat().st_size if partial.exists() else 0
+                headers={"Range":f"bytes={offset}-"} if offset else {}
+                with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=100) as res:
+                    if offset and res.status==206:
+                        interval=res.headers.get("Content-Range","")
+                        if not interval.startswith(f"bytes {offset}-"):raise IOError("unexpected range response")
+                        expected=int(interval.split("/")[-1]);mode="ab"
+                    else:
+                        n=res.headers.get("Content-Length");expected=int(n) if n else None;mode="wb"
+                    with partial.open(mode) as f:
+                        while v:=res.read(1048576):f.write(v)
                 if expected is not None and partial.stat().st_size!=expected:raise IOError("incomplete NWB")
                 with h5py.File(partial):pass
                 partial.replace(nwb);break
@@ -126,14 +137,16 @@ def main():
     order=sorted((sid for sid,v in grouped.items() if len(v)>=2),key=lambda n:hashlib.sha256(("hepta-9de7-ramp-v1/"+str(n)).encode()).hexdigest())
     put(src/"ranked_specimens.json",order)
     kept=[];attempts=[]
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        for step in range(0,len(order),4):
-            jobs=[(sid,pool.submit(acquire_cell,sid,grouped[sid])) for sid in order[step:step+4]]
+    # The future queue is limited to the remaining target count. Eligibility is still ranked.
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        cursor=0
+        while len(kept)<24 and cursor<len(order):
+            pending=order[cursor:cursor+24-len(kept)];cursor+=len(pending)
+            jobs=[(sid,pool.submit(acquire_cell,sid,grouped[sid])) for sid in pending]
             for sid,job in jobs:
                 r=job.result();attempts.append(sid)
-                if r["accepted"] and len(kept)<24:kept.append(sid)
+                if r["accepted"]:kept.append(sid)
                 print("source",sid,r["accepted"],len(r["sweeps"]),"eligible",len(kept),r["nwb_bytes"],r["skips"][:1],flush=True)
-            if len(kept)==24:break
     assert len(kept)==24
     put(src/"cohort.json",dict(source_rows=len(rows),eligible_roster=len(order),excluded=len(excluded),attempts=attempts,train=kept[:12],dev=kept[12:16],held=kept[16:24],input_hashes={str(sid):digest(src/str(sid)/"signals-v2.npz") for sid in kept},protocol_sha256=digest(ROOT/"PROTOCOL.md")))
 if __name__=="__main__":main()

@@ -124,6 +124,8 @@ def run(args):
             result[arm]=dict(candidates=candidates,selected=fit(model,tr+dev,arm,selected));print(arm,selected,flush=True)
         put(dest/"seal.json",dict(models=result,cohort_sha256=sha(src/"cohort.json"),law_sha256=sha(args.law),source_sha256=sha(Path(__file__)),c_sha256=sha(ROOT/"physical.c"),library_sha256=sha(ROOT/"physical.so")))
         return
+    from seal_exchange import await_joint
+    await_joint(ROOT)
     seal=json.loads((dest/"seal.json").read_text())
     assert seal["cohort_sha256"]==sha(src/"cohort.json") and seal["law_sha256"]==sha(args.law) and seal["source_sha256"]==sha(Path(__file__)) and seal["c_sha256"]==sha(ROOT/"physical.c") and seal["library_sha256"]==sha(ROOT/"physical.so")
     held=model.traces(cohort["held"]);all_rows={};summary={};proof={};bins=0;baseline=None
