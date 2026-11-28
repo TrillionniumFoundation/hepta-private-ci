@@ -14,11 +14,13 @@ class Scalars:
 
 
 class Stationary:
-    def __init__(self,ops=Scalars):
+    def __init__(self,ops=Scalars,drive=None):
         self.op=ops
         c=ops.number
         self.r,self.delta,self.sigma,self.tax,self.alpha,self.C,self.m,self.q=map(c,(".08",".02",".23",".27",".6","6.39","1",".09"))
         self.v,self.ke,self.kl,self.reset,self.lag=map(c,("-.8",".6","4.1",".30",".25"))
+        if drive is not None:
+            self.v=drive
         self.P=c("61.68")*(1+c(".28")*self.v)
         self.D=self.sigma*self.sigma/2
         self.mu=self.r-self.delta-self.D

@@ -113,18 +113,17 @@ def bound(limits,srect,radius=None):
     return ((I+lam*D*derivatives/norm)/amin).b
 
 
-def main(which,start,end,out,n=28):
-    roots=json.loads(Path(__file__).with_name("enclosures.json").read_text())["roots"]
-    r=json.loads(Path(__file__).with_name("sharp_roots.json").read_text())[which]["inward_drift"]
-    # Keep closed literal constants highly accurate. Binary64 conversion is
-    # confined to the complex normal CDF and is compensated in cdf().
-    re=Stationary(Rigorous)
-    ur=Dual(iv.mpf(r),1)
-    h0=1-re.stationary(ur)[0].d
-    reality=Transfer(re,Dual(iv.mpf(r)))
+def main(which,start,end,out,n=28,setup=None):
+    if setup is None:
+        r=json.loads(Path(__file__).with_name("sharp_roots.json").read_text())[which]["inward_drift"]
+        re=Stationary(Rigorous)
+        h0=1-re.stationary(Dual(iv.mpf(r),1))[0].d
+        reality=Transfer(re,Dual(iv.mpf(r)))
+        t=Transfer(Stationary(Complex),iv.mpc(iv.mpf(r)))
+        additional_bound=None
+    else:
+        reality,t,h0,additional_bound=setup
     constants=limits(reality)
-    comp=Stationary(Complex)
-    t=Transfer(comp,iv.mpc(iv.mpf(r)))
     evals=0
     @lru_cache(maxsize=16000)
     def eval_node(c,h,j,n):
@@ -151,8 +150,10 @@ def main(which,start,end,out,n=28):
             if abs(box).b>=rad:return None
             br=iv.mpc(iv.mpf([-rad,rad]),iv.mpf([-rad,rad]))
             mx=bound(constants,br,rad)
+            if mx is not None and additional_bound is not None:mx+=additional_bound(br,rad)
         else:
             mx=bound(constants,box)
+            if mx is not None and additional_bound is not None:mx+=additional_bound(box,None)
         if mx is None:return None
         # For analytic H on rho=2, each complex-series Chebyshev coefficient
         # is at most 2M/2^j. On the real interval the interpolant's
