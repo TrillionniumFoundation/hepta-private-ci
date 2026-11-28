@@ -28,7 +28,9 @@ def get(q,path):
         if not json.loads(raw)["success"]:raise ValueError("RMA unsuccessful")
         path.write_bytes(raw)
     return json.loads(path.read_bytes())
-def label(value):return value.decode().lower() if isinstance(value,bytes) else str(value).lower()
+def scalar(value):return np.asarray(value).reshape(-1).item()
+def label(value):
+    value=scalar(value);return value.decode().lower() if isinstance(value,bytes) else str(value).lower()
 def version(f):
     v=f.get("general/generated_by")
     if v is not None:
@@ -45,37 +47,37 @@ def window(f,row):
     if label(v.attrs["unit"]) not in ("volts","volt","v"):raise ValueError("non-volt response")
     if "ramp" not in label(voltage["aibs_stimulus_name"][()]):raise ValueError("not an NWB Ramp")
     dt=current["starting_time"];vr=voltage["starting_time"]
-    rate=float(dt.attrs["rate"]);t0=float(dt[()]);assert abs(float(vr[()])-t0)<1e-7 and abs(rate-float(vr.attrs["rate"]))<1e-5
+    rate=float(scalar(dt.attrs["rate"]));t0=float(scalar(dt[()]));assert abs(float(scalar(vr[()]))-t0)<1e-7 and abs(rate-float(scalar(vr.attrs["rate"])))<1e-5
     width=round(rate*.002)
     if rate<10000 or abs(width-rate*.002)>1e-6:raise ValueError("sample rate")
     exp=f.get(f"epochs/Experiment_{n}/stimulus")
     if exp is None:raise ValueError("no experimental sampling interval")
     ra=int(exp["idx_start"][()]);rb=ra+int(exp["count"][()])
-    start=max(ra,round((row["stimulus_start_time"]-t0)*rate))
-    stop=min(rb,len(v),len(stim),round((row["stimulus_start_time"]-t0+row["stimulus_duration"])*rate),start+round(30*rate))
+    start=max(ra,round(row["stimulus_start_time"]*rate))
+    stop=min(rb,len(v),len(stim),round((row["stimulus_start_time"]+row["stimulus_duration"])*rate),start+round(30*rate))
     bins=(stop-start)//width
     if bins<10:raise ValueError("insufficient complete observation")
     stop=start+bins*width
     sp=None;spikey=None
     for key in ("spike_times","aibs_spike_times"):
         path=f"analysis/{key}/{name}"
-        if path in f:sp=np.asarray(f[path],dtype=np.float64);spikey=path;break
+        if path in f:sp=np.asarray(f[path],dtype=np.float64).reshape(-1);spikey=path;break
     if sp is None:raise ValueError("no explicit official spike-time dataset")
     if not np.all(np.isfinite(sp)) or not np.all(np.diff(sp)>0):raise ValueError("invalid official spikes")
-    orig=np.asarray(stim[start:stop]);converted=version(f)>=(1,1);scale=(float(stim.attrs["conversion"]) if converted else 1.)*1e12
+    orig=np.asarray(stim[start:stop]);converted=version(f)>=(1,1);scale=(float(scalar(stim.attrs["conversion"])) if converted else 1.)*1e12
     x=np.mean(orig.astype(float).reshape(bins,width),axis=1)*scale
     if not np.isfinite(x).all() or np.ptp(x)<=0 or abs(x).max()>5000:raise ValueError("invalid sampled current")
-    lo=t0+start/rate;hi=t0+stop/rate;times=sp[(sp>=lo)&(sp<hi)]-lo
+    lo=start/rate;hi=stop/rate;times=sp[(sp>=lo)&(sp<hi)]-lo
     indices=np.floor(times/.002).astype(int)
     if np.any(indices<0) or np.any(indices>=bins):raise ValueError("time alignment at bin edge")
     counts=np.bincount(indices,minlength=bins).astype(np.uint16)
-    info=dict(row=row,spike_dataset=spikey,rates_hz=rate,original_epoch=[ra,rb],native_samples=[start,stop],start_s=lo,end_s=hi,
+    info=dict(row=row,spike_dataset=spikey,rates_hz=rate,original_epoch=[ra,rb],native_samples=[start,stop],absolute_sweep_start_clock=t0,start_s=lo,end_s=hi,
               bin_seconds=.002,current_multiplier_pA=scale,version=version(f),current_min_max_pA=[float(x.min()),float(x.max())],
               original_dtype=str(orig.dtype),bins=bins,native_dtype_bytes=orig.nbytes,observed_spikes=len(times),occupied_bins=int((counts>0).sum()))
     return info,orig,times,counts,x.astype(np.float32)
 def acquire_cell(sid,rows):
     folder=ROOT/"source"/str(sid);folder.mkdir(parents=True,exist_ok=True)
-    result=folder/"attempt.json"
+    result=folder/"attempt-v2.json"
     if result.is_file():return json.loads(result.read_text())
     q=f"model::Specimen,rma::criteria,[id$eq{sid}],rma::include,ephys_result(well_known_files(well_known_file_type))"
     spec=get(q,folder/"specimen.json")["msg"][0];files=[x for x in spec["ephys_result"]["well_known_files"] if x["well_known_file_type"]["name"]=="NWBDownload"]
@@ -106,7 +108,7 @@ def acquire_cell(sid,rows):
             payload[f"occupied_counts_{i}"]=counts;payload[f"current_bin_pA_{i}"]=x
             kept.append(info)
             if len(kept)==3:break
-    out=folder/"signals.npz"
+    out=folder/"signals-v2.npz"
     if len(kept)>=2:np.savez_compressed(out,**payload)
     summary=dict(specimen=sid,source_id=obj["id"],source_url=url,nwb_sha256=digest(nwb),nwb_bytes=nwb.stat().st_size,
                  accepted=len(kept)>=2,sweeps=kept,skips=failed,signals_sha256=digest(out) if out.exists() else None)
@@ -133,5 +135,5 @@ def main():
                 print("source",sid,r["accepted"],len(r["sweeps"]),"eligible",len(kept),r["nwb_bytes"],r["skips"][:1],flush=True)
             if len(kept)==24:break
     assert len(kept)==24
-    put(src/"cohort.json",dict(source_rows=len(rows),eligible_roster=len(order),excluded=len(excluded),attempts=attempts,train=kept[:12],dev=kept[12:16],held=kept[16:24],input_hashes={str(sid):digest(src/str(sid)/"signals.npz") for sid in kept},protocol_sha256=digest(ROOT/"PROTOCOL.md")))
+    put(src/"cohort.json",dict(source_rows=len(rows),eligible_roster=len(order),excluded=len(excluded),attempts=attempts,train=kept[:12],dev=kept[12:16],held=kept[16:24],input_hashes={str(sid):digest(src/str(sid)/"signals-v2.npz") for sid in kept},protocol_sha256=digest(ROOT/"PROTOCOL.md")))
 if __name__=="__main__":main()
