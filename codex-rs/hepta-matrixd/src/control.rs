@@ -431,9 +431,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                ErrorKind::NotFound | ErrorKind::ConnectionRefused
+            ) =>
+        {
+            // Windows can refuse a connection when there is no rendezvous file.
+            // Confirm absence without treating a dangling link as a missing entry.
+            match tokio::fs::symlink_metadata(socket_path).await {
+                Ok(_) => {}
+                Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+                Err(error) => return Err(error.into()),
+            }
+        }
         Err(error) => return Err(error.into()),
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
@@ -849,6 +860,17 @@ mod tests {
             .await;
         assert!(matches!(response.payload, MatrixdPayload::Accepted));
         assert!(store.pending_approval("approval-race").await?.is_none());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn missing_control_socket_path_is_preparable_without_a_listener() -> TestResult {
+        let temp = TempDir::new()?;
+        let socket_path = temp.path().join("owner").join("fresh-control.mx");
+        assert!(!socket_path.exists());
+        prepare_socket(&socket_path).await?;
+        assert!(socket_path.parent().expect("socket parent").is_dir());
+        assert!(!socket_path.exists());
         Ok(())
     }
 
