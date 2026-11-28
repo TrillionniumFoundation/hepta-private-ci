@@ -1,0 +1,33 @@
+{
+ "method": "same_site_bp",
+ "seed": 311,
+ "steps": 16,
+ "examples": 256,
+ "unique_examples": 245,
+ "input_index_sha256": "29d04aafd1df3e3f8da2b4f6f841db1f8efc64cd256bbc3bd7f608e9e2295364",
+ "full_parameters": 1016475200,
+ "eligible_parameters": 4980736,
+ "changed": {
+  "read.0": 655358,
+  "read.1": 655357,
+  "read.2": 655360,
+  "read.3": 655357,
+  "read.4": 655357,
+  "read.5": 655358,
+  "projection": 1048575
+ },
+ "delta_frobenius": {
+  "read.0": 0.3964979946613312,
+  "read.1": 0.39626356959342957,
+  "read.2": 0.4001530408859253,
+  "read.3": 0.40120166540145874,
+  "read.4": 0.4026182293891907,
+  "read.5": 0.4180469214916229,
+  "projection": 0.5243548154830933
+ },
+ "sha256": "3fc118c873432141e1e6eb79b00f833d139d8943d8e5c40e7d1586924a82affe",
+ "setup_s": 2.7945756376720965,
+ "optimization_s": 71.42663003597409,
+ "postfit_s": 0.023916717153042555,
+ "invocation_wall_s": 76.06549354968593
+}

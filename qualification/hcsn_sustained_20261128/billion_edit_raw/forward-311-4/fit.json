@@ -1,0 +1,33 @@
+{
+ "method": "forward",
+ "seed": 311,
+ "steps": 4,
+ "examples": 64,
+ "unique_examples": 63,
+ "input_index_sha256": "8b94262dbad5696934c1d0aeedc4b641a9993fd505fd9bf1bc720eddeaca0f4f",
+ "full_parameters": 1016475200,
+ "eligible_parameters": 4980736,
+ "changed": {
+  "read.0": 655360,
+  "read.1": 655360,
+  "read.2": 655360,
+  "read.3": 655360,
+  "read.4": 655360,
+  "read.5": 655360,
+  "projection": 1048576
+ },
+ "delta_frobenius": {
+  "read.0": 71.83344268798828,
+  "read.1": 70.53243255615234,
+  "read.2": 71.26268768310547,
+  "read.3": 74.54309844970703,
+  "read.4": 78.13973236083984,
+  "read.5": 80.39530181884766,
+  "projection": 9.246392250061035
+ },
+ "sha256": "7024efccf7c1dab10aed5b3c9b0d4ce3b56b07a6bc54b7678677f84cd8f47e35",
+ "setup_s": 2.7868877733126283,
+ "optimization_s": 14.536503091920167,
+ "postfit_s": 0.020353461150079966,
+ "invocation_wall_s": 18.075185975059867
+}

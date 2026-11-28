@@ -1,0 +1,33 @@
+{
+ "method": "same_site_bp",
+ "seed": 557,
+ "steps": 16,
+ "examples": 256,
+ "unique_examples": 248,
+ "input_index_sha256": "07dc6940e82e9a9ab80a7edbe9d8a2e150054cbcd012edaaeb9bc0e670669902",
+ "full_parameters": 1016475200,
+ "eligible_parameters": 4980736,
+ "changed": {
+  "read.0": 655356,
+  "read.1": 655356,
+  "read.2": 655360,
+  "read.3": 655359,
+  "read.4": 655360,
+  "read.5": 655358,
+  "projection": 1048576
+ },
+ "delta_frobenius": {
+  "read.0": 0.37980398535728455,
+  "read.1": 0.37822335958480835,
+  "read.2": 0.37689921259880066,
+  "read.3": 0.37721800804138184,
+  "read.4": 0.36917802691459656,
+  "read.5": 0.3651728332042694,
+  "projection": 0.5044988393783569
+ },
+ "sha256": "5e7eb1c8e0ce70998519cf62dbfab4b9195958288d06ed6b56616955d10c2956",
+ "setup_s": 3.714947004802525,
+ "optimization_s": 78.37953960103914,
+ "postfit_s": 0.027111718896776438,
+ "invocation_wall_s": 82.92199572594836
+}
