@@ -177,7 +177,15 @@ async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_c
                 item: TurnItem::ContextCompaction(_),
                 ..
             }) => saw_compaction_completed = true,
-            EventMsg::TurnComplete(_) => break,
+            EventMsg::TurnComplete(turn) => {
+                if let Some(completion) = codex.pending_normal_turn_finish_completion(&turn.turn_id)
+                {
+                    tokio::time::timeout(std::time::Duration::from_secs(10), completion)
+                        .await
+                        .expect("timed out waiting for compaction terminalization");
+                }
+                break;
+            }
             _ => {}
         }
     }
