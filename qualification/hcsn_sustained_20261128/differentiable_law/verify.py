@@ -12,13 +12,13 @@ RES=json.loads((ROOT/"reference.json").read_text())["cases"]
 PARAMS=("margin","rate","payout","sigma","tax","recovery","coupon","principal","maturity","premium")
 
 
-def test(dtype):
+def test(dtype,accumulation_dtype=None):
     args_raw=np.array([[[x,*rec["contract"]] for x in rec["margin"]] for rec in RES])
     true=np.array([rec["values"] for rec in RES])
     jac=np.array([rec["jacobian"] for rec in RES])
     raw=torch.tensor(args_raw,dtype=dtype,requires_grad=True)
     start=time.perf_counter()
-    outs=price(*raw.unbind(-1))
+    outs=price(*raw.unbind(-1),accumulation_dtype=accumulation_dtype)
     pred=torch.stack(outs,-1)
     deriv=torch.stack([torch.autograd.grad(v.sum(),raw,retain_graph=True)[0] for v in outs],-2)
     elapsed=time.perf_counter()-start
@@ -28,7 +28,7 @@ def test(dtype):
     for i,row in enumerate(args_raw):
         for j,item in enumerate(row):
             q=torch.tensor(item,dtype=dtype)
-            singles=torch.stack(price(*q.unbind())).double().numpy()
+            singles=torch.stack(price(*q.unbind(),accumulation_dtype=accumulation_dtype)).double().numpy()
             single=max(single,float(np.max(np.abs(pred[i,j]-singles))))
     absval=np.max(np.abs(pred-true),axis=(0,1))
     absjac=np.max(np.abs(deriv-jac),axis=(0,1,3))
@@ -41,7 +41,7 @@ def test(dtype):
     if dtype==torch.float64:
         if absval.max()>1e-7 or reljac.max()>2e-6 or single>1e-9:
             raise ValueError((absval,reljac,single))
-    return dict(dtype=str(dtype),reference_values=int(true.size),reference_partials=int(jac.size),
+    return dict(dtype=str(dtype),accumulation_dtype=str(accumulation_dtype or dtype),reference_values=int(true.size),reference_partials=int(jac.size),
                 max_abs_by_output=absval.tolist(),max_abs_derivative_by_output=absjac.tolist(),
                 max_scaled_derivative_by_input=dict(zip(PARAMS,reljac.tolist())),max_batch_scalar=single,
                 reverse_and_forward_s=elapsed)
@@ -72,6 +72,6 @@ if __name__=="__main__":
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     out=dict(torch=str(torch.__version__),outputs=["boundary","equity","credit_loss","hit","discounted_hit"],
              cases=len(RES),convention="absorbed x<=0 for equity and hit, constant recovery price at boundary",
-             comparisons=[test(torch.float64),test(torch.float32)],two_parameter_synthetic_fit=calibrate())
+             comparisons=[test(torch.float64),test(torch.float32),test(torch.float32,torch.float64)],two_parameter_synthetic_fit=calibrate())
     (ROOT/"verified.json").write_text(json.dumps(out,indent=2)+"\n")
     print(json.dumps(out),flush=True)

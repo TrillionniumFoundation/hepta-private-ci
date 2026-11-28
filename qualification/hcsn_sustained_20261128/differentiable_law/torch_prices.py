@@ -51,7 +51,19 @@ def _exp_integral(k, lo, hi):
     return torch.exp(-k*lo)*distance*exprel
 
 
-def price(log_margin, rate, payout, sigma, tax, recovery, coupon, principal, maturity, premium):
+def price(log_margin, rate, payout, sigma, tax, recovery, coupon, principal, maturity, premium,
+          *, accumulation_dtype=None):
+    args=(log_margin,rate,payout,sigma,tax,recovery,coupon,principal,maturity,premium)
+    if accumulation_dtype is None:
+        return _evaluate(*args)
+    output_dtype=args[0].dtype
+    for arg in args[1:]:
+        output_dtype=torch.promote_types(output_dtype,arg.dtype)
+    promoted=_evaluate(*(arg.to(dtype=accumulation_dtype) for arg in args))
+    return Quote(*(v.to(dtype=output_dtype) for v in promoted))
+
+
+def _evaluate(log_margin, rate, payout, sigma, tax, recovery, coupon, principal, maturity, premium):
     x,r,delta,sigma,tax,recovery,C,P,T,premium=torch.broadcast_tensors(
             log_margin,rate,payout,sigma,tax,recovery,coupon,principal,maturity,premium)
     positive=x>0

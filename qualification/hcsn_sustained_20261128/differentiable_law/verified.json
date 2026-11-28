@@ -1,0 +1,133 @@
+{
+  "torch": "2.13.0+rocm10.0.0",
+  "outputs": [
+    "boundary",
+    "equity",
+    "credit_loss",
+    "hit",
+    "discounted_hit"
+  ],
+  "cases": 12,
+  "convention": "absorbed x<=0 for equity and hit, constant recovery price at boundary",
+  "comparisons": [
+    {
+      "dtype": "torch.float64",
+      "accumulation_dtype": "torch.float64",
+      "reference_values": 180,
+      "reference_partials": 1800,
+      "max_abs_by_output": [
+        7.815970093361102e-14,
+        1.709281605144497e-10,
+        5.684341886080802e-14,
+        3.3306690738754696e-16,
+        3.3306690738754696e-16
+      ],
+      "max_abs_derivative_by_output": [
+        2.414665800642979e-09,
+        2.2980219114288047e-05,
+        1.1444498682067206e-09,
+        2.3129646346357423e-11,
+        7.516123140538511e-11
+      ],
+      "max_scaled_derivative_by_input": {
+        "margin": 2.788182562342292e-10,
+        "rate": 1.357479012871852e-07,
+        "payout": 1.4060648802938183e-07,
+        "sigma": 2.1233144836156034e-08,
+        "tax": 4.186090200983079e-07,
+        "recovery": 4.559294387700772e-08,
+        "coupon": 2.1831574599648352e-08,
+        "principal": 3.2159525802752044e-09,
+        "maturity": 4.892788011044457e-08,
+        "premium": 3.3456786245441283e-07
+      },
+      "max_batch_scalar": 0.0,
+      "reverse_and_forward_s": 0.3793428437784314
+    },
+    {
+      "dtype": "torch.float32",
+      "accumulation_dtype": "torch.float32",
+      "reference_values": 180,
+      "reference_partials": 1800,
+      "max_abs_by_output": [
+        0.00015788820493867206,
+        0.000377769823643348,
+        9.915150508277293e-05,
+        6.556547704761329e-08,
+        8.647091132019114e-08
+      ],
+      "max_abs_derivative_by_output": [
+        0.01688470083234961,
+        0.037095727765603215,
+        0.009646975306395689,
+        4.7493798255304753e-07,
+        6.759652180221565e-07
+      ],
+      "max_scaled_derivative_by_input": {
+        "margin": 2.5198054527152326e-05,
+        "rate": 0.006249786982987103,
+        "payout": 0.0006239601492812634,
+        "sigma": 0.0001301396854809877,
+        "tax": 0.0001524055214447591,
+        "recovery": 0.00019060081727424055,
+        "coupon": 0.00011099853338519739,
+        "principal": 7.413394443038833e-06,
+        "maturity": 0.00048208202645436127,
+        "premium": 0.016390655154603938
+      },
+      "max_batch_scalar": 0.0,
+      "reverse_and_forward_s": 0.013886586762964725
+    },
+    {
+      "dtype": "torch.float32",
+      "accumulation_dtype": "torch.float64",
+      "reference_values": 180,
+      "reference_partials": 1800,
+      "max_abs_by_output": [
+        3.89089603913817e-06,
+        7.723386005409338e-06,
+        1.4455187695716631e-06,
+        2.983871133510618e-08,
+        2.838964652251974e-08
+      ],
+      "max_abs_derivative_by_output": [
+        2.0826795491757366e-05,
+        3.995559757186129e-05,
+        1.426299232321071e-05,
+        2.6590739832244026e-07,
+        2.8723482836667813e-07
+      ],
+      "max_scaled_derivative_by_input": {
+        "margin": 2.2007176110100285e-07,
+        "rate": 1.3291115963065915e-06,
+        "payout": 2.6094602745970653e-06,
+        "sigma": 1.2912848767433502e-06,
+        "tax": 9.461556051238734e-07,
+        "recovery": 1.5290925062762838e-07,
+        "coupon": 4.69511820392388e-08,
+        "principal": 5.499585549525173e-08,
+        "maturity": 1.6105177798640983e-07,
+        "premium": 3.322472520532603e-07
+      },
+      "max_batch_scalar": 0.0,
+      "reverse_and_forward_s": 0.01930206874385476
+    }
+  ],
+  "two_parameter_synthetic_fit": {
+    "initial": [
+      0.27,
+      0.025
+    ],
+    "true": [
+      0.23,
+      0.01
+    ],
+    "estimated": [
+      0.22999999361289528,
+      0.009999999854396814
+    ],
+    "initial_loss": 0.008829353018874598,
+    "last_loss": 1.4889944939411678e-16,
+    "closure_calls": 18
+  }
+}

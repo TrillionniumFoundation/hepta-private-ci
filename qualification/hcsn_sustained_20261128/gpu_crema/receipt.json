@@ -1,0 +1,157 @@
+{
+  "request_id": "hcsn-lowband-full-crema-1140569-20261128",
+  "provider": "colab",
+  "account": "qiqian",
+  "adapter_job_id": "4d17ee09-6dc1-41e6-8296-f0c3a9f9d228",
+  "provider_request_id": "hc-0b21eda2a1254f0f5b9da3f8e720e04ec881ce95",
+  "source_sha256": "741044e0003a1eba716572477a4f1b6cba63ddd0130835473eda160ed88914f4",
+  "created_at": "2026-11-28T11:50:21.702980+00:00",
+  "updated_at": "2026-11-28T12:00:13.171700+00:00",
+  "state": "COLLECTED",
+  "outcome": {
+    "accelerator_execution_verification": "requires_task_specific_artifact",
+    "accelerator_requested": "T4",
+    "compute_succeeded": true,
+    "provider_terminal_state": "succeeded"
+  },
+  "artifact_manifest": {
+    "cold.npz": {
+      "sha256": "bcc1748a768e289c6c7c7a7dbd006aeaf830a30a8e8891dc00f041ba6f13fe42",
+      "size": 8896347
+    },
+    "result.json": {
+      "sha256": "3c29e646cec9ff7f5066b3aacf63a3f37b38747a588d1c07788511607db6dbc7",
+      "size": 27722
+    },
+    "stderr": {
+      "sha256": "e869fe630f0d364012b007a830a3e0554c20436ba00d599ea658a89d4901d396",
+      "size": 311
+    },
+    "stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "weights.zip": {
+      "sha256": "aee02ef21f499e73122ce8c0567b9ebe0f27a3696f52d3fee9d0b005c88e0996",
+      "size": 7071204
+    }
+  },
+  "missing": [],
+  "effects": {
+    "allocate": {
+      "at": "2026-11-28T11:50:51.247721+00:00",
+      "status": "confirmed"
+    },
+    "bind": {
+      "at": "2026-11-28T11:51:10.466743+00:00",
+      "status": "confirmed"
+    },
+    "release": {
+      "at": "2026-11-28T11:59:57.852671+00:00",
+      "status": "confirmed"
+    },
+    "run": {
+      "at": "2026-11-28T11:51:54.919772+00:00",
+      "status": "confirmed"
+    },
+    "submit_local": {
+      "at": "2026-11-28T11:51:53.059612+00:00",
+      "status": "confirmed"
+    }
+  },
+  "events": [
+    {
+      "at": "2026-11-28T11:50:21.703005+00:00",
+      "event": "planned_and_reserved"
+    },
+    {
+      "at": "2026-11-28T11:50:43.099347+00:00",
+      "event": "execution_reservation_claimed"
+    },
+    {
+      "at": "2026-11-28T11:50:51.247747+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:51:10.451574+00:00",
+      "event": "effect_response_received",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T11:51:10.466769+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "bind"
+    },
+    {
+      "at": "2026-11-28T11:51:53.041906+00:00",
+      "event": "effect_response_received",
+      "stage": "bind"
+    },
+    {
+      "at": "2026-11-28T11:51:53.059644+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "submit_local"
+    },
+    {
+      "at": "2026-11-28T11:51:54.894166+00:00",
+      "event": "effect_response_received",
+      "stage": "submit_local"
+    },
+    {
+      "at": "2026-11-28T11:51:54.909162+00:00",
+      "event": "adapter_job_bound"
+    },
+    {
+      "at": "2026-11-28T11:51:54.919821+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "run"
+    },
+    {
+      "at": "2026-11-28T11:57:19.784201+00:00",
+      "event": "effect_response_received",
+      "stage": "run"
+    },
+    {
+      "at": "2026-11-28T11:57:59.878213+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:59:15.452169+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:59:43.504340+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T11:59:57.839741+00:00",
+      "event": "artifacts_verified_and_retained"
+    },
+    {
+      "at": "2026-11-28T11:59:57.852699+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "release"
+    },
+    {
+      "at": "2026-11-28T12:00:13.150415+00:00",
+      "event": "effect_response_received",
+      "stage": "release"
+    },
+    {
+      "at": "2026-11-28T12:00:13.171727+00:00",
+      "event": "complete_and_resources_reconciled"
+    }
+  ],
+  "release": {
+    "phase": "released",
+    "actual_spec": {
+      "accelerator": "T4",
+      "shape": "STANDARD",
+      "variant": "GPU"
+    },
+    "runtime_submit_attempts": 1,
+    "kernel_submit_attempts": 1,
+    "release_submit_attempts": 1
+  }
+}
