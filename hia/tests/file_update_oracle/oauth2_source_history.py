@@ -72,14 +72,17 @@ def _vendor(repo, history):
 
 def restore_predecessor(repo, actual, predecessor_identity):
     history, history_binding = _history()
-    if _pair_identity(actual) != history["current_files"]:
-        raise RuntimeError("unreviewed or mixed workspace dependency source pair")
     if predecessor_identity != history["predecessor_files"]:
         raise RuntimeError("OAuth2 source predecessor differs from frozen SQLx pair")
     physical = {p: _read(Path(repo) / p) for p in ROOT_FILES}
     if {p: row[0] for p, row in physical.items()} != actual:
         raise RuntimeError("OAuth2 source input differs from physical current pair")
     restored = dict(actual)
+    otel_admission = None
+    if _pair_identity(actual) != history["current_files"]:
+        from .otel_source_history import restore_predecessor as restore_otel
+        otel_admission = restore_otel(repo, actual, history["current_files"])
+        restored = otel_admission["restored"]
     for splice in history["manifest_inverse"]:
         after, before = splice["after"].encode(), splice["before"].encode()
         if restored[ROOT_FILES[0]].count(after) != 1:
@@ -107,6 +110,10 @@ def restore_predecessor(repo, actual, predecessor_identity):
               "vendor": vendor, "bazel_lock": bazel_binding,
               "history": history_binding, "helper": helper_binding,
               "dependency_graph_equivalence_claimed": False}
+    if otel_admission is not None:
+        report["otel_source_history"] = otel_admission["report"]
+        report["workspace_variant"] = otel_admission["report"]["source_variant"]
+        report["projected_oauth2_files"] = history["current_files"]
     return {"restored": restored, "report": report}
 
 
@@ -122,3 +129,7 @@ def verify_predecessor(admission):
     history, _ = _history()
     if _vendor(report["repo"], history) != report["vendor"]:
         raise RuntimeError("captured OAuth2 vendor identity changed")
+
+    if "otel_source_history" in report:
+        from .otel_source_history import verify_predecessor as verify_otel
+        verify_otel({"report": report["otel_source_history"]})

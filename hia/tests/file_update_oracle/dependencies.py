@@ -89,6 +89,11 @@ def admit_workspace_sources(repo, originals):
         from .oauth2_source_history import restore_predecessor
         oauth2_admission = restore_predecessor(repo, actual, identities["sqlx"])
         restored = oauth2_admission["restored"]
+        if "otel_source_history" in oauth2_admission["report"]:
+            outer = oauth2_admission["report"]["otel_source_history"]
+            observed.append({"name": "otel-time-source", "from": "otel-time",
+                             "to": "oauth2-epoch", "complete_package_inverses": 1,
+                             "restored_files": outer["predecessor_files"]})
         observed.append({"name": "oauth2-epoch-source", "from": "oauth2-epoch",
                          "to": "sqlx", "complete_package_inverses": 1,
                          "restored_files": _pair_identity(restored)})
@@ -104,7 +109,8 @@ def admit_workspace_sources(repo, originals):
     result = {"restored": restored, "report": {
         "schema": "codex.hia.workspace-dependency-source-admission.v1",
         "actual_revision": (history["revisions"]["sqlx"] if oauth2_admission is None else
-                            oauth2_admission["report"]["source_variant"]),
+                            oauth2_admission["report"].get("workspace_variant",
+                                oauth2_admission["report"]["source_variant"])),
         "original_revisions": history["revisions"]["original"],
         "actual_files": {path: row[1] for path, row in captured.items()},
         "original_files": _pair_identity(originals), "inverse": observed,

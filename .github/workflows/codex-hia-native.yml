@@ -1881,6 +1881,20 @@ jobs:
               assert report["passed"] and report["tests"] == count, report
               assert not report["errors"] and not report["failures"], report
           PY
+      - name: Verify complete OTEL source transition and current custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_otel_dependency_sources.py \
+            --repo "$GITHUB_WORKSPACE/codex" --original-root "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-dependency-otel-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-dependency-otel-controls.log"
+          python3 - <<'PY'
+          import json, os, pathlib
+          report = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-dependency-otel-controls.json").read_bytes())
+          assert report["passed"] and report["tests"] == 14, report
+          assert not report["errors"] and not report["failures"], report
+          PY
       - name: Preserve dependency source control evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -1893,6 +1907,8 @@ jobs:
             ${{ runner.temp }}/hia-dependency-original-controls.log
             ${{ runner.temp }}/hia-dependency-oauth2-controls.json
             ${{ runner.temp }}/hia-dependency-oauth2-controls.log
+            ${{ runner.temp }}/hia-dependency-otel-controls.json
+            ${{ runner.temp }}/hia-dependency-otel-controls.log
 
   native-required:
     name: native-components
