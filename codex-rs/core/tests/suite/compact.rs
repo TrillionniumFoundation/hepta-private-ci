@@ -73,6 +73,17 @@ use tempfile::TempDir;
 use wiremock::MockServer;
 // --- Test helpers -----------------------------------------------------------
 
+// A terminal event can arrive before its owner finishes. Sequence dependent
+// fixture operations without changing the event assertions or deadlines.
+async fn wait_for_terminalization(thread: &codex_core::CodexThread) {
+    tokio::time::timeout(
+        std::time::Duration::from_secs(10),
+        thread.wait_for_terminalization_for_test(),
+    )
+    .await
+    .expect("the completed thread must finish terminalization before the next operation");
+}
+
 pub(super) const FIRST_REPLY: &str = "FIRST_REPLY";
 pub(super) const SUMMARY_TEXT: &str = "SUMMARY_ONLY_CONTEXT";
 const THIRD_USER_MSG: &str = "next turn";
@@ -555,12 +566,7 @@ async fn summarize_context_three_requests_and_instructions() {
         .await
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
-    tokio::time::timeout(
-        std::time::Duration::from_secs(10),
-        codex.wait_for_terminalization_for_test(),
-    )
-    .await
-    .expect("the completed thread must finish its terminalization before the next step");
+    wait_for_terminalization(&codex).await;
 
     // 2) Summarize – second hit should include the summarization prompt.
     codex.submit(Op::Compact).await.unwrap();
@@ -570,12 +576,7 @@ async fn summarize_context_three_requests_and_instructions() {
     };
     assert_eq!(message, COMPACT_WARNING_MESSAGE);
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
-    tokio::time::timeout(
-        std::time::Duration::from_secs(10),
-        codex.wait_for_terminalization_for_test(),
-    )
-    .await
-    .expect("the completed thread must finish its terminalization before the next step");
+    wait_for_terminalization(&codex).await;
 
     // 3) Next user input – third hit; history should include only the summary.
     codex
@@ -796,6 +797,7 @@ async fn manual_pre_compact_block_decision_does_not_block_compaction() {
         .expect("submit first user turn");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.expect("trigger compact");
 
     let completed = wait_for_event_match(&codex, |ev| match ev {
@@ -863,6 +865,7 @@ async fn compact_hooks_respect_matchers_and_post_runs_after_compaction() {
         .expect("submit first user turn");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.expect("trigger compact");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::Warning(_))).await;
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
@@ -927,6 +930,7 @@ async fn manual_compact_uses_custom_prompt() {
         .expect("submit first user turn");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.expect("trigger compact");
     let warning_event = wait_for_event(&codex, |ev| matches!(ev, EventMsg::Warning(_))).await;
     let EventMsg::Warning(WarningEvent { message }) = warning_event else {
@@ -1068,6 +1072,7 @@ async fn manual_compact_emits_context_compaction_items() {
         .unwrap();
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.unwrap();
 
     let mut started_item = None;
@@ -1699,6 +1704,7 @@ async fn auto_compact_runs_after_token_limit_hit() {
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: SECOND_AUTO_MSG.into(),
@@ -1709,6 +1715,7 @@ async fn auto_compact_runs_after_token_limit_hit() {
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: POST_AUTO_USER_MSG.into(),
@@ -1906,6 +1913,7 @@ async fn auto_compact_emits_context_compaction_items() {
                 _ => {}
             }
         }
+        wait_for_terminalization(&codex).await;
     }
 
     let started_item = started_item.expect("context compaction item started");
@@ -1958,6 +1966,7 @@ async fn auto_compact_starts_after_turn_started() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: SECOND_AUTO_MSG.into(),
@@ -1967,6 +1976,7 @@ async fn auto_compact_starts_after_turn_started() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: POST_AUTO_USER_MSG.into(),
@@ -2164,6 +2174,7 @@ async fn pre_sampling_compact_runs_on_switch_to_smaller_context_model() {
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -2266,6 +2277,7 @@ async fn pre_sampling_compact_runs_when_comp_hash_changes() {
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -2646,6 +2658,7 @@ async fn pre_sampling_compact_falls_back_after_previous_model_invalid_request_on
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -2751,6 +2764,7 @@ async fn pre_sampling_legacy_remote_compact_falls_back_after_previous_model_inva
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -2841,6 +2855,7 @@ async fn pre_sampling_compact_keeps_unknown_previous_model_for_api_key_auth_and_
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -2931,6 +2946,7 @@ async fn pre_sampling_compact_skips_when_either_comp_hash_is_missing() {
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "hash introduced",
@@ -2944,6 +2960,7 @@ async fn pre_sampling_compact_skips_when_either_comp_hash_is_missing() {
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "hash removed",
@@ -3040,6 +3057,7 @@ async fn body_after_prefix_model_switch_budget_compacts_with_next_model() {
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "after switch",
@@ -3524,6 +3542,7 @@ async fn auto_compact_persists_rollout_entries() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: SECOND_AUTO_MSG.into(),
@@ -3533,6 +3552,7 @@ async fn auto_compact_persists_rollout_entries() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: POST_AUTO_USER_MSG.into(),
@@ -3620,6 +3640,7 @@ async fn manual_compact_retries_after_context_window_error() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.unwrap();
     let warning_event = wait_for_event(&codex, |ev| matches!(ev, EventMsg::Warning(_))).await;
     let EventMsg::Warning(WarningEvent { message }) = warning_event else {
@@ -3807,9 +3828,11 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: second_user_message.into(),
@@ -3819,9 +3842,11 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex.submit(Op::Compact).await.unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: final_user_message.into(),
@@ -4049,6 +4074,7 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 break;
             }
         }
+        wait_for_terminalization(&codex).await;
     }
 
     assert!(
@@ -4222,6 +4248,7 @@ async fn auto_compact_clamps_config_limit_to_context_window() {
     let codex = builder.build(&server).await.unwrap();
 
     codex.submit_turn("OVER_LIMIT_TURN").await.unwrap();
+    wait_for_terminalization(&codex.codex).await;
     codex.submit_turn("FOLLOW_UP_AFTER_CLAMP").await.unwrap();
 
     assert!(
@@ -4289,6 +4316,7 @@ async fn auto_compact_body_after_prefix_ignores_starting_window_prefix() {
 
     for user in ["PREFIX_FREE_ONE", "PREFIX_FREE_TWO"] {
         test.submit_turn(user).await.expect("submit turn");
+        wait_for_terminalization(&test.codex).await;
     }
 
     assert_eq!(
@@ -4378,6 +4406,7 @@ async fn auto_compact_body_after_prefix_counts_growth_after_compaction() {
     test.submit_turn("WINDOW_PREFIX")
         .await
         .expect("submit first turn");
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("GROWTH_AFTER_COMPACT")
         .await
         .expect("submit second turn");
@@ -4389,6 +4418,7 @@ async fn auto_compact_body_after_prefix_counts_growth_after_compaction() {
         "second turn should compact first and then sample the new growth"
     );
 
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("AFTER_GROWTH")
         .await
         .expect("submit third turn");
@@ -4400,6 +4430,7 @@ async fn auto_compact_body_after_prefix_counts_growth_after_compaction() {
         "the first server-observed input in the new window should become the prefill baseline"
     );
 
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("AFTER_GROWTH_TRIGGER")
         .await
         .expect("submit fourth turn");
@@ -4461,6 +4492,7 @@ async fn auto_compact_body_after_prefix_still_caps_at_context_window() {
 
     for user in ["CONTEXT_CAP_ONE", "CONTEXT_CAP_TWO", "CONTEXT_CAP_THREE"] {
         test.submit_turn(user).await.expect("submit turn");
+        wait_for_terminalization(&test.codex).await;
     }
 
     let requests = request_log.requests();
@@ -4560,6 +4592,7 @@ async fn auto_compact_counts_encrypted_reasoning_before_last_user() {
             .await
             .unwrap();
         wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        wait_for_terminalization(&codex).await;
 
         if idx < 2 {
             assert!(
@@ -4677,6 +4710,7 @@ async fn auto_compact_runs_when_reasoning_header_clears_between_turns() {
             .await
             .unwrap();
         wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        wait_for_terminalization(&codex).await;
     }
 
     let compact_requests = compact_mock.requests();
@@ -4733,6 +4767,7 @@ async fn snapshot_request_shape_pre_turn_compaction_including_incoming_user_mess
             .await
             .expect("submit user input");
         wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        wait_for_terminalization(&codex).await;
     }
     core_test_support::submit_thread_settings(
         &codex,
@@ -4852,6 +4887,7 @@ async fn snapshot_request_shape_pre_turn_compaction_strips_incoming_model_switch
     })
     .await;
 
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .start_or_steer_turn(disabled_permission_user_turn(
             "AFTER_SWITCH_USER",
@@ -4945,6 +4981,7 @@ async fn snapshot_request_shape_pre_turn_compaction_context_window_exceeded() {
         .expect("submit first user");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "USER_TWO".to_string(),
@@ -5012,6 +5049,7 @@ async fn snapshot_request_shape_manual_compact_without_previous_user_messages() 
     codex.submit(Op::Compact).await.expect("run /compact");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
+    wait_for_terminalization(&codex).await;
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "AFTER_MANUAL_EMPTY_COMPACT".to_string(),
@@ -5095,11 +5133,13 @@ async fn manual_compaction_keeps_the_creation_time_global_instructions() -> Resu
     )?;
     assert_eq!(source, rewritten_source);
 
+    wait_for_terminalization(&test.codex).await;
     test.codex.submit(Op::Compact).await?;
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("after compact").await?;
 
     // Assert ordinary and compact turns keep the old rendering even though the reported source
@@ -5239,11 +5279,13 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         NEW_GLOBAL_INSTRUCTIONS,
     )?;
     assert_eq!(source, rewritten_source);
+    wait_for_terminalization(&test.codex).await;
     test.codex.submit(Op::Compact).await?;
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("after remote v2 compaction").await?;
     test.codex.flush_rollout().await?;
 
@@ -5310,11 +5352,35 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         instruction_fragments(&requests[3]),
         vec![old_fragment.clone(), replacement_fragment]
     );
+    // Replacement history keeps local annotations that are not part of the provider schema.
+    const INTERNAL_METADATA: &str = "internal_chat_message_metadata_passthrough";
+    let original_user = replacement_history
+        .iter()
+        .find(|item| item["content"][0]["text"] == "before remote v2 compaction")
+        .expect("persisted replacement history should contain the original user turn");
+    assert_eq!(
+        original_user[INTERNAL_METADATA]["content_item_kinds"],
+        json!(["user.text"]),
+        "the original user's item kinds should survive local compaction"
+    );
+    let mut provider_replacement = replacement_history.clone();
+    for item in &mut provider_replacement {
+        item.as_object_mut()
+            .expect("persisted response item must be an object")
+            .remove(INTERNAL_METADATA);
+    }
+    assert!(
+        requests.iter().all(|request| request
+            .input()
+            .iter()
+            .all(|item| item.get(INTERNAL_METADATA).is_none())),
+        "local item metadata must not reach the provider"
+    );
     let resumed_input = requests[3].input();
     assert_eq!(
         resumed_input.get(..replacement_history.len()),
-        Some(replacement_history.as_slice()),
-        "remote-v2 cold resume should replay persisted replacement history verbatim"
+        Some(provider_replacement.as_slice()),
+        "remote-v2 cold resume should replay every provider-visible field in persisted history in order"
     );
     let post_compact_input = requests[2].input();
     assert_eq!(
