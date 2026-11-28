@@ -32,6 +32,7 @@ use crate::oauth::validate_authorization_server_endpoints;
 use crate::oauth_client_registration::McpOAuthClientRegistration;
 use crate::oauth_client_registration::PreparedOAuthLogin;
 use crate::oauth_client_registration::start_authorization as start_client_registration;
+use crate::oauth_discovery_error_context::with_safe_discovery_context;
 use crate::oauth_http_client::OAuthHttpClientAdapter;
 use crate::save_oauth_tokens;
 use crate::utils::build_default_headers;
@@ -197,7 +198,8 @@ async fn perform_oauth_login_with_browser_output(
         callback_url,
         /*timeout_secs*/ None,
     )
-    .await?
+    .await
+    .map_err(with_safe_discovery_context)?
     .finish(emit_browser_url)
     .await
 }
@@ -241,7 +243,8 @@ pub async fn perform_oauth_login_return_url(
         callback_url,
         timeout_secs,
     )
-    .await?;
+    .await
+    .map_err(with_safe_discovery_context)?;
 
     let authorization_url = flow.authorization_url();
     let completion = flow.spawn();
