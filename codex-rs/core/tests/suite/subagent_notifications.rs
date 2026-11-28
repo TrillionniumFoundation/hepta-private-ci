@@ -762,7 +762,23 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
 
     test.submit_turn(TURN_1_PROMPT).await?;
     let _ = wait_for_requests(&first_child_request).await?;
-    let _ = wait_for_requests(&second_child_request).await?;
+    let second_child_requests = wait_for_requests(&second_child_request).await?;
+    let second_child_body = second_child_requests[0].body_json();
+    let child_thread_id = ThreadId::from_string(
+        second_child_body["client_metadata"]["thread_id"]
+            .as_str()
+            .expect("continued child thread id"),
+    )?;
+    let child_turn_id = second_child_body["client_metadata"]["turn_id"]
+        .as_str()
+        .expect("continued child turn id");
+    let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+    // Receiving the continuation request does not mean its stop hook has run.
+    wait_for_event_match(child_thread.as_ref(), |event| match event {
+        EventMsg::TurnComplete(event) if event.turn_id == child_turn_id => Some(()),
+        _ => None,
+    })
+    .await;
 
     let subagent_stop_inputs = wait_for_hook_log(
         test.codex_home_path(),

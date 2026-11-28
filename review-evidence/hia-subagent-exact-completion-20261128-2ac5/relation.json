@@ -1,0 +1,15 @@
+{
+  "actual_test_status": "PENDING_COMMON_WINDOWS_CONSUMER_GATE",
+  "actual_windows_test_passed": false,
+  "base": "4c1930dbf29e30c1b737144810ea98ae8e22286d",
+  "inverse_verified": true,
+  "new_bytes": 107668,
+  "new_sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e",
+  "new_text": "    let second_child_requests = wait_for_requests(&second_child_request).await?;\n    let second_child_body = second_child_requests[0].body_json();\n    let child_thread_id = ThreadId::from_string(\n        second_child_body[\"client_metadata\"][\"thread_id\"]\n            .as_str()\n            .expect(\"continued child thread id\"),\n    )?;\n    let child_turn_id = second_child_body[\"client_metadata\"][\"turn_id\"]\n        .as_str()\n        .expect(\"continued child turn id\");\n    let child_thread = test.thread_manager.get_thread(child_thread_id).await?;\n    // Receiving the continuation request does not mean its stop hook has run.\n    wait_for_event_match(child_thread.as_ref(), |event| match event {\n        EventMsg::TurnComplete(event) if event.turn_id == child_turn_id => Some(()),\n        _ => None,\n    })\n    .await;\n",
+  "old_bytes": 106910,
+  "old_sha256": "01f00225c20103f4ed1f38bb7d2fbe0e4022977f5d7fced3596df5659c79bb56",
+  "old_text": "    let _ = wait_for_requests(&second_child_request).await?;\n",
+  "original_hook_deadline_and_all_assertions_preserved": true,
+  "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+  "schema": "codex.hia.subagent-completion-fixture-history.v1"
+}
