@@ -1,0 +1,228 @@
+{
+  "schema": "hepta.oauth-rejection-qualification.audit.v1",
+  "base_ref": "dee6b95562226ffd7a5d7d1ef7671130193f9535",
+  "base_tree": "dba56c99de1a157508ac8d3ad12d3ee4fdb3c4ec",
+  "status": "LOCAL_FALSE_PASS_REPAIR_VERIFIED; NATIVE_SEMANTIC_REJECTION_QUALIFICATION_OPEN",
+  "sources": [
+    {
+      "path": "scripts/mcp_conformance/codex_conformance_adapter.py",
+      "host_path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/publication/scripts/mcp_conformance/codex_conformance_adapter.py",
+      "mode": "100644",
+      "base_git_blob": "8a13e3c3d928a4c58edc67bc18dc4a1d95fb346d",
+      "tested_sha256": "153bf7e72d707c0c97c11110b9e949a8353dcb64276ed50b0a9c6bf323c4d979",
+      "format_ast_identical": true,
+      "bytes": 35606,
+      "sha256": "153bf7e72d707c0c97c11110b9e949a8353dcb64276ed50b0a9c6bf323c4d979",
+      "git_blob": "5dd568b0ed41cc17c293759400dead5a150edbdc"
+    },
+    {
+      "path": "scripts/mcp_conformance/test_auth_rejection_qualification.py",
+      "host_path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/publication/scripts/mcp_conformance/test_auth_rejection_qualification.py",
+      "mode": "100644",
+      "base_git_blob": null,
+      "tested_sha256": "14a3abc374144546ae942c1770bc56b5504f536c9467c6d7bf9b96aba7e47e8e",
+      "format_ast_identical": true,
+      "bytes": 9622,
+      "sha256": "4419e41fa25d3527ee06b2fe65a0b6961b9ddc713d9b99af7698c89334a46d15",
+      "git_blob": "517fd926ea06c01d05ecef3f34426131dc07a790"
+    }
+  ],
+  "behavior": {
+    "before": "Any false login result qualified all six expected-rejection scenarios, including an initial address-capability or transport failure.",
+    "after": "Expected-rejection failures remain unqualified without an observable structured semantic cause. Unexpected success still fails. A private immutable observation records the actual RPC versus callback-completion stage only for diagnosis.",
+    "ordinary_login": "Original tuple return shape, scopes and clientRegistration forwarding remain; existing callers are preserved.",
+    "authority": "No native or proxy guard changes, no metadata-derived origin grants, no official runner/check/baseline changes."
+  },
+  "validation": {
+    "baseline_reproduction": {
+      "original_false_qualifications": 6,
+      "wall_seconds": 0.09008481772616506,
+      "scope": "Exact original Python function with controlled existing JSON-RPC error shape; zero native OAuth execution."
+    },
+    "unittest": {
+      "tests": 7,
+      "passed": 7,
+      "wall_seconds": 0.42324342764914036,
+      "scope": "New qualification controls, including actual owned loopback browser HTTP. These same seven tests are included in the pytest total below, not additional independent tests."
+    },
+    "pytest": {
+      "total": 102,
+      "passed": 102,
+      "existing_tests": 95,
+      "new_tests": 7,
+      "parameterized_subtests": 30,
+      "skipped": 0,
+      "reported_test_seconds": 0.79,
+      "wall_seconds": 1.2085833009332418,
+      "scope": "Two unchanged original Python fixture suites plus the new file. Not the entire fixture directory, SDK suite, native executable, or official upstream conformance run."
+    },
+    "format": {
+      "status": "PASS",
+      "commands": [
+        {
+          "argv": [
+            "/home/qq/hepta-audit-20261128-5bdf/root/format-tools/bin/just",
+            "fmt"
+          ],
+          "cwd": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/format-worktree/codex-rs",
+          "exit_code": 0,
+          "wall_seconds": 0.2009610659442842,
+          "streams": {
+            "stdout": {
+              "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/original_fmt.stdout.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/original_fmt.stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        {
+          "argv": [
+            "/home/qq/hepta-audit-20261128-5bdf/root/format-tools/bin/just",
+            "fmt",
+            "--check"
+          ],
+          "cwd": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/format-worktree/codex-rs",
+          "exit_code": 0,
+          "wall_seconds": 0.09077625535428524,
+          "streams": {
+            "stdout": {
+              "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/original_fmt_check.stdout.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/original_fmt_check.stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      ],
+      "scope": "Actual original just fmt + --check on two untracked source files in a partial synthetic Git inventory; not whole-repository formatting. All tests completed before these format commands; no tests rerun after formatting.",
+      "preflight_original_failure_preserved": true
+    }
+  },
+  "test_environment": {
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "pytest_version": "9.0.3",
+    "lock_git_blob": "745e50ed67ab3edc55e2050c57e5c0628c35d748",
+    "lock_path": "sdk/python/uv.lock",
+    "wheel_sha256s": [
+      {
+        "name": "iniconfig",
+        "version": "2.3.0",
+        "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/pytest-wheels/iniconfig-2.3.0-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/cb/b1/3846dd7f199d53cb17f49cba7e651e9ce294d8497c8c150530ed11865bb8/iniconfig-2.3.0-py3-none-any.whl",
+        "bytes": 7484,
+        "sha256": "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+      },
+      {
+        "name": "packaging",
+        "version": "26.2",
+        "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/pytest-wheels/packaging-26.2-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl",
+        "bytes": 100195,
+        "sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e"
+      },
+      {
+        "name": "pluggy",
+        "version": "1.6.0",
+        "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/pytest-wheels/pluggy-1.6.0-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl",
+        "bytes": 20538,
+        "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+      },
+      {
+        "name": "pygments",
+        "version": "2.20.0",
+        "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/pytest-wheels/pygments-2.20.0-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl",
+        "bytes": 1231151,
+        "sha256": "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
+      },
+      {
+        "name": "pytest",
+        "version": "9.0.3",
+        "path": "/home/qq/hepta-audit-20261128-5bdf/sse-format/oauth-rejection/pytest-wheels/pytest-9.0.3-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/d4/24/a372aaf5c9b7208e7112038812994107bc65a84cd00e0354a88c2c77a617/pytest-9.0.3-py3-none-any.whl",
+        "bytes": 375249,
+        "sha256": "2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9"
+      }
+    ],
+    "dependency_scope": "Only pytest and its complete active Linux/Python3.14 dependency closure from original sdk/python/uv.lock. This is not a full SDK dependency install or SDK/native test."
+  },
+  "independent_review": {
+    "scope": "Peer reviewed the communicated narrow design and diff semantics only; did not open the final formatted files or execute these controls. No design blocker reported. Root publication review remains separate."
+  },
+  "hosted_baseline": {
+    "source_head": "dee6b95562226ffd7a5d7d1ef7671130193f9535",
+    "actual_checkout": "176c0692f5b7755a747b3fb5b0c20e5046586b88",
+    "checkout_description": "Hosted synthetic merge of dee6 into c076. Root independently verified its tree equals the source-head tree.",
+    "source_tree": "dba56c99de1a157508ac8d3ad12d3ee4fdb3c4ec",
+    "sdk_job": {
+      "job_id": 141007506966,
+      "raw_path": "/home/qq/hepta-audit-20261128-5bdf/root/DEE6_JOB_141007506966.log",
+      "raw_bytes": 915356,
+      "raw_sha256": "823c2c5cbf67850fc6629991b4cc558c9871f465d179258c7009d1e4cb260fe0",
+      "gzip_path": "/home/qq/hepta-audit-20261128-5bdf/root/DEE6_JOB_141007506966.log.gz",
+      "gzip_bytes": 84620,
+      "gzip_sha256": "997a54ebb2747d2dc6666d63b6281606a861aa1543336f99b677d747a26ea690"
+    },
+    "six_adapter_pass_rows": [
+      {
+        "scenario": "auth/resource-mismatch",
+        "line": 7358,
+        "original_line": "2026-11-28T14:32:09.5462367Z     harness/auth/resource-mismatch/codex-adapter                                                                              | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      },
+      {
+        "scenario": "auth/iss-supported-missing",
+        "line": 7346,
+        "original_line": "2026-11-28T14:32:09.5436882Z     harness/auth/iss-supported-missing/codex-adapter                                                                          | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      },
+      {
+        "scenario": "auth/iss-wrong-issuer",
+        "line": 7349,
+        "original_line": "2026-11-28T14:32:09.5441513Z     harness/auth/iss-wrong-issuer/codex-adapter                                                                               | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      },
+      {
+        "scenario": "auth/iss-unexpected",
+        "line": 7348,
+        "original_line": "2026-11-28T14:32:09.5440246Z     harness/auth/iss-unexpected/codex-adapter                                                                                 | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      },
+      {
+        "scenario": "auth/iss-normalized",
+        "line": 7344,
+        "original_line": "2026-11-28T14:32:09.5431985Z     harness/auth/iss-normalized/codex-adapter                                                                                 | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      },
+      {
+        "scenario": "auth/metadata-issuer-mismatch",
+        "line": 7351,
+        "original_line": "2026-11-28T14:32:09.5445303Z     harness/auth/metadata-issuer-mismatch/codex-adapter                                                                       | N/A              | N/A              | N/A              | N/A                      | N/A                      | PASS                    "
+      }
+    ],
+    "typescript_test_summary": {
+      "passed": 46,
+      "failed": 1,
+      "total": 47
+    },
+    "limit": "The six PASS rows alone do not identify each underlying native error. The controlled original-function reproduction demonstrates that any initial RPC error was sufficient to qualify these expected-rejection cases. The complete hosted SDK gate was already FAIL, not bypassed."
+  },
+  "open": [
+    "Native public structured rejection reason and end-to-end qualification for the six negative OAuth scenarios.",
+    "Restricted proxy enforcement required by the five existing Rust proxy/OAuth failures.",
+    "An explicit trusted owner capability for separate local authorization-server origins in the pinned official suite.",
+    "Full hosted CI for this new candidate; original dependency and unrelated gates remain independent."
+  ],
+  "evidence_archive": {
+    "path": "RAW_EVIDENCE.tar.gz",
+    "bytes": 146720,
+    "sha256": "51f26852c7cc764c51f334689d8ae168c403d89debc8794535b0ce06cc98dc1a",
+    "git_blob": "334459e512bcd8bdd60241382a1ba8c4de598ab1"
+  },
+  "ci_index_scope": "Original root index covers five full job logs; this narrow package includes only its SDK job 141007506966 compressed raw log. Other four paths in that original index are provenance references, not included artifacts."
+}
