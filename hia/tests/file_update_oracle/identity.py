@@ -242,22 +242,161 @@ def _exec_server_test_projection(relative, expected, actual, listing):
     }
 
 
+
+# Exact candidate admission, supported by the independent cross-lock campaign.
+# This is not a wildcard dependency exception or a claim of formal qualification.
+_REVIEWED_4280 = {
+    "commit": "4280cfe7e4ab7fca7371e499482b6adff7ac31de",
+    "tree": "55c3c10cce3580fba1a7c0191bde4d9e5540c8d9",
+    "identity_blob": "2843182cf7c2b88a4ef0fc53c902f813f8d58046",
+    "cross_lock_ledger_sha256": "0e3eedc18d5a4e92bcfde5fffa3af7c47be5f1f1ae0f1352912ea8560383e14e",
+    "file_observations_sha256": "2e0dc35e48acf012100503722ee994b47540cfa8b0b151359016941f339a9655",
+    "effects_observations_sha256": "258c518712fd18c0a34f6e4853b31c69b0e42991fae6bde922851c32dcf5a534",
+}
+_REVIEWED_4280_FILES = {
+    "codex-rs/Cargo.toml": (
+        "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+        "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e"),
+    "codex-rs/Cargo.lock": (
+        "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
+        "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa"),
+    "codex-rs/exec-server/src/local_file_system.rs": (
+        "f5210cc12b474ebb1983737ed8ee141cc10a033cc457bc22fe869fb1e967c061",
+        "a4b3d87823a0858c0495d34c1c066e6c67b773762ce561807e552fb295ee6538"),
+}
+_REVIEWED_4280_EXEC_TREE = "4ded82432f79ba4191223cb2f88448dd560a31d0"
+_REVIEWED_4280_EXEC_LEAVES = {
+    "src/local_file_system.rs": (
+        "ccfc1f65fb1c2cb9aa0e7acb632265de34b34f16",
+        "0a1be1295388173a8aebc3e81980e3edecb9f12a"),
+    "src/local_file_system_authorized_read_tests.rs": (
+        "c1223c43044977c694bafba42815740140401c5e",
+        "8d16d6e8ab4bb17d63ed850d92af8f86c4e5c588"),
+    "src/local_file_system_macos.rs": (
+        "587f1b55bba4754c66b31b3b0bb677ba525e3927", None),
+}
+
+
+def _project_tree(repo, tree, changes):
+    """Inverse-project only named, exact leaves; bind every untouched sibling."""
+    listing = git(repo, "ls-tree", "-z", tree)
+    if not listing.endswith(b"\0"):
+        raise RuntimeError("incomplete candidate tree listing")
+    entries = {}
+    for record in listing[:-1].split(b"\0"):
+        header, name = record.split(b"\t", 1)
+        mode, kind, blob = header.split(b" ")
+        if (not name or name in {b".", b".."} or b"/" in name or name in entries
+                or len(blob) != 40 or any(c not in b"0123456789abcdef" for c in blob)
+                or (mode, kind) not in {
+                    (b"040000", b"tree"), (b"100644", b"blob"),
+                    (b"100755", b"blob"), (b"120000", b"blob"),
+                    (b"160000", b"commit")}):
+            raise RuntimeError("invalid candidate tree entry")
+        entries[name] = (mode, kind, blob)
+
+    def digest(items):
+        payload = b"".join(
+            mode.lstrip(b"0") + b" " + name + b"\0" + bytes.fromhex(blob.decode("ascii"))
+            for name, (mode, kind, blob) in sorted(
+                items.items(), key=lambda item: item[0] +
+                (b"/" if item[1][1] == b"tree" else b"")))
+        return hashlib.sha1(f"tree {len(payload)}\0".encode() + payload).hexdigest()
+
+    if digest(entries) != tree:
+        raise RuntimeError("candidate tree bytes do not match Git identity")
+    by_child = {}
+    for path, value in changes.items():
+        head, _, tail = path.partition("/")
+        by_child.setdefault(head.encode(), {})[tail] = value
+    for name, group in by_child.items():
+        if name not in entries:
+            raise RuntimeError("reviewed projection leaf absent")
+        mode, kind, actual = entries[name]
+        if "" in group:
+            before, after = group[""]
+            if len(group) != 1 or (mode, kind, actual) != (
+                    b"100644", b"blob", before.encode()):
+                raise RuntimeError("reviewed projection leaf differs")
+            if after is None:
+                del entries[name]
+            else:
+                entries[name] = (mode, kind, after.encode())
+        else:
+            if kind != b"tree":
+                raise RuntimeError("reviewed projection parent is not a tree")
+            entries[name] = (mode, kind, _project_tree(
+                repo, actual.decode(), group).encode())
+    return digest(entries)
+
+
+def _reviewed_4280_root(producer, current):
+    path = "hia/tests/file_update_oracle/identity.py"
+    code = (producer / path).read_bytes()
+    blob = hashlib.sha1(f"blob {len(code)}\0".encode() + code).hexdigest()
+    inverse = _project_tree(producer, current["tree"], {
+        path: (blob, _REVIEWED_4280["identity_blob"]),
+    })
+    if inverse != _REVIEWED_4280["tree"]:
+        raise RuntimeError("unreviewed producing tree; exact 4280 inverse required")
+    return inverse
+
+
+def _reviewed_4280_exec_projection(producer, relative, expected, actual):
+    pin = _EXEC_SERVER_TEST_PROJECTION
+    if (relative, expected, actual) != (
+            pin["dependency"], pin["original_tree"], _REVIEWED_4280_EXEC_TREE):
+        raise RuntimeError("unreviewed path dependency projection")
+    listing = git(producer, "ls-tree", "-r", "-z", actual)
+    if not listing.endswith(b"\0") or len(listing[:-1].split(b"\0")) != 144:
+        raise RuntimeError("complete reviewed exec-server leaf inventory differs")
+    wine_tree = _project_tree(producer, actual, _REVIEWED_4280_EXEC_LEAVES)
+    if wine_tree != pin["actual_tree"]:
+        raise RuntimeError("macOS inverse does not recover the reviewed Wine tree")
+    inverse = _project_tree(producer, actual, {
+        **_REVIEWED_4280_EXEC_LEAVES,
+        pin["path"]: (pin["actual_blob"], pin["original_blob"]),
+    })
+    if inverse != expected:
+        raise RuntimeError("complete inverse does not recover the original dependency")
+    return {"schema": "codex.hia.path-dependency-reviewed-projection.v2",
+            "dependency": relative, "actual_tree": actual,
+            "original_tree": expected, "leaf_count": 144,
+            "projected_wine_tree": wine_tree, "projected_original_tree": inverse,
+            "macos_leaves": _REVIEWED_4280_EXEC_LEAVES,
+            "wine_projection": pin}
+
+
 def producer_inputs(producer, original_root, original_manifest):
     current = clean_identity(producer)
     # Equality to immutable originals rejects manifest/default-feature changes even
     # if an attacker updates a self-reported manifest SHA to match that change.
     matched = {}
-    for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
-        if sha(producer / path) != sha(original_root / path):
-            raise RuntimeError(f"original dependency/type declaration changed: {path}")
-        matched[path] = sha(producer / path)
+    reviewed = {}
+    paths = ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES)
+    differences = {path: (sha(original_root / path), sha(producer / path))
+                   for path in paths if sha(producer / path) != sha(original_root / path)}
+    if differences:
+        if (differences != _REVIEWED_4280_FILES or
+                original_manifest["commit"] != BASE or
+                original_manifest["crate_tree"] != CRATE_TREE):
+            raise RuntimeError("unreviewed original dependency/type declaration change")
+        reviewed = {**_REVIEWED_4280,
+                    "projected_tree": _reviewed_4280_root(producer, current),
+                    "reviewed_files": differences}
+    for path in paths:
+        if path not in differences:
+            matched[path] = sha(producer / path)
     # The producing Actions checkout may be shallow. Baseline trees came from
     # the separate immutable original checkout, never from assumed local history.
     path_trees = {}
     projections = {}
     for relative, expected in original_manifest["path_dependency_trees"].items():
         actual = git(producer, "rev-parse", f"HEAD:{relative}").decode().strip()
-        if actual != expected:
+        if actual != expected and reviewed:
+            projections[relative] = _reviewed_4280_exec_projection(
+                producer, relative, expected, actual)
+        elif actual != expected:
             pin = _EXEC_SERVER_TEST_PROJECTION
             if (relative, expected, actual) != (
                     pin["dependency"], pin["original_tree"], pin["actual_tree"]):
@@ -270,6 +409,8 @@ def producer_inputs(producer, original_root, original_manifest):
               "exact_routing_inverse": recover_owner(producer)}
     if projections:
         result["path_dependency_projections"] = projections
+    if reviewed:
+        result["reviewed_candidate"] = reviewed
     return result
 
 
