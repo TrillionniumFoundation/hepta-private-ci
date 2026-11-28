@@ -1,0 +1,69 @@
+{
+  "schema": "hepta-full-edit-timing-audit-v1",
+  "source_commit": "7caa89806980928b6adc29893da33f1827e7099b",
+  "source_readme_sha256": "22a99a01cbf1000ab65cf2a2df3758e5effe860168036c04f28784182c20d668",
+  "corrected_readme_sha256": "29c28139859b3e7544618e198decee18acfd107ff7b0907d57e24661b8a20009",
+  "terminal_sha256": "0368d83ed508f9551403ae4fec926eca0801500daa444a1bd52312f9dfe3ca51",
+  "whole_py_sha256_unchanged": "88b46ab1432201cca1df1fbc44449fbad94c996708b6e94963980bebc6bccbff",
+  "development_seal_sha256": "6ef8baad733525893762dd8fd7e79e30b133cf2bc023e409ff570627699d100c",
+  "costs_independently_recomputed_from_published_json": [
+    {
+      "method": "forward",
+      "three_original_seconds": [
+        27.68487277207896,
+        29.11133027775213,
+        28.20502557931468
+      ],
+      "median": 28.20502557931468,
+      "mean": 28.333742876381923
+    },
+    {
+      "method": "shuffled",
+      "three_original_seconds": [
+        27.633676898200065,
+        29.818968186620623,
+        28.856088429223746
+      ],
+      "median": 28.856088429223746,
+      "mean": 28.76957783801481
+    },
+    {
+      "method": "head",
+      "three_original_seconds": [
+        18.573969014920294,
+        19.73743687896058,
+        19.822438306640834
+      ],
+      "median": 19.73743687896058,
+      "mean": 19.37794806684057
+    },
+    {
+      "method": "same_site_bp",
+      "three_original_seconds": [
+        56.79864733340219,
+        61.603086908347905,
+        57.00197291839868
+      ],
+      "median": 57.00197291839868,
+      "mean": 58.467902386716254
+    },
+    {
+      "method": "full_bp",
+      "three_original_seconds": [
+        72.26273066643625,
+        71.32309331605211,
+        71.81051764125004
+      ],
+      "median": 71.81051764125004,
+      "mean": 71.79878054124613
+    }
+  ],
+  "source_control_flow": {
+    "checkpoint_timer": "whole.py sets charged_to_development_s before writing the last dev npz and fits JSON",
+    "gate_timer": "whole.py adds common_prep + checkpoint charged_to_development_s + cumulative cold_spent only after all fits and selection are sealed",
+    "total_wall": "terminal.total_wall_s=588.4366667689756 is computed after bootstrap and before writing terminal.json"
+  },
+  "scope": "No original weights or logits were fetched; these are published JSON arithmetic and source-control-flow checks.",
+  "changes": "Only the statistic label and accounting boundary are corrected; no reported measurement, threshold, model, algorithm, or sealed input is changed.",
+  "verification": "Five published table values match rounded medians; terminal source/seal hashes checked; no scientific execution was repeated."
+}
