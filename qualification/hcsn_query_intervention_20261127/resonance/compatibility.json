@@ -1,0 +1,99 @@
+{
+ "compatible_at_premium_0_01": {
+  "boundary": 6.394884621840902e-14,
+  "equity": 4.382327833951649e-13,
+  "hit": 1.1102230246251565e-16,
+  "equity_dx": 2.9558577807620168e-12,
+  "equity_dP": 9.048317650695026e-15,
+  "advance": 5.551115123125783e-17,
+  "different_horizon_hit": 1.1102230246251565e-16,
+  "hit_dx": 8.881784197001252e-16
+ },
+ "native_network": {
+  "timesteps": 15,
+  "batch": 4,
+  "old_and_new_buffers_same_names": true,
+  "strict_checkpoint_missing": [],
+  "strict_checkpoint_unexpected": [],
+  "output_abs": 1.2878587085651816e-14,
+  "input_gradient_abs": 2.1024848528838902e-15,
+  "parameter_gradient_abs": {
+   "drive.weight": 1.1934897514720433e-14,
+   "drive.bias": 8.604228440844963e-15,
+   "rec.weight": 1.2281842209915794e-14,
+   "readout.weight": 2.984279490192421e-13,
+   "readout.bias": 1.7763568394002505e-14
+  }
+ },
+ "zero_limit": {
+  "fixed_log_margin_0.1": {
+   "B_E_F_G": [
+    65.04840293603543,
+    4.0847125137305955,
+    0.6210393606037601,
+    0.6071096319013604
+   ],
+   "gradient": [
+    240.14337412878248,
+    -21.343451330325138,
+    0.0,
+    -0.17076135509472531
+   ],
+   "physical_right_fd": [
+    240.1433741300233,
+    -21.343451329780546,
+    -7.401486830834376e-12,
+    -0.1707613551523342
+   ],
+   "formal_left_fd": [
+    240.14337412647058,
+    -21.343451331497693,
+    7.401486830834376e-12,
+    -0.1707613550598156
+   ],
+   "max_abs_right": 1.2408065686031478e-09,
+   "max_abs_formal_left": 2.311907110197353e-09
+  },
+  "fixed_absolute_V75": {
+   "B_E_F_G": [
+    65.04840293603543,
+    7.657932465563154,
+    0.48772455043659857,
+    0.4733267086318004
+   ],
+   "gradient": [
+    240.14337412878248,
+    -383.8331056729141,
+    10.802787398346554,
+    10.584472725006083
+   ],
+   "physical_right_fd": [
+    240.1433741300233,
+    -383.8331056737883,
+    10.802787398189738,
+    10.58447272488383
+   ],
+   "formal_left_fd": [
+    240.14337412647058,
+    -383.8331056631894,
+    10.802787397945488,
+    10.584472724619227
+   ],
+   "max_abs_right": 1.2408065686031478e-09,
+   "max_abs_formal_left": 9.724715255288174e-09
+  },
+  "cell_all_finite": true
+ },
+ "broadcast_shape": [
+  3,
+  4
+ ],
+ "broadcast_gradients_finite": true,
+ "invalid_inputs": {
+  "negative_physical_premium": "incremental liquidity yield must be finite and nonnegative",
+  "negative_principal": "principal must be finite and positive",
+  "zero_maturity": "rate, payout, volatility, maturity and principal must be positive",
+  "nan_margin": "log margin must be finite"
+ },
+ "construction_inside_inference_mode": 3.8722198996132766
+}
