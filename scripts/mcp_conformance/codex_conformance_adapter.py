@@ -10,7 +10,7 @@ import urllib.error
 import urllib.parse
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Mapping, Sequence
+from typing import Literal, Mapping, Sequence
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener  # noqa: TID251
 
 _MODULE_DIR = Path(__file__).resolve().parent
@@ -39,6 +39,13 @@ class Step:
 
 class AdapterFailure(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class _OAuthLoginObservation:
+    success: bool
+    error: str | None
+    stage: Literal["login_request", "callback_completion"]
 
 
 CIMD_CLIENT_METADATA_URL = "https://conformance-test.local/client-metadata.json"
@@ -377,6 +384,22 @@ def _oauth_login(
     timeout_seconds: float,
     client_registration: str | None = None,
 ) -> tuple[bool, str | None]:
+    observation = _observe_oauth_login(
+        client,
+        scopes=scopes,
+        timeout_seconds=timeout_seconds,
+        client_registration=client_registration,
+    )
+    return observation.success, observation.error
+
+
+def _observe_oauth_login(
+    client: AppServerClient,
+    *,
+    scopes: Sequence[str] | None,
+    timeout_seconds: float,
+    client_registration: str | None = None,
+) -> _OAuthLoginObservation:
     event_index = len(client.events)
     params: dict[str, object] = {
         "name": TEST_SERVER_NAME,
@@ -389,7 +412,7 @@ def _oauth_login(
     response = client.request("mcpServer/oauth/login", params)
     result, detail = _response_result(response)
     if result is None:
-        return False, detail
+        return _OAuthLoginObservation(False, detail, "login_request")
     authorization_url = result.get("authorizationUrl")
     if not isinstance(authorization_url, str):
         raise AdapterFailure("mcpServer/oauth/login returned no authorization URL")
@@ -408,7 +431,11 @@ def _oauth_login(
         raise AdapterFailure("OAuth completion notification did not contain params")
     success = params_value.get("success") is True
     error = params_value.get("error")
-    return success, str(error) if error is not None else None
+    return _OAuthLoginObservation(
+        success,
+        str(error) if error is not None else None,
+        "callback_completion",
+    )
 
 
 def _reload_mcp(client: AppServerClient) -> None:
@@ -468,16 +495,23 @@ def _exercise_auth_scenario(
     client_registration: str | None = None,
 ) -> str:
     if scenario in EXPECTED_AUTH_REJECTION_SCENARIOS:
-        success, error = _oauth_login(
+        observation = _observe_oauth_login(
             client,
             scopes=None,
             timeout_seconds=timeout_seconds,
         )
-        if success:
+        if observation.success:
             raise AdapterFailure(
                 "OAuth flow unexpectedly accepted authorization metadata that must be rejected"
             )
-        return f"rejected invalid authorization flow: {error or 'request rejected'}"
+        # The app-server response and completion notification expose only an
+        # unstructured error string. Neither a failure at the expected stage nor
+        # the upstream fixture's absence-of-token checks prove its cause.
+        raise AdapterFailure(
+            f"OAuth rejection is unqualified for {scenario}: failure during "
+            f"{observation.stage}; app-server did not provide a structured "
+            f"rejection reason. Observed error: {observation.error or 'not provided'}"
+        )
 
     if scenario == "auth/scope-step-up":
         success, error = _oauth_login(
