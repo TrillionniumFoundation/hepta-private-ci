@@ -330,11 +330,19 @@
       "10,1,1,1,1": 1
     },
     "result_count_key": "operation,constructor-valid,microsecond-option-valid,nanosecond-option-valid,std-conversion-valid",
-    "buffer_control_calls": 2682,
-    "native_calls_required": 2098434,
+    "buffer_control_calls": 2582,
+    "native_calls_required": 2098334,
     "coverage": "Canonical duration endpoints and invalid fractions; exact optional total microsecond/nanosecond boundaries; full i64 power-of-two neighborhoods and extremes; all checked unit boundaries; deterministic full-range and valid-range inputs; unsigned standard-duration overflow and canonical fraction guards; actual TimeDelta::zero.",
     "controls": "Two fills and exact/excess output capacities for every semantic case. All 168 shorter output capacities and three nonempty workspace sizes for all eleven operations; truncated/oversized source, invalid metadata, nonzero reserved/unused words and nonzero zero-constructor arguments. All inputs, outputs, tails and unaligned guards compared.",
-    "recording": "Complete input, original output and native-call transcript retained as gzip streams, with SHA-256 hashes of every uncompressed byte."
+    "recording": "Complete input, original output and native-call transcript retained as gzip streams, with SHA-256 hashes of every uncompressed byte.",
+    "buffer_control_groups": {
+      "frame_sizes": 536,
+      "metadata": 39,
+      "short_capacity_by_operation": 1848,
+      "workspace_by_operation": 99,
+      "unused_nanoseconds": 54,
+      "zero_arguments": 6
+    }
   },
   "claims": {
     "production_callers_migrated": false,

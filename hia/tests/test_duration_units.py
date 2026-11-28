@@ -74,6 +74,8 @@ def qualify(args, report):
     prefix, suffix = bytes(range(17)), bytes(range(239, 256))
     trace_hash = hashlib.sha256()
     trace_bytes, calls, semantic_calls = 0, 0, 0
+    controls = {"frame_sizes": 0, "metadata": 0, "short_capacity_by_operation": 0,
+                "workspace_by_operation": 0, "unused_nanoseconds": 0, "zero_arguments": 0}
     trace_path = args.output / "native-calls.bin.gz"
     try:
         with trace_path.open("xb") as file, gzip.GzipFile(filename="", mode="wb", fileobj=file, mtime=0) as trace:
@@ -108,6 +110,8 @@ def qualify(args, report):
                 for capacity in [0, 167, 168, 181]:
                     for fill in [0, 165]:
                         call(frame, b"", capacity, fill, 0xFFFFFFFE if capacity < 168 else 0xFFFFFFFF)
+            controls["frame_sizes"] = calls - semantic_calls
+            group_start = calls
             for position, values in [(0, [0, 2, MASK]), (1, [11, MASK]),
                                      (4, [1, MASK]), (5, [1, MASK]), (6, [1, MASK]), (7, [1, MASK])]:
                 for value in values:
@@ -116,28 +120,41 @@ def qualify(args, report):
                     for capacity in [167, 168, 181]:
                         call(struct.pack("<8Q", *words), b"", capacity, 165,
                              0xFFFFFFFE if capacity < 168 else 0xFFFFFFFF)
+            controls["metadata"] = calls - group_start
             for operation in range(11):
                 frame = struct.pack("<8Q", 1, operation, 0, 0, 0, 0, 0, 0)
+                group_start = calls
                 for capacity in range(168):
                     call(frame, b"", capacity, 165, 0xFFFFFFFE)
+                controls["short_capacity_by_operation"] += calls - group_start
+                group_start = calls
                 for workspace in [b"\0", b"\xa5" * 8, b"\0" * 64]:
                     for capacity in [167, 168, 181]:
                         call(frame, workspace, capacity, 165, 0xFFFFFFFE if capacity < 168 else 0xFFFFFFFF)
+                controls["workspace_by_operation"] += calls - group_start
+                group_start = calls
                 if operation not in (0, 9):
                     for value in [1, MASK]:
                         frame = struct.pack("<8Q", 1, operation, 0, value, 0, 0, 0, 0)
                         for capacity in [167, 168, 181]:
                             call(frame, b"", capacity, 165, 0xFFFFFFFE if capacity < 168 else 0xFFFFFFFF)
+                controls["unused_nanoseconds"] += calls - group_start
+            group_start = calls
             for argument in [1, MASK]:
                 frame = struct.pack("<8Q", 1, 10, argument, 0, 0, 0, 0, 0)
                 for capacity in [167, 168, 181]:
                     call(frame, b"", capacity, 165, 0xFFFFFFFE if capacity < 168 else 0xFFFFFFFF)
+            controls["zero_arguments"] = calls - group_start
     finally:
-        report.update(native_calls=calls, semantic_calls=semantic_calls,
+        report.update(native_calls=calls, semantic_calls=semantic_calls, buffer_control_groups=controls,
                       trace={"raw_bytes": trace_bytes, "raw_sha256": trace_hash.hexdigest(),
                              "archive": binding(trace_path)})
-    require(calls - semantic_calls == corpus["buffer_control_calls"] == 2682
-            and calls == corpus["native_calls_required"] == len(cases) * 4 + 2682,
+    require(controls == corpus["buffer_control_groups"] == {
+                "frame_sizes": 536, "metadata": 39, "short_capacity_by_operation": 1848,
+                "workspace_by_operation": 99, "unused_nanoseconds": 54, "zero_arguments": 6},
+            "native buffer control groups are incomplete")
+    require(calls - semantic_calls == sum(controls.values()) == corpus["buffer_control_calls"] == 2582
+            and calls == corpus["native_calls_required"] == len(cases) * 4 + 2582,
             "native call coverage is incomplete")
     report["buffer_control_calls"] = calls - semantic_calls
     require(identity() == before and binding(library_path) == build["library"]
