@@ -10,7 +10,7 @@ use crate::model::Stage1RecallCandidate;
 use crate::model::Stage1StartupClaimParams;
 use crate::model::ThreadRow;
 use chrono::DateTime;
-#[cfg(any(not(feature = "hia-native"), test))]
+#[cfg(not(feature = "hia-native"))]
 use chrono::Duration;
 use sqlx::Executor;
 use sqlx::QueryBuilder;

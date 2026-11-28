@@ -27,7 +27,8 @@ def inverse(path, text):
                             '#[path = "../../../hia/datetime_retention.rs"]\n'
                             'mod hia_datetime_retention;\n')
     if path == MEMORIES:
-        text = replace_once(text, '#[cfg(any(not(feature = "hia-native"), test))]\n')
+        text = replace_once(text, '#[cfg(not(feature = "hia-native"))]\nuse chrono::Duration;\n',
+                            'use chrono::Duration;\n')
         text, count = re.subn(re.escape(NATIVE) + r'        let (?:max_age_cutoff|idle_cutoff|cutoff) = \{\n.*?^        \};\n',
                              '', text, flags=re.M | re.S)
         require(count == 4 and text.count(DEFAULT) == 4, "four memory calculations were not preserved")
