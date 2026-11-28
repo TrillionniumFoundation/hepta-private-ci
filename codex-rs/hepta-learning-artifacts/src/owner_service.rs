@@ -153,6 +153,11 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        if let Some(operation_id) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation_id.clone(),
+            ));
+        }
         Ok(self.host.current_registry_view(now)?)
     }
 
