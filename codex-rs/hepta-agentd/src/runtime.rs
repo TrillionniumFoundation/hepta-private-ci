@@ -182,6 +182,9 @@ pub async fn run_with_shutdown(
     if let Some(bootstrap) = &neuron_generation {
         bootstrap.attach(&state)?;
     }
+    if let Some(bootstrap) = &terminal_learning {
+        bootstrap.attach_native_lifetime(&state)?;
+    }
     if let Some(notes) = notes_objective {
         state
             .notes_objective
@@ -760,6 +763,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.active_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.terminal_native_drain_blockers() == 0
         {
             return Ok(());
         }
@@ -775,6 +779,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.unresolved_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.terminal_native_drain_blockers() == 0
         {
             return Ok(());
         }
@@ -787,11 +792,16 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
     let circuit_blockers = state.circuit_task_drain_blockers().await?;
-    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
+    let terminal_blockers = state.terminal_native_drain_blockers();
+    if unresolved == 0
+        && generation_blockers == 0
+        && circuit_blockers == 0
+        && terminal_blockers == 0
+    {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s) and {terminal_blockers} terminal native worker(s); owner recovery is required"
         )))
     }
 }

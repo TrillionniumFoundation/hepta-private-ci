@@ -1,0 +1,37 @@
+{
+  "schema": "terminal-native-lifetime-prospective-source-v1",
+  "base_head": "7fc08f759e7fb3103b9e18e666ebdee98a1115a8",
+  "protocol_commit": "20e22d3dc147040b6fc3fd65a67b4635a7027511",
+  "protocol_sha256": "81e52f36f764266a4db925d6a1d7f20a29d47c8467e6acfeca4ad98f3f557b3b",
+  "source_sha256": {
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime.rs": "681dac21f467bbd7311aea56797afdfd91edb9932729ebbe89d63484e698f6e9",
+    "codex-rs/hepta-agentd/src/state_terminal_learning.rs": "c51bf4cc873a52c24133efe693eae9a4f79a46d6b8130b11bd7896a6f925b68f",
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime_tests.rs": "3e9f1aaba122b2d9f71488c81b9e40d0bd6d6b40dc831c4822cec73854f9dffe",
+    "codex-rs/hepta-agentd/src/terminal_learning.rs": "6e431b8a9f0b0439f6d111b312ee85e1ec4c8758c3b4ea1ed3957ca66bf1472b",
+    "codex-rs/hepta-agentd/src/terminal_learning_runtime.rs": "08188bf23865495ef778eb0834bccce66282c43677a57940a0903a6a8b3d71c7",
+    "codex-rs/hepta-agentd/src/state.rs": "b1359d23f79e761a9c33a2403fb52687520748c643fe1e2f230bf8513954f22b",
+    "codex-rs/hepta-agentd/src/runtime.rs": "075acf4a080e4e1fa379d77179ec4f8e6356385d666584e7545c2682487888ef",
+    "codex-rs/hepta-agentd/src/terminal_learning_tests.rs": "6017e5d3795083c5a0984e8abe85a6fb0313484caf54b3399d6a44351f4ab64b",
+    "CALLERS.toml": "95da443a50a1fac7bd6f397f134b5d17bc235f42a29094a1d0747f55f3746c70"
+  },
+  "exact_tests": [
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_lifetime_tests::cancellation_before_fit_keeps_real_worker_tracked_until_exit",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_lifetime_tests::draining_closes_native_admission_and_cannot_finish_with_live_worker"
+  ],
+  "minimum_tests": 2,
+  "expected_actual_fit_calls": 0,
+  "native_executed": false,
+  "command_cap_seconds": 120,
+  "original_shared_pool_seconds": 3600,
+  "remaining_budget_recorded_by_exclusive_native_owner_before_dispatch": true,
+  "scientific_budget_reset": false,
+  "original_26_controls_rerun": false,
+  "wire_schema_changed": false,
+  "new_ledger_provider": false,
+  "human_training": false,
+  "format_exit": 0,
+  "format_elapsed_seconds": 0.8944523681420833,
+  "format_raw_postimages_sha256": "c595d60484d5eaa37703d6ea8488ba598d73108e9453335eb22328debbab51dd",
+  "combined_command_cap_seconds": 240,
+  "combined_pending_cohort_size": 28
+}

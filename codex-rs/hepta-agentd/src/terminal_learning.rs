@@ -22,6 +22,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use tokio::sync::Semaphore;
+use tokio::sync::TryAcquireError;
 use tokio::sync::oneshot;
 
 use crate::AgentdSharedReplayHostV1;
@@ -43,6 +44,10 @@ pub(crate) use paired_binding::PairedTerminalLearningReceiptV1;
 #[cfg(target_os = "linux")]
 pub(crate) use paired_binding::PreparedPairedTerminalV1;
 
+#[path = "terminal_native_lifetime.rs"]
+mod native_lifetime;
+pub(crate) use native_lifetime::TerminalNativeLifetimeV1;
+
 type JobResult = Result<TerminalLearningReceiptV1, TerminalLearningErrorV1>;
 
 #[derive(Clone)]
@@ -63,6 +68,7 @@ pub struct AgentdTerminalLearningOwnerV1 {
     replay: Arc<AgentdSharedReplayHostV1>,
     jobs: Arc<Mutex<BTreeMap<StableId, Job>>>,
     compute: Arc<Semaphore>,
+    native_lifetime: Arc<TerminalNativeLifetimeV1>,
     maximum_jobs: usize,
 }
 
@@ -82,15 +88,22 @@ impl AgentdTerminalLearningOwnerV1 {
         if replay.consumer_agent_id() != &agent_id {
             return Err(TerminalLearningErrorV1::WrongScope);
         }
+        let compute = Arc::new(Semaphore::new(/*permits*/ 1));
+        let native_lifetime = Arc::new(TerminalNativeLifetimeV1::new(Arc::clone(&compute)));
         Ok(Self {
             agent_id,
             producer_id,
             ledger,
             replay,
             jobs: Arc::new(Mutex::new(BTreeMap::new())),
-            compute: Arc::new(Semaphore::new(/*permits*/ 1)),
+            compute,
+            native_lifetime,
             maximum_jobs,
         })
+    }
+
+    pub(crate) fn native_lifetime(&self) -> Arc<TerminalNativeLifetimeV1> {
+        Arc::clone(&self.native_lifetime)
     }
 
     pub(crate) fn agent_id(&self) -> &AgentId {
@@ -184,6 +197,7 @@ impl AgentdTerminalLearningOwnerV1 {
                 if matches!(mode, TerminalLearningModeV1::Readback) {
                     return Err(TerminalLearningErrorV1::CommitUncertain);
                 }
+                self.native_lifetime.require_fit_open()?;
                 if jobs.len() >= self.maximum_jobs {
                     return Err(TerminalLearningErrorV1::Capacity);
                 }
@@ -234,9 +248,13 @@ impl AgentdTerminalLearningOwnerV1 {
                 .ok_or(TerminalLearningErrorV1::CommitUncertain)?;
             match &job.state {
                 JobState::Admitted => {
-                    let permit = Arc::clone(&self.compute)
-                        .try_acquire_owned()
-                        .map_err(|_| TerminalLearningErrorV1::Busy)?;
+                    let permit = Arc::clone(&self.compute).try_acquire_owned().map_err(
+                        |error| match error {
+                            TryAcquireError::Closed => TerminalLearningErrorV1::Unavailable,
+                            TryAcquireError::NoPermits => TerminalLearningErrorV1::Busy,
+                        },
+                    )?;
+                    let permit = self.native_lifetime.claim_terminal_native_work(permit)?;
                     job.state = JobState::Computing;
                     Ok(permit)
                 }
@@ -279,6 +297,7 @@ impl AgentdTerminalLearningOwnerV1 {
                         })??;
                 fit_native(
                     &ledger,
+                    &_permit,
                     &native_request,
                     digest,
                     source,
@@ -361,8 +380,10 @@ impl AgentdTerminalLearningOwnerV1 {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn fit_native(
     ledger: &Mutex<LedgerWriter>,
+    native_work: &native_lifetime::TerminalNativeWorkGuardV1,
     request: &TerminalLearningRequestV1,
     digest: Digest32,
     source: SharedExperienceUseV1,
@@ -406,6 +427,21 @@ fn fit_native(
     // This gates a new native fit invocation. Its synchronous atomic work can
     // finish after end; the checks below refuse to release such a result.
     check_work_budget(request, now, started, end)?;
+    #[cfg(test)]
+    {
+        let before_fit = native_work.lifetime.before_fit.lock().unwrap().take();
+        if let Some(before_fit) = before_fit {
+            before_fit();
+        }
+    }
+    // Cancellation can abandon the async waiter while this real blocking job
+    // still owns the permit and Ledger. Refuse a late new fit at its entry gate.
+    native_work.begin_terminal_native_fit()?;
+    #[cfg(test)]
+    native_work
+        .lifetime
+        .fit_calls
+        .fetch_add(/*val*/ 1, std::sync::atomic::Ordering::SeqCst);
     let candidate = AgentdSharedReplayHostV1::fit_from_source(
         source,
         &ledger,

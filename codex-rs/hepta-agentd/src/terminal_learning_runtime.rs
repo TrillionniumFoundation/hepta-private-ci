@@ -139,6 +139,11 @@ impl TerminalLearningRuntimeBootstrapV1 {
         Ok(())
     }
 
+    pub(crate) fn attach_native_lifetime(&self, state: &AgentdState) -> Result<(), AgentdError> {
+        self.require_identity(state.identity())?;
+        state.attach_terminal_native_lifetime(self.owner.native_lifetime())
+    }
+
     pub(crate) async fn run(
         self,
         state: Arc<AgentdState>,
@@ -154,6 +159,12 @@ impl TerminalLearningRuntimeBootstrapV1 {
         clock: impl Fn() -> Result<u64, TerminalLearningErrorV1> + Send + Sync,
     ) -> Result<(), AgentdError> {
         self.require_identity(state.identity())?;
+        let _native_runtime = self
+            .owner
+            .native_lifetime()
+            .bind_terminal_native_runtime(cancellation.clone())
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        self.attach_native_lifetime(&state)?;
         #[cfg(target_os = "linux")]
         let paired_receipt = match self.paired.take() {
             Some(paired) => Some(
