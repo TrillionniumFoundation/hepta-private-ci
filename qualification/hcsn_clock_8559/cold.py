@@ -10,10 +10,18 @@ from train import Data, apply, atomic_json, digest
 from model import Classifier
 
 
-def confirm(root,results,out,budget,matched_step=0,device="cpu"):
+def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=False,native=False):
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     manifest=results/f'seal-{budget}.json'; rows=json.loads(manifest.read_text())
-    assert len(rows)==21 and len({(x['arm'],x['seed']) for x in rows})==21
+    identities={(x['arm'],x['seed']) for x in rows}
+    if literal_only:
+        assert len(rows)==3 and identities=={('literal',s) for s in (137,311,557)}
+    else:
+        from model import ARMS
+        assert len(rows)==21 and identities=={(a,s) for a in ARMS for s in (137,311,557)}
+    if native:
+        assert literal_only and device=='cpu'
+        from fused.native import enable
     common=time.perf_counter();d=Data(root)
     streams={}; row=speaker=y=None
     for name in ('natural','fast','slow'):
@@ -36,6 +44,7 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu"):
             continue
         started=time.perf_counter()
         model=Classifier(info['arm'])
+        if native:model=enable(model)
         apply(model,torch.load(chosen,map_location='cpu',weights_only=True));model.to(device);model.eval()
         if device=='cuda':torch.cuda.synchronize()
         init_wall=time.perf_counter()-started
@@ -52,7 +61,7 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu"):
         os.replace(tmp,probs)
         score_hash=digest(probs)
         write_and_hash_s=time.perf_counter()-forward_stop
-        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,
+        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,native=native,
                     checkpoint_sha256=digest(chosen),score_sha256=score_hash,seal_sha256=digest(manifest),
                     input_setup_wall_s=common,model_restore_wall_s=init_wall,forward_wall_s=timings,
                     prediction_write_hash_wall_s=write_and_hash_s,cold_arm_wall_s=time.perf_counter()-started))
@@ -63,4 +72,5 @@ if __name__=='__main__':
     for k in ('data','runs','out'):p.add_argument(k,type=Path)
     p.add_argument('rung',type=int);p.add_argument('--matched-step',type=int,default=0)
     p.add_argument('--device',choices=['cpu','cuda'],default='cpu')
-    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step,a.device)
+    p.add_argument('--literal-only',action='store_true');p.add_argument('--native',action='store_true')
+    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step,a.device,a.literal_only,a.native)
