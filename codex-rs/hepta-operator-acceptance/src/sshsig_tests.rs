@@ -33,11 +33,26 @@ impl Oracle {
         let mut allowed_paths = Vec::new();
         for (index, key) in [&key, &other].into_iter().enumerate() {
             let result = Command::new(ssh_keygen_path())
-                .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+                .args(["-v", "-t", "ed25519", "-N", "", "-f"])
                 .arg(key)
                 .output()
                 .expect("start fixed system key generator");
-            assert!(result.status.success(), "{:?}", result.status);
+            assert!(
+                result.status.success(),
+                "key generation {:?}; stdout={}; stderr={}; Windows environment present={:?}",
+                result.status,
+                String::from_utf8_lossy(&result.stdout),
+                String::from_utf8_lossy(&result.stderr),
+                [
+                    "SYSTEMROOT",
+                    "WINDIR",
+                    "USERPROFILE",
+                    "HOMEDRIVE",
+                    "HOMEPATH",
+                    "PROGRAMDATA"
+                ]
+                .map(|name| (name, std::env::var_os(name).is_some()))
+            );
             let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
             let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
             assert_eq!(fields[0], "ssh-ed25519");
