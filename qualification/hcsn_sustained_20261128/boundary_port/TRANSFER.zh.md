@@ -75,3 +75,5 @@ $$
 表的四行接收数据各自只含下游本地返回；单向级联的整体谱由本地块和已单列的发送块给出。每项都严格低于 1，复共轭、开环混合和右半圆最大值原理补全右半平面。有限维滤波器与受控漂移的短块可微性仍成立，因此在这里实际使用的增益上，两种源和相应的接收稳态均局部指数稳定。$\epsilon=.075$ 的稳态解和导数仅作定量复核，本项全谱复证限定在 .025。[各分支原始区间](operating_points.json) · [发送低支](finite_source_low.json) · [发送高支](finite_source_high.json) · [低→低](finite_receiver_low_low.json) · [低→高](finite_receiver_low_high.json) · [高→低](finite_receiver_high_low.json) · [高→高](finite_receiver_high_high.json)
 
 重新验证先按半轴模块的指引编译 `../halfline/cdf_point.so`，设 `PYTHONPATH=../halfline`。执行 `python operating_points.py` 后，对 `source_low`、`source_high`、`receiver_low_low`、`receiver_low_high`、`receiver_high_low`、`receiver_high_high` 六个参数记录各运行 `python finite_stability.py NAME finite_NAME.json`。
+
+[从同一复位通过有限写入脉冲进入大幅不同的发放态，再延迟读取](REACHABILITY.zh.md)给出了跨分支的互补实验。

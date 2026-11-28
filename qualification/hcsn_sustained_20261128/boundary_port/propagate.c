@@ -28,7 +28,7 @@ static void init(Cell *s,int n,double dx,double dt,double u,
 }
 static void dispose(Cell *s){free(s->mass);free(s->queue);free(s->upper);free(s->rhs);}
 
-static double prop(Cell *s,double v,double wall_velocity) {
+static double prop(Cell *s,double v,double wall_velocity,double current) {
     double total=0,moment=0,e=0,l=0;
     int n=s->n;
     for(int i=0;i<n;i++){
@@ -36,7 +36,7 @@ static double prop(Cell *s,double v,double wall_velocity) {
         total+=p;moment+=p*(i+1)*s->dx;
         e+=p*(s->e0[i]+(v+.9)*s->e1[i]);l+=p*(s->l0[i]+(v+.9)*s->l1[i]);
     }
-    double vel=.03355-.7*v+.6*tanh(fmax(e,0.))*(.30-moment/total)-4.1*tanh(fmax(l,0.))-wall_velocity;
+    double vel=.03355-.7*v+.6*tanh(fmax(e,0.))*(.30-moment/total)-4.1*tanh(fmax(l,0.))-wall_velocity+current;
     double D=.23*.23/2,pe=vel*s->dx/D;
     double up,down;
     if(fabs(pe)<1e-7){
@@ -76,8 +76,38 @@ void response(int n,int steps,int pulse,double period,double dx,double dt,double
         double qmid=q+half*(wall-q),dq=wall-qmid;
         double vr=tanh(h0+gain*qmid),br=bminus+(vr+.9)*bprime;
         double rvel=(bprime/br)*(1-vr*vr)*gain*dq;
-        double js=prop(&src,vs,svel),jr=prop(&rec,vr,rvel);
+        double js=prop(&src,vs,svel,0.),jr=prop(&rec,vr,rvel,0.);
         z+=full*(goal-z);q+=full*(wall-q);
+        double endv=tanh(h0+eps*z),y=log((bminus+(endv+.9)*bprime)/wb0);
+        out[i*6]=(i+1)*dt;out[i*6+1]=y;out[i*6+2]=js;out[i*6+3]=jr;
+        out[i*6+4]=src.escape;out[i*6+5]=rec.escape;
+    }
+    dispose(&src);dispose(&rec);
+}
+
+/* Identical hard reset and initially empty refractory history, followed by
+   scalar current injection. The independent receiver is enabled only at a
+   declared later common read time; before then it is the same unforced cell. */
+void condition(int n,int steps,double dx,double dt,double eps,double gain,double amp,double duration,
+               double read_time,double ur,double bminus,double bprime,const double *e0,const double *e1,
+               const double *l0,const double *l1,double *out){
+    Cell src,rec; init(&src,n,dx,dt,.1,e0,e1,l0,l1); init(&rec,n,dx,dt,ur,e0,e1,l0,l1);
+    for(int i=0;i<n;i++)src.mass[i]=0.;
+    src.mass[src.reset_i]=1.;
+    for(int i=0;i<src.delay;i++)src.queue[i]=0.;
+    src.total_refractory=0.;
+    double z=0.,q=0.,h0=atanh(-.8),wb0=bminus+.1*bprime;
+    double half=-expm1(-dt/2),full=-expm1(-dt);
+    for(int i=0;i<steps;i++){
+        double t=(i+.5)*dt,goal=src.total_refractory,zmid=z+half*(goal-z),dz=goal-zmid;
+        double vs=tanh(h0+eps*zmid),bs=bminus+(vs+.9)*bprime;
+        double source_wall=log(bs/wb0),svel=(bprime/bs)*(1-vs*vs)*eps*dz;
+        double observed=t>=read_time?source_wall:0.;
+        double qmid=q+half*(observed-q),dq=observed-qmid;
+        double vr=tanh(h0+gain*qmid),br=bminus+(vr+.9)*bprime;
+        double rvel=(bprime/br)*(1-vr*vr)*gain*dq;
+        double js=prop(&src,vs,svel,t<duration?amp:0.),jr=prop(&rec,vr,rvel,0.);
+        z+=full*(goal-z);q+=full*(observed-q);
         double endv=tanh(h0+eps*z),y=log((bminus+(endv+.9)*bprime)/wb0);
         out[i*6]=(i+1)*dt;out[i*6+1]=y;out[i*6+2]=js;out[i*6+3]=jr;
         out[i*6+4]=src.escape;out[i*6+5]=rec.escape;
