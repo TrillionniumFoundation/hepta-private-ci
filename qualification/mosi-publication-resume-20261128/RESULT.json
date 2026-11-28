@@ -1,0 +1,85 @@
+{
+  "base_commit": "7caa89806980928b6adc29893da33f1827e7099b",
+  "tested_source_commit": "b233239cfd03e98cc5f4a37203a67d27689a05ed",
+  "tested_source_tree": "a6eccdda378c2f515b5e025dd5c06ffdd15ce8a0",
+  "tested_files": {
+    "qualification/hcsn_sustained_20261128/mosi_recovery/publish_mosi.py": {
+      "bytes": 17064,
+      "sha256": "2a7017e51c9149cd1de2efe7ac6f8ff7852188a422e959e91ab2105eccdacc4d"
+    },
+    "qualification/hcsn_sustained_20261128/mosi_recovery/test_publish_mosi.py": {
+      "bytes": 16162,
+      "sha256": "e40cf52e9206420c7609f798f3bc087435143fa1ee29ef6a291cd423bdf46b1c"
+    }
+  },
+  "status": "15 local publication controls passed; deployment and scientific raw custody are not claimed",
+  "tests": {
+    "tests_run": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "elapsed_seconds": 1.3759440530011489,
+    "self_peak_rss_kib": 20520,
+    "children_peak_rss_kib": 20392
+  },
+  "command_wall_seconds": 1.5115625119997276,
+  "standard_command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qualification/hcsn_sustained_20261128/mosi_recovery",
+    "-p",
+    "test_publish_mosi.py",
+    "-v"
+  ],
+  "python_version": "3.12.14",
+  "optimized_subprocesses": [
+    "-O",
+    "-OO"
+  ],
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "outcome": "import failure: new except body under-indented; no controls ran"
+    },
+    {
+      "id": "attempt-02",
+      "outcome": "13/13 passed; original syntax failure retained"
+    },
+    {
+      "id": "attempt-03",
+      "outcome": "14/14 passed; existing validator AssertionError translated to incomplete"
+    },
+    {
+      "id": "attempt-04",
+      "outcome": "15/15 passed; two real optimized interpreter subprocesses refuse before any helper loading or I/O"
+    }
+  ],
+  "transport_evidence": "attempt-04/control_trace.json records local-Git-backed API GETs and actual native git init/remote/fetch/rev-parse/ls-tree. Publisher calls are mocks. No network or remote writes were executed by these controls.",
+  "source_call_graph": {
+    "recovery_map": "Original source unchanged. Reads original seals, recovered weights and archived predictions; checks hashes, counts and saved-score MAE.",
+    "fresh_map": "Original source unchanged. Reads sealed originals and calls original verify.main for saved-prediction arithmetic; writes derived recounts into a temporary directory, compares output digests, then deletes that temporary directory. No forward, backward or fit.",
+    "shared_publisher": "Byte-identical pinned helper 0f182311ca3e2904e469580ecab2b58240991fbac2d3254e3286f3e5570ac60d; its publishing implementation and native nonforce push implementation are unchanged."
+  },
+  "receipt_binding": "Strict JSON/schema, expected kind/branch/prefix, canonical current-source manifest SHA256 and Git blob ID/count, and every expected blob mode/OID in the exact remote commit subtree. Other appended scopes cannot replace expected entries.",
+  "fallback": "Only API transport failures trigger native readback. Native readback pins the official origin and exact commit and does not push. Logical mismatches stay incomplete; original receipt bytes are retained.",
+  "boundaries": [
+    "API protocol behavior is exercised against real small local Git objects, not the live GitHub service.",
+    "Checks attest content-addressed tree entries of the fixed commit, not current branch ancestry, permanent remote availability, or independent semantic validation beyond the existing source verifiers.",
+    "These controls do not recover missing fresh raw objects, prove that real operator receipts were corrupt, or establish the cause of any missing result directory.",
+    "No training, forward pass, scientific gate rerun, live host restart, deployment or remote publication occurred."
+  ],
+  "evidence": {
+    "path": "evidence.tar.gz",
+    "bytes": 47321,
+    "sha256": "4f33e6e445339e876c284cd8be9c4fbf64821e88b6993936054b8933d08b379b",
+    "members": 30,
+    "indexed_payloads": 29,
+    "uncompressed_payload_bytes": 193053,
+    "all_members_read_back_equal": true
+  }
+}

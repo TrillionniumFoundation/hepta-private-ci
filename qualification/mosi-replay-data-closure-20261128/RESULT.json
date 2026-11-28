@@ -1,0 +1,298 @@
+{
+  "actual_raw_transfer": {
+    "actual_weight_objects": 49,
+    "archive_objects": 166,
+    "archive_payload_bytes": 15325978,
+    "data_sha256": "968dfb23d19f7ba50c9907b2146810e09922283b4b4342618e8d2eac151c4f70",
+    "finished_utc": "2026-11-28T14:18:38.512776+00:00",
+    "fit_receipts": 36,
+    "new_forward": false,
+    "new_training": false,
+    "original_object_bytes": 15303090,
+    "original_objects": 165,
+    "original_verifier_sha256": "bdbb45e0ad4227ef2750bb7d35ca4d2035b1c9fd8257d2c4e2c7ed7fa76b17af",
+    "producer_directories_read": false,
+    "receipt_scope": "Object identity and saved-prediction replay inputs only; no model inference or physical retiming.",
+    "schema": "hepta.mosi.fixed-raw-transfer.v1",
+    "source_commit": "4b84b0431b089ccac84c75ac3ac19f96ad804fe4",
+    "started_utc": "2026-11-28T14:18:38.101506+00:00",
+    "status": "PASS",
+    "tar_bytes": 15455744,
+    "tar_sha256": "c7e6a02b4d223c924d7dabd62494ef819b91030aebffa9513628ee246acc36c4",
+    "terminal_objects": 159,
+    "wall_s": 0.41127575910650194
+  },
+  "archives": {
+    "controls.tar.gz": {
+      "git_blob": "291944c34b914695aff4adb64240b08d2b700da5",
+      "sha256": "e6d41e1d485b63871b1add60bd2c004d812b3c6bb83022bc21fa7c79906080e5",
+      "size": 70642
+    },
+    "original-replay.tar.gz": {
+      "git_blob": "c33878f31df66265e1afd351a843b86970d59441",
+      "sha256": "3dae2445f9c8ba10956514b6414bf2672f62bb0b6f4d2f8cef2fc5324f9d1656",
+      "size": 124549
+    }
+  },
+  "control_archive_members": 58,
+  "controls_scope": "Synthetic publisher fixtures plus real local Git commit/blob/tree objects. Model arithmetic and unused NumPy import explicitly stubbed; no live publish.",
+  "first_failure_explanations": {
+    "baseline-15": "Untouched15 had3 failures on Python3.14 because fixture patch of relay.time.sleep replaced stdlib time.sleep used by subprocess.wait.",
+    "baseline-harnessfix-15": "Only fixture module binding corrected; all15 existing test function bodies unchanged;15/15pass.",
+    "candidate-21-attempt-02": "20pass/1error: fixture push returned previous tree; receiver correctly refused absent provenance. Fixture now returns new fixed commit.",
+    "candidate-21-attempt-03": "21/21 actual controls pass; no production validation bypass."
+  },
+  "format_command": {
+    "exit_code": 0,
+    "qualification": "original command executes its exact byte guards; its declared language scopes do not include qualification Python, so no Python formatting qualification is claimed; candidates parsed and hashes unchanged; prior executed tests remain applicable",
+    "receipt_sha256": "08f03b0f01b8126fadbef2a0082a4accf73510afdaefa3ed97c331d6310d8914",
+    "scope": "partial synthetic Git inventory; four actual untracked qualification Python candidates and seven required exact original byte fixtures",
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "tests_reexecuted_after_format": false,
+    "wall_seconds": 0.12747940979897976
+  },
+  "fresh_payload_count_after": 166,
+  "fresh_payload_count_before": 165,
+  "fresh_receipt_file_count_after_including_index": 167,
+  "original_mapping_counterexample": {
+    "data_file_present": true,
+    "data_fixture_bytes": 55,
+    "data_fixture_sha256": "f0f79656c629f26e2b8ec28519dfc38e7e16aec7ca65754d679343b90c9a9a18",
+    "data_in_git_object_expectation": false,
+    "data_in_manifest": false,
+    "data_in_returned_mapping": false,
+    "data_used_by_stub_path": "/tmp/mosi-publication-control-rlb561wp/reconstructed/data.json",
+    "forward_passes": 0,
+    "mapped_paths": [
+      "AV_input_provenance.json",
+      "FRESH_SEAL.json",
+      "PROSPECTIVE_REPLICATION.md",
+      "fresh_study.py",
+      "input_recovery.json",
+      "models/control.pt",
+      "result/SUMMARY.json",
+      "result/all_intact_models.json",
+      "terminal_manifest.json"
+    ],
+    "model_arithmetic_stub_calls": 1,
+    "new_remote_publications": 0,
+    "omission_reproduced": true,
+    "original_mapper_sha256": "2a7017e51c9149cd1de2efe7ac6f8ff7852188a422e959e91ab2105eccdacc4d",
+    "source_parent_commit": "54c8fe3c8f04b1871d64e360463fcb576a3906d4",
+    "synthetic_only": true,
+    "training_steps": 0
+  },
+  "original_replay": {
+    "assertions_enabled": true,
+    "copied_inputs_unchanged": true,
+    "cpu_s": 1.238957066,
+    "designs": [
+      [
+        0,
+        "raw_all"
+      ],
+      [
+        0,
+        "raw_text"
+      ],
+      [
+        0,
+        "raw_av"
+      ],
+      [
+        64,
+        "fp_h"
+      ],
+      [
+        64,
+        "fp_h_text"
+      ],
+      [
+        64,
+        "fp_h_av"
+      ],
+      [
+        64,
+        "fp_h_shuffle"
+      ],
+      [
+        64,
+        "fp_r"
+      ],
+      [
+        64,
+        "random_h"
+      ],
+      [
+        64,
+        "bp_h"
+      ],
+      [
+        64,
+        "transformer"
+      ],
+      [
+        64,
+        "transformer_text"
+      ]
+    ],
+    "environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONOPTIMIZE": ""
+    },
+    "exit_code": 0,
+    "finished_utc": "2026-11-28T14:18:48.828228+00:00",
+    "interpretation": "Actual sealed saved-prediction arithmetic replay with the recovered producer data manifest. It is not new forward inference, model training, or independent physical remeasurement of the reported costs.",
+    "new_forward": false,
+    "new_training": false,
+    "numpy": "2.5.4",
+    "original_scientific_directory_read": false,
+    "original_verifier_argv": [
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/source/verify.py",
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/raw/models",
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/raw/cold",
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/data.json",
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/raw/FRESH_SEAL.json",
+      "/home/qian-qi/hepta-audit-20261128-5bdf/mosi-recount/derived"
+    ],
+    "original_verifier_exit": 0,
+    "outputs": {
+      "SUMMARY.json": {
+        "bytes_identical": true,
+        "json_differences": 0,
+        "published_sha256": "b4de92a5706d9b2d89373fa1cb7e965262bd0d3c38db54d25d4189689bdc65b7",
+        "recomputed_sha256": "b4de92a5706d9b2d89373fa1cb7e965262bd0d3c38db54d25d4189689bdc65b7"
+      },
+      "all_intact_models.json": {
+        "bytes_identical": true,
+        "json_differences": 0,
+        "published_sha256": "631692a3df88adc6c4b8490c6c6fdbafeb8024b0cfba9d3807b0b2f835f2ef11",
+        "recomputed_sha256": "631692a3df88adc6c4b8490c6c6fdbafeb8024b0cfba9d3807b0b2f835f2ef11"
+      }
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39",
+    "priority_nice": 10,
+    "producer_timing_remeasured": false,
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "python_executable": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+    "raw_commit": "4b84b0431b089ccac84c75ac3ac19f96ad804fe4",
+    "schema": "hepta.mosi.original-saved-prediction-replay.v1",
+    "scope": {
+      "bootstrap_repetitions": 10000,
+      "cases": 686,
+      "eligible_prefix_selections": 108,
+      "intact_or_perturbation_vectors": 684,
+      "raw_scalar_prediction_entries": 469224,
+      "real_fit_jobs": 36,
+      "rungs": [
+        15,
+        60,
+        180
+      ],
+      "seal_sha256": "fc024bfe4a11bcf1f95390efe0a32d2200cb532f11aa7c7c57fa15c601194858",
+      "seeds": [
+        413,
+        677,
+        941
+      ],
+      "source_groups": {
+        "test": 31,
+        "train": 52,
+        "valid": 10
+      },
+      "videos": 31
+    },
+    "scope_override_matches_fresh_driver": true,
+    "self_peak_rss_KiB": 43488,
+    "shared": [
+      "fp_h",
+      "fp_r",
+      "random_h",
+      "bp_h",
+      "transformer",
+      "fp_h_av"
+    ],
+    "source_commit": "4f80d069218e5416be0f51323a9db46b461d07dd",
+    "status": "PASS",
+    "wall_s": 1.2439056630246341
+  },
+  "parent_remote_commit": "54c8fe3c8f04b1871d64e360463fcb576a3906d4",
+  "parent_tree": "408843f80d6cbdc807cb47ea5b5d977f0fab9b59",
+  "production_scope": "Only fresh_map data dependency inclusion and reserved original input keys",
+  "receipt_gate": "Old incomplete receipt stays unchanged and cannot skip or trigger republish on new manifest mismatch.",
+  "recovered_original_data": {
+    "host": "desktop",
+    "new_forward_or_training": false,
+    "path": "/home/qian-qi/.local/share/hepta-research/hcsn-mosi-recovery-1140569/reconstructed/data.json",
+    "previous_missing_artifact_observation_preserved": true,
+    "producer_timing_remeasured": false,
+    "schema": "hepta.mosi-original-data-recovery.v1",
+    "sha256": "968dfb23d19f7ba50c9907b2146810e09922283b4b4342618e8d2eac151c4f70",
+    "size": 3083,
+    "source": "native file_info and complete single-file read; regular file with link_count=1",
+    "version": "2050:57806048:3083:1795865437668429528:1795865437668429528"
+  },
+  "reserved_key_coverage": "All7 conflicting-key cases executed; same-bytes rejection is unconditional source review, not another executed subcase.",
+  "schema": "hepta.mosi.publication-data-closure.v1",
+  "sources": {
+    "qualification/hcsn_sustained_20261128/mosi_recovery/publish_mosi.py": {
+      "git_blob": "9d003bbba5a3d2fb07175bd9a47b3ec01143f4c7",
+      "sha256": "ba76f99405fab27c1c21ee579602202c096cac9fea2abcaf0c7e0bf025e17f8e",
+      "size": 17313
+    },
+    "qualification/hcsn_sustained_20261128/mosi_recovery/test_publish_mosi.py": {
+      "git_blob": "b15b9df45dd60f98542c2e48ab73b14ccb89414d",
+      "sha256": "041a353c9bb78438f7430e4bff54240d6ebef346004db147e631272a96b57ac4",
+      "size": 25124
+    }
+  },
+  "status": "ENGINEERING_CONTROLS_AND_ORIGINAL_ARITHMETIC_REPLAY_PASS",
+  "timeline_of_actual_controls": {
+    "baseline-15": {
+      "errors": 0,
+      "failures": 3,
+      "result_sha256": "a2c2dda35bf8f6f0c746b0534416f0d8ac31ae026fea22e7c0272ac4cdd1d816",
+      "skips": 0,
+      "successful": false,
+      "tests": 15,
+      "wall_s": 0.7413473296910524
+    },
+    "baseline-harnessfix-15": {
+      "errors": 0,
+      "failures": 0,
+      "result_sha256": "33b2ec4dfdfc2ec949c5adcb3ac89b7320ce1359e1feeaad6b2343e750156a28",
+      "skips": 0,
+      "successful": true,
+      "tests": 15,
+      "wall_s": 0.748806512914598
+    },
+    "candidate-21-attempt-02": {
+      "errors": 1,
+      "failures": 0,
+      "result_sha256": "e8b95cb2ac78ec017584ec4499bb8688631fae95ee186750afe69d7ad6c9025d",
+      "skips": 0,
+      "successful": false,
+      "tests": 21,
+      "wall_s": 1.1187017778865993
+    },
+    "candidate-21-attempt-03": {
+      "errors": 0,
+      "failures": 0,
+      "result_sha256": "4a385acc1cc06545a1af3001fe58b8ce22d6750e64634a5ad66cebe3993c1866",
+      "skips": 0,
+      "successful": true,
+      "tests": 21,
+      "wall_s": 1.2258523576892912
+    }
+  },
+  "unchanged_boundaries": [
+    "No new forward inference, training, scientific algorithm edit or producer timing remeasurement.",
+    "Frozen missing-artifact and wrong-manifest failures remain historical evidence.",
+    "Saved-prediction replay verifies saved results; it does not regenerate predictions from weights.",
+    "Concurrent mutation safety between arithmetic verification, publication snapshot and hardlink staging is outside this narrow patch.",
+    "Scientific quality and matched-quality speed conclusions are unchanged."
+  ]
+}
