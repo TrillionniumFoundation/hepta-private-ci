@@ -88,7 +88,7 @@ def main():
             expected_python=args.expected_python, format_base=os.environ.get("PFT_FORMAT_BASE"), github_actions=os.environ.get("GITHUB_ACTIONS") == "true",
             github={k:os.environ.get(k) for k in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_EVENT_NAME", "GITHUB_SHA")},
             threads={k:os.environ.get(k) for k in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")},
-            historical_science_budget_used=False))
+            historical_science_budget_used=False, runtime_closure_complete=False))
         for name, class_name, expected_count in SUITES:
             module = importlib.import_module("qualification.hcsn_closure_20261124." + name)
             suite = unittest.defaultTestLoader.loadTestsFromTestCase(getattr(module, class_name))
