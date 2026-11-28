@@ -291,7 +291,10 @@ fn helper_env_key_is_allowed(key: &str) -> bool {
         // CoreFoundation consults this before falling back to user lookup during helper startup.
         || (cfg!(target_os = "macos") && key == "__CF_USER_TEXT_ENCODING")
         || bazel_bwrap_env_key_is_allowed(key)
-        || (cfg!(windows) && key.eq_ignore_ascii_case("PATH"))
+        // Windows needs its system directory in custom child environments
+        // for the loader's side-by-side assembly resolution.
+        || (cfg!(windows)
+            && (key.eq_ignore_ascii_case("PATH") || key.eq_ignore_ascii_case("SystemRoot")))
 }
 
 #[cfg(debug_assertions)]
@@ -532,10 +535,12 @@ mod tests {
 
     #[cfg(windows)]
     #[test]
-    fn helper_env_preserves_windows_path_key_for_system_bwrap_discovery() {
+    fn helper_env_preserves_windows_loader_variables_only() {
         let env = helper_env_from_vars(
             [
                 ("Path", r"C:\Windows\System32"),
+                ("SystemRoot", r"C:\Windows"),
+                ("SYSTEMROOT_OVERRIDE", "bad"),
                 ("PATH_INJECTION", "bad"),
                 ("OPENAI_API_KEY", "secret"),
             ]
@@ -544,7 +549,10 @@ mod tests {
 
         assert_eq!(
             env,
-            HashMap::from([("Path".to_string(), r"C:\Windows\System32".to_string())])
+            HashMap::from([
+                ("Path".to_string(), r"C:\Windows\System32".to_string()),
+                ("SystemRoot".to_string(), r"C:\Windows".to_string()),
+            ])
         );
     }
 
