@@ -46,6 +46,7 @@ use super::rmcp_client::remote_aware_environment_id;
 use super::rmcp_client::remote_aware_stdio_server_bin;
 
 const RMCP_SERVER: &str = "rmcp";
+const NOTES_SERVER: &str = "notes";
 const RMCP_PREFIXED_NAMESPACE: &str = "mcp__rmcp";
 const RMCP_UNPREFIXED_NAMESPACE: &str = "rmcp";
 const RMCP_ECHO_TOOL_NAME: &str = "mcp__rmcp__echo";
@@ -276,13 +277,13 @@ fn write_mcp_tool_hook(
     fs::write(home.join("hooks.json"), hooks.to_string()).context("write MCP tool hook config")
 }
 
-fn write_thread_hint_mcp_tool_hook(home: &Path) -> Result<()> {
+fn write_thread_hint_mcp_tool_hook(home: &Path, server_name: &str) -> Result<()> {
     let hooks = json!({
         "hooks": {
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "mcp_tool",
-                    "server": RMCP_SERVER,
+                    "server": server_name,
                     "tool": "thread_hint",
                     "input": {},
                     "timeout": 5,
@@ -294,10 +295,10 @@ fn write_thread_hint_mcp_tool_hook(home: &Path) -> Result<()> {
         .context("write governed MCP tool hook config")
 }
 
-fn set_rmcp_marker_env(config: &mut Config, marker_file: String) {
+fn configure_thread_hint_server(config: &mut Config, server_name: &str, marker_file: String) {
     let mut servers = config.mcp_servers.get().clone();
-    let server = servers
-        .get_mut(RMCP_SERVER)
+    let mut server = servers
+        .remove(RMCP_SERVER)
         .expect("rmcp test server should already be configured");
     let McpServerTransportConfig::Stdio { env, .. } = &mut server.transport else {
         panic!("rmcp test server should use stdio transport");
@@ -306,6 +307,7 @@ fn set_rmcp_marker_env(config: &mut Config, marker_file: String) {
         "MCP_TEST_THREAD_HINT_MARKER_FILE".to_string(),
         marker_file,
     )]));
+    servers.insert(server_name.to_string(), server);
     config
         .mcp_servers
         .set(servers)
@@ -532,7 +534,8 @@ async fn run_governed_mcp_tool_hook_guard_test(
     let rmcp_test_server_bin = stdio_server_bin()?;
     let mut builder = test_codex()
         .with_pre_build_hook(|home| {
-            write_thread_hint_mcp_tool_hook(home).expect("write governed MCP tool hook fixture");
+            write_thread_hint_mcp_tool_hook(home, NOTES_SERVER)
+                .expect("write governed MCP tool hook fixture");
         })
         .with_config(move |config| {
             enable_hooks_and_rmcp_server(
@@ -541,7 +544,7 @@ async fn run_governed_mcp_tool_hook_guard_test(
                 AppToolApproval::Prompt,
                 /*prefix_mcp_tool_names*/ true,
             );
-            set_rmcp_marker_env(config, marker_file_env);
+            configure_thread_hint_server(config, NOTES_SERVER, marker_file_env);
             if enable_hepta {
                 config
                     .features
@@ -555,7 +558,7 @@ async fn run_governed_mcp_tool_hook_guard_test(
         builder = builder.with_extensions(Arc::new(extensions.build()));
     }
     let test = builder.build(&server).await?;
-    wait_for_mcp_server(&test.codex, RMCP_SERVER).await?;
+    wait_for_mcp_server(&test.codex, NOTES_SERVER).await?;
 
     test.codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
@@ -652,7 +655,16 @@ async fn mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval() -> R
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<()> {
+async fn mcp_tool_hook_passes_thread_metadata_to_local_hidden_notes_hint() -> Result<()> {
+    assert_hidden_thread_hint_hook(NOTES_SERVER, /*can_read*/ true).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn mcp_tool_hook_does_not_call_an_unrelated_hidden_tool() -> Result<()> {
+    assert_hidden_thread_hint_hook(RMCP_SERVER, /*can_read*/ false).await
+}
+
+async fn assert_hidden_thread_hint_hook(server_name: &'static str, can_read: bool) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = start_mock_server().await;
@@ -666,22 +678,12 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
     )
     .await;
     let rmcp_test_server_bin = stdio_server_bin()?;
+    let marker_dir = TempDir::new()?;
+    let marker_file = marker_dir.path().join("thread_hint_called");
+    let marker_file_env = marker_file.to_string_lossy().into_owned();
     let test = test_codex()
-        .with_pre_build_hook(|home| {
-            let hooks = json!({
-                "hooks": {
-                    "UserPromptSubmit": [{
-                        "hooks": [{
-                            "type": "mcp_tool",
-                            "server": RMCP_SERVER,
-                            "tool": "thread_hint",
-                            "input": {},
-                            "timeout": 5,
-                        }],
-                    }],
-                },
-            });
-            fs::write(home.join("hooks.json"), hooks.to_string())
+        .with_pre_build_hook(move |home| {
+            write_thread_hint_mcp_tool_hook(home, server_name)
                 .expect("write model-hidden MCP tool hook config");
         })
         .with_config(move |config| {
@@ -691,10 +693,11 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
                 AppToolApproval::Prompt,
                 /*prefix_mcp_tool_names*/ true,
             );
+            configure_thread_hint_server(config, server_name, marker_file_env);
         })
         .build(&server)
         .await?;
-    wait_for_mcp_server(&test.codex, RMCP_SERVER).await?;
+    wait_for_mcp_server(&test.codex, server_name).await?;
 
     test.submit_turn("load thread context").await?;
 
@@ -703,14 +706,20 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
         "manual history hint for thread {}\nunstructured notes/thread_hint fixture result",
         test.session_configured.thread_id,
     );
-    assert!(
+    assert_eq!(
         request
             .message_input_texts("developer")
-            .contains(&expected_context)
+            .contains(&expected_context),
+        can_read,
+    );
+    assert_eq!(
+        marker_file.exists(),
+        can_read,
+        "observe real server invocation"
     );
     assert!(
         request
-            .tool_by_name(RMCP_PREFIXED_NAMESPACE, "thread_hint")
+            .tool_by_name(&format!("mcp__{server_name}"), "thread_hint")
             .is_none(),
         "the hook tool must remain hidden from the model"
     );
