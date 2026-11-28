@@ -1,0 +1,1157 @@
+{
+  "schema": "hia.native_ci_partition.v1",
+  "base_commit": "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2",
+  "original_workflow_git_blob": "6737f83ea50fc40fb6c9bf2e169814003897843b",
+  "original_workflow_sha256": "a37e1358cb13325cb7bfc35c6f4a04d40081f7d3dff0923189daed09d37a6754",
+  "candidate_workflow_git_blob": "f0c87a2aaed0ccfcfe36c155c7ec4aa0d8b8ea22",
+  "candidate_workflow_sha256": "baf253dcf8c629d4fdb630098c82fe3570036afea50d9ddfe399042ee1777c45",
+  "validation": {
+    "host": "ai395",
+    "python": "/usr/bin/python3",
+    "yaml_parser": "6.0.3",
+    "pty_session": "dpty-ef799a10578cae7e9818ad20cfb3f2605f5afbfc4b0ddd81c9669ae81d1b6f17",
+    "exit_code": 0,
+    "original_gate_bodies_exact": true,
+    "original_conditions_preserved": true,
+    "outcome_dependencies_in_same_shard": true,
+    "historical_job_bytes_unchanged": true,
+    "triggers_and_permissions_unchanged": true,
+    "original_job_timeouts_minutes": 60,
+    "aggregate_shell_syntax": "passed",
+    "independent_javascript_sha256_match": true
+  },
+  "observation": {
+    "run_id": 46080284399,
+    "job_id": 140777419369,
+    "head_sha": "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2",
+    "started_at": "2026-11-27T23:03:31Z",
+    "completed_at": "2026-11-28T00:08:31Z",
+    "conclusion": "cancelled",
+    "last_success_step": 111,
+    "unfinished_step": 112,
+    "pending_last_step": 126,
+    "cancellation_actor_or_cause": "not established by retrieved metadata"
+  },
+  "original_steps": 125,
+  "shared_steps": 10,
+  "shard_steps": {
+    "differential": 94,
+    "owners": 23,
+    "installed": 14,
+    "maintenance": 24
+  },
+  "aggregate_truth_table": [
+    {
+      "current": "success",
+      "historical": "success",
+      "exit_code": 0
+    },
+    {
+      "current": "success",
+      "historical": "failure",
+      "exit_code": 1
+    },
+    {
+      "current": "success",
+      "historical": "cancelled",
+      "exit_code": 1
+    },
+    {
+      "current": "success",
+      "historical": "skipped",
+      "exit_code": 1
+    },
+    {
+      "current": "failure",
+      "historical": "success",
+      "exit_code": 1
+    },
+    {
+      "current": "failure",
+      "historical": "failure",
+      "exit_code": 1
+    },
+    {
+      "current": "failure",
+      "historical": "cancelled",
+      "exit_code": 1
+    },
+    {
+      "current": "failure",
+      "historical": "skipped",
+      "exit_code": 1
+    },
+    {
+      "current": "cancelled",
+      "historical": "success",
+      "exit_code": 1
+    },
+    {
+      "current": "cancelled",
+      "historical": "failure",
+      "exit_code": 1
+    },
+    {
+      "current": "cancelled",
+      "historical": "cancelled",
+      "exit_code": 1
+    },
+    {
+      "current": "cancelled",
+      "historical": "skipped",
+      "exit_code": 1
+    },
+    {
+      "current": "skipped",
+      "historical": "success",
+      "exit_code": 1
+    },
+    {
+      "current": "skipped",
+      "historical": "failure",
+      "exit_code": 1
+    },
+    {
+      "current": "skipped",
+      "historical": "cancelled",
+      "exit_code": 1
+    },
+    {
+      "current": "skipped",
+      "historical": "skipped",
+      "exit_code": 1
+    }
+  ],
+  "coverage": [
+    {
+      "index": 0,
+      "name": "Check out Codex",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "c50957cbbadfcec3331206a74332bbf4a083f93a6b821d8e20d2d2b39ecf1dc5"
+    },
+    {
+      "index": 1,
+      "name": "Check out pinned HIA compiler",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "9a03fefaeb096da844e51776cc7bbce81e85320cb1e1e8d7b1610f26ebbbcc2e"
+    },
+    {
+      "index": 2,
+      "name": "Prepare Rust oracle and production caller compiler",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "57a05a831627ff3a6756a6f4599742ca3d857774249d3a1b9ca5268ccb338cf7"
+    },
+    {
+      "index": 3,
+      "name": "Verify standalone Rust formatter editions and source stability",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "b4b14385e674bcb01c985ecae4790e21637c27449e7e1892de85cd0a9d951f62"
+    },
+    {
+      "index": 4,
+      "name": "Rebuild compiler generations and native components",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "bbf1cb00129aba839ba7d8159f4dd9473779099afe2693d8de9a7dfba11e294f"
+    },
+    {
+      "index": 5,
+      "name": "Configure exact unified formatter compiler receipts",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "5992e9759f6b9bc3da4574585b63f534e517812878ea6c50ea5560113720a07a"
+    },
+    {
+      "index": 6,
+      "name": "Verify complete unified formatter ABI and original components",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "e24b804e1c6e728a9c660f9adc78ab0bb82e0deac75ffedd9044a049af72836e"
+    },
+    {
+      "index": 7,
+      "name": "Verify unified formatter source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "94db4681dea531ce70474f0820c44cac587a8d5cfd884ee0a9d2185970f6cdb3"
+    },
+    {
+      "index": 8,
+      "name": "Verify template parsing and atomic no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "5be0014d6870aeb73d2edd1da02850146b2cbfc1b5d0695d3716e78c7bd87ece"
+    },
+    {
+      "index": 9,
+      "name": "Verify template parser source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "964c6b1dfa0eaeae14640063797f17e46dd8a59c944f8e9d39d91972935c2fcd"
+    },
+    {
+      "index": 10,
+      "name": "Verify template rendering and atomic no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "739cbb1153f22423d0f0f3a6b4f4a9629fe072feb55207ae45a765fb7aa238b6"
+    },
+    {
+      "index": 11,
+      "name": "Verify template renderer source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "7ec06875a4e9814c80cb373302d6db3f6053a57ff5caacac198314327125ea08"
+    },
+    {
+      "index": 12,
+      "name": "Verify UUID byte matching and atomic no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "6c2f0ede0e4d19d715b5c52c34fc993fc32d5c9b7902bd3420fc725ea292ef78"
+    },
+    {
+      "index": 13,
+      "name": "Verify UUID source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "3cd5fc694c33f3ae9229bd79d34629801654c85956341aa14fa08b0331b26666"
+    },
+    {
+      "index": 14,
+      "name": "Verify standalone continuation and no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "41cfcb93f3dd366c97250c5d66de46c3093de94d6f05f89d84bf14310a7e4d9c"
+    },
+    {
+      "index": 15,
+      "name": "Verify standalone source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "ad94a85ec9cac99c1584ee0da1465fb856042ee78c55c0f10891910bc05f1f8f"
+    },
+    {
+      "index": 16,
+      "name": "Verify application continuation and no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "601933bb47a13c184568701db34ee5073a4a92c15b080a49d745c8ed5aaf5759"
+    },
+    {
+      "index": 17,
+      "name": "Verify application source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "e746d3d46cb13c0a4bbd1ef3cb9e2faf8fdd897e78a70766f7b585b6b3d0b130"
+    },
+    {
+      "index": 18,
+      "name": "Verify summary continuation and no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "9890d379aab952153fd66c592e6c28a5adf401788b54d8261365424581178f32"
+    },
+    {
+      "index": 19,
+      "name": "Verify summary source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "2087e3c38249ea62c184994ad32204a0d945a1aa7be59814b825be0d3ff2aef2"
+    },
+    {
+      "index": 20,
+      "name": "Verify patch-effect frames and committed-state contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "553fc24fe621ae8c9f56a56b5ab1228798fff5051b7be8ddc24aeb3236443d62"
+    },
+    {
+      "index": 21,
+      "name": "Verify patch-effect source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "0972e6c5c2a5fe3b376f79b36dd60cdd83306563f666eb1ca2772e5795811a22"
+    },
+    {
+      "index": 22,
+      "name": "Verify file-update frame and no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "da3dc60c58d116116bba8136e4f30f0989d170c0604b6bf3bf0dcf52c06b2a00"
+    },
+    {
+      "index": 23,
+      "name": "Verify file-update source and archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "6ffc2f8e9e586cf2bb7021b2e5e386ba8a3a7ffff745e2b782203dc683fa6627"
+    },
+    {
+      "index": 24,
+      "name": "Verify pinned word-memory language contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "0a0aab0c0241ca047440fe9f11f650d86e5226c6da244ebd677b5ce63dec566e"
+    },
+    {
+      "index": 25,
+      "name": "Verify Cargo build receipts and reject stale artifacts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "357303606896f352a2c4064477a151d4ed3568e4510175a14a2f0fe908c171e4"
+    },
+    {
+      "index": 26,
+      "name": "Compare HIA search with original Rust implementation",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "7f9f91faf0559f683e11ac53f01b21fe9be324a4e4b2d219f59603657ca00e5d"
+    },
+    {
+      "index": 27,
+      "name": "Verify typed scalar admission and unchanged Cargo receipt checks",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "308037401b78effd3f9f2595242121e443f240668c0ad1f35c4216d4de636914"
+    },
+    {
+      "index": 28,
+      "name": "Compare HIA UTF-8 boundaries with Rust and Core VM",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "30e31ae90245231b5447b4ae7f2fce4fa8909a9265e1a01cd9e0c7f5f7f8c747"
+    },
+    {
+      "index": 29,
+      "name": "Test statically linked native patch caller and large inputs",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "5d442249d0c5fcd406289f52dc9f6d52cbd24cf91198e6771283ab0239ea32e8"
+    },
+    {
+      "index": 30,
+      "name": "Compare native SourceFile with the complete original Rust owner",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "3e1199866ca612816871caa282d1a3a52c43b679960fdfc786a1d859ef6c8273"
+    },
+    {
+      "index": 31,
+      "name": "Verify SourceFile frame and no-write contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "321dba94e167793272076b56ca8715f371add4739d8ae14634e0b9d517a06000"
+    },
+    {
+      "index": 32,
+      "name": "Verify SourceFile archive and source admission",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "fa90425fdbcdabb633d944f78c5355754829328f7f403d114cf1c40984577edf"
+    },
+    {
+      "index": 33,
+      "name": "Compare native batch and streaming parsers with the complete original Rust owner",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "9c605adb48f205ce1685f47a24bf95723262bc2c935ce582261abac233a9255d"
+    },
+    {
+      "index": 34,
+      "name": "Verify actual parser host dependencies and reject incomplete receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "c92923535b7957e11f7eb07797c763116b47a2d3b38fc9b654bbf00b26d35292"
+    },
+    {
+      "index": 35,
+      "name": "Verify parser framing and committed-error-state contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "8df5725ca74b5222295cbb13153ca622c35b8258aa9c7a67ed0977495ce58c8c"
+    },
+    {
+      "index": 36,
+      "name": "Verify parser archive and source admission",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "9a123b31042c45723c92f3e283935d0c142c33200c434b41149e1cc4bd188a31"
+    },
+    {
+      "index": 37,
+      "name": "Verify streaming output line counts and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "201042dc839af0b9c567396472200352b934f8b3078b6536b4a80e7f2b406b8c"
+    },
+    {
+      "index": 38,
+      "name": "Verify output-item budget literal frames and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "d7adb5647e689bc6beef502e481fd5211d30b8e9454461fcd3b9b360bd126559"
+    },
+    {
+      "index": 39,
+      "name": "Verify environment display literal frames and bounded native streams",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "b271e098419fcb351c74d178b845c034430097f182bca2f7ae35bcafa588ece5"
+    },
+    {
+      "index": 40,
+      "name": "Verify citation stream literal frames and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "e39ebfa1a8eaa65c6c5e76a58d5ea39ec05f374337e635a0e62ed29f53998797"
+    },
+    {
+      "index": 41,
+      "name": "Verify proposed plan literal frames and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "d6a589c643d1b178df7b3c1af02a8897fcb79e9c14665d92255a800aa05727bc"
+    },
+    {
+      "index": 42,
+      "name": "Verify fuzzy match literal states and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "a6b19c639ce351ec18222772db81cdf52e9134651686170076bbccd41b197fa4"
+    },
+    {
+      "index": 43,
+      "name": "Verify raw UTF-8 classification and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "ef90988da626a118eeb966284aeab87dca89c3255f7dea2b3857e3ac84a250c8"
+    },
+    {
+      "index": 44,
+      "name": "Verify generic inline tag decisions and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "229a110e7e98c6d8b5f0011271faac4ba1f810c833ed8d109f34d82f899320c7"
+    },
+    {
+      "index": 45,
+      "name": "Verify retry decisions and atomic ABI errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "372ede9a9c391a78beb86e59764910d8e6499169f5526020d23f4a61e26ef574"
+    },
+    {
+      "index": 46,
+      "name": "Test statically linked native string caller and allocation behavior",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "464bd39d0f9f6249bf79cc7655f163f631e58e5dc536be96d2752d35cbbcf037"
+    },
+    {
+      "index": 47,
+      "name": "Compare native metric sanitizer with the original Rust caller",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "f5933605786d661a16a234e78fc05a864aea808f9b148966c7651fcc106a55f6"
+    },
+    {
+      "index": 48,
+      "name": "Verify metric sanitizer streaming state and buffer contract",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "a3b427e42ea5a2048d85a1e2edd0b085ddad754acd917546f3a129fc48a8901d"
+    },
+    {
+      "index": 49,
+      "name": "Compare native markdown location formatting with original Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "2536a37a6e538c866aae2749d2b41c941b48db2672742786266a79e84a486fcb"
+    },
+    {
+      "index": 50,
+      "name": "Verify markdown location streaming and error contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "6d343ff07c48281379bc31ef7890b218bdb0c4c9719166eac14531189ce6b4c0"
+    },
+    {
+      "index": 51,
+      "name": "Install pinned repository test runners",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "e6ae326b5104ae7d78b51ebb0656ce117ede92d8a114502c31fec8324f9d1edc"
+    },
+    {
+      "index": 52,
+      "name": "Test all four production crates with HIA enabled",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "c0b8c95ecad2d51384ef62a52a33b413a1fd7a04e2f9ac1f596c9db37c33404c"
+    },
+    {
+      "index": 53,
+      "name": "Test environment display public oracles with HIA enabled",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "9e5861b787effa04ce67ad05e33850ccfa64f47a5f201a2102117dac79c681a6"
+    },
+    {
+      "index": 54,
+      "name": "Test environment display public oracles with default Rust",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "7a45e5296f8cb92157ac2cafb123d703215e4e25fb07a1740e0ce65328c9560e"
+    },
+    {
+      "index": 55,
+      "name": "Test citation and proposed plan public oracles with HIA enabled",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "b07a315c9ff6088749e7bd30d479ae17e6e8d14473508fa98d31cb886f7384e1"
+    },
+    {
+      "index": 56,
+      "name": "Test citation and proposed plan public oracles with default Rust",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "71f818549e44befe449d35e824a372444335820edfcd73f06962fda276950bee"
+    },
+    {
+      "index": 57,
+      "name": "Lint citation and proposed plan owner with native and default features",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "f7bb218f32421cef35f25e28fbd1cf132ce493f32897bd96ba01c1f5aac27ae9"
+    },
+    {
+      "index": 58,
+      "name": "Test retry public owner and existing provider clients with HIA enabled",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "521ebfe8e496ac70ea6d8f666696f4512f3b96f0c91279b98eda2efce0ae8ebd"
+    },
+    {
+      "index": 59,
+      "name": "Test retry public owner and existing provider clients with default Rust",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "9eb7ec3e7bbe1113e083379cff7dee4b2300e230c7a3e674843f294739393f82"
+    },
+    {
+      "index": 60,
+      "name": "Lint retry owner and public consumer with native and default features",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "d419d0e0911e07a147962dbe474e8efcd92bce21714f6f630a3d2f33ff9b23a5"
+    },
+    {
+      "index": 61,
+      "name": "Test fuzzy match public and decoder oracles with HIA enabled",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "e0e58ed7695f54be7cccdb9a160f0f69058fc4d359543da564400c178ab781c2"
+    },
+    {
+      "index": 62,
+      "name": "Test fuzzy match original public oracles with default Rust",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "9c551c968907bd7e1ba1971a0b8ce94027b27f45f38c5e1702b3fb8d942a3624"
+    },
+    {
+      "index": 63,
+      "name": "Lint fuzzy match owner with native and default features",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "d0bab6e87140a84d478f704f071e436c577e61780a47621b17529319a0f0556a"
+    },
+    {
+      "index": 64,
+      "name": "Test existing fuzzy ranking and highlight callers with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "9a95b523c7fff06326bca7309cf3d86f6ac1b2f63193b31d44ed541ef02c904e"
+    },
+    {
+      "index": 65,
+      "name": "Test existing fuzzy ranking and highlight callers with default Rust",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "27e6d94c4072576303ffa14110944f0230819ff7ec8baee1160c995da41606bf"
+    },
+    {
+      "index": 66,
+      "name": "Compare actual native and original ASCII JSON callers",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "c8909bc8125993baecc2281fd980aee226c12c5df1b17238aa235168222e6610"
+    },
+    {
+      "index": 67,
+      "name": "Verify ASCII JSON window and error contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "d8c2dea731cd2d4e89155fbd3061c6292d6a592a66fc0866dacc48ae9d8bdd0f"
+    },
+    {
+      "index": 68,
+      "name": "Compare native truncation APIs with the original Rust source",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "303b884e05f88e2c2771d8aba58bb61aefaf1446eb08a72e0fda6fe46e1b0020"
+    },
+    {
+      "index": 69,
+      "name": "Verify truncation UTF-8, budgets and buffer contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "f10ba54f562ed42537211bea10001bf463f3206c23417f526d19363845f41650"
+    },
+    {
+      "index": 70,
+      "name": "Test consumers of native truncation and token budgets",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "a047ba92a5e87652247f797249c90296785ae1c9cf689c7f52c99a70f5542358"
+    },
+    {
+      "index": 71,
+      "name": "Test existing Core output-item callers with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "01c1d5fb0e188bd5cb51b84e65a21da3b9764930bd54c781051d74d75932b6be"
+    },
+    {
+      "index": 72,
+      "name": "Test existing Core output-item callers with default Rust",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "a1dd062eeadddcc30f4a99ccddf50d3770775ce1d9e25db5919db6b02f492fbd"
+    },
+    {
+      "index": 73,
+      "name": "Test existing Core citation and proposed plan consumers with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "1170374b439c9a99be37b03f2c1a561ad4cc226191b7511a2ceab60774030e6f"
+    },
+    {
+      "index": 74,
+      "name": "Test existing Core citation and proposed plan consumers with default Rust",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "a5490e311e3def37ca8bcf963d07bab6d35eeef54f50a0a297f8d4a71f3fe5d7"
+    },
+    {
+      "index": 75,
+      "name": "Verify native scalar token arithmetic and invalid-mode traps",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "7b378156f36afcbcbe0142c110219899c7ab2ec46fb6ca869d251052d52c5cbb"
+    },
+    {
+      "index": 76,
+      "name": "Verify installed HIA apply_patch executable",
+      "shards": [
+        "installed"
+      ],
+      "original_step_sha256": "21be53ecaa99062e214807c2eef90ac3987ecf8cb2f9520f34377d0dcdb5c88c"
+    },
+    {
+      "index": 77,
+      "name": "Provision system bubblewrap for real sandbox owner tests",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "45bab63676419f6eba337116404f4ef7006db50af825c02c4bd0bc2116471cf6"
+    },
+    {
+      "index": 78,
+      "name": "Test full Codex owners with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "286b23b73366375971a69feb408c0bb8e291650cc6ebb71b368c6e360cc3f328"
+    },
+    {
+      "index": 79,
+      "name": "Test native template owner and all direct consumers",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "85d85c2f9853c1ee8b9f3958d6aebd78d0e08996a2041fd67f64fc6ace9460dd"
+    },
+    {
+      "index": 80,
+      "name": "Test default template owner and all direct consumers",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "83cecbcbb3f97eb2e4b490555b56487274398361221dbc11a770d15eba141f95"
+    },
+    {
+      "index": 81,
+      "name": "Verify installed full Codex executable",
+      "shards": [
+        "installed"
+      ],
+      "original_step_sha256": "7a0e57daf6f0bac1a5c7bfb9d6c23eaf9c19fcebd609938def59935556387e9e"
+    },
+    {
+      "index": 82,
+      "name": "Verify default callers and truncation consumers require no HIA artifacts",
+      "shards": [
+        "installed"
+      ],
+      "original_step_sha256": "e1d21e9beff20784274f92ee71cd2e2278afc561e6618c5c965d7f662d7da5ab"
+    },
+    {
+      "index": 83,
+      "name": "Verify exact file-update dependency source admission",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "2c6943085c65aa082a852db1344c61717bd7551360a7101df79681c364e00fe4"
+    },
+    {
+      "index": 84,
+      "name": "Check out complete original file-update owner",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "bdee08d8f1cbc6c3960b2d3b9f5241e90af82e0f492e1afd507637938e7ecee1"
+    },
+    {
+      "index": 85,
+      "name": "Compare complete original and actual Cargo native UUID owners",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "0882887c869095fa4ba86f09caaa1cc3ad40859a3708acb8b942c0846b03ee2d"
+    },
+    {
+      "index": 86,
+      "name": "Compare complete original and actual Cargo native template parse and render owners",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "42aee8993d3ed745c36d3e2081be5acd2387456a76c19898b3f4e1cc040ebc98"
+    },
+    {
+      "index": 87,
+      "name": "Compare complete original and native file-update owners",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "454169eddca0939e9a642efaf38a500a64c0b24c0d2f4ff56595ff777f9d65a2"
+    },
+    {
+      "index": 88,
+      "name": "Compare complete original and native filesystem-effect owners",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "17eceeaabd2045cb684293eba42e35c8d3ffc5ff7b49f72f9c3b8e7ea38e5ba2"
+    },
+    {
+      "index": 89,
+      "name": "Compare complete original and native standalone programs",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "6d8c69b4f316750c1b5741461634678f64081d61cc105cdc23db617378cc006f"
+    },
+    {
+      "index": 90,
+      "name": "Compare complete original and native public patch application",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "3139b9424a9cacfe8b65dcb766f4256f157b824d0ce73f4adc61f9b4bf8d2f0b"
+    },
+    {
+      "index": 91,
+      "name": "Compare complete original and native public summary writes",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "cabdecf3c860fc2aa53f7652cfe7744d6ce3404a1ca6537d98df8a1590195fc3"
+    },
+    {
+      "index": 92,
+      "name": "Qualify actual checked and wrapping owner policy receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "65f09d9ef38e70cb3cff8cccb5a45cfdb8f73e0439de932f5cac84a947127531"
+    },
+    {
+      "index": 93,
+      "name": "Check out complete original unified formatter owner",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "b4e5c1474b024605b6bac559dfeed987d4d27820b8406bffafd79a0272cdf402"
+    },
+    {
+      "index": 94,
+      "name": "Compare complete original and native unified formatter APIs",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "e910d2e8c99bacb149c7050954c3634ae202631ba66d3ac65f35ca2b22c5570f"
+    },
+    {
+      "index": 95,
+      "name": "Compare native execution policy matching with original Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "ceced74868ac619736e7488c11331979843e9f5cfbc1f0e9f223ab941623a87c"
+    },
+    {
+      "index": 96,
+      "name": "Verify scalar count admission and closed object profile",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "3ac78874db752cb015b1b9267ccee72fed776196e8cbe11bfe51763b6bda271c"
+    },
+    {
+      "index": 97,
+      "name": "Verify short-command matching requires no frame allocation",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "cd4b12c15ef2913a172d862e69a6f89ea3f2c787547d59f3542419020401eeb7"
+    },
+    {
+      "index": 98,
+      "name": "Verify prefix matching buffer admission and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "9a8698c28f4e186b9588f17b487315332a7fa3dea8e80b391e1cfcb7b932f2e5"
+    },
+    {
+      "index": 99,
+      "name": "Verify complete policy summary ABI and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "fcb151fee63ac04368387864c15ce2039fca9c31a1e68684512a446e26248efd"
+    },
+    {
+      "index": 100,
+      "name": "Compare complete policy reduction with original public Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "fa83266b9fb75b7fe5942ec6ae3a2eff124a537e4ae2374868f2ec9e9cb3edd4"
+    },
+    {
+      "index": 101,
+      "name": "Verify complete network domain ABI and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "7953b203fad459a063de5ec408a145c4933ed00ee6c38c610188f89827a77b24"
+    },
+    {
+      "index": 102,
+      "name": "Compare complete network domain compilation with original public Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "a5f306429b5f99a4740cd55db839017613e9ee87633838aa6e1cafc4f6b6bb56"
+    },
+    {
+      "index": 103,
+      "name": "Verify complete allowed-prefix ABI and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "4980fb82ac44fed22ef9afa063652353766dfd5cdef57c3b77bcda5c4603e893"
+    },
+    {
+      "index": 104,
+      "name": "Compare complete allowed prefixes with original public Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "677811fb163aeb88367378162a81275a8091d6e97f6159c150448eda99c2b820"
+    },
+    {
+      "index": 105,
+      "name": "Verify complete command dispatcher continuation ABI",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "640ed6be8def1f22412a38b4e30fd2cd75b17d6131802ca117ee0e730f41cb2c"
+    },
+    {
+      "index": 106,
+      "name": "Compare complete command dispatch with original public Rust",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "d4f58c524cf4ba3054660331c4d9a3112016044dbd5b5a60f12bbe0e1d5e75ca"
+    },
+    {
+      "index": 107,
+      "name": "Verify complete network-host ABI and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "024f965fb5f6dc957ca20c719ecee9374b32dfa941088f33b2ecb974bacd4bac"
+    },
+    {
+      "index": 108,
+      "name": "Compare network-host normalization with original Rust (two baselines)",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "cb087d0bee3971bceeef31314aea65ef8ff10f2d67aa9fe7ccf08eca1b291b04"
+    },
+    {
+      "index": 109,
+      "name": "Verify installed execution policy command",
+      "shards": [
+        "installed"
+      ],
+      "original_step_sha256": "bf80918afcfc0d1e2cac5f2b8fc7ca6212d436f508ae45b60c91faf6b39b8fe1"
+    },
+    {
+      "index": 110,
+      "name": "Compare actual native and original UUID callers",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "fc1ac5a34ee424748001072889456ed6a66b9ae339787ed9baa1c40dfa6bcfe6"
+    },
+    {
+      "index": 111,
+      "name": "Verify UUID window progress and error contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "5aba3e12b2912b473012a8baa347c057b803bfd9312d86add96fabde063f5fa6"
+    },
+    {
+      "index": 112,
+      "name": "Compare complete native and original template parsers",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "611275c3d62f87d47797b4b1ebc1c6b960c06c8303f086903497d46f26069cf9"
+    },
+    {
+      "index": 113,
+      "name": "Verify template parser window and error contracts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "53dd895685297a5582574e20835c1df06321631b91d05b764a7bbf49190a822f"
+    },
+    {
+      "index": 114,
+      "name": "Compare native and original template renderers",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "d581de319fdfd497b2641ab8ed5d1bc054f98dd544f88e07be47c53e646c222a"
+    },
+    {
+      "index": 115,
+      "name": "Compare native template collection and public API behavior",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "a7635d23dc2bf86e98593c6c9130c6ceb262e70146ae621e8f31a06ca2302a09"
+    },
+    {
+      "index": 116,
+      "name": "Verify template index bounds, ordering and atomic errors",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "607597daf3f6931da08e0c8c2d4e8f865c37ed9a55bea4b3e355aa4d49476bab"
+    },
+    {
+      "index": 117,
+      "name": "Test actual agent execution policy integration with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "cf04f70c7dbd9f0d6faa74272c82b45c43d1a4f61e91da483014842959ce97ee"
+    },
+    {
+      "index": 118,
+      "name": "Test actual Core network domain consumer with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "58231179bd9d51233f31bb8bf33e32f98b4b0198677cbcca7e08b40b9f948cf1"
+    },
+    {
+      "index": 119,
+      "name": "Test actual protocol allowed-prefix consumer with HIA enabled",
+      "shards": [
+        "owners"
+      ],
+      "original_step_sha256": "4349a1f2a8504dca96ac8c59c92d8162ffceea24209896ff3fb123a0686dba09"
+    },
+    {
+      "index": 120,
+      "name": "Verify added Index and legacy raw-only archive receipts",
+      "shards": [
+        "differential"
+      ],
+      "original_step_sha256": "917521fdfd07cf984357da144773b8de7a8301e55ea4c5ada835616146bf381d"
+    },
+    {
+      "index": 121,
+      "name": "Run strict native and default owner lint",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "cb676876205563613a88eb9656661ff40bf36ae4a4adcda128dcaacb14003386"
+    },
+    {
+      "index": 122,
+      "name": "Run scoped native owner fixes without source drift",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "562d922478a832c5feed507a285b296ef5f56f02e474c0a2d455cdb884574ace"
+    },
+    {
+      "index": 123,
+      "name": "Fix native string and template owners with actual compiler evidence",
+      "shards": [
+        "maintenance"
+      ],
+      "original_step_sha256": "a64413f2c42d64937e95f08c361d2a8d42087ccc1ff1bcc700af8244dcae5632"
+    },
+    {
+      "index": 124,
+      "name": "Upload original build and test results",
+      "shards": [
+        "differential",
+        "owners",
+        "installed",
+        "maintenance"
+      ],
+      "original_step_sha256": "fbdaa3e1101b826b68c80c884d084a766ce3cbd9010ed64bdee7ede8d7b6aa0e"
+    }
+  ]
+}
