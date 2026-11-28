@@ -296,6 +296,7 @@ fn normalize_scopes(scopes_supported: Option<Vec<String>>) -> Option<Vec<String>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::oauth_fixture_capability::fixture_http_client;
     use axum::Json;
     use axum::Router;
     use axum::http::StatusCode;
@@ -402,11 +403,17 @@ mod tests {
 
     fn assert_recorded_discovery_failure(discovery: Result<Option<StreamableHttpOAuthDiscovery>>) {
         let error = discovery.expect_err("the recording HTTP client rejects OAuth discovery");
+        let Some(AuthError::DiscoveryRequestFailed { url, source }) =
+            error.downcast_ref::<AuthError>()
+        else {
+            panic!("OAuth discovery must preserve the executor transport failure: {error:#}");
+        };
+        assert_eq!(url.as_str(), "http://example.com/mcp");
         assert!(
             matches!(
-                error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("expected discovery request failure")
+                source.downcast_ref::<ExecServerError>(),
+                Some(ExecServerError::HttpRequest(reason))
+                    if reason == "expected discovery request failure"
             ),
             "OAuth discovery must preserve the executor transport failure: {error:#}"
         );
@@ -618,14 +625,15 @@ mod tests {
         .await
         .expect_err("cross-origin OAuth discovery redirects must be rejected");
 
-        assert!(
-            matches!(
-                error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                        && reason.contains(&redirect_url)
-            ),
-            "OAuth discovery must preserve the cross-origin redirect rejection: {error:#}"
+        let Some(AuthError::DiscoveryRequestFailed { url, source }) =
+            error.downcast_ref::<AuthError>()
+        else {
+            panic!("OAuth discovery must preserve the cross-origin redirect rejection: {error:#}");
+        };
+        assert_eq!(url.as_str(), format!("{}/mcp", resource_server.uri()));
+        assert_eq!(
+            source.to_string(),
+            format!("OAuth discovery redirect to non-same-origin URL rejected: {redirect_url}")
         );
         redirect_target.verify().await;
         resource_server.verify().await;
@@ -661,12 +669,15 @@ mod tests {
             .await
             .expect_err("transient OAuth discovery failures must not become unsupported access");
 
-            assert!(
-                matches!(
-                    error.downcast_ref::<AuthError>(),
-                    Some(AuthError::MetadataError(reason)) if reason.contains(status.as_str())
-                ),
-                "auth-status discovery must preserve HTTP {status}: {error:#}"
+            let Some(AuthError::DiscoveryRequestFailed { url, source }) =
+                error.downcast_ref::<AuthError>()
+            else {
+                panic!("auth-status discovery must preserve HTTP {status}: {error:#}");
+            };
+            assert_eq!(url.as_str(), format!("{}/mcp", server.uri()));
+            assert_eq!(
+                source.to_string(),
+                format!("unexpected HTTP status {status}")
             );
             server.verify().await;
         }
@@ -833,12 +844,23 @@ mod tests {
             url: format!("http://{address}/mcp"),
             handle,
         };
+        let mut authorization_metadata_url = url::Url::parse(&authorization_server.url)
+            .expect("authorization fixture URL should parse");
+        authorization_metadata_url.set_path("/.well-known/oauth-authorization-server/mcp");
+        let http_client = fixture_http_client(
+            &resource_server.url,
+            &[
+                ("GET", resource_server.url.clone()),
+                ("GET", resource_metadata_url),
+                ("GET", authorization_metadata_url.to_string()),
+            ],
+        );
 
         let discovery = discover_streamable_http_oauth(
             &resource_server.url,
             /*http_headers*/ None,
             /*env_http_headers*/ None,
-            test_http_client(),
+            http_client,
             OAuthDiscoveryTimeout::LOCAL,
             StreamableHttpRedirectMode::Legacy,
         )
