@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.blind-weight-program-independent-readout-audit.v1",
+  "audited_utc": "2026-11-28T11:15:47.140376+00:00",
+  "result_sha256": "a6224fc276a43d17c98a97ad4e04eabcb17d544ffb1bab25b59504ef5958cc8a",
+  "editor_candidate_packet_seals_unchanged": true,
+  "additional_forward_calls": 0,
+  "additional_gradient_steps": 0,
+  "candidate_revision_after_feedback": false,
+  "observations": {
+    "gpt_equals_canonical_native_parameter_bytes_and_scores": true,
+    "actual_changed_words": [
+      1,
+      2,
+      0
+    ],
+    "fresh_contexts_shared_across_all_parents": 40,
+    "paired_query_rows_per_parent": 80,
+    "gradient_training_steps": 0,
+    "host_full_native_forwards": 18
+  },
+  "interpretation": [
+    "Known mechanism transferred through anonymous tensor/unit IDs, unit-order permutations, signed gauge and signed affine quote coordinates. Not independent mechanism discovery.",
+    "Only seed83 improves paired classification over bridge-only (10/80 to80/80); seed47 bridge-only was already80/80, although edit improves CE; seed137 makes zero weight changes.",
+    "Ignoring quote-unit sign is an adverse control on two negative-scale views, but its positive-scale view equals the correct program.",
+    "Explicit bridge changes graph; original graph remains40/80 despite program. Existing normal-route retention is supplied by explicit route/bridge semantics, not learned automatic task recognition.",
+    "Accuracy100% is ordinal comparison on40 fresh synthetic shared contexts, not a calibrated value estimate or measured market/NDU gain.",
+    "Editor model reasoning cost is unmetered in this session. The0.115s program execution excludes that cost and prior method discovery.",
+    "This audit reads frozen result/packet/seal only after host completion; no feedback-based program revisions or new model executions."
+  ]
+}

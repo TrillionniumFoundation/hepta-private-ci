@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.wsp.scan_rule_to_data.v1",
+  "created_on": "2026-11-28",
+  "protocol_kind": "Fixed follow-up execution of published author-selected configurations, after published outcomes and the earlier 65-label matrix were known; no independent blind discovery claim",
+  "upstream_commit": "297c24db4b63c09a78d3552ac5f90865eaf95c9a",
+  "instance": "ncc5c260f",
+  "base_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+  "reference_selection_source": "WeightCode/scripts/e13/t11_scan.py CONDITIONS.addprim_jump.refs: rulegen_mixed_sparse19_sal=q3, rulegen_mixed_grad_full=q2; runner.py labels q{candidate.slot}, scanrefs.configs uses lr-major order",
+  "arms": [
+    {"name":"rulegen_mixed_sparse19_sal_q3", "method":"sparse19_sal", "lr":0.001, "steps":300, "seed":0, "fixed_reference_child_sha256":"727dae68a426bb3fcd1dc1d56b18a16c70b5b9d80254b0454a1664130ef542db"},
+    {"name":"rulegen_mixed_grad_full_q2", "method":"full", "lr":0.001, "steps":100, "seed":0}
+  ],
+  "data": {
+    "fit":"Official rulegen_fit_set(addprim_jump,mixed): 2000 jump compositions plus 2000 old grammar commands, followed by the original 65 experience rows",
+    "grammar_fit_commands_sha256":"4834e49492cb73bf966839f3ffea7798e1a5951d03987dbc6ad1adbfe3e46094",
+    "official_labels_check":"Verify every generated label against pinned SCAN tasks.txt; no externally collected new labels",
+    "final":"Same published sealed 2568 new and 1000 old commands, read once for each fixed candidate; report overlap with grammar-generated training commands explicitly",
+    "final_sha256":"32f4aea890601a2193db6b704c3475fe3408812b391f79a455f1e9a15d6c393a",
+    "subset":"Additionally report pre-defined final-new subset excluding every generated training input and every unlabeled input probed by the published WSP program; this is an audit of existing public data, not a newly collected independent test"
+  },
+  "execution": {
+    "device":"cpu", "threads":4, "seed":0,
+    "optimizer":"Adam betas .9/.999 eps1e-8 weight_decay0 foreachFalse",
+    "loss":"Full-batch mean cross-entropy over all non-IGNORE output tokens",
+    "microbatch":128,
+    "accumulation":"Accumulate summed token CE divided by the fixed full-batch valid-token count; one Adam update after all microbatches. Mathematical objective equals upstream full-batch, but floating-point reduction order differs; no bit-exact GPU checkpoint reproduction claim.",
+    "sparse_mask":"At base, top floor(0.19*numel) entries of every tensor by absolute full-batch gradient, stable upstream argsort; mask fixed for all 300 updates",
+    "parity":"Before fitting, verify torch vs canonical NumPy logits on all 65 experience rows; verify accumulated vs dense loss/gradient on these rows to abs1e-4 and rel1e-3 for nontrivial entries",
+    "checks":"No model selection in this follow-up. Measure published check split after fitting as descriptive only; never reject or switch configuration based on final scores.",
+    "resource_cap":"Start after prior CPU matrix completes. At most 3 hours wall for both fits, four threads, 128-row microbatch. Save fixed step checkpoints every 50 steps, progress every10; failures/cap hits remain in output. No GPU jobs and no external publication.",
+    "repeats":"Seed0 is the published reference. No stochastic layers or minibatch sampling after load; duplicate optimizer seeds would repeat the same mathematical full-batch path. No claim of robustness across independently trained base checkpoints."
+  },
+  "cost":"Report fit wall/CPU, gradient steps, actual microbatch forward/backward rows, calibration/mask and check costs, selected changed entries, full model hashes. Published configuration discovery/search cost is external and excluded from this rerun; BP rerun cost is therefore not its total method-development cost.",
+  "interpretation":"Both WSP and rule-to-data receive the same grammar knowledge. They use it differently: explicit weight compilation versus generated-label gradient fitting. No universal superiority is prespecified."
+}

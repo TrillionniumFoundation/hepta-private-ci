@@ -1,0 +1,526 @@
+{
+  "agent_inference_compute_cost": null,
+  "candidates": [
+    {
+      "actual_gpt_changed_words": 1,
+      "candidate_values": {
+        "CANONICAL": [
+          -0.06833992898464203,
+          -0.1788829267024994,
+          0.22020237147808075,
+          0.06273935735225677
+        ],
+        "GPT": [
+          -0.06833992898464203,
+          -0.1788829267024994,
+          0.22020237147808075,
+          0.06273935735225677
+        ],
+        "KEEP": [
+          -0.06833992898464203,
+          -0.1788829267024994,
+          0.22020237147808075,
+          -0.06273935735225677
+        ],
+        "WRONG_UNIT_SIGN": [
+          -0.06833992898464203,
+          -0.1788829267024994,
+          0.22020237147808075,
+          0.06273935735225677
+        ]
+      },
+      "case_id": "case_e25db6ae50",
+      "four_word_sha256": {
+        "CANONICAL": "6feffefcb907232c5170d441ed218f4056dcf84b23b8d4b5f98b772b9793ed26",
+        "GPT": "6feffefcb907232c5170d441ed218f4056dcf84b23b8d4b5f98b772b9793ed26",
+        "KEEP": "421295751e50313b683c30546469e881d3608fd3e263552e609211caa6b8a3cc",
+        "WRONG_UNIT_SIGN": "6feffefcb907232c5170d441ed218f4056dcf84b23b8d4b5f98b772b9793ed26"
+      },
+      "gpt_ties_canonical_bytes": true,
+      "quote_scale": 2.0,
+      "seed": 47,
+      "validation": {
+        "canonical_four_word_sha256": "6feffefcb907232c5170d441ed218f4056dcf84b23b8d4b5f98b772b9793ed26",
+        "status": "EDIT",
+        "view_bias_max_error": 0.0
+      }
+    },
+    {
+      "actual_gpt_changed_words": 2,
+      "candidate_values": {
+        "CANONICAL": [
+          -0.03559621423482895,
+          -0.3153667151927948,
+          0.029893994331359863,
+          -0.1310570240020752
+        ],
+        "GPT": [
+          -0.03559621423482895,
+          -0.3153667151927948,
+          0.029893994331359863,
+          -0.1310570240020752
+        ],
+        "KEEP": [
+          0.03559621423482895,
+          0.3153667151927948,
+          0.029893994331359863,
+          -0.1310570240020752
+        ],
+        "WRONG_UNIT_SIGN": [
+          0.03559621423482895,
+          0.3153667151927948,
+          -0.029893994331359863,
+          0.1310570240020752
+        ]
+      },
+      "case_id": "case_318947344f",
+      "four_word_sha256": {
+        "CANONICAL": "a7eb8d6cef82a9a5376a93e116d133ec0cc4e788e7e3f56f7567e99d85461585",
+        "GPT": "a7eb8d6cef82a9a5376a93e116d133ec0cc4e788e7e3f56f7567e99d85461585",
+        "KEEP": "46f5276a24a95029cb03f337466358b623890e08caa62e49e94122429cf5c5df",
+        "WRONG_UNIT_SIGN": "eef377bd1946d1a67be21f60c88bcbc737cd62a09be44e8405d2fa351d093f52"
+      },
+      "gpt_ties_canonical_bytes": true,
+      "quote_scale": -0.5,
+      "seed": 83,
+      "validation": {
+        "canonical_four_word_sha256": "a7eb8d6cef82a9a5376a93e116d133ec0cc4e788e7e3f56f7567e99d85461585",
+        "status": "EDIT",
+        "view_bias_max_error": 0.0
+      }
+    },
+    {
+      "actual_gpt_changed_words": 0,
+      "candidate_values": {
+        "CANONICAL": [
+          0.12049546092748642,
+          -0.11875878274440765,
+          0.3328059911727905,
+          0.08070097863674164
+        ],
+        "GPT": [
+          0.12049546092748642,
+          -0.11875878274440765,
+          0.3328059911727905,
+          0.08070097863674164
+        ],
+        "KEEP": [
+          0.12049546092748642,
+          -0.11875878274440765,
+          0.3328059911727905,
+          0.08070097863674164
+        ],
+        "WRONG_UNIT_SIGN": [
+          -0.12049546092748642,
+          0.11875878274440765,
+          -0.3328059911727905,
+          -0.08070097863674164
+        ]
+      },
+      "case_id": "case_ff3ccef0d3",
+      "four_word_sha256": {
+        "CANONICAL": "c49333127ef9eb09ab81fd8190ceba97f427a76fda5d079e8eb66ba010d0e920",
+        "GPT": "c49333127ef9eb09ab81fd8190ceba97f427a76fda5d079e8eb66ba010d0e920",
+        "KEEP": "c49333127ef9eb09ab81fd8190ceba97f427a76fda5d079e8eb66ba010d0e920",
+        "WRONG_UNIT_SIGN": "8e630b6b90ab7d17dc36e6cf6ac162ae41dec2ebf6ce468610d09e4cde60d350"
+      },
+      "gpt_ties_canonical_bytes": true,
+      "quote_scale": -4.0,
+      "seed": 137,
+      "validation": {
+        "canonical_four_word_sha256": "c49333127ef9eb09ab81fd8190ceba97f427a76fda5d079e8eb66ba010d0e920",
+        "status": "KEEP",
+        "view_bias_max_error": 0.0
+      }
+    }
+  ],
+  "deployment": "none",
+  "editor_feedback_rounds_before_seal": 0,
+  "equivalence": [
+    {
+      "gpt_and_canonical_score_bytes_equal": true,
+      "seed": 47
+    },
+    {
+      "gpt_and_canonical_score_bytes_equal": true,
+      "seed": 83
+    },
+    {
+      "gpt_and_canonical_score_bytes_equal": true,
+      "seed": 137
+    }
+  ],
+  "fresh_synthetic_contexts": 40,
+  "full_native_forwards": 18,
+  "independent_mechanism_discovery_claimed": false,
+  "native_cpu_seconds": 3.775141,
+  "native_graph_changed": true,
+  "new_fits": 0,
+  "new_gradient_steps": 0,
+  "packet_to_evaluation_seal_wall_seconds": 185.67420959472656,
+  "paired_queries": 80,
+  "parent_views_share_contexts": true,
+  "protocol_sha256": "214c06d2d0f141980e2c516b64bbed05382d9dcff7c06ccbf19da409769208ae",
+  "python_cpu_seconds": 1.2747106449999999,
+  "quality_conclusion": "GPT view program ties canonical byte edits; semantic sign error is a negative control",
+  "records": [
+    {
+      "accuracy": 1.0,
+      "arm": "KEEP",
+      "brier": 0.23239227067974166,
+      "candidate_sha256": "9d3b61f40aa45b4a1e25299b2204e4022c113a801a6b3ad15c9ba2f948bac430",
+      "ce": 0.6578962982546133,
+      "correct": 80,
+      "max_probability": 0.5413531406310204,
+      "min_probability": 0.4586468593689796,
+      "physical_residuals": [
+        5.329070518200751e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "28ff28dc41ab2215ff119904f978164e5213ee2bc6685bcbbb64db70cc0f09cf",
+      "seed": 47
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "CANONICAL",
+      "brier": 0.22875953287731896,
+      "candidate_sha256": "6d151f4b26a948750f9949cd0597a6e712dad2edf54d53cd0a3d5c44d8ae2df2",
+      "ce": 0.6506041587308282,
+      "correct": 80,
+      "max_probability": 0.5489356443672552,
+      "min_probability": 0.4510643556327447,
+      "physical_residuals": [
+        5.329070518200751e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "058fa54d76ab97e9166ed0291f951a3e7d46c73a3cb831478e9ac7170eb33a0b",
+      "seed": 47
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "GPT",
+      "brier": 0.22875953287731896,
+      "candidate_sha256": "6d151f4b26a948750f9949cd0597a6e712dad2edf54d53cd0a3d5c44d8ae2df2",
+      "ce": 0.6506041587308282,
+      "correct": 80,
+      "max_probability": 0.5489356443672552,
+      "min_probability": 0.4510643556327447,
+      "physical_residuals": [
+        5.329070518200751e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "058fa54d76ab97e9166ed0291f951a3e7d46c73a3cb831478e9ac7170eb33a0b",
+      "seed": 47
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "WRONG_UNIT_SIGN",
+      "brier": 0.22875953287731896,
+      "candidate_sha256": "6d151f4b26a948750f9949cd0597a6e712dad2edf54d53cd0a3d5c44d8ae2df2",
+      "ce": 0.6506041587308282,
+      "correct": 80,
+      "max_probability": 0.5489356443672552,
+      "min_probability": 0.4510643556327447,
+      "physical_residuals": [
+        5.329070518200751e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "058fa54d76ab97e9166ed0291f951a3e7d46c73a3cb831478e9ac7170eb33a0b",
+      "seed": 47
+    },
+    {
+      "accuracy": 0.5,
+      "arm": "ORIGINAL_GRAPH_GPT",
+      "brier": 0.25,
+      "candidate_sha256": "6d151f4b26a948750f9949cd0597a6e712dad2edf54d53cd0a3d5c44d8ae2df2",
+      "ce": 0.6931471805599453,
+      "correct": 40,
+      "max_probability": 0.5,
+      "min_probability": 0.5,
+      "physical_residuals": [
+        5.329070518200751e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "0495625f437b32ce2e021141e323d70e8b821835bc4a7a9ebbc8a3ab5afe6105",
+      "seed": 47
+    },
+    {
+      "accuracy": 0.125,
+      "arm": "KEEP",
+      "brier": 0.25683859635093176,
+      "candidate_sha256": "f248653cc821a05440598200ac7af1d5e76bdbb574627bda5a914046d7a5b64e",
+      "ce": 0.7068272792092051,
+      "correct": 10,
+      "max_probability": 0.5172396780225417,
+      "min_probability": 0.4827603219774584,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "714f57afe07f03d381c2d275a12dca6a7ff093243c26fdbadbe2b47b96c7eec2",
+      "seed": 83
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "CANONICAL",
+      "brier": 0.22808944034442785,
+      "candidate_sha256": "57d2a1b0507f0f80a0eed37402084bfbaaa4d5a086fdfba7571f5da0f71c3a02",
+      "ce": 0.6492592627954792,
+      "correct": 80,
+      "max_probability": 0.552226298134199,
+      "min_probability": 0.44777370186580095,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "da89cf8f3e50c7b1c4343c94c8a2a81fc5b6753c7d25e26cb17f1f27d952abe9",
+      "seed": 83
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "GPT",
+      "brier": 0.22808944034442785,
+      "candidate_sha256": "57d2a1b0507f0f80a0eed37402084bfbaaa4d5a086fdfba7571f5da0f71c3a02",
+      "ce": 0.6492592627954792,
+      "correct": 80,
+      "max_probability": 0.552226298134199,
+      "min_probability": 0.44777370186580095,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "da89cf8f3e50c7b1c4343c94c8a2a81fc5b6753c7d25e26cb17f1f27d952abe9",
+      "seed": 83
+    },
+    {
+      "accuracy": 0.0,
+      "arm": "WRONG_UNIT_SIGN",
+      "brier": 0.27218287067922836,
+      "candidate_sha256": "80ca879d547da055c976d65a5b31ad92538a5ef3371c28aca2276ccd350496e2",
+      "ce": 0.7375886290728315,
+      "correct": 0,
+      "max_probability": 0.5521753610387442,
+      "min_probability": 0.4478246389612558,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "03cbd30f7fa92d9937dfe1dc993fa7e4d8f8347a4b67c2873404b1469eb56b5c",
+      "seed": 83
+    },
+    {
+      "accuracy": 0.5,
+      "arm": "ORIGINAL_GRAPH_GPT",
+      "brier": 0.25,
+      "candidate_sha256": "57d2a1b0507f0f80a0eed37402084bfbaaa4d5a086fdfba7571f5da0f71c3a02",
+      "ce": 0.6931471805599453,
+      "correct": 40,
+      "max_probability": 0.5,
+      "min_probability": 0.5,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "a07fed761c716e8bed52940237f4a90d1ec86b228b9d394f228e7ffb8bea45ed",
+      "seed": 83
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "KEEP",
+      "brier": 0.22428256373791386,
+      "candidate_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "ce": 0.641598208031495,
+      "correct": 80,
+      "max_probability": 0.5622680441514685,
+      "min_probability": 0.43773195584853153,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "91e242142af82a69097f241e516ad0f29d3f8455b551185d8c1e185cb82cb4b5",
+      "seed": 137
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "CANONICAL",
+      "brier": 0.22428256373791386,
+      "candidate_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "ce": 0.641598208031495,
+      "correct": 80,
+      "max_probability": 0.5622680441514685,
+      "min_probability": 0.43773195584853153,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "91e242142af82a69097f241e516ad0f29d3f8455b551185d8c1e185cb82cb4b5",
+      "seed": 137
+    },
+    {
+      "accuracy": 1.0,
+      "arm": "GPT",
+      "brier": 0.22428256373791386,
+      "candidate_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "ce": 0.641598208031495,
+      "correct": 80,
+      "max_probability": 0.5622680441514685,
+      "min_probability": 0.43773195584853153,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "91e242142af82a69097f241e516ad0f29d3f8455b551185d8c1e185cb82cb4b5",
+      "seed": 137
+    },
+    {
+      "accuracy": 0.0,
+      "arm": "WRONG_UNIT_SIGN",
+      "brier": 0.2772024725143475,
+      "candidate_sha256": "74080b7ae34290a1b5f0373b1d0d464bc92425683ee361b1686fcc1c6e9c0ce3",
+      "ce": 0.7476737958083467,
+      "correct": 0,
+      "max_probability": 0.5618277175144388,
+      "min_probability": 0.4381722824855612,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "adab4e442f01002a96e9e972384558f4ffca7249044db8e2ae5e5716c1d34d97",
+      "seed": 137
+    },
+    {
+      "accuracy": 0.5,
+      "arm": "ORIGINAL_GRAPH_GPT",
+      "brier": 0.25,
+      "candidate_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "ce": 0.6931471805599453,
+      "correct": 40,
+      "max_probability": 0.5,
+      "min_probability": 0.5,
+      "physical_residuals": [
+        5.995204332975845e-15,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queries": 80,
+      "score_bytes_sha256": "c70927d67d1c4fbb2da1d4a1fa62730d9aa2459c55e43f5fb292a6c4baeba713",
+      "seed": 137
+    }
+  ],
+  "retention": [
+    {
+      "candidate_sha256": "6d151f4b26a948750f9949cd0597a6e712dad2edf54d53cd0a3d5c44d8ae2df2",
+      "correct": 25,
+      "exact_parent_outputs": {
+        "features": true,
+        "heads": true,
+        "scores": true
+      },
+      "historical_input": true,
+      "queries": 32,
+      "seed": 47
+    },
+    {
+      "candidate_sha256": "57d2a1b0507f0f80a0eed37402084bfbaaa4d5a086fdfba7571f5da0f71c3a02",
+      "correct": 27,
+      "exact_parent_outputs": {
+        "features": true,
+        "heads": true,
+        "scores": true
+      },
+      "historical_input": true,
+      "queries": 32,
+      "seed": 83
+    },
+    {
+      "candidate_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "correct": 27,
+      "exact_parent_outputs": {
+        "features": true,
+        "heads": true,
+        "scores": true
+      },
+      "historical_input": true,
+      "queries": 32,
+      "seed": 137
+    }
+  ],
+  "retention_gate_pass": true,
+  "schema": "hepta.alias-transfer-result.v1",
+  "status": "COMPLETED",
+  "unlabeled_program_packet": true,
+  "wall_seconds": 5.221492923999904
+}

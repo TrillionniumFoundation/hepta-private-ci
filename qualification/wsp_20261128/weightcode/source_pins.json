@@ -1,0 +1,70 @@
+{
+  "upstream_url": "https://github.com/Gen-Verse/WeightCode",
+  "source_commit": "297c24db4b63c09a78d3552ac5f90865eaf95c9a",
+  "dataset_url": "https://huggingface.co/datasets/Boom5426/WeightCode",
+  "dataset_revision": "4c27541829737b8a4c438634d12792043409706d",
+  "dataset_sha256sums_sha256": "31edb7a83866bb9950e527a8f2d7d55826089a75552f1a34efa6a8247faba0e4",
+  "base_params_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+  "edited_params_sha256": "6c9bc3bdaf347dfb6c868a71f17506bea58ab51f82707f236692604dc34198a0",
+  "source_files": {
+    "run.json": "118bb98df45255513895edfb3a287b4c378a8b84682c93c26f303f0616cd95b6",
+    "session_result.json": "7d0d8ebb1316d0f0898c167b75e7fa643e876b9aac96600a8bdae1303a825beb",
+    "final/centroid_meanrow_floor.py": "b003c6b9e7a03a3d367633b600cb2ca8cac11cde428ea12b55bdc60362fc5320"
+  },
+  "selected_models": {
+    "base": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "embedding_only": "9ebb60fa5b49822018bf173fec8fecfe1db2d9c83e62fc3ef27862230fae371d",
+    "head_weight_only": "d655ca0eb1c1a8b9f081c845708afca03820b7a53ebea4b9f18d0aa015268b6a",
+    "head_bias_only": "55aa0a2d8cf21afeabfc0932a9faf679f751784c4ab9740eaad4ecf48e773aad",
+    "embedding_head_weight": "610dbc56e10f63f1ca33d650a6655a974649d893a4060c472ef4bae4d8c635a7",
+    "embedding_head_bias": "eac9507e06a5dfbb94c90e957614ed4f012d1661fd9f4e68158f21e70df729ad",
+    "head_weight_bias": "55dd4bf7854be5438f932a1b58db9e67f40e94a60a9bd5af9c9189cd4dd70b04",
+    "full_published_edit": "6c9bc3bdaf347dfb6c868a71f17506bea58ab51f82707f236692604dc34198a0",
+    "random_support_norm_seed0": "5cf211359294fd52e126a31f1fded9d25f3fb8cf0af4b2635369f9e15cd11c1e",
+    "random_support_norm_seed1": "36f410daeb83e018cc92eba603c10f87922d27d134f19174284525bcfba14519",
+    "random_support_norm_seed2": "a569aad6e145bda4193b3e9a879788b2063f28d9bc73a07ae9ce39ddd61994de",
+    "f1_last_seed0": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "f1_last_seed1": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "f1_last_seed2": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "f1_full_seed0": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "f1_full_seed1": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "f1_full_seed2": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "lora_r4_seed0": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "lora_r4_seed1": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "lora_r4_seed2": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc"
+  },
+  "storage": "Public base checkpoint is fetched by pinned downloader; unchanged selected models reference that hash. Edited model is reconstructed by exact patch. All candidate-selection records and predictions are retained.",
+  "prediction_archive": {
+    "reconstructed_path": "artifacts/scan_predictions.tar.gz",
+    "bytes": 1561641,
+    "sha256": "7bbdc3e846e403fb488541f04fe06a1aa79110d9fea5714fd8653b795f9fc862",
+    "parts": [
+      {
+        "path": "artifacts/scan_predictions.tar.gz.part000",
+        "bytes": 450000,
+        "sha256": "3acf977e191204c4b044c1f6e7f159634c22a4adb3d30c4c36e7341e12fe2faa"
+      },
+      {
+        "path": "artifacts/scan_predictions.tar.gz.part001",
+        "bytes": 450000,
+        "sha256": "d97ba63508783049b1a98907138536320a4b3aa74c59cb34511b885c457facbf"
+      },
+      {
+        "path": "artifacts/scan_predictions.tar.gz.part002",
+        "bytes": 450000,
+        "sha256": "ff35f6b32c24fa30a007dfa3ef35b1709a7b0f8504e9a00ab59b8a320787eb6c"
+      },
+      {
+        "path": "artifacts/scan_predictions.tar.gz.part003",
+        "bytes": 211641,
+        "sha256": "cd99a571a33fc262f1660ae724278828ea61273051bd6d238b4e25d380c78827"
+      }
+    ],
+    "reconstruction": "Concatenate parts in listed order; verify complete SHA before decompression or reading"
+  },
+  "published_patch_archive": {
+    "path": "artifacts/exact_public_program_patch.tar.gz",
+    "bytes": 3070,
+    "sha256": "10b0ca55fb419e6c7f08ab98b467ec2d306a6b15984c6f9aae066015a190d018"
+  }
+}

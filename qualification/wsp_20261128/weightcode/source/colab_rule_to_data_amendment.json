@@ -1,0 +1,13 @@
+{
+  "schema":"hepta.wsp.execution_amendment.v1",
+  "date":"2026-11-28",
+  "previous_protocol":"scan_rule_to_data_protocol.json",
+  "reason":"HeptaRuntime Colab T4 became available while the local job was only waiting for the prior matrix. Parent requested preferred cloud resources; the local queue was interrupted with exit130 before any rule-to-data fit or result.",
+  "quality_method_changes":"none: author-fixed sparse19_sal q3 lr0.001 steps300 seed0 and full q2 lr0.001 steps100 seed0, same official4000 grammar rows+65 experience, fixed top19% mask, fullbatch Adam objective via128-row accumulation, same fixed final and overlap subsets",
+  "execution_changes":{"device":"cuda","required_accelerator":"T4","precision":"float32 IEEE, TF32 disabled, no AMP","cpu_threads":2,"profile_hard_wall_seconds":600,"per_job_soft_wall_seconds":480,"maximum_jobs":8,"maximum_gpu_job_wall_seconds":4800,"checkpoint_interval_steps":10},
+  "continuation":"Finite immediate chunks only if wall budget requires; persist model, optimizer, fixed mask, completed-step counter and prior artifact SHA. Resume exactly the remaining fixed steps, no result-driven selection, no recurring automation. Count failed and repeated work.",
+  "evaluation":"Canonical upstream NumPy forward on CPU. Once fixed training finishes, seal model then read check/final as descriptive, without changing any candidate. Fresh unseen-input holdout is not claimed.",
+  "preflight":"Verify actual GPU identity, CUDA availability, model/source/data hashes, CUDA versus canonical logits and accumulation gradient parity before fitting. Record numerical/runtime differences; do not claim original GPU child hash equality unless observed.",
+  "privacy":"Only public WeightCode/SCAN source, model and newly trained derivatives; no pocket4 or private Hepta checkpoints uploaded.",
+  "rollback_and_release":"Retain all evidence and non-success states; no model deployment. Runtime agent manages allocation ledger and release after final artifact verification."
+}
