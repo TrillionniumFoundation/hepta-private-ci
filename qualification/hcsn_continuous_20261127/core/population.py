@@ -11,9 +11,10 @@ from torch import nn
 from he_xiong import Published
 
 class BoundaryPopulation(nn.Module):
-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False):
+    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False):
         super().__init__()
         self.matrix_free=matrix_free
+        self.cache_prices=cache_prices
         if atoms<3 or width<1 or dt<=0 or not 0<reset<1.30 or any(t<=0 for t in probe_horizons):
             raise ValueError('invalid population geometry or horizon')
         self.width=width; self.dt=float(dt); self.probe_horizons=tuple(probe_horizons)
@@ -55,7 +56,17 @@ class BoundaryPopulation(nn.Module):
         F=hit(p.a);G=hit(p.zb);B=p.boundary(principal)
         L=p.disc*(principal/p.p.m-p.c/p.q)*F+(p.c/p.q-p.p.alpha*B/p.p.m)*G
         return E,L
-    def step(self,frame,state):
+    def _price_basis(self):
+        # At a fixed log-margin grid, both published prices are affine in
+        # nominal principal. Build per forward pass so edits to grid, law
+        # buffers, dtype/device and loaded checkpoints take effect immediately.
+        center = self.prices.p.P0
+        span = max(1., abs(center) * .28)
+        anchors = self.grid.new_tensor([center-span, center+span])
+        equity, loss = self.priced_channels(anchors)
+        return anchors, equity, loss
+
+    def step(self,frame,state,price_basis=None):
         frame=frame.to(self.sender.weight)
         mass,refractory,old_b,old_value=state
         u=self.sender(frame)+self.recurrent(old_b)+(old_value.tanh()*self.feedback).sum(-1)
@@ -70,7 +81,13 @@ class BoundaryPopulation(nn.Module):
             flow=(mass*hit).sum(-1)
             newmass=(mass[...,None]*surv).sum(-2)
         newmass=newmass+refractory[...,None]*self.reset_weights
-        E,L=self.priced_channels(P)
+        if price_basis is None:
+            E,L=self.priced_channels(P)
+        else:
+            anchors,equity,loss=price_basis
+            fraction=(P[...,None]-anchors[0])/(anchors[1]-anchors[0])
+            E=torch.lerp(equity[0],equity[1],fraction)
+            L=torch.lerp(loss[0],loss[1],fraction)
         v=torch.stack([(newmass*E).sum(-1)/20.,(newmass*L).sum(-1)/20.],dim=-1)
         probes=[(newmass*self.prices.passage(self.grid,t)).sum(-1) for t in self.probe_horizons]
         transmitted=torch.stack([b,flow,v[...,0],v[...,1],*probes],dim=-1)
@@ -79,18 +96,19 @@ class BoundaryPopulation(nn.Module):
         if frames.ndim!=3 or frames.shape[0]==0: raise ValueError('expected nonempty [time,batch,channel] input')
         if state is None:state=self.initial(frames.size(1))
         outputs=[]
+        price_args=(self._price_basis(),) if self.cache_prices else ()
         for frame in frames:
-            message,state=self.step(frame,state);outputs.append(message)
+            message,state=self.step(frame,state,*price_args);outputs.append(message)
         return torch.stack(outputs),state
 
 class ContinuousSpikingNetwork(nn.Module):
-    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False):
+    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False):
         super().__init__()
         if port not in ('boundary','priced','augmented'):raise ValueError('unknown message port')
         self.port=port
-        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free)
+        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices)
         channels={'boundary':1,'priced':4,'augmented':4+len(self.first.probe_horizons)}[port]
-        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free)
+        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices)
         self.head=nn.Linear(width*(4+len(self.second.probe_horizons)),outputs,dtype=torch.float64)
         self.channels=channels
     def forward(self,frames,state=None):

@@ -1,0 +1,55 @@
+{
+  "observed_at": "2026-11-28T10:59:31.576233+00:00",
+  "automatic_account_rotation": false,
+  "candidates": [
+    {
+      "provider": "kaggle",
+      "account": "qiqian",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "kaggle",
+      "account": "sunfo",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "kaggle",
+      "account": "tomas",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "qiqian",
+      "ready": true,
+      "blockers": []
+    },
+    {
+      "provider": "colab",
+      "account": "sunfo",
+      "ready": false,
+      "blockers": [
+        "EXISTING_RUNTIME_REQUIRES_EXPLICIT_BINDING",
+        "ACCOUNT_RESERVED"
+      ]
+    },
+    {
+      "provider": "colab",
+      "account": "tomas",
+      "ready": false,
+      "blockers": [
+        "ACCOUNT_RESERVED"
+      ]
+    }
+  ],
+  "planned_provider": "colab",
+  "planned_account": "qiqian",
+  "request_id": "hcsn-price-native-1140569-20261128",
+  "source_sha256": "cc77d3d5c81465678d3673f867b026457267e765cdde0f1b5aa8d4adf4bca40c",
+  "timeout_s": 600,
+  "artifact": "cloud_result.json"
+}

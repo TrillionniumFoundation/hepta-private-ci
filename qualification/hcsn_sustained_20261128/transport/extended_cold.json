@@ -1,0 +1,211 @@
+{
+  "source_sha256": "06874079ef763bff0ef691778abfa81be374c45ca75c190dfe63e02382f50fa2",
+  "development_seal_sha256": "2ffba30ca784f26f8d38d4afc136b9f2249fddbc3be852bd298be9491fd0afa1",
+  "pairs": [
+    {
+      "atoms": 12,
+      "seed": 314,
+      "first_dev_gate_step": 32,
+      "terminal_test_accuracy_dense": 1.0,
+      "terminal_test_accuracy_fft": 1.0,
+      "to_dev_gate_s_dense": 5.588793334085494,
+      "to_dev_gate_s_fft": 2.493193707894534,
+      "cold_to_dev_gate_ratio": 2.241620182334388,
+      "test_at_gate_dense": {
+        "balanced_accuracy": 0.9054054054054055,
+        "ce": 0.5333445802330993,
+        "state_sha256": "229744ceec0d8fc3e152f02ff86694b3d62b0a711d508efd4f924bdce35939c3",
+        "load_and_inference_seconds": 0.07263408415019512
+      },
+      "test_at_gate_fft": {
+        "balanced_accuracy": 0.9054054054054055,
+        "ce": 0.5333445802330993,
+        "state_sha256": "512e92189325f486bd8a9e5975803be7ba18279f7a3bfe66b848ad5fc9f0acac",
+        "load_and_inference_seconds": 0.08660937496460974
+      }
+    },
+    {
+      "atoms": 12,
+      "seed": 159,
+      "first_dev_gate_step": 24,
+      "terminal_test_accuracy_dense": 0.9861111111111112,
+      "terminal_test_accuracy_fft": 0.9861111111111112,
+      "to_dev_gate_s_dense": 1.7444902921561152,
+      "to_dev_gate_s_fft": 1.9555732500739396,
+      "cold_to_dev_gate_ratio": 0.8920608277343518,
+      "test_at_gate_dense": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4651118986249423,
+        "state_sha256": "3f9a90bb3e393b505a936b6a339ebb109d0768698e9315a3c959e4cb9be64fe6",
+        "load_and_inference_seconds": 0.0702840001322329
+      },
+      "test_at_gate_fft": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4651118986249424,
+        "state_sha256": "7fb1725f817509d4da9e0dd8d82eaffff60e6acbfe090962c4f563dd11cc4360",
+        "load_and_inference_seconds": 0.08593345806002617
+      }
+    },
+    {
+      "atoms": 128,
+      "seed": 314,
+      "first_dev_gate_step": 32,
+      "terminal_test_accuracy_dense": 1.0,
+      "terminal_test_accuracy_fft": 1.0,
+      "to_dev_gate_s_dense": 20.03679766599089,
+      "to_dev_gate_s_fft": 4.891903500072658,
+      "cold_to_dev_gate_ratio": 4.095910245509399,
+      "test_at_gate_dense": {
+        "balanced_accuracy": 0.8783783783783784,
+        "ce": 0.5339470300007564,
+        "state_sha256": "e7b1099eecd686abe8e7f287f0d945c8301bb8ef48680efb77f05c19816f3f20",
+        "load_and_inference_seconds": 1.523108083056286
+      },
+      "test_at_gate_fft": {
+        "balanced_accuracy": 0.8783783783783784,
+        "ce": 0.5339470300007565,
+        "state_sha256": "ff787c9c106e47783772ba51ab7c614ef34dbfad25479dbbeb074e0351134d4f",
+        "load_and_inference_seconds": 0.33152899984270334
+      }
+    },
+    {
+      "atoms": 128,
+      "seed": 159,
+      "first_dev_gate_step": 24,
+      "terminal_test_accuracy_dense": 1.0,
+      "terminal_test_accuracy_fft": 1.0,
+      "to_dev_gate_s_dense": 16.47797158313915,
+      "to_dev_gate_s_fft": 4.125827749958262,
+      "cold_to_dev_gate_ratio": 3.9938583435301793,
+      "test_at_gate_dense": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4608179803020553,
+        "state_sha256": "d248da1f64474025c63a614a437cd443ac3a49e31fb0dfe08af1f39cbe2ec743",
+        "load_and_inference_seconds": 1.4983227911870927
+      },
+      "test_at_gate_fft": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.460817980302055,
+        "state_sha256": "c224843610428141899084dc9758aab883149b93d0f8be64042618bea2b0e6a0",
+        "load_and_inference_seconds": 0.296266958815977
+      }
+    }
+  ],
+  "heldout": {
+    "12-314-dense": {
+      "gate": {
+        "balanced_accuracy": 0.9054054054054055,
+        "ce": 0.5333445802330993,
+        "state_sha256": "229744ceec0d8fc3e152f02ff86694b3d62b0a711d508efd4f924bdce35939c3",
+        "load_and_inference_seconds": 0.07263408415019512
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.03664211566639893,
+        "state_sha256": "cc39f9c5e0d56c205b73ba9404b8ef7cf6384d343b997e20e64ce613cf90c45f",
+        "load_and_inference_seconds": 0.06886562495492399
+      }
+    },
+    "12-314-fft": {
+      "gate": {
+        "balanced_accuracy": 0.9054054054054055,
+        "ce": 0.5333445802330993,
+        "state_sha256": "512e92189325f486bd8a9e5975803be7ba18279f7a3bfe66b848ad5fc9f0acac",
+        "load_and_inference_seconds": 0.08660937496460974
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.03664211566639892,
+        "state_sha256": "70cb4e23cbb7cecf71ca90fd7cbbfe03ea44ba70ef320e4d824425e746a772df",
+        "load_and_inference_seconds": 0.10035662492737174
+      }
+    },
+    "12-159-fft": {
+      "gate": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4651118986249424,
+        "state_sha256": "7fb1725f817509d4da9e0dd8d82eaffff60e6acbfe090962c4f563dd11cc4360",
+        "load_and_inference_seconds": 0.08593345806002617
+      },
+      "terminal": {
+        "balanced_accuracy": 0.9861111111111112,
+        "ce": 0.028989370356237155,
+        "state_sha256": "87d3f97abb1616eb9f2a34c494b9f3b77cafc919f310f402115170ea606075e3",
+        "load_and_inference_seconds": 0.08747320901602507
+      }
+    },
+    "12-159-dense": {
+      "gate": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4651118986249423,
+        "state_sha256": "3f9a90bb3e393b505a936b6a339ebb109d0768698e9315a3c959e4cb9be64fe6",
+        "load_and_inference_seconds": 0.0702840001322329
+      },
+      "terminal": {
+        "balanced_accuracy": 0.9861111111111112,
+        "ce": 0.028989370356237058,
+        "state_sha256": "ae0b2c6135c8a738f9d3c6f9980968172a00740d2c32219b47193099ee269795",
+        "load_and_inference_seconds": 0.06802683277055621
+      }
+    },
+    "128-314-fft": {
+      "gate": {
+        "balanced_accuracy": 0.8783783783783784,
+        "ce": 0.5339470300007565,
+        "state_sha256": "ff787c9c106e47783772ba51ab7c614ef34dbfad25479dbbeb074e0351134d4f",
+        "load_and_inference_seconds": 0.33152899984270334
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.031668705048572346,
+        "state_sha256": "59719817190e19b0451f63691dab80ee6d6a967c13554757cc663d5e5f6abed9",
+        "load_and_inference_seconds": 0.30762679199688137
+      }
+    },
+    "128-314-dense": {
+      "gate": {
+        "balanced_accuracy": 0.8783783783783784,
+        "ce": 0.5339470300007564,
+        "state_sha256": "e7b1099eecd686abe8e7f287f0d945c8301bb8ef48680efb77f05c19816f3f20",
+        "load_and_inference_seconds": 1.523108083056286
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.031668705048572485,
+        "state_sha256": "e70d5f93fa4c75689fab78865be28b296c282d20d410a16c3a3df3f93f6d9362",
+        "load_and_inference_seconds": 1.4893265829887241
+      }
+    },
+    "128-159-dense": {
+      "gate": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.4608179803020553,
+        "state_sha256": "d248da1f64474025c63a614a437cd443ac3a49e31fb0dfe08af1f39cbe2ec743",
+        "load_and_inference_seconds": 1.4983227911870927
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.023900539108835862,
+        "state_sha256": "8ee1e6a48a3055c36924842e41c38e2ab79312aef379d1c63dd504711fe1310f",
+        "load_and_inference_seconds": 1.5321775409393013
+      }
+    },
+    "128-159-fft": {
+      "gate": {
+        "balanced_accuracy": 0.9864864864864865,
+        "ce": 0.460817980302055,
+        "state_sha256": "c224843610428141899084dc9758aab883149b93d0f8be64042618bea2b0e6a0",
+        "load_and_inference_seconds": 0.296266958815977
+      },
+      "terminal": {
+        "balanced_accuracy": 1.0,
+        "ce": 0.02390053910883569,
+        "state_sha256": "9d57044b0c7e49bba7c449afb89af97a6b72c7da75a07168d7f1d58556b75463",
+        "load_and_inference_seconds": 0.29090570798143744
+      }
+    }
+  },
+  "threshold": 0.8,
+  "cap": 96,
+  "terminal": true
+}
