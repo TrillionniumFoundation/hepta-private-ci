@@ -1,0 +1,177 @@
+{
+  "torch": "2.13.0+rocm10.0.0",
+  "hip": "7.15.26333",
+  "device": "AMD Radeon 8060S Graphics",
+  "dot": 140.0,
+  "weights": {
+    "hx": "ae4204b23201b3b517517811b737da97ac155800fb525eb0e13eb535d670a2ce",
+    "sdpa": "a28db196e6039eae047f7d4d0cbd09a2f9c4757c739b48b3b58de6e056b5136e"
+  },
+  "rows": [
+    {
+      "kind": "hx",
+      "window": 128,
+      "targets": 245568,
+      "nll": 5.790808968802779,
+      "ppl": 327.27767474330597,
+      "strict_hidden_max_error": 4.082918167114258e-06,
+      "alternate_chunking_max_error": 2.0265579223632812e-06,
+      "source_reference_nll": 5.790809100157436,
+      "wall_seconds": 1.6412300360389054
+    },
+    {
+      "kind": "hx",
+      "window": 256,
+      "targets": 245568,
+      "nll": 5.786990108218173,
+      "ppl": 326.030230355139,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 2.0265579223632812e-06,
+      "source_reference_nll": 5.790809100157436,
+      "wall_seconds": 0.11596463760361075
+    },
+    {
+      "kind": "hx",
+      "window": 512,
+      "targets": 245568,
+      "nll": 5.785565437039822,
+      "ppl": 325.5660751954275,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 2.3543834686279297e-06,
+      "source_reference_nll": 5.790809100157436,
+      "wall_seconds": 0.47066334495320916
+    },
+    {
+      "kind": "hx",
+      "window": 1024,
+      "targets": 245568,
+      "nll": 5.784949304681502,
+      "ppl": 325.36554518458644,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 2.3543834686279297e-06,
+      "source_reference_nll": 5.790809100157436,
+      "wall_seconds": 0.3913097409531474
+    },
+    {
+      "kind": "hx",
+      "window": 2048,
+      "targets": 245568,
+      "nll": 5.78466935538921,
+      "ppl": 325.2744720789961,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 3.2186508178710938e-06,
+      "source_reference_nll": 5.790809100157436,
+      "wall_seconds": 0.5197778129950166
+    },
+    {
+      "kind": "sdpa",
+      "window": 128,
+      "targets": 245568,
+      "nll": 5.759890644202099,
+      "ppl": 317.31362693559527,
+      "strict_hidden_max_error": 0.0,
+      "alternate_chunking_max_error": 1.9073486328125e-06,
+      "source_reference_nll": 5.759890776137687,
+      "wall_seconds": 0.575480411760509
+    },
+    {
+      "kind": "sdpa",
+      "window": 256,
+      "targets": 245568,
+      "nll": 5.9406838859280136,
+      "ppl": 380.1948505580474,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 1.7881393432617188e-06,
+      "source_reference_nll": 5.759890776137687,
+      "wall_seconds": 0.10913678584620357
+    },
+    {
+      "kind": "sdpa",
+      "window": 512,
+      "targets": 245568,
+      "nll": 6.0302213418422435,
+      "ppl": 415.8070546965883,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 1.9073486328125e-06,
+      "source_reference_nll": 5.759890776137687,
+      "wall_seconds": 0.16216231789439917
+    },
+    {
+      "kind": "sdpa",
+      "window": 1024,
+      "targets": 245568,
+      "nll": 6.069732094328962,
+      "ppl": 432.5647794922395,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 2.0265579223632812e-06,
+      "source_reference_nll": 5.759890776137687,
+      "wall_seconds": 0.3688377751968801
+    },
+    {
+      "kind": "sdpa",
+      "window": 2048,
+      "targets": 245568,
+      "nll": 6.091041410137756,
+      "ppl": 441.88135133017767,
+      "strict_hidden_max_error": null,
+      "alternate_chunking_max_error": 2.5033950805664062e-06,
+      "source_reference_nll": 5.759890776137687,
+      "wall_seconds": 0.361841909121722
+    }
+  ],
+  "head_check": {
+    "hx": {
+      "complete_word_scores": 133112,
+      "max_logp_difference": 2.6971855149326984e-06,
+      "max_normalization_error": 1.083670919665991e-07
+    },
+    "sdpa": {
+      "complete_word_scores": 133112,
+      "max_logp_difference": 2.653514336259377e-06,
+      "max_normalization_error": 1.1551776291085503e-07
+    }
+  },
+  "raw_sha256": "ece6d3b133cd0c1db8f51a9fc56413706c9660f5c9836a9391b33fc744152da1",
+  "block_bootstrap": {
+    "hx_256": [
+      -0.0038188605846056797,
+      -0.004635196497591215,
+      -0.0030630423490500295
+    ],
+    "hx_512": [
+      -0.005243531762956373,
+      -0.006412608155263276,
+      -0.004235087491190962
+    ],
+    "hx_1024": [
+      -0.005859664121276518,
+      -0.007242027769496676,
+      -0.004609192565943262
+    ],
+    "hx_2048": [
+      -0.00613961341356884,
+      -0.007516319307873113,
+      -0.004843542587432486
+    ],
+    "sdpa_256": [
+      0.1807932417259144,
+      0.17180613748532667,
+      0.19041571895955442
+    ],
+    "sdpa_512": [
+      0.27033069764014495,
+      0.257949420709334,
+      0.2839970460405726
+    ],
+    "sdpa_1024": [
+      0.30984145012686304,
+      0.2956795513631752,
+      0.32554054131365934
+    ],
+    "sdpa_2048": [
+      0.3311507659356578,
+      0.3153087421841204,
+      0.34864500172475144
+    ]
+  }
+}

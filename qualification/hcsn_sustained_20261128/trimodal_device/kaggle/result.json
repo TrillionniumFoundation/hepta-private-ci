@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "device": {
+    "torch": "2.11.0+cpu",
+    "compiled_cuda": null,
+    "device_count": 0,
+    "cuda_available": false,
+    "nvidia_smi_present": false,
+    "driver": {
+      "ctypes_library": null,
+      "libcuda_load": false
+    }
+  },
+  "seed": 137,
+  "arms": [
+    "financial",
+    "sdpa_matched"
+  ],
+  "rows": [],
+  "endpoint": "requested_cuda_unavailable",
+  "train_updates": 0
+}

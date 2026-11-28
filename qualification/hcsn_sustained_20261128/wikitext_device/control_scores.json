@@ -1,0 +1,252 @@
+{
+  "scope": "post-primary; no fitting or method selection",
+  "rows": [
+    {
+      "kind": "hx",
+      "position": "periodic",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 5.785565437039822,
+      "target_nll_by_withinwindow_position": [
+        5.785092037318066,
+        5.785738332542613,
+        5.785715924285626
+      ]
+    },
+    {
+      "kind": "hx",
+      "position": "clamp",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 5.786553532028535,
+      "target_nll_by_withinwindow_position": [
+        5.785092037318066,
+        5.7875028281065815,
+        5.786810032126149
+      ]
+    },
+    {
+      "kind": "hx",
+      "position": "zero_tail",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 5.786640835118824,
+      "target_nll_by_withinwindow_position": [
+        5.785092037318066,
+        5.787038466367482,
+        5.787217319151175
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "periodic",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 6.030221341842245,
+      "target_nll_by_withinwindow_position": [
+        5.757609318672454,
+        6.124830023919335,
+        6.119362295128101
+      ],
+      "distant_attention_fraction_by_layer_head": [
+        [
+          0.6271603157088389,
+          0.6386426968062205,
+          0.6319097490043422,
+          0.6340243628401419
+        ],
+        [
+          0.5866843980638495,
+          0.5947365785893234,
+          0.5799445657367832,
+          0.5908325601408649
+        ]
+      ],
+      "queries_per_head": 1438
+    },
+    {
+      "kind": "sdpa",
+      "position": "periodic",
+      "local_attention_window": 128,
+      "window": 512,
+      "nll": 6.017719224194751,
+      "target_nll_by_withinwindow_position": [
+        5.7576093184118085,
+        6.108872185005793,
+        6.102329900862995
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "clamp",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 5.924170354427005,
+      "target_nll_by_withinwindow_position": [
+        5.757609318672454,
+        5.915635682030218,
+        6.011855216099037
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "clamp",
+      "local_attention_window": 128,
+      "window": 512,
+      "nll": 5.94337536314319,
+      "target_nll_by_withinwindow_position": [
+        5.7576093184118085,
+        5.932054675842086,
+        6.042072944129725
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "zero_tail",
+      "local_attention_window": null,
+      "window": 512,
+      "nll": 6.037596623440851,
+      "target_nll_by_withinwindow_position": [
+        5.757609318672454,
+        6.120057509898737,
+        6.1365143916088725
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "zero_tail",
+      "local_attention_window": 128,
+      "window": 512,
+      "nll": 5.966471174057358,
+      "target_nll_by_withinwindow_position": [
+        5.7576093184118085,
+        6.1131929258643884,
+        5.997589848906068
+      ]
+    },
+    {
+      "kind": "hx",
+      "position": "periodic",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 5.78466935538921,
+      "target_nll_by_withinwindow_position": [
+        5.749269658901464,
+        5.737364859611201,
+        5.7905820769095495
+      ]
+    },
+    {
+      "kind": "hx",
+      "position": "clamp",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 5.785837878445831,
+      "target_nll_by_withinwindow_position": [
+        5.749269658901464,
+        5.738343482969261,
+        5.791847716874495
+      ]
+    },
+    {
+      "kind": "hx",
+      "position": "zero_tail",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 5.786107364178959,
+      "target_nll_by_withinwindow_position": [
+        5.749269658901464,
+        5.738229789923025,
+        5.792163863162583
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "periodic",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 6.091041410137757,
+      "target_nll_by_withinwindow_position": [
+        5.71347923150062,
+        6.085603154975505,
+        6.1184230318571045
+      ],
+      "distant_attention_fraction_by_layer_head": [
+        [
+          0.8352122922511864,
+          0.8414547076247824,
+          0.8373581788878685,
+          0.8398166788665286
+        ],
+        [
+          0.8281625564670081,
+          0.8284047346404683,
+          0.8232406433899623,
+          0.8252777059638129
+        ]
+      ],
+      "queries_per_head": 1798
+    },
+    {
+      "kind": "sdpa",
+      "position": "periodic",
+      "local_attention_window": 128,
+      "window": 2048,
+      "nll": 6.080808317914027,
+      "target_nll_by_withinwindow_position": [
+        5.71347923239432,
+        6.070449383616668,
+        6.107810142387099
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "clamp",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 6.0271130563200375,
+      "target_nll_by_withinwindow_position": [
+        5.71347923150062,
+        5.873685346911914,
+        6.060504408186171
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "clamp",
+      "local_attention_window": 128,
+      "window": 2048,
+      "nll": 6.01960882198851,
+      "target_nll_by_withinwindow_position": [
+        5.71347923239432,
+        5.891547983025741,
+        6.050650139490348
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "zero_tail",
+      "local_attention_window": null,
+      "window": 2048,
+      "nll": 6.116532443396652,
+      "target_nll_by_withinwindow_position": [
+        5.71347923150062,
+        6.082577160532545,
+        6.147775231225797
+      ]
+    },
+    {
+      "kind": "sdpa",
+      "position": "zero_tail",
+      "local_attention_window": 128,
+      "window": 2048,
+      "nll": 5.9676307951023135,
+      "target_nll_by_withinwindow_position": [
+        5.71347923239432,
+        6.078380580803347,
+        5.977882932868674
+      ]
+    }
+  ],
+  "raw_sha256": "61b65564b1ca07212beb4b9df8caef781d322145d87937ab8d16c684f3cc63f0"
+}
