@@ -10,3 +10,5 @@ python crema/study.py "$PARENT" "$SUSTAINED_OUT"
 ```
 
 The first command writes all 27 candidate patches, seals them before scoring held-out actors and writes one score array per candidate. The second command writes the optimizer and RNG states at interval, then seals one selected checkpoint per condition. Full raw score arrays and selected weights are archived together in the study's results branch. The source branch contains the score summaries and independent verifiers. The figure in the Chinese overview can be regenerated with `python paper/plot_channels.py` beside its literature reference implementation.
+
+The original decoding program is `crema/src/prepare_original.py`. It resolves a pinned public CREMA-D revision, verifies every clip against its Git LFS object identity and constructs the common label vocabulary. The decoder build, media and roster hashes are in `crema/prepared.json`. To rebuild, provide the pinned executable and its metadata at `PARENT/env/ffmpeg` and `PARENT/env/decoder.json` and run `python crema/src/prepare_original.py "$PARENT"`. Check the final byte hash before training.
