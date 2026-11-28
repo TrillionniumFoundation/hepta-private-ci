@@ -1,0 +1,93 @@
+{
+  "metadata": {
+    "kind": "hx",
+    "seed": 311,
+    "threads": 1,
+    "device": "cpu",
+    "device_name": "x86_64",
+    "torch": "2.15.0+cpu",
+    "parameter_count": 1144579,
+    "float_dtype": "float32",
+    "vocab": 33278,
+    "context": 128,
+    "batch": 32,
+    "learning_rate": 0.003,
+    "weight_decay": 0.01
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "cumulative_targets": 2088627,
+      "train_nll": 6.640027667260345,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.193250647574371,
+        "ppl": 489.4345022354326
+      },
+      "train_seconds": 43.891021425031795,
+      "cumulative_train_seconds": 43.891021425031795
+    },
+    {
+      "epoch": 2,
+      "cumulative_targets": 4177254,
+      "train_nll": 6.287376952802112,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.0612310540837795,
+        "ppl": 428.90311492370034
+      },
+      "train_seconds": 48.9132428570083,
+      "cumulative_train_seconds": 92.8042642820401
+    }
+  ],
+  "selected_epoch": 2,
+  "test": {
+    "targets": 245568,
+    "nll": 5.994667406001521,
+    "ppl": 401.2831974105826
+  },
+  "cut_test": {
+    "targets": 245568,
+    "nll": 7.8271220922295335,
+    "ppl": 2507.7020434160095
+  },
+  "timed": [
+    {
+      "clock": 15,
+      "actual_seconds": 15.04397297903779,
+      "tokens": 753587,
+      "step": 184,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.4372580258650585,
+        "ppl": 624.6915612130476
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.378208807340814,
+        "ppl": 588.871979267796
+      }
+    },
+    {
+      "clock": 45,
+      "actual_seconds": 45.035865056041075,
+      "tokens": 2133683,
+      "step": 521,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.189484729319676,
+        "ppl": 487.59479817079136
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.120057237938069,
+        "ppl": 454.8907307618625
+      }
+    }
+  ],
+  "total_training_seconds": 92.8042642820401,
+  "total_process_training_seconds": 44.18485198700004,
+  "tok_per_training_second": 45011.44459596132,
+  "overall_seconds": 104.14135527610779,
+  "model_sha256": "b0e30f295a2d0711b49e019150afb87744233ca70a0b02134b8cc5cf5a2ca5e2"
+}
