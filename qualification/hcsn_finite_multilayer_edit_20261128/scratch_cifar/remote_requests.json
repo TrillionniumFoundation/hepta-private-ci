@@ -1,0 +1,56 @@
+[
+ {
+  "host": "ai395",
+  "executable": "/home/qq/.venvs/rocm10/bin/python",
+  "args": [
+   "-u",
+   "-c",
+   "import json,os,sys,subprocess,pathlib,time\nr=pathlib.Path('/tmp/hepta-edit-8559');os.chdir(r);os.nice(10);os.sched_setaffinity(0,{14});p=r/'fits';p.mkdir(exist_ok=True);log=r/'logs';log.mkdir(exist_ok=True)\nplan=[[\"literal\",\"boundary\"],[\"smooth\",\"bp\"],[\"dense\",\"fp\"],[\"literal\",\"rf\"],[\"smooth\",\"wrong\"],[\"literal\",\"bp\"],[\"dense\",\"bp\"],[\"smooth\",\"boundary\"],[\"literal\",\"fp\"],[\"dense\",\"raw\"],[\"smooth\",\"fp\"],[\"literal\",\"wrong\"],[\"dense\",\"rf\"],[\"smooth\",\"rf\"],[\"literal\",\"raw\"],[\"smooth\",\"raw\"]]; receipts=[]\nfor kind,arm in plan:\n key=kind+'-157-'+arm\n with (log/(key+'.log')).open('a') as f:\n  t=time.time();cmd=[sys.executable,'-u','train.py','source','law.npz','fits',kind,'157',arm]\n  q=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)\n receipts.append({'key':key,'code':q.returncode,'begin':t,'end':time.time()});(r/'controller-157.json').write_text(json.dumps(receipts))\n print(key,q.returncode,flush=True)\n if q.returncode:sys.exit(q.returncode)"
+  ],
+  "cwd": "/tmp/hepta-edit-8559",
+  "env": {
+   "OMP_NUM_THREADS": "1",
+   "OPENBLAS_NUM_THREADS": "1",
+   "MKL_NUM_THREADS": "1",
+   "ROCR_VISIBLE_DEVICES": "",
+   "CUDA_VISIBLE_DEVICES": ""
+  },
+  "idempotency_key": "edit8559-cifar-allsite-157-r1"
+ },
+ {
+  "host": "ai395",
+  "executable": "/home/qq/.venvs/rocm10/bin/python",
+  "args": [
+   "-u",
+   "-c",
+   "import json,os,sys,subprocess,pathlib,time\nr=pathlib.Path('/tmp/hepta-edit-8559');os.chdir(r);os.nice(10);os.sched_setaffinity(0,{16});p=r/'fits';p.mkdir(exist_ok=True);log=r/'logs';log.mkdir(exist_ok=True)\nplan=[[\"literal\",\"bp\"],[\"dense\",\"bp\"],[\"smooth\",\"boundary\"],[\"literal\",\"fp\"],[\"dense\",\"raw\"],[\"smooth\",\"fp\"],[\"literal\",\"wrong\"],[\"dense\",\"rf\"],[\"smooth\",\"rf\"],[\"literal\",\"raw\"],[\"smooth\",\"raw\"],[\"literal\",\"boundary\"],[\"smooth\",\"bp\"],[\"dense\",\"fp\"],[\"literal\",\"rf\"],[\"smooth\",\"wrong\"]]; receipts=[]\nfor kind,arm in plan:\n key=kind+'-281-'+arm\n with (log/(key+'.log')).open('a') as f:\n  t=time.time();cmd=[sys.executable,'-u','train.py','source','law.npz','fits',kind,'281',arm]\n  q=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)\n receipts.append({'key':key,'code':q.returncode,'begin':t,'end':time.time()});(r/'controller-281.json').write_text(json.dumps(receipts))\n print(key,q.returncode,flush=True)\n if q.returncode:sys.exit(q.returncode)"
+  ],
+  "cwd": "/tmp/hepta-edit-8559",
+  "env": {
+   "OMP_NUM_THREADS": "1",
+   "OPENBLAS_NUM_THREADS": "1",
+   "MKL_NUM_THREADS": "1",
+   "ROCR_VISIBLE_DEVICES": "",
+   "CUDA_VISIBLE_DEVICES": ""
+  },
+  "idempotency_key": "edit8559-cifar-allsite-281-r1"
+ },
+ {
+  "host": "ai395",
+  "executable": "/home/qq/.venvs/rocm10/bin/python",
+  "args": [
+   "-u",
+   "-c",
+   "import json,os,sys,subprocess,pathlib,time\nr=pathlib.Path('/tmp/hepta-edit-8559');os.chdir(r);os.nice(10);os.sched_setaffinity(0,{18});p=r/'fits';p.mkdir(exist_ok=True);log=r/'logs';log.mkdir(exist_ok=True)\nplan=[[\"smooth\",\"fp\"],[\"literal\",\"wrong\"],[\"dense\",\"rf\"],[\"smooth\",\"rf\"],[\"literal\",\"raw\"],[\"smooth\",\"raw\"],[\"literal\",\"boundary\"],[\"smooth\",\"bp\"],[\"dense\",\"fp\"],[\"literal\",\"rf\"],[\"smooth\",\"wrong\"],[\"literal\",\"bp\"],[\"dense\",\"bp\"],[\"smooth\",\"boundary\"],[\"literal\",\"fp\"],[\"dense\",\"raw\"]]; receipts=[]\nfor kind,arm in plan:\n key=kind+'-509-'+arm\n with (log/(key+'.log')).open('a') as f:\n  t=time.time();cmd=[sys.executable,'-u','train.py','source','law.npz','fits',kind,'509',arm]\n  q=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)\n receipts.append({'key':key,'code':q.returncode,'begin':t,'end':time.time()});(r/'controller-509.json').write_text(json.dumps(receipts))\n print(key,q.returncode,flush=True)\n if q.returncode:sys.exit(q.returncode)"
+  ],
+  "cwd": "/tmp/hepta-edit-8559",
+  "env": {
+   "OMP_NUM_THREADS": "1",
+   "OPENBLAS_NUM_THREADS": "1",
+   "MKL_NUM_THREADS": "1",
+   "ROCR_VISIBLE_DEVICES": "",
+   "CUDA_VISIBLE_DEVICES": ""
+  },
+  "idempotency_key": "edit8559-cifar-allsite-509-r1"
+ }
+]
