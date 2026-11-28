@@ -336,4 +336,4 @@ impl<'de> Deserialize<'de> for StrictJson {
 
 #[cfg(test)]
 #[path = "paired_record_identity_tests.rs"]
-mod tests;
+pub(crate) mod tests;
