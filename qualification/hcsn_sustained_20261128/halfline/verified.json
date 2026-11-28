@@ -1,0 +1,123 @@
+{
+  "renewal": [
+    {
+      "u": 0.03679015606832787,
+      "flux": 0.11898592784820114,
+      "independent_E": 8.363114832895063,
+      "independent_L": 0.07059871830740495,
+      "independent_mean": 0.8689423157345734,
+      "bounded_omitted_equity_tail": 2.3908635283899456e-18,
+      "absolute_error_vs_closed": [
+        6.057376822354854e-13,
+        2.4841240175987878e-15,
+        0.0
+      ]
+    },
+    {
+      "u": 0.14287503226204987,
+      "flux": 0.425579532955883,
+      "independent_E": 1.1323529080389605,
+      "independent_L": 0.17727671931838276,
+      "independent_mean": 0.3351268173398386,
+      "bounded_omitted_equity_tail": 8.092722731691288e-74,
+      "absolute_error_vs_closed": [
+        7.638334409421077e-14,
+        9.71445146547012e-16,
+        3.885780586188048e-16
+      ]
+    },
+    {
+      "u": 0.3115453932206987,
+      "flux": 0.8244420435350045,
+      "independent_E": 0.5922888292143693,
+      "independent_L": 0.22977929607702996,
+      "independent_mean": 0.2348993455706886,
+      "bounded_omitted_equity_tail": 6.436363958053454e-162,
+      "absolute_error_vs_closed": [
+        6.206146707654625e-14,
+        9.992007221626409e-16,
+        4.996003610813204e-16
+      ]
+    }
+  ],
+  "independent_delay_adjoint": [
+    {
+      "s": 0.48,
+      "truncation_for_independent_adjoint": 4.0,
+      "bvp": 1.0102642674703566,
+      "closed": 1.0102642370774053,
+      "difference": 3.039295126683328e-08,
+      "nodes": 451
+    },
+    {
+      "s": 0.48,
+      "truncation_for_independent_adjoint": 6.0,
+      "bvp": 1.0102642370324872,
+      "closed": 1.0102642370774053,
+      "difference": -4.491806926409936e-11,
+      "nodes": 542
+    },
+    {
+      "s": 0.48,
+      "truncation_for_independent_adjoint": 8.0,
+      "bvp": 1.0102642370520705,
+      "closed": 1.0102642370774053,
+      "difference": -2.5334845332736222e-11,
+      "nodes": 742
+    },
+    {
+      "s": 0.51,
+      "truncation_for_independent_adjoint": 4.0,
+      "bvp": 0.9888009289010794,
+      "closed": 0.988800900088889,
+      "difference": 2.881219041128702e-08,
+      "nodes": 455
+    },
+    {
+      "s": 0.51,
+      "truncation_for_independent_adjoint": 6.0,
+      "bvp": 0.9888009000488736,
+      "closed": 0.988800900088889,
+      "difference": -4.001543540965713e-11,
+      "nodes": 549
+    },
+    {
+      "s": 0.51,
+      "truncation_for_independent_adjoint": 8.0,
+      "bvp": 0.9888009000629293,
+      "closed": 0.988800900088889,
+      "difference": -2.595967885099526e-11,
+      "nodes": 745
+    }
+  ],
+  "positive_real_mode": 0.49413961600971545,
+  "exploratory_finite_band_only": [
+    {
+      "u": 0.03679015606832787,
+      "n": 1200,
+      "frequency_min": 0.0001,
+      "frequency_max": 20.0,
+      "min_modulus": 0.15249992598278134,
+      "at_angular_frequency": 0.25370626388561596,
+      "phase_change_over_pi": 0.020113578919840825
+    },
+    {
+      "u": 0.14287503226204987,
+      "n": 1200,
+      "frequency_min": 0.0001,
+      "frequency_max": 20.0,
+      "min_modulus": 0.654822567076981,
+      "at_angular_frequency": 0.3773621642718127,
+      "phase_change_over_pi": -0.9462490166445429
+    },
+    {
+      "u": 0.3115453932206987,
+      "n": 1200,
+      "frequency_min": 0.0001,
+      "frequency_max": 20.0,
+      "min_modulus": 0.5481088095487915,
+      "at_angular_frequency": 0.00010848499534827694,
+      "phase_change_over_pi": 0.06168501500319319
+    }
+  ]
+}
