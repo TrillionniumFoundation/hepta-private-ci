@@ -23,6 +23,8 @@ use crate::text_session::AgentdTextSessionConfig;
 
 #[path = "notes_thread_human.rs"]
 pub(crate) mod human;
+#[path = "notes_thread_items.rs"]
+mod items;
 #[path = "notes_thread_proof.rs"]
 mod proof;
 #[path = "notes_thread_runtime.rs"]
