@@ -70,7 +70,7 @@ jobs:
               assert sorted(name for name, result in cases) == names, (target, cases)
               assert all(result == "ok" for name, result in cases), (target, cases)
               assert f"test result: ok. {len(names)} passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;" in log, log
-              binary = pathlib.Path("bazel-bin/codex-rs/ext/queue") / (target + "-bin")
+              binary = pathlib.Path("bazel-bin/codex-rs/ext/queue") / {"queue-unit-tests": "queue-unit-tests-bin", "queue-queue_service-test": "queue-queue_service-test"}[target]
               binary_data = binary.read_bytes()
               evidence["targets"][target] = {"tests": cases, "test_log_bytes": len(log_data), "test_log_sha256": hashlib.sha256(log_data).hexdigest(), "binary": binary.as_posix(), "binary_bytes": len(binary_data), "binary_sha256": hashlib.sha256(binary_data).hexdigest()}
           for name in ["codex-rs/ext/queue/src/service.rs", "codex-rs/ext/queue/tests/queue_service.rs", "codex-rs/ext/queue/tests/queue_service/listing_consistency.rs", "codex-rs/ext/queue/BUILD.bazel", "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock"]:
