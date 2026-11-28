@@ -98,8 +98,12 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
+winapi-util = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
