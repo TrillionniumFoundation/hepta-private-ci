@@ -6,6 +6,7 @@ use codex_core::sandboxing::SandboxPermissions;
 use codex_features::Feature;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::error::CodexErr;
+use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemPath;
@@ -131,7 +132,7 @@ fn elevated_unavailable_message() -> String {
 }
 
 fn assert_elevated_capture_refusal(error: &CodexErr) {
-    let CodexErr::Io(io_error) = error else {
+    let CodexErrorDetails::Io(io_error) = error.details() else {
         panic!("unexpected core elevated error variant: {error:?}");
     };
     assert_eq!(io_error.kind(), std::io::ErrorKind::Other);
@@ -498,7 +499,9 @@ async fn windows_elevated_unified_exec_refuses_unqualified_session() -> anyhow::
         Ok(_) => panic!("the unqualified elevated session unexpectedly initialized"),
         Err(error) => error,
     };
-    let Some(CodexErr::Fatal(message)) = error.downcast_ref::<CodexErr>() else {
+    let Some(CodexErrorDetails::Fatal(message)) =
+        error.downcast_ref::<CodexErr>().map(CodexErr::details)
+    else {
         panic!("unexpected session initialization error: {error:#}");
     };
     let native_message = elevated_unavailable_message();
