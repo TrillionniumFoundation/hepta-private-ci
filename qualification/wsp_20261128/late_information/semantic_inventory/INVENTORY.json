@@ -1,0 +1,864 @@
+{
+  "schema": "hepta.actual-smallhcsn-semantic-inventory.v1",
+  "read_only": true,
+  "new_model_calls": 0,
+  "new_fits": 0,
+  "source_pins": [
+    {
+      "path": "src/mcp/weight_smallhcsn/bound_io.rs",
+      "bytes": 10924,
+      "sha256": "f55a0824019096e7cf6d92cae383df94836c6d63cc98daf9a946019a719550dc"
+    },
+    {
+      "path": "src/mcp/weight_smallhcsn/model.rs",
+      "bytes": 7990,
+      "sha256": "1c85f2c11c95062a96ed8cdf5d93a97388d0c74d34914d081facdbbc87d07f0d"
+    },
+    {
+      "path": "src/mcp/weight_smallhcsn/physics.rs",
+      "bytes": 6941,
+      "sha256": "59a08e87c6cbe8c6ebaa152e18dda91ef742fc46a540cb32c8732ad77fd350a1"
+    },
+    {
+      "path": "src/mcp/weight_smallhcsn/trace.rs",
+      "bytes": 2283,
+      "sha256": "22861f646b78eec880802b838a7ae565a5bc5c43840b56c0f3e62816125a6002"
+    }
+  ],
+  "source_manifest_sha256": "61a4fb95558f861e1ba3eac2eef20a97d741844d4d3a37f2035690c475b85022",
+  "source_analysis_method": "human/agent-read explicit control-flow contract plus exact tensor/layout checks; not general automatic circuit discovery",
+  "parents": [
+    {
+      "seed": 47,
+      "artifact_sha256": "9d3b61f40aa45b4a1e25299b2204e4022c113a801a6b3ad15c9ba2f948bac430",
+      "source_pt_sha256": "92756ef7d5dc98d27cb305a9132eb03aca31487ceddaa09be7456457ed3df7dd",
+      "registered_parameter_scalars": 330,
+      "buffer_scalars": 208,
+      "trainable_flags_at_checkpoint_save_recoverable": false,
+      "original_graph_structurally_inactive_parameter_scalars": 192,
+      "original_graph_potentially_score_connected_parameter_scalars": 138,
+      "potential_connection_is_not_identifiability_or_nonzero_effect": true,
+      "tensors": {
+        "body.fixed_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 1195,
+          "byte_length": 64,
+          "sha256": "15cac12698f58a4a0437b9957c637b525c0ff65945f9da296628c81a3fb0c65d",
+          "min": 0.6413589832268978,
+          "max": 0.6930194825823199,
+          "kind": "protected_buffer",
+          "effect": "initial boundary and centering origin; not an independently learned threshold"
+        },
+        "body.input_drive.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1259,
+          "byte_length": 16,
+          "sha256": "b68c14728c6a36237b872575b2d89378b10fe7662892566c1d3c586d44cbc36d",
+          "min": -0.21633732318878174,
+          "max": 0.03212115168571472,
+          "kind": "registered_parameter",
+          "effect": "sender physical-control bias",
+          "active_scalars_original": 4
+        },
+        "body.input_drive.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1275,
+          "byte_length": 144,
+          "sha256": "a4eb0076cdf9ee900edbc233d19aad37d9f84996bc6f938359b871a32e359063",
+          "min": -0.310759574174881,
+          "max": 0.3633866608142853,
+          "kind": "registered_parameter",
+          "effect": "raw inputs to four sender physical controls at ticks 0,2,4",
+          "active_scalars_original": 36
+        },
+        "body.input_mark.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1419,
+          "byte_length": 16,
+          "sha256": "6509a0693ab092628db4f38ddca8ae3fcba73282a6a33f18223f4e872201e33b",
+          "min": -0.21288947761058807,
+          "max": 0.17289695143699646,
+          "kind": "registered_parameter",
+          "effect": "sender mark bias; disconnected from original receiver score",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 4,
+          "bridge_effective_scalars": 4
+        },
+        "body.input_mark.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1435,
+          "byte_length": 144,
+          "sha256": "608ae025eb70a6c25df01f449d0950dbf0f7ce2eba687406c9f4e6c62860db06",
+          "min": -0.3328171372413635,
+          "max": 0.24755987524986267,
+          "kind": "registered_parameter",
+          "effect": "sender signed-mark state, with no original receiver score path",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 36,
+          "bridge_effective_scalars": 36
+        },
+        "body.raw_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1579,
+          "byte_length": 32,
+          "sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+          "min": 0.0,
+          "max": 0.0,
+          "kind": "registered_parameter",
+          "effect": "inactive under fixed qvi profile; no evaluator read",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 8
+        },
+        "body.raw_cost": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1611,
+          "byte_length": 32,
+          "sha256": "0ee336e7f9cdf51ef1eab6926ba53f01f6d0e602dcb26e70d6128916f24a4538",
+          "min": -0.14688709378242493,
+          "max": 0.15460461378097534,
+          "kind": "registered_parameter",
+          "equation": "0.15 + 0.02*tanh(raw_cost + 0.15*drive)",
+          "effect": "local physical QVI and reward cost at even ticks",
+          "active_scalars_original": 8
+        },
+        "body.readout.bias": {
+          "shape": [
+            2
+          ],
+          "dtype": "F32",
+          "scalars": 2,
+          "file_offset": 1643,
+          "byte_length": 8,
+          "sha256": "c9a4e784fb49876acc3927922e9a0e70e13bb356a4ff79247a3655d5f6d14268",
+          "min": -0.018277442082762718,
+          "max": 0.018277442082762718,
+          "kind": "registered_parameter",
+          "effect": "shared per-choice score offset; cancels in exact-arithmetic choice margin, apart from floating-point evaluation effects",
+          "active_scalars_original": 2
+        },
+        "body.readout.weight": {
+          "shape": [
+            2,
+            20
+          ],
+          "dtype": "F32",
+          "scalars": 40,
+          "file_offset": 1651,
+          "byte_length": 160,
+          "sha256": "750e4347c6009b694c0b2cd01b973b8c9c0ad7a345770a139e92a55135aa5c87",
+          "min": -0.1826629638671875,
+          "max": 0.1826629638671875,
+          "kind": "registered_parameter",
+          "effect": "two shared linear heads on 4 receivers x 5 features",
+          "active_scalars_original": 40
+        },
+        "body.recurrent.weight": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 1811,
+          "byte_length": 768,
+          "sha256": "90be8b92210665cf38a319e7da1bffce8b5e05892f7a684868955e57b8e3c47a",
+          "min": -0.24904853105545044,
+          "max": 0.1828724443912506,
+          "kind": "registered_parameter",
+          "effect": "previous centered boundaries; 128 zero-channel words plus 16 masked first-channel words are inactive",
+          "active_scalars_original": 48,
+          "inactive_scalars_original": 144
+        },
+        "body.reset_absolute": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 2579,
+          "byte_length": 64,
+          "sha256": "e90a2de35914f8efd980ba636d96ae8916ce237dc64cfcb47a3b08083fb94938",
+          "min": 1.17,
+          "max": 1.23,
+          "kind": "protected_buffer",
+          "effect": "absolute reset coordinate used by QVI, initial deposit and refractory return"
+        },
+        "body.synaptic_mask": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 2643,
+          "byte_length": 768,
+          "sha256": "868454d030c7285340d40c2c333be2148fd289e884245a7683dafb14508c4e45",
+          "min": 0.0,
+          "max": 1.0,
+          "kind": "protected_buffer",
+          "effect": "disables receiver-to-sender edges; only first eight columns consumed in boundary mode"
+        }
+      }
+    },
+    {
+      "seed": 83,
+      "artifact_sha256": "f248653cc821a05440598200ac7af1d5e76bdbb574627bda5a914046d7a5b64e",
+      "source_pt_sha256": "dff3771fca8cc19d99188179ea8eb745012521b87f1edddffd446e1867cab033",
+      "registered_parameter_scalars": 330,
+      "buffer_scalars": 208,
+      "trainable_flags_at_checkpoint_save_recoverable": false,
+      "original_graph_structurally_inactive_parameter_scalars": 192,
+      "original_graph_potentially_score_connected_parameter_scalars": 138,
+      "potential_connection_is_not_identifiability_or_nonzero_effect": true,
+      "tensors": {
+        "body.fixed_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 1195,
+          "byte_length": 64,
+          "sha256": "15cac12698f58a4a0437b9957c637b525c0ff65945f9da296628c81a3fb0c65d",
+          "min": 0.6413589832268978,
+          "max": 0.6930194825823199,
+          "kind": "protected_buffer",
+          "effect": "initial boundary and centering origin; not an independently learned threshold"
+        },
+        "body.input_drive.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1259,
+          "byte_length": 16,
+          "sha256": "a742544ee65ff5a5cdd8fe6a4a21be4938d1b506e40f5f64bfac85cefa9cd758",
+          "min": -0.1320980340242386,
+          "max": 0.1922510415315628,
+          "kind": "registered_parameter",
+          "effect": "sender physical-control bias",
+          "active_scalars_original": 4
+        },
+        "body.input_drive.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1275,
+          "byte_length": 144,
+          "sha256": "9d6fb70fc13ed7ab9c12ad19f2a29d68a18fb2bea78e87ef69a925942ed11604",
+          "min": -0.4615359604358673,
+          "max": 0.4175420105457306,
+          "kind": "registered_parameter",
+          "effect": "raw inputs to four sender physical controls at ticks 0,2,4",
+          "active_scalars_original": 36
+        },
+        "body.input_mark.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1419,
+          "byte_length": 16,
+          "sha256": "3920dcd21c93dbb1d3b7d2774e3be3953e67dd1bcdc102c9e3e4e5a4a4bd902c",
+          "min": 0.0974164828658104,
+          "max": 0.24691236019134521,
+          "kind": "registered_parameter",
+          "effect": "sender mark bias; disconnected from original receiver score",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 4,
+          "bridge_effective_scalars": 4
+        },
+        "body.input_mark.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1435,
+          "byte_length": 144,
+          "sha256": "2f3e214a1188265a2a2b4ec0764f1013e4e4cf5c7c861b9adf36893a227aee20",
+          "min": -0.279854953289032,
+          "max": 0.33210045099258423,
+          "kind": "registered_parameter",
+          "effect": "sender signed-mark state, with no original receiver score path",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 36,
+          "bridge_effective_scalars": 36
+        },
+        "body.raw_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1579,
+          "byte_length": 32,
+          "sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+          "min": 0.0,
+          "max": 0.0,
+          "kind": "registered_parameter",
+          "effect": "inactive under fixed qvi profile; no evaluator read",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 8
+        },
+        "body.raw_cost": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1611,
+          "byte_length": 32,
+          "sha256": "af13093d1b4e5a83ac2f3fb7d2adc2952176caf4803f276c51a41e6c91be7cb8",
+          "min": -0.16551858186721802,
+          "max": 0.17200292646884918,
+          "kind": "registered_parameter",
+          "equation": "0.15 + 0.02*tanh(raw_cost + 0.15*drive)",
+          "effect": "local physical QVI and reward cost at even ticks",
+          "active_scalars_original": 8
+        },
+        "body.readout.bias": {
+          "shape": [
+            2
+          ],
+          "dtype": "F32",
+          "scalars": 2,
+          "file_offset": 1643,
+          "byte_length": 8,
+          "sha256": "cca9d23202b9c2099d727b5df0f7419bf011ccd0ab5253bb2dcc208cdbf9cd5f",
+          "min": -0.03717536851763725,
+          "max": 0.03717536851763725,
+          "kind": "registered_parameter",
+          "effect": "shared per-choice score offset; cancels in exact-arithmetic choice margin, apart from floating-point evaluation effects",
+          "active_scalars_original": 2
+        },
+        "body.readout.weight": {
+          "shape": [
+            2,
+            20
+          ],
+          "dtype": "F32",
+          "scalars": 40,
+          "file_offset": 1651,
+          "byte_length": 160,
+          "sha256": "d341b0712cb1813d41a4313d5b8ad96e3fae00e6abb5c93207f682b7c4112a2c",
+          "min": -0.19903789460659027,
+          "max": 0.19903789460659027,
+          "kind": "registered_parameter",
+          "effect": "two shared linear heads on 4 receivers x 5 features",
+          "active_scalars_original": 40
+        },
+        "body.recurrent.weight": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 1811,
+          "byte_length": 768,
+          "sha256": "791e64a13abbdb0ea8d1be203287c7492e96871938a0a43cbf7cb33955be18ec",
+          "min": -0.2920229136943817,
+          "max": 0.22450745105743408,
+          "kind": "registered_parameter",
+          "effect": "previous centered boundaries; 128 zero-channel words plus 16 masked first-channel words are inactive",
+          "active_scalars_original": 48,
+          "inactive_scalars_original": 144
+        },
+        "body.reset_absolute": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 2579,
+          "byte_length": 64,
+          "sha256": "e90a2de35914f8efd980ba636d96ae8916ce237dc64cfcb47a3b08083fb94938",
+          "min": 1.17,
+          "max": 1.23,
+          "kind": "protected_buffer",
+          "effect": "absolute reset coordinate used by QVI, initial deposit and refractory return"
+        },
+        "body.synaptic_mask": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 2643,
+          "byte_length": 768,
+          "sha256": "868454d030c7285340d40c2c333be2148fd289e884245a7683dafb14508c4e45",
+          "min": 0.0,
+          "max": 1.0,
+          "kind": "protected_buffer",
+          "effect": "disables receiver-to-sender edges; only first eight columns consumed in boundary mode"
+        }
+      }
+    },
+    {
+      "seed": 137,
+      "artifact_sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443",
+      "source_pt_sha256": "7b662ad2738c3816802fedc5ac41a2d9f3c4b24d4ddce8463dabc9dbd46a8428",
+      "registered_parameter_scalars": 330,
+      "buffer_scalars": 208,
+      "trainable_flags_at_checkpoint_save_recoverable": false,
+      "original_graph_structurally_inactive_parameter_scalars": 192,
+      "original_graph_potentially_score_connected_parameter_scalars": 138,
+      "potential_connection_is_not_identifiability_or_nonzero_effect": true,
+      "tensors": {
+        "body.fixed_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 1195,
+          "byte_length": 64,
+          "sha256": "15cac12698f58a4a0437b9957c637b525c0ff65945f9da296628c81a3fb0c65d",
+          "min": 0.6413589832268978,
+          "max": 0.6930194825823199,
+          "kind": "protected_buffer",
+          "effect": "initial boundary and centering origin; not an independently learned threshold"
+        },
+        "body.input_drive.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1259,
+          "byte_length": 16,
+          "sha256": "1ee63c0f402d90a4c05403c03c7a027dd8e89533cf2361ab811d3d05d4eb288a",
+          "min": -0.178536519408226,
+          "max": 0.22207288444042206,
+          "kind": "registered_parameter",
+          "effect": "sender physical-control bias",
+          "active_scalars_original": 4
+        },
+        "body.input_drive.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1275,
+          "byte_length": 144,
+          "sha256": "495116a6719a47331c8b0c30eae98217457400531ea3ea56b9d5f78fe5b03990",
+          "min": -0.4474427103996277,
+          "max": 0.4764953553676605,
+          "kind": "registered_parameter",
+          "effect": "raw inputs to four sender physical controls at ticks 0,2,4",
+          "active_scalars_original": 36
+        },
+        "body.input_mark.bias": {
+          "shape": [
+            4
+          ],
+          "dtype": "F32",
+          "scalars": 4,
+          "file_offset": 1419,
+          "byte_length": 16,
+          "sha256": "3404ac5bfc0ef52775f3a3180348223f0bf44cbd28f5d0dc8e884cb268a0e866",
+          "min": -0.05085940286517143,
+          "max": 0.29288914799690247,
+          "kind": "registered_parameter",
+          "effect": "sender mark bias; disconnected from original receiver score",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 4,
+          "bridge_effective_scalars": 4
+        },
+        "body.input_mark.weight": {
+          "shape": [
+            4,
+            9
+          ],
+          "dtype": "F32",
+          "scalars": 36,
+          "file_offset": 1435,
+          "byte_length": 144,
+          "sha256": "2dbf404ff6ca231183ed36436264a6a860181caec5b182bf1d3ca872064bf012",
+          "min": -0.3226467967033386,
+          "max": 0.3328059911727905,
+          "kind": "registered_parameter",
+          "effect": "sender signed-mark state, with no original receiver score path",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 36,
+          "bridge_effective_scalars": 36
+        },
+        "body.raw_boundary": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1579,
+          "byte_length": 32,
+          "sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+          "min": 0.0,
+          "max": 0.0,
+          "kind": "registered_parameter",
+          "effect": "inactive under fixed qvi profile; no evaluator read",
+          "active_scalars_original": 0,
+          "inactive_scalars_original": 8
+        },
+        "body.raw_cost": {
+          "shape": [
+            8
+          ],
+          "dtype": "F32",
+          "scalars": 8,
+          "file_offset": 1611,
+          "byte_length": 32,
+          "sha256": "b924cc95caaf67ff012d4c293fb19e2e0870bb29073f40e9383f95fc7ec74d2d",
+          "min": -0.15258698165416718,
+          "max": 0.16432373225688934,
+          "kind": "registered_parameter",
+          "equation": "0.15 + 0.02*tanh(raw_cost + 0.15*drive)",
+          "effect": "local physical QVI and reward cost at even ticks",
+          "active_scalars_original": 8
+        },
+        "body.readout.bias": {
+          "shape": [
+            2
+          ],
+          "dtype": "F32",
+          "scalars": 2,
+          "file_offset": 1643,
+          "byte_length": 8,
+          "sha256": "3388f40f2fa329bd5712f1a49cac9ec5fdd78fe1c5642ece2d6718088df650df",
+          "min": -0.0392518974840641,
+          "max": 0.0392518974840641,
+          "kind": "registered_parameter",
+          "effect": "shared per-choice score offset; cancels in exact-arithmetic choice margin, apart from floating-point evaluation effects",
+          "active_scalars_original": 2
+        },
+        "body.readout.weight": {
+          "shape": [
+            2,
+            20
+          ],
+          "dtype": "F32",
+          "scalars": 40,
+          "file_offset": 1651,
+          "byte_length": 160,
+          "sha256": "4370834847b5f9cc7d2bb7ef01a8bdf2789c56efd9c0b449e4acb0d7c0cbb811",
+          "min": -0.18916495144367218,
+          "max": 0.18916495144367218,
+          "kind": "registered_parameter",
+          "effect": "two shared linear heads on 4 receivers x 5 features",
+          "active_scalars_original": 40
+        },
+        "body.recurrent.weight": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 1811,
+          "byte_length": 768,
+          "sha256": "a8c5543d510bd04615d1a8c33ca3e0c83b36271c3736653f8cf0f528f06897e4",
+          "min": -0.24743622541427612,
+          "max": 0.21919378638267517,
+          "kind": "registered_parameter",
+          "effect": "previous centered boundaries; 128 zero-channel words plus 16 masked first-channel words are inactive",
+          "active_scalars_original": 48,
+          "inactive_scalars_original": 144
+        },
+        "body.reset_absolute": {
+          "shape": [
+            8
+          ],
+          "dtype": "F64",
+          "scalars": 8,
+          "file_offset": 2579,
+          "byte_length": 64,
+          "sha256": "e90a2de35914f8efd980ba636d96ae8916ce237dc64cfcb47a3b08083fb94938",
+          "min": 1.17,
+          "max": 1.23,
+          "kind": "protected_buffer",
+          "effect": "absolute reset coordinate used by QVI, initial deposit and refractory return"
+        },
+        "body.synaptic_mask": {
+          "shape": [
+            8,
+            24
+          ],
+          "dtype": "F32",
+          "scalars": 192,
+          "file_offset": 2643,
+          "byte_length": 768,
+          "sha256": "868454d030c7285340d40c2c333be2148fd289e884245a7683dafb14508c4e45",
+          "min": 0.0,
+          "max": 1.0,
+          "kind": "protected_buffer",
+          "effect": "disables receiver-to-sender edges; only first eight columns consumed in boundary mode"
+        }
+      }
+    }
+  ],
+  "modules": [
+    {
+      "name": "state_representation",
+      "implementation": "Population p[10], q[10], boundary plus cached physical operators, independently for 8 neurons",
+      "checkpoint_state_tensor": null,
+      "p_semantics": "6 spatial masses + 3 refractory phase masses + unused zero state",
+      "q_semantics": "signed marked mass with |q_i|<=p_i; not Bayesian belief",
+      "messages": "only previous centered boundary, not complete p/q",
+      "endpoint_scope": "fixed six-tick reinitialized batch; no live persistent state in this evaluator",
+      "repair_available": "explicit graph/clock/state-contract change; weight edit cannot bypass absent path",
+      "abstain": [
+        "requested target requires unobserved history",
+        "unknown initial population or live step phase"
+      ]
+    },
+    {
+      "name": "first_passage_and_reset",
+      "implementation": "killed semigroup first-hit probability, full reset generator and conservative boundary remap",
+      "actual_weight_controls": [
+        "body.input_drive.weight",
+        "body.input_drive.bias",
+        "body.recurrent.weight",
+        "body.raw_cost"
+      ],
+      "protected_buffers": [
+        "body.reset_absolute",
+        "body.fixed_boundary"
+      ],
+      "learned_reset_head": false,
+      "reset_delay": {
+        "kind": "Erlang",
+        "stages": 3,
+        "mean": 0.2,
+        "stage_rate": 15.0
+      },
+      "repair_status": "analytic operators preserved, not repaired by tested four-coordinate program",
+      "abstain": [
+        "reset buffer edit not permitted by scope",
+        "deposit outside supported interior cell hull",
+        "mass/positivity/first-hit-versus-event-count invariant fails"
+      ]
+    },
+    {
+      "name": "call_put",
+      "implementation": "two alternative input choices share one body and a two-logit classifier",
+      "named_call_put_tensors": [],
+      "call_put_valuation_operator": false,
+      "semantic_warning": "two choices or two logits do not establish separate Call/Put first-passage channels",
+      "repair_status": "unsupported by this checkpoint",
+      "abstain": [
+        "requires distinct directional option event laws or calibrated financial payoff not present in schema"
+      ]
+    },
+    {
+      "name": "belief",
+      "implementation": null,
+      "bayesian_posterior_tensor": null,
+      "observation_likelihood": null,
+      "available_state": "analytic reset-diffusion probability; it is not a learned latent-market belief",
+      "repair_status": "missing state/observation contract, not a located bad weight",
+      "abstain": [
+        "target requires latent regime posterior not encoded by inputs/state"
+      ]
+    },
+    {
+      "name": "continuation_q",
+      "implementation": "V=(rho I-G)^(-1)r; feature=sum(p_next*V)",
+      "discount_rate": 0.3,
+      "reward": "0.8*(boundary+spatial_center)-0.25 in active cells, minus local intervention cost*event intensity",
+      "learned_continuation_q_tensor": null,
+      "global_task_bellman_objective": false,
+      "repair_status": "preserved local analytic continuation; not a learned action-value repair",
+      "abstain": [
+        "request treats local physical reward as future trading return",
+        "requested action/state/budget not represented",
+        "proposed Bellman bound assumes an unestablished discount contraction"
+      ]
+    },
+    {
+      "name": "ndu_value_control",
+      "implementation_in_checkpoint": null,
+      "learned_ndu_tensor": null,
+      "available_runtime_role": "external declared goal/risk/cost guard on a finite set of evaluated actions",
+      "global_neural_optimum_established": false,
+      "repair_status": "planner semantic contract required, no NDU checkpoint head to edit",
+      "abstain": [
+        "unconditional retention loses any protected correct decision",
+        "task route is absent or ambiguous",
+        "cost/risk metric not bound to this evaluation",
+        "only surrogate improved while endpoint regressed"
+      ]
+    }
+  ],
+  "temporal_reachability": {
+    "condition": "original fixed six-tick boundary-only graph, external baseline held fixed",
+    "tick_zero_based": true,
+    "physical_updates": [
+      0,
+      2,
+      4
+    ],
+    "old_boundary_messages": true,
+    "raw_input_to_final_receiver_probability_features": {
+      "0": true,
+      "1": false,
+      "2": true,
+      "3": false,
+      "4": false,
+      "5": false
+    },
+    "raw_input_to_final_receiver_signed_event": {
+      "0": true,
+      "1": false,
+      "2": true,
+      "3": false,
+      "4": true,
+      "5": false
+    },
+    "bridge_exception": "explicit final-tick tied mark connects tick5 to receiver signed event only; changes function class",
+    "evidence": [
+      "temporal_results/RESULT.json",
+      "graph_rollback_results/RESULT.json"
+    ]
+  },
+  "required_semantic_gates": [
+    {
+      "id": "bind_complete_function",
+      "requires": [
+        "exact parameter artifact",
+        "graph profile",
+        "request route",
+        "evaluator source/binary identity",
+        "input digest",
+        "initial state and tick phase"
+      ],
+      "failure": "ABSTAIN"
+    },
+    {
+      "id": "late_quote_task",
+      "requires": [
+        "horizon 6",
+        "price coordinate 7 in normalized positive-scale units",
+        "same nonprice features and history across choices",
+        "equal external baseline",
+        "finite distinct prices"
+      ],
+      "failure": "ABSTAIN"
+    },
+    {
+      "id": "late_quote_reachability",
+      "requires": [
+        "declared final-tick bridge",
+        "live signed-head contrast",
+        "nonzero final mark sensitivity and resolved F32 margin"
+      ],
+      "failure": "ABSTAIN_OR_UNREACHABLE"
+    },
+    {
+      "id": "scope",
+      "requires": [
+        "only body.input_mark.weight indices 7,16,25,34 may differ",
+        "all other bytes and original header identical"
+      ],
+      "failure": "REJECT"
+    },
+    {
+      "id": "prospective_parity",
+      "requires": [
+        "complete native vs reduced parity before any fitting if a reduced objective is used"
+      ],
+      "failure": "DO_NOT_START_FIT",
+      "historical_run_deviation": "PROTOCOL_DEVIATION_01.md"
+    },
+    {
+      "id": "real_endpoint",
+      "requires": [
+        "full native goal evaluation",
+        "physical invariants",
+        "historical regression gate or explicit exact scoped route"
+      ],
+      "failure": "REJECT_AND_RESTORE"
+    },
+    {
+      "id": "rollback",
+      "requires": [
+        "inverse bytes exact",
+        "graph and route restored",
+        "same input and initial/live phase",
+        "complete features/heads/scores match original"
+      ],
+      "failure": "DO_NOT_REPORT_RESTORED"
+    },
+    {
+      "id": "goal_stopping",
+      "requires": [
+        "compare KEEP among finite actions",
+        "if existing graph already meets declared goal, avoid unnecessary parameter edits"
+      ],
+      "failure": "NO_GLOBAL_OPTIMALITY_CLAIM"
+    }
+  ],
+  "scope_contracts": {
+    "original_profile_readout": [
+      "body.readout.weight"
+    ],
+    "production_sender_candidate": [
+      "body.input_drive.weight",
+      "body.input_drive.bias"
+    ],
+    "research_late_quote": {
+      "body.input_mark.weight": [
+        7,
+        16,
+        25,
+        34
+      ]
+    }
+  },
+  "unsupported_claims": [
+    "repair of unseen pocket4 trader weights",
+    "learned Belief/Continuation-Q/NDU head found here",
+    "two classes imply Call/Put event channels",
+    "all time horizons or live phases covered",
+    "globally optimal neural edit",
+    "future market return improvement"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.wsp-ci-artifact-layout.v1",
+  "triggering_head": "53d6fbfaf7c0449b3f256988a57a82c41d740c43",
+  "exact_baseline": "b3fdc981568ab9ce122d2fb569372651e0b4b314",
+  "science_archive_bytes_modified": false,
+  "scientific_metrics_or_selection_modified": false,
+  "codespell": {
+    "mechanism": "Codespell interpreted fourteen opaque compressed archive fragments as prose. Register only their exact repository paths and frozen SHA256 values in the existing before/after custody checker; no wildcard or execution exemption.",
+    "inherited_base_archive_fragments": 4,
+    "new_wsp_archive_fragments": 10,
+    "baseline_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46001296623/job/140513305897",
+    "head_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46144963892/job/140978861286",
+    "original_custody_entries_preserved": 106,
+    "generic_custody_tests_passed": 15,
+    "actual_new_fragment_bytes_verified_locally": 10,
+    "old_fragment_sha_source": "Existing committed hcsn_continuous_20261127/evidence/manifest.json; CI checks the actual payloads."
+  },
+  "case_sensitive_paths": {
+    "original_path": "qualification/hcsn_continuous_20261127/paired_catalog/IMPLEMENTATION.md",
+    "new_path": "qualification/hcsn_continuous_20261127/paired_catalog/IMPLEMENTATION_PLAN.md",
+    "git_blob_unchanged": "3a261503787131a146624f7b9be0bd2decdb3dfe",
+    "retained_distinct_path": "qualification/hcsn_continuous_20261127/paired_catalog/implementation.md",
+    "retained_distinct_git_blob": "44349aa39a356e59af309f2d55e6790d40ae8dd7",
+    "retained_lowercase_note": "This later text contains the difference-hash overlap audit paragraph and remains at its original path. The shorter original implementation description moves byte-for-byte to a distinct name.",
+    "problem": "The base and research head both contained two different Git blobs whose paths differ only by case. Default case-insensitive Windows/macOS worktrees cannot materialize both; the clean-worktree gate reported the uppercase file as modified.",
+    "baseline_directory_verified": true,
+    "directory_casefold_unique_after_rename": true,
+    "baseline_failed_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46001296623/job/140522745211",
+    "current_failed_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46144963892/job/140979658263",
+    "frozen_package_and_lowercase_file_content_unchanged": true
+  },
+  "unrelated_ci_failures": {
+    "codex_rs_tree_equal_between_base_and_head": "4c3abc4698fd6b0659cdf6a3ea62cfcc46795dd6",
+    "github_workflows_tree_equal_between_base_and_head": "17157e340426eff56b6db93f6ee770cb5089b5f9",
+    "windows_sandbox_failure_observed_in_both": "elevated Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; a replacement preserving read, launch and IPC behavior has not been qualified",
+    "baseline_windows_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46001296623/job/140522747492",
+    "current_windows_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46144963892/job/140979658484",
+    "exec_server_resume_failure": "Observed in current head but not in the compared base log; unchanged source tree alone is insufficient to call this test a demonstrated pre-existing failure. No test or sandbox policy is weakened here.",
+    "overall_ci_pass_claim": false
+  }
+}

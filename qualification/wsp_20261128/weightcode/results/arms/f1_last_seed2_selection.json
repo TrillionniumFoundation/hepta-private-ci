@@ -1,0 +1,432 @@
+{
+  "selection": {
+    "slot": null,
+    "config": null,
+    "check_score": 0,
+    "selection_inputs": "Only V_check and old_check; no final split results used"
+  },
+  "selected_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+  "checks": [
+    {
+      "slot": 0,
+      "config": {
+        "lr": 1e-05,
+        "steps": 10
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 5.196301611221088e-09
+      },
+      "params_sha256": "1d2f795c26bdc03df2d1a48eec9e9b90ad6980b2bde82dd5e50e0372ad34d49b",
+      "n_changed": 900,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807172051381861,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 1,
+      "config": {
+        "lr": 1e-05,
+        "steps": 30
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 5.0816773011774785e-09
+      },
+      "params_sha256": "88bebf69f689d207c11e84372c192b9ff1802e5f162412f698e237143ab851c8",
+      "n_changed": 901,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.880741533670689,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 2,
+      "config": {
+        "lr": 1e-05,
+        "steps": 100
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 4.852429125179469e-09
+      },
+      "params_sha256": "3c280a1ea700d5c2154295acd5260189eb239f6577cea3c08f5080bb170cdb31",
+      "n_changed": 902,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807577526923576,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 3,
+      "config": {
+        "lr": 1e-05,
+        "steps": 300
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 4.432139988352901e-09
+      },
+      "params_sha256": "43cf636756d61ad6ad5a3b5158d2fc7a5fe3300b3f8a4f8868311c6eca6af29f",
+      "n_changed": 902,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807577526923576,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 4,
+      "config": {
+        "lr": 0.0001,
+        "steps": 10
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 4.73780481513586e-09
+      },
+      "params_sha256": "39dc3df0dd55634fe6569a3d416dfe4acbc11d16e14cd5924108712d8004581a",
+      "n_changed": 903,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807658622031919,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 5,
+      "config": {
+        "lr": 0.0001,
+        "steps": 30
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 4.164683264917812e-09
+      },
+      "params_sha256": "1c4a468deb26340b8a11daaa07063f7e765783284752b924ee103f4f99d4e2c5",
+      "n_changed": 903,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807496431815233,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 6,
+      "config": {
+        "lr": 0.0001,
+        "steps": 100
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 3.782602231439114e-09
+      },
+      "params_sha256": "915e998644ab6be00679c52b7badffa4bd4ea013d5ba44042fa0e0fe54b00469",
+      "n_changed": 903,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8806928766056832,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    },
+    {
+      "slot": 7,
+      "config": {
+        "lr": 0.0001,
+        "steps": 300
+      },
+      "notes": {
+        "fit_loss_at_checkpoint": 3.4387293013082854e-09
+      },
+      "params_sha256": "e67fe7f72a2b91b034846251294535b0c1b6fc60dd650c1566bc08059808f983",
+      "n_changed": 903,
+      "check": {
+        "new": {
+          "n": 2569,
+          "em_base": 0.0,
+          "em_child": 0.0,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.8807253146490204,
+          "token_acc_child": 0.8807009861165175,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "old": {
+          "n": 1000,
+          "em_base": 0.997,
+          "em_child": 0.997,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998958333333333,
+          "token_acc_child": 0.9998958333333333,
+          "paired_delta_95pct_bootstrap_pp": [
+            0.0,
+            0.0
+          ],
+          "prediction_cache_hit": true
+        },
+        "new_score": 0,
+        "old_score": 0,
+        "joint_score": 0,
+        "joint_points": 0.0
+      },
+      "selected_at_this_point": false
+    }
+  ],
+  "fit_info": {
+    "model_config": {
+      "vocab_size": 17,
+      "seq_len": 59,
+      "n_out": 7,
+      "pad_id": 0,
+      "d_model": 128,
+      "n_layers": 4,
+      "n_heads": 4,
+      "d_mlp": 512
+    },
+    "parity_max_abs_logit_diff": 0.00048828125,
+    "parity_bound": 0.0448235107421875,
+    "parity_rows": "the fit rows",
+    "fit_rows": {
+      "rows": "the 65 experience rows (1 primitive rows, 64 replay rows of old commands)"
+    },
+    "trainable": [
+      "head.bias",
+      "head.weight"
+    ],
+    "device": "cpu",
+    "n_trainable_entries": 903,
+    "n_params": 803975,
+    "trainable_frac": 0.001123169252775273,
+    "base_fit_loss": 5.234509714568958e-09
+  },
+  "fit_wall_seconds": 19.481522616000348,
+  "check_wall_seconds": 0.15405363199988642
+}

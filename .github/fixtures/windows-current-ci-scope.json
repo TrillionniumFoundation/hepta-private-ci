@@ -168,18 +168,18 @@
         "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access",
         "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
         "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
-        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::elevated_non_tty_cmd_refuses_before_env_output_or_exit",
         "unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch",
         "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
         "unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes",
         "token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes",
         "unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup",
         "unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup",
-        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+        "unified_exec::tests::legacy_and_elevated_non_tty_refuse_before_cmd_emits_output",
         "unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup",
-        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots"
+        "unified_exec::tests::legacy_and_elevated_refuse_before_deleting_owned_roots"
       ],
-      "filter": "test(=token::tests::workspace_token_refuses_multiple_capabilities_before_native_access) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes) | test(=token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup) | test(=unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots)"
+      "filter": "test(=token::tests::workspace_token_refuses_multiple_capabilities_before_native_access) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_refuses_before_env_output_or_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes) | test(=token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::legacy_and_elevated_non_tty_refuse_before_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup) | test(=unified_exec::tests::legacy_and_elevated_refuse_before_deleting_owned_roots)"
     },
     {
       "id": "sandbox-legacy-delete-admission",
@@ -189,9 +189,9 @@
         "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets",
         "unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion",
         "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
-        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
+        "unified_exec::tests::delete_permission_tests::legacy_and_elevated_refuse_before_four_cell_delete_attempt"
       ],
-      "filter": "test(=token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets) | test(=unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion) | test(=token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes) | test(=unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary)"
+      "filter": "test(=token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets) | test(=unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion) | test(=token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes) | test(=unified_exec::tests::delete_permission_tests::legacy_and_elevated_refuse_before_four_cell_delete_attempt)"
     },
     {
       "id": "retained-windows-materialization",

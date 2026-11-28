@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.wsp.ci-artifact-layout-followup.v1",
+  "previous_head": "99727d8c3d96982c669fc37204ee0f462b4cebb7",
+  "failures_observed": [
+    {
+      "job_id": 140991757120,
+      "reason": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: renamed IMPLEMENTATION_PLAN.md matches versioned-development-plan forbidden path rule"
+    },
+    {
+      "job_id": 140991757410,
+      "reason": "prospective merge git diff --check rejects the original scientific CSV's 21 CRLF rows as trailing CR whitespace"
+    }
+  ],
+  "changes": [
+    {
+      "kind": "same_blob_rename",
+      "from": "qualification/hcsn_continuous_20261127/paired_catalog/IMPLEMENTATION_PLAN.md",
+      "to": "qualification/hcsn_continuous_20261127/paired_catalog/IMPLEMENTATION_ORIGINAL.md",
+      "git_blob": "3a261503787131a146624f7b9be0bd2decdb3dfe",
+      "reason": "Case-distinct original and extended notes remain separate; destination is checked against the actual unchanged document policy."
+    },
+    {
+      "kind": "exact_path_git_attributes",
+      "path": "qualification/wsp_20261128/weightcode/results/matrix_quality_cost.csv",
+      "sha256": "8cd6b40ea4d0cc9be7b41d828ee5e430441da3a93cf7074a078fc0609b257f42",
+      "bytes": 2304,
+      "crlf_rows": 21,
+      "attributes": "-text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+      "reason": "Keep original scientific CSV bytes under autocrlf and recognize its CRLF line endings. Other default whitespace checks stay enabled."
+    }
+  ],
+  "local_qualification": {
+    "exact_crlf_passes": true,
+    "git_blob_byte_identical": true,
+    "neighbor_crlf_rejected": true,
+    "trailing_space_on_exact_csv_rejected": true,
+    "renamed_note_matches_no_forbidden_path_rule": true,
+    "receipt_sha256": "03c637adc51ae4a780af4f2f9299296e2482a7de39f659ad629cbd2ff10833df"
+  },
+  "scientific_bytes_modified": false,
+  "scientific_metrics_or_selection_modified": false,
+  "blanket_lint_ignore_added": false,
+  "overall_ci_status": "Pending new exact head; no overall PASS claim."
+}

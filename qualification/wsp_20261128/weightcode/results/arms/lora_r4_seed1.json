@@ -1,0 +1,185 @@
+{
+  "name": "lora_r4_seed1",
+  "kind": "gradient_baseline",
+  "params_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+  "n_changed": 0,
+  "final": {
+    "new": {
+      "n": 2568,
+      "em_base": 0.0,
+      "em_child": 0.0,
+      "delta": 0.0,
+      "fixed": 0,
+      "broken": 0,
+      "token_acc_base": 0.8759410695742471,
+      "token_acc_child": 0.8759410695742471,
+      "paired_delta_95pct_bootstrap_pp": [
+        0.0,
+        0.0
+      ],
+      "prediction_cache_hit": true
+    },
+    "new_by_construction": {
+      "twice_thrice": {
+        "n": 2268,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8671829071134627,
+        "token_acc_child": 0.8671829071134627
+      },
+      "around": {
+        "n": 1308,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8137901376146789,
+        "token_acc_child": 0.8137901376146789
+      },
+      "opposite": {
+        "n": 1263,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8981921351280021,
+        "token_acc_child": 0.8981921351280021
+      },
+      "turn": {
+        "n": 499,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8985888443553774,
+        "token_acc_child": 0.8985888443553774
+      },
+      "and": {
+        "n": 1262,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8748514263074485,
+        "token_acc_child": 0.8748514263074485
+      },
+      "after": {
+        "n": 1301,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.8769215987701768,
+        "token_acc_child": 0.8769215987701768
+      },
+      "none": {
+        "n": 1,
+        "em_base": 0.0,
+        "em_child": 0.0,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.9583333333333334,
+        "token_acc_child": 0.9583333333333334
+      }
+    },
+    "old": {
+      "n": 1000,
+      "em_base": 0.996,
+      "em_child": 0.996,
+      "delta": 0.0,
+      "fixed": 0,
+      "broken": 0,
+      "token_acc_base": 0.999875,
+      "token_acc_child": 0.999875,
+      "paired_delta_95pct_bootstrap_pp": [
+        0.0,
+        0.0
+      ],
+      "prediction_cache_hit": true
+    },
+    "new_score": 0,
+    "old_score": 0,
+    "joint_score": 0,
+    "joint_points": 0.0
+  },
+  "final_wall_seconds": 0.07182751700020162,
+  "rollback": {
+    "restored_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+    "exact": true
+  },
+  "method": "lora_r4",
+  "seed": 1,
+  "selection": {
+    "slot": null,
+    "config": null,
+    "check_score": 0,
+    "selection_inputs": "Only V_check and old_check; no final split results used"
+  },
+  "logical_external_checks": 8,
+  "fit_info": {
+    "model_config": {
+      "vocab_size": 17,
+      "seq_len": 59,
+      "n_out": 7,
+      "pad_id": 0,
+      "d_model": 128,
+      "n_layers": 4,
+      "n_heads": 4,
+      "d_mlp": 512
+    },
+    "parity_max_abs_logit_diff": 0.00048828125,
+    "parity_bound": 0.0448235107421875,
+    "parity_rows": "the fit rows",
+    "fit_rows": {
+      "rows": "the 65 experience rows (1 primitive rows, 64 replay rows of old commands)"
+    },
+    "trainable": [
+      "b1.attn.q.weight",
+      "b1.attn.k.weight",
+      "b1.attn.v.weight",
+      "b1.attn.o.weight",
+      "b1.mlp.fc1.weight",
+      "b1.mlp.fc2.weight",
+      "b2.attn.q.weight",
+      "b2.attn.k.weight",
+      "b2.attn.v.weight",
+      "b2.attn.o.weight",
+      "b2.mlp.fc1.weight",
+      "b2.mlp.fc2.weight",
+      "b3.attn.q.weight",
+      "b3.attn.k.weight",
+      "b3.attn.v.weight",
+      "b3.attn.o.weight",
+      "b3.mlp.fc1.weight",
+      "b3.mlp.fc2.weight",
+      "b4.attn.q.weight",
+      "b4.attn.k.weight",
+      "b4.attn.v.weight",
+      "b4.attn.o.weight",
+      "b4.mlp.fc1.weight",
+      "b4.mlp.fc2.weight"
+    ],
+    "device": "cpu",
+    "n_trainable_entries": 786432,
+    "n_params": 803975,
+    "trainable_frac": 0.9781796697658509,
+    "base_fit_loss": 5.234509714568958e-09,
+    "lora_rank": 4,
+    "lora_alpha": 4,
+    "lora_init_seed": 1
+  },
+  "fit_wall_seconds": 73.54193549599995,
+  "check_wall_seconds": 139.5076889060001,
+  "training_steps_total": 600,
+  "fit_rows": 65,
+  "selection_record": "/workspace/scratch/cd3dbf666179/research_repro/scan_extension/arms/lora_r4_seed1_selection.json"
+}

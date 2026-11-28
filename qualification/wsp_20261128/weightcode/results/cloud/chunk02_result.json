@@ -1,0 +1,433 @@
+{
+  "status": "complete",
+  "job_index": 1,
+  "job_record": {
+    "started_unix": 1795864630.2094223,
+    "counts": {
+      "numpy_rows": 10770,
+      "torch_inference_rows": 0,
+      "torch_gradient_rows": 406500,
+      "gradient_microbatches": 3200,
+      "optimizer_steps": 100
+    },
+    "status": "complete",
+    "wall_seconds": 171.6261771699999,
+    "cpu_seconds": 238.899744973,
+    "detail": null,
+    "max_rss_kib": 1430108
+  },
+  "summary": {
+    "protocol": {
+      "schema": "hepta.wsp.scan_rule_to_data.v1",
+      "created_on": "2026-11-28",
+      "protocol_kind": "Fixed follow-up execution of published author-selected configurations, after published outcomes and the earlier 65-label matrix were known; no independent blind discovery claim",
+      "upstream_commit": "297c24db4b63c09a78d3552ac5f90865eaf95c9a",
+      "instance": "ncc5c260f",
+      "base_sha256": "9cee872c639d5d419cf759c9cff80ec86462b5533fdb64252220efd0a93126bc",
+      "reference_selection_source": "WeightCode/scripts/e13/t11_scan.py CONDITIONS.addprim_jump.refs: rulegen_mixed_sparse19_sal=q3, rulegen_mixed_grad_full=q2; runner.py labels q{candidate.slot}, scanrefs.configs uses lr-major order",
+      "arms": [
+        {
+          "name": "rulegen_mixed_sparse19_sal_q3",
+          "method": "sparse19_sal",
+          "lr": 0.001,
+          "steps": 300,
+          "seed": 0,
+          "fixed_reference_child_sha256": "727dae68a426bb3fcd1dc1d56b18a16c70b5b9d80254b0454a1664130ef542db"
+        },
+        {
+          "name": "rulegen_mixed_grad_full_q2",
+          "method": "full",
+          "lr": 0.001,
+          "steps": 100,
+          "seed": 0
+        }
+      ],
+      "data": {
+        "fit": "Official rulegen_fit_set(addprim_jump,mixed): 2000 jump compositions plus 2000 old grammar commands, followed by the original 65 experience rows",
+        "grammar_fit_commands_sha256": "4834e49492cb73bf966839f3ffea7798e1a5951d03987dbc6ad1adbfe3e46094",
+        "official_labels_check": "Verify every generated label against pinned SCAN tasks.txt; no externally collected new labels",
+        "final": "Same published sealed 2568 new and 1000 old commands, read once for each fixed candidate; report overlap with grammar-generated training commands explicitly",
+        "final_sha256": "32f4aea890601a2193db6b704c3475fe3408812b391f79a455f1e9a15d6c393a",
+        "subset": "Additionally report pre-defined final-new subset excluding every generated training input and every unlabeled input probed by the published WSP program; this is an audit of existing public data, not a newly collected independent test"
+      },
+      "execution": {
+        "device": "cpu",
+        "threads": 4,
+        "seed": 0,
+        "optimizer": "Adam betas .9/.999 eps1e-8 weight_decay0 foreachFalse",
+        "loss": "Full-batch mean cross-entropy over all non-IGNORE output tokens",
+        "microbatch": 128,
+        "accumulation": "Accumulate summed token CE divided by the fixed full-batch valid-token count; one Adam update after all microbatches. Mathematical objective equals upstream full-batch, but floating-point reduction order differs; no bit-exact GPU checkpoint reproduction claim.",
+        "sparse_mask": "At base, top floor(0.19*numel) entries of every tensor by absolute full-batch gradient, stable upstream argsort; mask fixed for all 300 updates",
+        "parity": "Before fitting, verify torch vs canonical NumPy logits on all 65 experience rows; verify accumulated vs dense loss/gradient on these rows to abs1e-4 and rel1e-3 for nontrivial entries",
+        "checks": "No model selection in this follow-up. Measure published check split after fitting as descriptive only; never reject or switch configuration based on final scores.",
+        "resource_cap": "Start after prior CPU matrix completes. At most 3 hours wall for both fits, four threads, 128-row microbatch. Save fixed step checkpoints every 50 steps, progress every10; failures/cap hits remain in output. No GPU jobs and no external publication.",
+        "repeats": "Seed0 is the published reference. No stochastic layers or minibatch sampling after load; duplicate optimizer seeds would repeat the same mathematical full-batch path. No claim of robustness across independently trained base checkpoints."
+      },
+      "cost": "Report fit wall/CPU, gradient steps, actual microbatch forward/backward rows, calibration/mask and check costs, selected changed entries, full model hashes. Published configuration discovery/search cost is external and excluded from this rerun; BP rerun cost is therefore not its total method-development cost.",
+      "interpretation": "Both WSP and rule-to-data receive the same grammar knowledge. They use it differently: explicit weight compilation versus generated-label gradient fitting. No universal superiority is prespecified."
+    },
+    "amendment": {
+      "schema": "hepta.wsp.execution_amendment.v1",
+      "date": "2026-11-28",
+      "previous_protocol": "scan_rule_to_data_protocol.json",
+      "reason": "HeptaRuntime Colab T4 became available while the local job was only waiting for the prior matrix. Parent requested preferred cloud resources; the local queue was interrupted with exit130 before any rule-to-data fit or result.",
+      "quality_method_changes": "none: author-fixed sparse19_sal q3 lr0.001 steps300 seed0 and full q2 lr0.001 steps100 seed0, same official4000 grammar rows+65 experience, fixed top19% mask, fullbatch Adam objective via128-row accumulation, same fixed final and overlap subsets",
+      "execution_changes": {
+        "device": "cuda",
+        "required_accelerator": "T4",
+        "precision": "float32 IEEE, TF32 disabled, no AMP",
+        "cpu_threads": 2,
+        "profile_hard_wall_seconds": 600,
+        "per_job_soft_wall_seconds": 480,
+        "maximum_jobs": 8,
+        "maximum_gpu_job_wall_seconds": 4800,
+        "checkpoint_interval_steps": 10
+      },
+      "continuation": "Finite immediate chunks only if wall budget requires; persist model, optimizer, fixed mask, completed-step counter and prior artifact SHA. Resume exactly the remaining fixed steps, no result-driven selection, no recurring automation. Count failed and repeated work.",
+      "evaluation": "Canonical upstream NumPy forward on CPU. Once fixed training finishes, seal model then read check/final as descriptive, without changing any candidate. Fresh unseen-input holdout is not claimed.",
+      "preflight": "Verify actual GPU identity, CUDA availability, model/source/data hashes, CUDA versus canonical logits and accumulation gradient parity before fitting. Record numerical/runtime differences; do not claim original GPU child hash equality unless observed.",
+      "privacy": "Only public WeightCode/SCAN source, model and newly trained derivatives; no pocket4 or private Hepta checkpoints uploaded.",
+      "rollback_and_release": "Retain all evidence and non-success states; no model deployment. Runtime agent manages allocation ledger and release after final artifact verification."
+    },
+    "results": [
+      {
+        "arm": {
+          "name": "rulegen_mixed_sparse19_sal_q3",
+          "method": "sparse19_sal",
+          "lr": 0.001,
+          "steps": 300,
+          "seed": 0,
+          "fixed_reference_child_sha256": "727dae68a426bb3fcd1dc1d56b18a16c70b5b9d80254b0454a1664130ef542db"
+        },
+        "params_sha256": "3830eeb7d4ed6a0ae3f38910796209f005b566da9d18a82d4655c7fa80228220",
+        "n_changed": 152718,
+        "checkpoint_sha256": "42435f9ef160e042aacfed087e3f7d81ff205dc6f508d551cba004d6a2fb33a6",
+        "training_complete": true,
+        "readouts_used_for_selection": false,
+        "readout": {
+          "check_new": {
+            "n": 2569,
+            "em_base": 0.0,
+            "em_child": 0.9957181782794862,
+            "delta": 0.9957181782794862,
+            "fixed": 2558,
+            "broken": 0,
+            "token_acc_base": 0.8807253146490204,
+            "token_acc_child": 0.9998702478266511,
+            "not_in_generated_fit": {
+              "n": 1926,
+              "em_base": 0.0,
+              "em_child": 0.994288681204569,
+              "delta": 0.994288681204569,
+              "fixed": 1915,
+              "broken": 0,
+              "token_acc_base": 0.8797269816545518,
+              "token_acc_child": 0.9998269297334718
+            }
+          },
+          "check_old": {
+            "n": 1000,
+            "em_base": 0.997,
+            "em_child": 0.998,
+            "delta": 0.0010000000000000009,
+            "fixed": 1,
+            "broken": 0,
+            "token_acc_base": 0.9998958333333333,
+            "token_acc_child": 0.9999166666666667,
+            "not_in_generated_fit": {
+              "n": 858,
+              "em_base": 0.9965034965034965,
+              "em_child": 0.9976689976689976,
+              "delta": 0.0011655011655011815,
+              "fixed": 1,
+              "broken": 0,
+              "token_acc_base": 0.9998785936285937,
+              "token_acc_child": 0.9999028749028749
+            }
+          },
+          "final_new": {
+            "n": 2568,
+            "em_base": 0.0,
+            "em_child": 0.9957165109034268,
+            "delta": 0.9957165109034268,
+            "fixed": 2557,
+            "broken": 0,
+            "token_acc_base": 0.8759410695742471,
+            "token_acc_child": 0.9998539719626168,
+            "not_in_generated_fit": {
+              "n": 1884,
+              "em_base": 0.0,
+              "em_child": 0.9941613588110403,
+              "delta": 0.9941613588110403,
+              "fixed": 1873,
+              "broken": 0,
+              "token_acc_base": 0.8750995222929936,
+              "token_acc_child": 0.9998009554140127
+            },
+            "neither_fitted_nor_wsp_probed": {
+              "n": 1658,
+              "em_base": 0.0,
+              "em_child": 0.9933655006031363,
+              "delta": 0.9933655006031363,
+              "fixed": 1647,
+              "broken": 0,
+              "token_acc_base": 0.8761434459187777,
+              "token_acc_child": 0.9997738238841978
+            }
+          },
+          "final_old": {
+            "n": 1000,
+            "em_base": 0.996,
+            "em_child": 0.996,
+            "delta": 0.0,
+            "fixed": 0,
+            "broken": 0,
+            "token_acc_base": 0.999875,
+            "token_acc_child": 0.999875,
+            "not_in_generated_fit": {
+              "n": 830,
+              "em_base": 0.9951807228915662,
+              "em_child": 0.9951807228915662,
+              "delta": 0.0,
+              "fixed": 0,
+              "broken": 0,
+              "token_acc_base": 0.9998493975903614,
+              "token_acc_child": 0.9998493975903614
+            }
+          }
+        },
+        "exact_published_reference_hash": false,
+        "execution_scope": "Author-fixed configuration with float32 microbatch accumulation; original GPU bit equality only if observed."
+      },
+      {
+        "arm": {
+          "name": "rulegen_mixed_grad_full_q2",
+          "method": "full",
+          "lr": 0.001,
+          "steps": 100,
+          "seed": 0
+        },
+        "params_sha256": "cd28f5286344c3e39ed9052d37e7486b5dcc0ee9da8f80ef71d1645708a86f87",
+        "n_changed": 757779,
+        "checkpoint_sha256": "2aa5a7aac7855e220428e174fa8dcf485b69246d97eeab57dd0a15b0e9603781",
+        "training_complete": true,
+        "readouts_used_for_selection": false,
+        "readout": {
+          "check_new": {
+            "n": 2569,
+            "em_base": 0.0,
+            "em_child": 0.9988322304398599,
+            "delta": 0.9988322304398599,
+            "fixed": 2566,
+            "broken": 0,
+            "token_acc_base": 0.8807253146490204,
+            "token_acc_child": 0.9999756714674971,
+            "not_in_generated_fit": {
+              "n": 1926,
+              "em_base": 0.0,
+              "em_child": 0.9984423676012462,
+              "delta": 0.9984423676012462,
+              "fixed": 1923,
+              "broken": 0,
+              "token_acc_base": 0.8797269816545518,
+              "token_acc_child": 0.999967549325026
+            }
+          },
+          "check_old": {
+            "n": 1000,
+            "em_base": 0.997,
+            "em_child": 0.995,
+            "delta": -0.0020000000000000018,
+            "fixed": 0,
+            "broken": 2,
+            "token_acc_base": 0.9998958333333333,
+            "token_acc_child": 0.9997916666666666,
+            "not_in_generated_fit": {
+              "n": 858,
+              "em_base": 0.9965034965034965,
+              "em_child": 0.9941724941724942,
+              "delta": -0.002331002331002252,
+              "fixed": 0,
+              "broken": 2,
+              "token_acc_base": 0.9998785936285937,
+              "token_acc_child": 0.9997571872571872
+            }
+          },
+          "final_new": {
+            "n": 2568,
+            "em_base": 0.0,
+            "em_child": 0.9972741433021807,
+            "delta": 0.9972741433021807,
+            "fixed": 2561,
+            "broken": 0,
+            "token_acc_base": 0.8759410695742471,
+            "token_acc_child": 0.9999026479750779,
+            "not_in_generated_fit": {
+              "n": 1884,
+              "em_base": 0.0,
+              "em_child": 0.9962845010615711,
+              "delta": 0.9962845010615711,
+              "fixed": 1877,
+              "broken": 0,
+              "token_acc_base": 0.8750995222929936,
+              "token_acc_child": 0.9998673036093418
+            },
+            "neither_fitted_nor_wsp_probed": {
+              "n": 1658,
+              "em_base": 0.0,
+              "em_child": 0.9957780458383595,
+              "delta": 0.9957780458383595,
+              "fixed": 1651,
+              "broken": 0,
+              "token_acc_base": 0.8761434459187777,
+              "token_acc_child": 0.9998492159227985
+            }
+          },
+          "final_old": {
+            "n": 1000,
+            "em_base": 0.996,
+            "em_child": 0.992,
+            "delta": -0.0040000000000000036,
+            "fixed": 0,
+            "broken": 4,
+            "token_acc_base": 0.999875,
+            "token_acc_child": 0.9997916666666666,
+            "not_in_generated_fit": {
+              "n": 830,
+              "em_base": 0.9951807228915662,
+              "em_child": 0.9903614457831326,
+              "delta": -0.004819277108433662,
+              "fixed": 0,
+              "broken": 4,
+              "token_acc_base": 0.9998493975903614,
+              "token_acc_child": 0.9997489959839357
+            }
+          }
+        },
+        "exact_published_reference_hash": false,
+        "execution_scope": "Author-fixed configuration with float32 microbatch accumulation; original GPU bit equality only if observed."
+      }
+    ],
+    "wsp_same_subsets": {
+      "final_new": {
+        "n": 2568,
+        "em_base": 0.0,
+        "em_child": 0.9980529595015576,
+        "delta": 0.9980529595015576,
+        "fixed": 2563,
+        "broken": 0,
+        "token_acc_base": 0.8759410695742471,
+        "token_acc_child": 0.9999350986500519,
+        "not_in_generated_fit": {
+          "n": 1884,
+          "em_base": 0.0,
+          "em_child": 0.9973460721868365,
+          "delta": 0.9973460721868365,
+          "fixed": 1879,
+          "broken": 0,
+          "token_acc_base": 0.8750995222929936,
+          "token_acc_child": 0.9999115357395613
+        },
+        "neither_fitted_nor_wsp_probed": {
+          "n": 1658,
+          "em_base": 0.0,
+          "em_child": 0.9975874547647768,
+          "delta": 0.9975874547647768,
+          "fixed": 1654,
+          "broken": 0,
+          "token_acc_base": 0.8761434459187777,
+          "token_acc_child": 0.9999120426216325
+        }
+      },
+      "final_old": {
+        "n": 1000,
+        "em_base": 0.996,
+        "em_child": 0.996,
+        "delta": 0.0,
+        "fixed": 0,
+        "broken": 0,
+        "token_acc_base": 0.999875,
+        "token_acc_child": 0.999875,
+        "not_in_generated_fit": {
+          "n": 830,
+          "em_base": 0.9951807228915662,
+          "em_child": 0.9951807228915662,
+          "delta": 0.0,
+          "fixed": 0,
+          "broken": 0,
+          "token_acc_base": 0.9998493975903614,
+          "token_acc_child": 0.9998493975903614
+        }
+      }
+    },
+    "source_commit": "297c24db4b63c09a78d3552ac5f90865eaf95c9a",
+    "wsp_sha256": "6c9bc3bdaf347dfb6c868a71f17506bea58ab51f82707f236692604dc34198a0",
+    "grammar_data_audit": {
+      "fit_record": {
+        "fit": "mixed",
+        "condition": "addprim_jump",
+        "pool_with_primitive": 7707,
+        "pool_without": 13203,
+        "n_with_primitive": 2000,
+        "streams": {
+          "prim": [
+            20261106,
+            1320,
+            1
+          ],
+          "old": [
+            20261106,
+            1320,
+            2
+          ]
+        },
+        "with_primitive_sha256": "fe7819920cb8a37de85530abad5e578c8f79d4fc2781760f8bb5ebabae8bbf11",
+        "with_primitive_by_construction": {
+          "twice_thrice": 1781,
+          "around": 958,
+          "opposite": 973,
+          "turn": 387,
+          "and": 1003,
+          "after": 989,
+          "none": 1
+        },
+        "n_without": 2000,
+        "without_sha256": "92e1db88dcd449bf0634726d4446a678eceae4aa09c3171efbf3fbdbb80b844f",
+        "n_generated": 4000,
+        "commands_sha256": "4834e49492cb73bf966839f3ffea7798e1a5951d03987dbc6ad1adbfe3e46094"
+      },
+      "label_check": {
+        "n_rows": 4000,
+        "mismatches": 0,
+        "tasks_txt_sha256": "d824c7d9e9149ba497e25f701981dac79954e04bf670d22e5c209f076ac6c89f"
+      },
+      "fit_rows": 4065,
+      "valid_tokens": 195120,
+      "fit_sha256": "b088a7be1326ad4cb3bfaf06ccecb0be41bf824224913801dcf81c91ca68ea13",
+      "overlap": {
+        "check_new": {
+          "total": 2569,
+          "fit_overlap": 643
+        },
+        "check_old": {
+          "total": 1000,
+          "fit_overlap": 142
+        },
+        "final_new": {
+          "total": 2568,
+          "fit_overlap": 684
+        },
+        "final_old": {
+          "total": 1000,
+          "fit_overlap": 170
+        }
+      },
+      "final_new_neither_fitted_nor_wsp_probed": 1658,
+      "common_mask_sha256": "f048254fa147a7442a9a9e3c9f3dee3320706f59a5662c6af09cd90a8cac3737"
+    },
+    "scope": "Published author-selected rule-to-data reproduction; no new private model or new external holdout."
+  },
+  "artifact_scope": "Only public WeightCode/SCAN and derived scientific checkpoints",
+  "evidence_root": "/content/hepta_weightcode_20261128_cd3d/evidence"
+}

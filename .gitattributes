@@ -28,3 +28,6 @@ archive/branch-convergence-20261113/historical-automation/originals/.github/work
 qualification/pred-history-study-20261112-5028/hosted-130884857137.log -text
 qualification/pred-history-study-20261112-5028/hosted-130884857440.log -text
 qualification/pred-history-study-20261112-5028/hosted-130884857466.log -text
+
+# Preserve the original scientific CSV bytes, whose recorded rows use CRLF.
+qualification/wsp_20261128/weightcode/results/matrix_quality_cost.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
