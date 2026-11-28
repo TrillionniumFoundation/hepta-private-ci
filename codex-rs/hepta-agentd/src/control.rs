@@ -181,8 +181,9 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
             )));
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
+        // Winsock can refuse a connection when the rendezvous path is absent.
         Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
@@ -230,3 +231,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
