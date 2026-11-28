@@ -91,6 +91,11 @@ def admit_workspace_sources(repo, originals):
         restored = oauth2_admission["restored"]
         if "otel_source_history" in oauth2_admission["report"]:
             outer = oauth2_admission["report"]["otel_source_history"]
+            if "external_migration_source_history" in outer:
+                external = outer["external_migration_source_history"]
+                observed.append({"name": "external-agent-time-source", "from": "external-time",
+                                 "to": "otel-time", "complete_package_inverses": 1,
+                                 "restored_files": external["predecessor_files"]})
             observed.append({"name": "otel-time-source", "from": "otel-time",
                              "to": "oauth2-epoch", "complete_package_inverses": 1,
                              "restored_files": outer["predecessor_files"]})

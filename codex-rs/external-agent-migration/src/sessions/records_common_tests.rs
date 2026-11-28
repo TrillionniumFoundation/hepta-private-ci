@@ -51,3 +51,33 @@ fn converts_error_tool_result_blocks_to_bounded_external_agent_tags() {
          [/external_agent_tool_result]"
     );
 }
+
+#[test]
+fn retains_integral_seconds_and_legacy_rfc3339_grammar() {
+    let cases = [
+        ("1970-01-01T00:00:00Z", Some(0)),
+        ("1969-12-31T23:59:59.999999999999Z", Some(-1)),
+        ("1970-01-01t05:30:00+05:30", Some(0)),
+        ("1969-12-31 18:30:00−05:30", Some(0)),
+        ("1970-01-01T00:00:00-00:00", Some(0)),
+        ("1970-01-01T23:59:00+23:59", Some(0)),
+        ("1969-12-31T00:01:00-23:59", Some(0)),
+        ("2016-12-31T23:59:60.123456789123z", Some(1483228799)),
+        ("1970-01-01T00:00:60Z", Some(59)),
+        ("1970-01-01T00:00:61Z", None),
+        ("1970-01-01T24:00:00Z", None),
+        ("1970-01-01T00:00:00+24:00", None),
+        ("1970-01-01T00:00:00+00:60", None),
+        ("1970-01-01T00:00:00+0000", None),
+        ("1970-01-01T00:00:00.Z", None),
+        ("1970-01-01T00:00:00Z ", None),
+        ("1900-02-29T00:00:00Z", None),
+        ("1970-01-01\t00:00:00Z", None),
+        ("1970-01-01T00:00:00", None),
+        ("1970-01-01T00:00:00.１２Z", None),
+        ("é", None),
+    ];
+    for (input, expected) in cases {
+        assert_eq!(parse_timestamp(input), expected, "{input:?}");
+    }
+}

@@ -1,5 +1,7 @@
 use super::truncate;
 use serde_json::Value as JsonValue;
+use time::Date;
+use time::Month;
 
 const NOTE_MAX_LEN: usize = 2_000;
 const TOOL_RESULT_MAX_LEN: usize = 4_000;
@@ -58,10 +60,65 @@ pub(super) fn extract_message_text(content: &JsonValue) -> Option<ExtractedMessa
     }
 }
 
-pub(super) fn parse_timestamp(timestamp: &str) -> Option<i64> {
-    chrono::DateTime::parse_from_rfc3339(timestamp)
-        .ok()
-        .map(|value| value.timestamp())
+fn decimal(bytes: &[u8]) -> Option<u32> {
+    bytes.iter().try_fold(0, |n, &b| {
+        b.is_ascii_digit().then(|| n * 10 + u32::from(b - b'0'))
+    })
+}
+
+// The migration consumer retains only integral Unix seconds. Preserve the
+// accepted legacy grammar, including fractional input and leap-second folding.
+pub(super) fn parse_timestamp(input: &str) -> Option<i64> {
+    let b = input.as_bytes();
+    let fixed = b.get(..19)?;
+    if fixed[4] != b'-'
+        || fixed[7] != b'-'
+        || !matches!(fixed[10], b'T' | b't' | b' ')
+        || fixed[13] != b':'
+        || fixed[16] != b':'
+    {
+        return None;
+    }
+    let year = i32::try_from(decimal(&fixed[..4])?).ok()?;
+    let month = Month::try_from(u8::try_from(decimal(&fixed[5..7])?).ok()?).ok()?;
+    let day = u8::try_from(decimal(&fixed[8..10])?).ok()?;
+    let hour = u8::try_from(decimal(&fixed[11..13])?).ok()?;
+    let minute = u8::try_from(decimal(&fixed[14..16])?).ok()?;
+    let second = u8::try_from(decimal(&fixed[17..19])?).ok()?;
+    if second > 60 {
+        return None;
+    }
+    let mut zone = &b[19..];
+    if let Some(tail) = zone.strip_prefix(b".") {
+        let digits = tail.iter().take_while(|b| b.is_ascii_digit()).count();
+        if digits == 0 {
+            return None;
+        }
+        zone = &tail[digits..];
+    }
+    let offset = if matches!(zone, b"Z" | b"z") {
+        0
+    } else {
+        let (sign, tail) = if let Some(t) = zone.strip_prefix(b"+") {
+            (1_i64, t)
+        } else if let Some(t) = zone.strip_prefix(b"-") {
+            (-1_i64, t)
+        } else {
+            (-1_i64, zone.strip_prefix("−".as_bytes())?)
+        };
+        if tail.len() != 5 || tail[2] != b':' {
+            return None;
+        }
+        let h = decimal(&tail[..2])?;
+        let m = decimal(&tail[3..])?;
+        if h > 23 || m > 59 {
+            return None;
+        }
+        sign * (i64::from(h) * 3600 + i64::from(m) * 60)
+    };
+    let date = Date::from_calendar_date(year, month, day).ok()?;
+    let local = date.with_hms(hour, minute, second.min(59)).ok()?;
+    Some(local.assume_utc().unix_timestamp() - offset)
 }
 
 fn content_blocks(content: &JsonValue) -> Vec<JsonValue> {
