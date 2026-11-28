@@ -1,0 +1,167 @@
+{
+ "affinity": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47
+ ],
+ "arm": "fp_h_text",
+ "common_process": {
+  "cpu": 3.049196776,
+  "wall": 3.0939445421099663
+ },
+ "cost_breakdown_cpu": {
+  "all_dev_s": 0.43138531700000016,
+  "feature_and_readout_s": 2.366065546999999,
+  "local_target_and_solves_s": 1.9450677979999993,
+  "optimizer_s": 0.0
+ },
+ "fit_cpu": 4.746787922999999,
+ "fit_wall": 4.802161257015541,
+ "hidden_depth": 3,
+ "history": [
+  {
+   "cpu": 1.6874458960000003,
+   "dev_pooled_mse": 1.94279944896698,
+   "dev_video_mae": 1.1139295101165771,
+   "hidden_write_fro": [
+    17.715726852416992,
+    8.167276382446289,
+    8.621356964111328
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.001,
+   "wall": 1.7034189200494438
+  },
+  {
+   "cpu": 3.226917378,
+   "dev_pooled_mse": 1.6680994033813477,
+   "dev_video_mae": 1.0313619375228882,
+   "hidden_write_fro": [
+    14.597345352172852,
+    7.926444053649902,
+    7.89963960647583
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.03,
+   "wall": 3.2429147691000253
+  },
+  {
+   "cpu": 4.74631505,
+   "dev_pooled_mse": 1.3623284101486206,
+   "dev_video_mae": 0.9636810421943665,
+   "hidden_write_fro": [
+    9.445260047912598,
+    6.5282135009765625,
+    6.129047870635986
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.3,
+   "wall": 4.801686776103452
+  }
+ ],
+ "input_dims": 793,
+ "parameter_count": 59457,
+ "seed": 413,
+ "selected": {
+  "15": {
+   "cpu": 4.74631505,
+   "dev_pooled_mse": 1.3623284101486206,
+   "dev_video_mae": 0.9636810421943665,
+   "file": "64-fp_h_text-413-r15.pt",
+   "hidden_write_fro": [
+    9.445260047912598,
+    6.5282135009765625,
+    6.129047870635986
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.3,
+   "sha256": "071383052a82002339b85324731c7164e04ff839485548704fb1c996f0df185c",
+   "wall": 4.801686776103452
+  },
+  "180": {
+   "cpu": 4.74631505,
+   "dev_pooled_mse": 1.3623284101486206,
+   "dev_video_mae": 0.9636810421943665,
+   "file": "64-fp_h_text-413-r15.pt",
+   "hidden_write_fro": [
+    9.445260047912598,
+    6.5282135009765625,
+    6.129047870635986
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.3,
+   "sha256": "071383052a82002339b85324731c7164e04ff839485548704fb1c996f0df185c",
+   "wall": 4.801686776103452
+  },
+  "60": {
+   "cpu": 4.74631505,
+   "dev_pooled_mse": 1.3623284101486206,
+   "dev_video_mae": 0.9636810421943665,
+   "file": "64-fp_h_text-413-r15.pt",
+   "hidden_write_fro": [
+    9.445260047912598,
+    6.5282135009765625,
+    6.129047870635986
+   ],
+   "hidden_writes": 3,
+   "label_target": "seven-anchor barycentric + sign projection",
+   "penalty": 0.3,
+   "sha256": "071383052a82002339b85324731c7164e04ff839485548704fb1c996f0df185c",
+   "wall": 4.801686776103452
+  }
+ },
+ "serialization_wall": 0.005145806120708585,
+ "source_fit_json_sha256": "93fb45f6d5a2b7f3d88b0c9c6b73ebe53d351363f5c44100da0075ff2ca72d94",
+ "thread_count": 1,
+ "width": 64
+}

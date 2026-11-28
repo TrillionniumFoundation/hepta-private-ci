@@ -1,0 +1,125 @@
+{
+ "affinity": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47
+ ],
+ "arm": "raw_text",
+ "common_process": {
+  "cpu": 2.663271621,
+  "wall": 2.7214748219121248
+ },
+ "cost_breakdown_cpu": {
+  "all_dev_s": 0.028356672999999777,
+  "feature_and_readout_s": 1.067870293,
+  "local_target_and_solves_s": 0.0,
+  "optimizer_s": 0.0
+ },
+ "fit_cpu": 1.116409773,
+ "fit_wall": 1.2218411699868739,
+ "hidden_depth": 0,
+ "history": [
+  {
+   "cpu": 0.4279123949999999,
+   "dev_pooled_mse": 3.8070058822631836,
+   "dev_video_mae": 1.6296446323394775,
+   "penalty": 0.001,
+   "wall": 0.500897663179785
+  },
+  {
+   "cpu": 0.7769316319999997,
+   "dev_pooled_mse": 2.148815155029297,
+   "dev_video_mae": 1.2329347133636475,
+   "penalty": 0.03,
+   "wall": 0.8765102371107787
+  },
+  {
+   "cpu": 1.1162915029999998,
+   "dev_pooled_mse": 1.4721004962921143,
+   "dev_video_mae": 1.0065096616744995,
+   "penalty": 0.3,
+   "wall": 1.2217213110998273
+  }
+ ],
+ "input_dims": 793,
+ "parameter_count": 1537,
+ "seed": 413,
+ "selected": {
+  "15": {
+   "cpu": 1.1162915029999998,
+   "dev_pooled_mse": 1.4721004962921143,
+   "dev_video_mae": 1.0065096616744995,
+   "file": "0-raw_text-413-r15.pt",
+   "penalty": 0.3,
+   "sha256": "75f5b60583c6861cf63bf38a125d1bbe62de96ca96ad95ecc6090da23cd152b1",
+   "wall": 1.2217213110998273
+  },
+  "180": {
+   "cpu": 1.1162915029999998,
+   "dev_pooled_mse": 1.4721004962921143,
+   "dev_video_mae": 1.0065096616744995,
+   "file": "0-raw_text-413-r15.pt",
+   "penalty": 0.3,
+   "sha256": "75f5b60583c6861cf63bf38a125d1bbe62de96ca96ad95ecc6090da23cd152b1",
+   "wall": 1.2217213110998273
+  },
+  "60": {
+   "cpu": 1.1162915029999998,
+   "dev_pooled_mse": 1.4721004962921143,
+   "dev_video_mae": 1.0065096616744995,
+   "file": "0-raw_text-413-r15.pt",
+   "penalty": 0.3,
+   "sha256": "75f5b60583c6861cf63bf38a125d1bbe62de96ca96ad95ecc6090da23cd152b1",
+   "wall": 1.2217213110998273
+  }
+ },
+ "serialization_wall": 0.003046324010938406,
+ "source_fit_json_sha256": "4d70de4b60f86113da84f8026ff8c41139d750fe7cc096aaf7d5ea3a5e1cc67d",
+ "thread_count": 1,
+ "width": 0
+}

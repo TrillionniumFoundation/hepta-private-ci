@@ -1,0 +1,125 @@
+{
+ "affinity": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47
+ ],
+ "arm": "raw_all",
+ "common_process": {
+  "cpu": 2.851161309,
+  "wall": 2.922236962011084
+ },
+ "cost_breakdown_cpu": {
+  "all_dev_s": 0.0355196870000003,
+  "feature_and_readout_s": 1.17963227,
+  "local_target_and_solves_s": 0.0,
+  "optimizer_s": 0.0
+ },
+ "fit_cpu": 1.2425641100000004,
+ "fit_wall": 1.2920104342047125,
+ "hidden_depth": 0,
+ "history": [
+  {
+   "cpu": 0.4522734800000001,
+   "dev_pooled_mse": 3.082979679107666,
+   "dev_video_mae": 1.5020915269851685,
+   "penalty": 0.001,
+   "wall": 0.45290045719593763
+  },
+  {
+   "cpu": 0.8564842980000003,
+   "dev_pooled_mse": 1.7014974355697632,
+   "dev_video_mae": 1.10872220993042,
+   "penalty": 0.03,
+   "wall": 0.904825319070369
+  },
+  {
+   "cpu": 1.242442997,
+   "dev_pooled_mse": 1.3982151746749878,
+   "dev_video_mae": 0.990129828453064,
+   "penalty": 0.3,
+   "wall": 1.2918873261660337
+  }
+ ],
+ "input_dims": 793,
+ "parameter_count": 1587,
+ "seed": 941,
+ "selected": {
+  "15": {
+   "cpu": 1.242442997,
+   "dev_pooled_mse": 1.3982151746749878,
+   "dev_video_mae": 0.990129828453064,
+   "file": "0-raw_all-941-r15.pt",
+   "penalty": 0.3,
+   "sha256": "3186b47d94afb93461ff3553c3aa2fe700cfb8b40de7ea4d2c42ce163239d8f9",
+   "wall": 1.2918873261660337
+  },
+  "180": {
+   "cpu": 1.242442997,
+   "dev_pooled_mse": 1.3982151746749878,
+   "dev_video_mae": 0.990129828453064,
+   "file": "0-raw_all-941-r15.pt",
+   "penalty": 0.3,
+   "sha256": "3186b47d94afb93461ff3553c3aa2fe700cfb8b40de7ea4d2c42ce163239d8f9",
+   "wall": 1.2918873261660337
+  },
+  "60": {
+   "cpu": 1.242442997,
+   "dev_pooled_mse": 1.3982151746749878,
+   "dev_video_mae": 0.990129828453064,
+   "file": "0-raw_all-941-r15.pt",
+   "penalty": 0.3,
+   "sha256": "3186b47d94afb93461ff3553c3aa2fe700cfb8b40de7ea4d2c42ce163239d8f9",
+   "wall": 1.2918873261660337
+  }
+ },
+ "serialization_wall": 0.0036564271431416273,
+ "source_fit_json_sha256": "416c8528f487e7ea449bb815b6af9aefc548ba2ce621eb8f2ecd728f8314f86e",
+ "thread_count": 1,
+ "width": 0
+}
