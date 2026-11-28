@@ -80,21 +80,23 @@ async fn managed_residency_overrides_provider_headers(transport: ModelTransport)
         ]),
     )
     .await;
-    let websocket_server = responses::start_websocket_server(vec![vec![
-        vec![
+    // Exercise the managed header on both the warmup and the next connection.
+    // The mock closes its first socket after the warmup completes.
+    let websocket_server = responses::start_websocket_server(vec![
+        vec![vec![
             responses::ev_response_created("prewarm-response"),
             responses::ev_completed("prewarm-response"),
-        ],
-        vec![
+        ]],
+        vec![vec![
             responses::ev_response_created("websocket-response"),
             responses::ev_assistant_message("websocket-message", "done"),
             responses::ev_completed("websocket-response"),
-        ],
-    ]])
+        ]],
+    ])
     .await;
     let model_base_url = match transport {
         ModelTransport::Http => http_server.uri(),
-        ModelTransport::Websocket => websocket_server.uri().to_string(),
+        ModelTransport::Websocket => websocket_server.uri().replacen("ws://", "http://", 1),
     };
 
     let codex_home = TempDir::new()?;
@@ -165,24 +167,30 @@ async fn managed_residency_overrides_provider_headers(transport: ModelTransport)
     .await??;
     assert_eq!(completed.turn.status, TurnStatus::Completed);
 
-    let (residency_header, provider_header) = match transport {
+    match transport {
         ModelTransport::Http => {
             let request = http_responses.single_request();
-            (
-                request.header(RESIDENCY_HEADER_NAME),
-                request.header("x-provider-header"),
-            )
+            assert_eq!(request.header(RESIDENCY_HEADER_NAME).as_deref(), Some("us"));
+            assert_eq!(
+                request.header("x-provider-header").as_deref(),
+                Some("preserved")
+            );
         }
         ModelTransport::Websocket => {
-            let handshake = websocket_server.single_handshake();
-            (
-                handshake.header(RESIDENCY_HEADER_NAME),
-                handshake.header("x-provider-header"),
-            )
+            let handshakes = websocket_server.handshakes();
+            assert_eq!(handshakes.len(), 2);
+            for handshake in handshakes {
+                assert_eq!(
+                    handshake.header(RESIDENCY_HEADER_NAME).as_deref(),
+                    Some("us")
+                );
+                assert_eq!(
+                    handshake.header("x-provider-header").as_deref(),
+                    Some("preserved")
+                );
+            }
         }
-    };
-    assert_eq!(residency_header, Some("us".to_string()));
-    assert_eq!(provider_header, Some("preserved".to_string()));
+    }
 
     websocket_server.shutdown().await;
     Ok(())
