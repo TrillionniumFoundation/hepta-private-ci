@@ -24,7 +24,7 @@ fn bundles() -> anyhow::Result<(
         schema_version: 1,
         identity_digest: crate::neuron_generation_process_identity_digest_v1(&identity)?
             .to_string(),
-        writer_proof_digest: original.writer_proof.sha256()?.to_string(),
+        writer_proof_digest: original.writer_proof.sha256()?.as_str().to_owned(),
         study: Digest32::of_bytes(b"synthetic study").to_string(),
         enrollment: Digest32::of_bytes(b"synthetic enrollment").to_string(),
         frozen_materials: manifest.commitment()?.to_string(),
@@ -44,7 +44,7 @@ fn bundles() -> anyhow::Result<(
         root: original.root.clone(),
         consumer: original.consumer.clone(),
         registered_identity: original.registered_identity.clone(),
-        writer_proof_digest: original.writer_proof.sha256()?.to_string(),
+        writer_proof_digest: original.writer_proof.sha256()?.as_str().to_owned(),
         socket_path: original
             .sockets
             .observation
