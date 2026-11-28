@@ -1,0 +1,32 @@
+{
+ "method": "same_site_bp",
+ "seed": 137,
+ "steps": 16,
+ "training_examples": 256,
+ "unique_training_examples": 249,
+ "input_index_sha256": "434511be5fceddce0d3427778dba0ffdc56e341212bf8e08eb8d484403f33857",
+ "changed": {
+  "read.0": 7680,
+  "read.1": 7680,
+  "read.2": 7680,
+  "read.3": 7680,
+  "read.4": 7680,
+  "read.5": 7680,
+  "projection": 24576
+ },
+ "rank": {
+  "read.0": 80,
+  "read.1": 80,
+  "read.2": 80,
+  "read.3": 80,
+  "read.4": 80,
+  "read.5": 80,
+  "projection": 96
+ },
+ "optimization_s": 1.3467821720987558,
+ "total_fit_dev_save_s": 1.8684915150515735,
+ "development_nll": 4.275191783905029,
+ "development_top1": 0.01830863207578659,
+ "sha256": "48b46928fd73d8f3a37e8c188c86e19565795c752675e41e525535d84bef996f",
+ "path": "same_site_bp-137-16/writes.pt"
+}

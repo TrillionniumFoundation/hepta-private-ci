@@ -1,0 +1,32 @@
+{
+ "method": "forward",
+ "seed": 557,
+ "steps": 16,
+ "training_examples": 256,
+ "unique_training_examples": 248,
+ "input_index_sha256": "07dc6940e82e9a9ab80a7edbe9d8a2e150054cbcd012edaaeb9bc0e670669902",
+ "changed": {
+  "read.0": 7680,
+  "read.1": 7680,
+  "read.2": 7680,
+  "read.3": 7680,
+  "read.4": 7680,
+  "read.5": 7680,
+  "projection": 24576
+ },
+ "rank": {
+  "read.0": 80,
+  "read.1": 80,
+  "read.2": 80,
+  "read.3": 80,
+  "read.4": 80,
+  "read.5": 80,
+  "projection": 96
+ },
+ "optimization_s": 0.27843116503208876,
+ "total_fit_dev_save_s": 0.7410154053941369,
+ "development_nll": 5.224521160125732,
+ "development_top1": 0.04184829816222191,
+ "sha256": "7df1745f2eb73aba6ffe0dc36acc08ee0ecf23ded551e467d47c92326e6ad363",
+ "path": "forward-557-16/writes.pt"
+}

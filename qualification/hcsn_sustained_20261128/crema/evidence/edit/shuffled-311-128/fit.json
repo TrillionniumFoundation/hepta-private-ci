@@ -1,0 +1,32 @@
+{
+ "method": "shuffled",
+ "seed": 311,
+ "steps": 128,
+ "training_examples": 2048,
+ "unique_training_examples": 1675,
+ "input_index_sha256": "a50e6fb4cd14b87c2576020972429530534c7ce71f0c6b4e07d99a052ccdf942",
+ "changed": {
+  "read.0": 7680,
+  "read.1": 7680,
+  "read.2": 7680,
+  "read.3": 7680,
+  "read.4": 7680,
+  "read.5": 7680,
+  "projection": 24576
+ },
+ "rank": {
+  "read.0": 80,
+  "read.1": 80,
+  "read.2": 80,
+  "read.3": 80,
+  "read.4": 80,
+  "read.5": 80,
+  "projection": 96
+ },
+ "optimization_s": 2.482340771239251,
+ "total_fit_dev_save_s": 2.998209881130606,
+ "development_nll": 4.8551926612854,
+ "development_top1": 0.06451612710952759,
+ "sha256": "df63cbc0d28d41be6191ad61e0a1fa631c25c3226a64c6e151337087118c4747",
+ "path": "shuffled-311-128/writes.pt"
+}
