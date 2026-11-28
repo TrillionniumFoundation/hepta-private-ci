@@ -128,7 +128,7 @@ impl TerminalLearningRuntimeBootstrapV1 {
             metadata.correction_decision,
             metadata.correction_outcome,
         ]
-        .iter()
+        .into_iter()
         .any(Digest32::is_zero)
         {
             return Err(refused(
