@@ -484,7 +484,16 @@ fn real_main() -> Result<()> {
             format!("open log in {} failed", sbx_dir.display()),
         ))
     })?;
+    trace_setup_marker(&payload, "begin");
     let result = run_setup(&payload, &mut log, &sbx_dir);
+    trace_setup_marker(
+        &payload,
+        if result.is_ok() {
+            "return-ok"
+        } else {
+            "return-error"
+        },
+    );
     if let Err(err) = &result {
         let _ = log_line(&mut log, &format!("setup error: {err:?}"));
         log_note(&format!("setup error: {err:?}"), Some(sbx_dir.as_path()));
@@ -511,6 +520,25 @@ fn real_main() -> Result<()> {
     result
 }
 
+fn trace_setup_marker(payload: &Payload, phase: &'static str) {
+    if std::env::var("SBX_DEBUG").ok().as_deref() != Some("1") {
+        return;
+    }
+    let directory = sandbox_dir(&payload.codex_home);
+    let marker_len = std::fs::metadata(directory.join("setup_marker.json"))
+        .ok()
+        .map(|metadata| metadata.len());
+    log_note(
+        &format!(
+            "HIA_SETUP_TRANSACTION pid={} phase={phase} mode={:?} refresh_only={} marker_len={marker_len:?}",
+            std::process::id(),
+            payload.mode,
+            payload.refresh_only
+        ),
+        Some(&directory),
+    );
+}
+
 fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
     let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;
     let _home_setup = if writes_setup_marker {
@@ -520,14 +548,17 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
     } else {
         None
     };
+    trace_setup_marker(payload, "locked");
     if writes_setup_marker {
         prepare_setup_marker(&payload.codex_home, &payload.real_user)?;
+        trace_setup_marker(payload, "prepared");
     }
     match payload.mode {
         SetupMode::ReadAclsOnly => run_read_acl_only(payload, log),
         SetupMode::ProvisionOnly => run_provision_only(payload, log, sbx_dir),
         SetupMode::Full => run_setup_full(payload, log, sbx_dir),
     }?;
+    trace_setup_marker(payload, "provisioned");
     if writes_setup_marker {
         commit_setup_marker(
             &payload.codex_home,
@@ -536,6 +567,7 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
             &payload.proxy_ports,
             payload.allow_local_binding,
         )?;
+        trace_setup_marker(payload, "committed");
     }
     Ok(())
 }

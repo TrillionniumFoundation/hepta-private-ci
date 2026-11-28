@@ -881,10 +881,49 @@ fn report_helper_failure(
     }
 }
 
+fn trace_incomplete_setup(codex_home: &Path) {
+    if std::env::var("SBX_DEBUG").ok().as_deref() != Some("1") {
+        return;
+    }
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
+    let marker_len = std::fs::metadata(setup_marker_path(codex_home))
+        .ok()
+        .map(|metadata| metadata.len());
+    eprintln!(
+        "HIA_SETUP_OBSERVATION pid={} marker_len={marker_len:?}",
+        std::process::id()
+    );
+    let path = current_log_file_path(&sandbox_dir(codex_home));
+    let Ok(mut log) = std::fs::File::open(path) else {
+        return;
+    };
+    let Ok(metadata) = log.metadata() else {
+        return;
+    };
+    let offset = metadata.len().saturating_sub(32 * 1024);
+    if log.seek(SeekFrom::Start(offset)).is_err() {
+        return;
+    }
+    let mut raw = Vec::new();
+    if log.take(32 * 1024).read_to_end(&mut raw).is_err() {
+        return;
+    }
+    for line in String::from_utf8_lossy(&raw)
+        .lines()
+        .filter(|line| line.contains("HIA_SETUP_TRANSACTION "))
+        .take(64)
+    {
+        eprintln!("{line}");
+    }
+}
+
 fn verify_setup_completed(codex_home: &Path) -> Result<()> {
     if sandbox_setup_is_complete(codex_home) {
         Ok(())
     } else {
+        trace_incomplete_setup(codex_home);
         Err(failure(
             SetupErrorCode::OrchestratorHelperIncomplete,
             "setup helper exited successfully before setup completed",

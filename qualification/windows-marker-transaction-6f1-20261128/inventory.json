@@ -1,0 +1,273 @@
+{
+  "archive": {
+    "bytes": 6318114,
+    "sha256": "1134f5e6f19c5a5cd56787492b6811f3127b96ea75e2f5a9326958c7ca3d5185"
+  },
+  "base": "6f1e6717bd5f19b6c7a4c0b630251fbd013d8b70",
+  "current_change_is_diagnostic_only": true,
+  "members": {
+    "drivers/archive_marker_consumer_6f1_v1.py": {
+      "bytes": 2147,
+      "mode": 416,
+      "sha256": "d0c0152bfe1a6bd11414f7969ed79e961af401b6efdd229a3d3cefe05b19edeb"
+    },
+    "drivers/prepare_marker_phase_diagnostic_v2.py": {
+      "bytes": 5347,
+      "mode": 416,
+      "sha256": "2fec6b0b362f90c16508014a8bfe8499fbff763662f664f9d105bc6c06327e5f"
+    },
+    "drivers/run_subagent_event_diagnostic_v1.py": {
+      "bytes": 3319,
+      "mode": 416,
+      "sha256": "390e6111b97bbbbbac14e5e160e57dd93f6f4e3062f017964182032ca037a29f"
+    },
+    "drivers/run_subagent_original_case_v1.py": {
+      "bytes": 1859,
+      "mode": 416,
+      "sha256": "f4f9be8fc0682ba1658571c283d26c8cb7bbf6b2f11d9e39b04e55faef0b3802"
+    },
+    "drivers/run_subagent_request_selection_v2.py": {
+      "bytes": 2840,
+      "mode": 416,
+      "sha256": "6a640399e20b7e7e9252c66673bb3d2774a291647f2b5f18b1c53f60ba9297bb"
+    },
+    "mac-original-subagent/intent.json": {
+      "bytes": 331,
+      "mode": 384,
+      "sha256": "6519a6bcdef598dede21df0c1eb66199bd6b4a0038fed389582025753d367fcf"
+    },
+    "mac-original-subagent/source-before.json": {
+      "bytes": 852,
+      "mode": 384,
+      "sha256": "8439cb8fb88b250ff793dc879fe171bff15908525fb6f32e0a31a8955e00b6eb"
+    },
+    "mac-original-subagent/started.json": {
+      "bytes": 15,
+      "mode": 384,
+      "sha256": "d4d6b35e70b58d1f9087e6d309ab9d95066598de7e2f02766630689cef14efaa"
+    },
+    "mac-original-subagent/terminal.json": {
+      "bytes": 85,
+      "mode": 384,
+      "sha256": "face9e91d9549330a7e355f0eb90107ed3d66b14ae57cef4a8df8496e31465a0"
+    },
+    "mac-original-subagent/tests.stderr": {
+      "bytes": 29729,
+      "mode": 384,
+      "sha256": "3fc9e888982c32cbce7c939ce45d677d9cce06b94bf21acab1f07c11d503723c"
+    },
+    "mac-original-subagent/tests.stdout": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mac-subagent-event-diagnostic/diagnostic-subagent_notifications.rs": {
+      "bytes": 107822,
+      "mode": 384,
+      "sha256": "e4b3e2d8ecd68066c6c48718ded91a9280c1a31c93ee38c2a802fce067c11f41"
+    },
+    "mac-subagent-event-diagnostic/diagnostic.diff": {
+      "bytes": 788,
+      "mode": 384,
+      "sha256": "2cd1afae91c4a23420f1e9c2e719fa3c46a553372f708e6b641130cbb8a33981"
+    },
+    "mac-subagent-event-diagnostic/intent.json": {
+      "bytes": 1002,
+      "mode": 384,
+      "sha256": "584608e71a3a93743bd433fdc7c5f162270b4fbce5f9ab3f053aa5e45fb1b091"
+    },
+    "mac-subagent-event-diagnostic/observed-events.txt": {
+      "bytes": 1532,
+      "mode": 384,
+      "sha256": "44801608fb454eab62d5e32ea473ac67e4c63d500b3500909f8f0383d9bea488"
+    },
+    "mac-subagent-event-diagnostic/original-subagent_notifications.rs": {
+      "bytes": 107668,
+      "mode": 384,
+      "sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e"
+    },
+    "mac-subagent-event-diagnostic/started.json": {
+      "bytes": 15,
+      "mode": 384,
+      "sha256": "4b5a22ee6f7cb8d67e401e667dbd2e566375b53d2b5799549d3a0b0329ef8bd7"
+    },
+    "mac-subagent-event-diagnostic/terminal.json": {
+      "bytes": 129,
+      "mode": 384,
+      "sha256": "384d17a6454ac5f7de548e79b3836cec9004b289aefb5c15261a46252b98e581"
+    },
+    "mac-subagent-event-diagnostic/tests.stderr": {
+      "bytes": 31378,
+      "mode": 384,
+      "sha256": "1d97525003abccef3db084c21595683d835fa9abaad961c79d5e2bc8af7e2847"
+    },
+    "mac-subagent-event-diagnostic/tests.stdout": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mac-subagent-request-selection/candidate-subagent_notifications.rs": {
+      "bytes": 108248,
+      "mode": 384,
+      "sha256": "1f017d35bd5b4c267989ab2237e8427169a19bb92b89c4744745945ea392408b"
+    },
+    "mac-subagent-request-selection/intent.json": {
+      "bytes": 1094,
+      "mode": 384,
+      "sha256": "a16574d373cd19495b58975be78b97b65ce68e04ac87a25d4cb622cbc1c440ac"
+    },
+    "mac-subagent-request-selection/original-subagent_notifications.rs": {
+      "bytes": 107668,
+      "mode": 384,
+      "sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e"
+    },
+    "mac-subagent-request-selection/source.patch": {
+      "bytes": 1967,
+      "mode": 384,
+      "sha256": "28bbaa943d3dfcff25526df59f0f33444cec51d3c5c63e96b66fa9f94f8aa3e7"
+    },
+    "mac-subagent-request-selection/started.json": {
+      "bytes": 15,
+      "mode": 384,
+      "sha256": "0b14d7b210137b2314dc7e36460e62b1837737b50d76407c97e09b14dc3d5f36"
+    },
+    "mac-subagent-request-selection/terminal.json": {
+      "bytes": 133,
+      "mode": 384,
+      "sha256": "e0cfe12b179da9fabd2c180e6522a5887fe0271abc962497df977e8e1fa13a62"
+    },
+    "mac-subagent-request-selection/tests.stderr": {
+      "bytes": 28075,
+      "mode": 384,
+      "sha256": "3ab681204410f36eac088233d241a6764e2f58489e2756022d94473bd5f484aa"
+    },
+    "mac-subagent-request-selection/tests.stdout": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "marker-candidate-preparation/diff-check.json": {
+      "bytes": 96,
+      "mode": 384,
+      "sha256": "ad358b02bde707548fdf3b4a53222114afb894fcb2e22acaf5e288d3fe0295bb"
+    },
+    "marker-candidate-preparation/diff-check.stderr": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "marker-candidate-preparation/diff-check.stdout": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "marker-candidate-preparation/just-fmt.json": {
+      "bytes": 92,
+      "mode": 384,
+      "sha256": "b5293f43889e6e18a06c65c11090bd086fa5902c3343837250fe00d5de34a605"
+    },
+    "marker-candidate-preparation/just-fmt.stderr": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "marker-candidate-preparation/just-fmt.stdout": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "marker-candidate-preparation/setup_main-win.rs.original": {
+      "bytes": 48141,
+      "mode": 384,
+      "sha256": "46d7b52b14f9bfcc4f9548a74770a2f06b371428c6f5b9f4e6d4f1ca19a9cfa0"
+    },
+    "marker-candidate-preparation/source-pins.json": {
+      "bytes": 324,
+      "mode": 384,
+      "sha256": "5746b4c678e769838b9405758f8298d76c9b767c9769c25625292647a12f6865"
+    },
+    "marker-candidate-preparation/source.diff": {
+      "bytes": 4550,
+      "mode": 384,
+      "sha256": "218049ff9365f1b6d7c6317e272bede2176c69089d69c4768a15f974ecf7000a"
+    },
+    "marker-candidate-preparation/src-setup.rs.original": {
+      "bytes": 83794,
+      "mode": 384,
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip": {
+      "bytes": 4942070,
+      "mode": 384,
+      "sha256": "21e821530a2871705148b79ec0ca4c6296cf7879196b549d4fd7ecfae6111240"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip.intent.json": {
+      "bytes": 128,
+      "mode": 384,
+      "sha256": "4b43bc5c9db84588449ff55e2c8134cbabb33463058646dcc5598c7f0d7a529a"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip.members/windows-sandbox-runfiles.log": {
+      "bytes": 1817641,
+      "mode": 384,
+      "sha256": "e3425ef04e423137f6661fd99298dd7aa9931148891ab861ce7578840d0d4e23"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip.started.json": {
+      "bytes": 15,
+      "mode": 384,
+      "sha256": "5c87f4a00db72e6087a9789e0cd3573b72a59f77f8fdbb52a072d55f2850335a"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip.stderr": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "windows-original6f/consumer6f1-artifact15239836691.zip.terminal.json": {
+      "bytes": 114,
+      "mode": 384,
+      "sha256": "0804fa5b49812dac0ddeabbbd1966b93081b61fa033b1da4a13d0244b53cb94a"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log": {
+      "bytes": 2070372,
+      "mode": 384,
+      "sha256": "5ee5519c92aaa6afc0840ba3eff20751500569916653a899667b3d57a4496e9e"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log.gz": {
+      "bytes": 441416,
+      "mode": 384,
+      "sha256": "a3e69928729808ae2f5ca68f916208b20478c0df61cb3eadca1e00b18db7457c"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log.intent.json": {
+      "bytes": 125,
+      "mode": 384,
+      "sha256": "1f128ebfd2c9aa779b013de239d23e8d0d89fa6b871f62ae4a7604106e1d24ab"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log.started.json": {
+      "bytes": 15,
+      "mode": 384,
+      "sha256": "9ffab7e22ffe8754efdc3704f64ea9ad026a39c0d50ee027d3073e55905727f7"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log.stderr": {
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "windows-original6f/consumer6f1-job140797955764.log.terminal.json": {
+      "bytes": 108,
+      "mode": 384,
+      "sha256": "06e142161196621369bf40c69b7eab39f06fdd0caee95b6ee2731b78b1aad2fa"
+    },
+    "windows-original6f/terminal.json": {
+      "bytes": 1008,
+      "mode": 384,
+      "sha256": "613ed0b23befcf9a7aa09411e57330667b207ba533eccb9e599d4ca98c6532c5"
+    }
+  },
+  "schema": "hepta.windows.marker-transaction-diagnostic.v1",
+  "source_diff": {
+    "bytes": 4550,
+    "sha256": "218049ff9365f1b6d7c6317e272bede2176c69089d69c4768a15f974ecf7000a"
+  },
+  "windows_gate": "OPEN",
+  "windows_original_job": 140797955764,
+  "windows_original_run": 46086738399
+}
