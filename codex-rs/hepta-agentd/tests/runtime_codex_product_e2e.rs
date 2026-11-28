@@ -99,6 +99,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        issuer_process_identity: None,
     })
     .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 
