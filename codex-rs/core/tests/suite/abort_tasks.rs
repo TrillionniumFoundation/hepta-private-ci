@@ -77,7 +77,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let suspended_response = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +120,15 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // TurnStarted precedes the durable sampling boundary. Waiting for the
+    // request (with headers still withheld) makes the handoff recoverable.
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while suspended_response.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("root turn should reach the model before suspension");
 
     assert_eq!(
         codex
@@ -169,31 +178,41 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
     mount_sse_once(
-        &recovery_server,
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
-    let resumed = test_codex()
-        .with_config(|config| {
+    // Replace the runtime without changing the provider or the execution
+    // workspace recorded for the suspended turn.
+    let cwd = test.config.cwd.clone();
+    let mut replacement = test_codex()
+        .with_config(move |config| {
             let _ = config.features.enable(Feature::HeptaTurnRecovery);
+            config.cwd = cwd;
         })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+        .with_model("gpt-5.4");
+    if let Some(url) = test.executor_environment().exec_server_url() {
+        replacement = replacement.with_exec_server_url(url);
+    }
+    let resumed = replacement
+        .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    let expected_epoch = resumed
+        .codex
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("replacement runtime should expose the durable turn's recovery epoch");
     assert_eq!(
         resumed
             .codex
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })
