@@ -1,0 +1,21 @@
+{
+  "combined_name": "attempt-1.tar.xz",
+  "combined_sha256": "407806be2088cbdf48cd5dcdd2d3bb26baf7f64b428876cbdbf4ecec112de892",
+  "combined_size": 14044260,
+  "parts": [
+    {
+      "git_blob": "26b9c3a45a7f42dc94c2c109d8b9f6cbde0f0598",
+      "name": "attempt-1.tar.xz.part01",
+      "sha256": "0103c444df1258dcd8e106353aeac480c4a078441788694ac4819f923f970d97",
+      "size": 7077888
+    },
+    {
+      "git_blob": "82bf9e3abb0ac6a7e906edf4d1a7d923425ed836",
+      "name": "attempt-1.tar.xz.part02",
+      "sha256": "01abfce61e8873a1aa822f61eff7faeb1a23ae47fc685193d4d6ee09e7be958c",
+      "size": 6966372
+    }
+  ],
+  "reason": "GitHub connector request body is limited to 16 MiB; concatenate the two raw parts in order.",
+  "schema": "pft-codec-evidence-parts-v1"
+}
