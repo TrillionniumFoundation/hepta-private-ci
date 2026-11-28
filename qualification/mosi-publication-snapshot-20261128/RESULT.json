@@ -1,0 +1,189 @@
+{
+  "actual_original_input_compatibility": {
+    "candidate_source_unchanged": true,
+    "copied_input_bytes": 15881944,
+    "copied_input_files": 190,
+    "copied_inputs_unchanged": true,
+    "cpu_s": 2.06134312,
+    "exit_code": 0,
+    "finished_utc": "2026-11-28T15:11:53.413996+00:00",
+    "network_publication": false,
+    "new_forward": false,
+    "new_training": false,
+    "original_producer_directory_read": false,
+    "peak_self_rss_KiB": 61416,
+    "producer_timing_remeasured": false,
+    "raw_commit": "4b84b0431b089ccac84c75ac3ac19f96ad804fe4",
+    "schema": "hepta.mosi.frozen-original-input-compatibility.v1",
+    "scope": "Necessary compatibility validation of the new frozen-publication implementation against already fixed original bytes. It is not another trained experiment.",
+    "scopes": {
+      "mosi_fresh_raw": {
+        "canonical_original_object_set_equal": true,
+        "manifest_git_blob": "1fb5117e94105c84e18f1783b53eaccdb228f93c",
+        "manifest_sha256": "10b2bb6d64bb2bb4ffe3410aa30a5efc9ee0694a1dcb67300a353077a0f25da1",
+        "no_private_validation_directory_remains": true,
+        "original_recovery_math_executions": 0,
+        "original_verifier_executions": 1,
+        "payload_bytes": 15306173,
+        "payload_objects": 166,
+        "receipt_objects_including_index": 167,
+        "status": "PASS",
+        "wall_s": 1.3227841628249735
+      },
+      "mosi_recovery_raw": {
+        "canonical_original_object_set_equal": true,
+        "manifest_git_blob": "562d179a273d674979b75c7e382009b187930d4d",
+        "manifest_sha256": "126813d3e9368eaddae4e7181da794d9ac78884a038a85fd8bcef71ada6d893e",
+        "no_private_validation_directory_remains": true,
+        "original_recovery_math_executions": 1,
+        "original_verifier_executions": 0,
+        "payload_bytes": 568777,
+        "payload_objects": 24,
+        "receipt_objects_including_index": 25,
+        "status": "PASS",
+        "wall_s": 0.19618836184963584
+      }
+    },
+    "source_parent_commit": "41aae3602f9f24e80ccf70dcea1bbcaa99774cb3",
+    "source_sha256": "3d9acc0993287815783e839dd5672c0f32c11f017fd6aa5b089cdb9a8f7376cd",
+    "started_utc": "2026-11-28T15:11:51.133131+00:00",
+    "status": "PASS",
+    "wall_s": 2.2808527119923383
+  },
+  "controls": {
+    "cpu_s": 37.32516279,
+    "environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONOPTIMIZE": ""
+    },
+    "errors": 0,
+    "executable": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+    "exit_code": 0,
+    "failures": 0,
+    "finished_utc": "2026-11-28T15:08:01.764164+00:00",
+    "model_forward": false,
+    "network_publication": false,
+    "numpy": "2.5.4",
+    "parent_commit": "41aae3602f9f24e80ccf70dcea1bbcaa99774cb3",
+    "peak_children_rss_KiB": 61716,
+    "peak_self_rss_KiB": 61716,
+    "planned_tests": 37,
+    "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39",
+    "priority_nice": 10,
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "schema": "hepta.mosi.frozen-publication-controls.v1",
+    "scope": "Original fixed mathematical validators execute on explicitly synthetic prediction fixtures. Real isolated Git objects exercise publication; no model forward, training or network publication.",
+    "skips": 0,
+    "sources_unchanged": true,
+    "started_utc": "2026-11-28T15:07:07.330332+00:00",
+    "status": "PASS",
+    "successful": true,
+    "tests": 37,
+    "training": false,
+    "wall_s": 54.43383253295906
+  },
+  "evidence_archive": {
+    "git_blob": "fbb0dbb7aecd11ef77b347ac353f5650f5cbe384",
+    "sha256": "b02163f321114afd49e7ffb3ce43bfa7073ea410862a0a0f4f47d21ae152a8cf",
+    "size": 133879
+  },
+  "evidence_archive_members": 127,
+  "first_counterexample": {
+    "later_resume_refused": "incomplete publication: current input verification failed: fresh data manifest hash",
+    "old_production_sha256": "ba76f99405fab27c1c21ee579602202c096cac9fea2abcaf0c7e0bf025e17f8e",
+    "published_data_sha256": "1a77013518f4af243370d39351d4d06415890d2f32f0290e4126359f9565fea5",
+    "published_seal_expected_data_sha256": "f0f79656c629f26e2b8ec28519dfc38e7e16aec7ca65754d679343b90c9a9a18",
+    "result_sha256": "db992ef5bcbc622b5dd27add22a0d43ab402bddf64b7cee67cf9bf15671fedf6",
+    "scope": "Deterministic synthetic fixture and real local Git. Not evidence of historic scientific corruption.",
+    "wrong_completion_commit": "bcc59a99c65850f3fff2dec2b40be6e63f6ac1e9",
+    "wrong_completion_receipt_sha256": "d8e0999063c554333d8b8e89a6bccd32505372f0a4b1c80ee743d0369ab454ee"
+  },
+  "format": {
+    "candidate_hashes_unchanged": true,
+    "exit_code": 0,
+    "qualification": "original command executes its exact byte guards; its declared language scopes do not include qualification Python, so no Python formatting qualification is claimed; candidates parsed and hashes unchanged; prior executed tests remain applicable",
+    "receipt_sha256": "1da42752cd99592b33b4e5412d81d6755299406e87d556c33c7320137527aa89",
+    "scope": "partial synthetic Git inventory; two actual untracked MOSI frozen-publication Python candidates and seven required exact original byte fixtures",
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "tests_rerun_after_format": false,
+    "wall_seconds": 0.10633217729628086
+  },
+  "new_control_methods": 16,
+  "new_forward_or_training": false,
+  "original_21_control_names_retained": true,
+  "parent_commit": "41aae3602f9f24e80ccf70dcea1bbcaa99774cb3",
+  "parent_tree": "254862ae637e5a7d414f175c7b139bd1ae665105",
+  "preceding_published_data_closure_commit": "41aae3602f9f24e80ccf70dcea1bbcaa99774cb3",
+  "profile_bounds": {
+    "extraFreshData": 3083,
+    "extraFreshVerifier": 8275,
+    "fresh": {
+      "bytes": 15303090,
+      "largest": [
+        "models/64-transformer_text-413-r15.pt",
+        {
+          "sha256": "9779858c749aa4c511703ef52c5912b86644e97912d9930c3d6158e3174bac9c",
+          "size": 391018
+        }
+      ],
+      "objects": 165
+    },
+    "freshManifestGitBlob": "d18d22f70824333a648f33b7347fc852f0730976",
+    "inputLimit": 16777216,
+    "recovery": {
+      "bytes": 568777,
+      "largest": [
+        "cold/0-raw_all-413-r15.pt.cold.npz",
+        {
+          "sha256": "e2d55b7371ca0027fdc914b03f2982fa46fad5a0434ae5dacff3c68717252f42",
+          "size": 51750
+        }
+      ],
+      "objects": 24
+    },
+    "recoveryManifestGitBlob": "562d179a273d674979b75c7e382009b187930d4d",
+    "scopeLimit": 67108864,
+    "sourceCommit": "4b84b0431b089ccac84c75ac3ac19f96ad804fe4"
+  },
+  "real_remote_publication_during_controls": false,
+  "schema": "hepta.mosi.immutable-publication-qualification.v1",
+  "scientific_results_or_quality_gates_changed": false,
+  "security_scope": "local process/filesystem mutation; no claim against arbitrary same-UID memory or host-kernel compromise",
+  "source": {
+    "qualification/hcsn_sustained_20261128/mosi_recovery/publish_mosi.py": {
+      "git_blob": "2c128459ed28c7dd2baf03494331eed60cd3ad95",
+      "sha256": "3d9acc0993287815783e839dd5672c0f32c11f017fd6aa5b089cdb9a8f7376cd",
+      "size": 27342
+    },
+    "qualification/hcsn_sustained_20261128/mosi_recovery/test_publish_mosi.py": {
+      "git_blob": "7071bfda6b162299693f51fad551aed9e89636cc",
+      "sha256": "544ed838b6810e1c25cb5368d70a3f1affe3cca7cd2f5038c3005e6a9075a3f9",
+      "size": 49430
+    }
+  },
+  "start_reconciliation": {
+    "claim_first_write_never_executed": false,
+    "first_write_outcome": "UNKNOWN",
+    "runner_create_only_attempt_guard": true,
+    "same_session_request_id_and_input_retry": true,
+    "scoped_observation_sha256": "9db303e9732928c11c9d0c7fef2a20e2c00ff047777c5579d8a4be8fd0d61b09",
+    "unknown_external_task_restarted": false
+  },
+  "status": "PASS_FOR_DECLARED_LOCAL_PUBLICATION_SCOPE",
+  "unchanged_core_functions": [
+    "object_id",
+    "validate_receipt",
+    "receipt_from",
+    "api_objects",
+    "native_objects",
+    "verify_publication",
+    "digest",
+    "read",
+    "save",
+    "git",
+    "recovery_map"
+  ]
+}
