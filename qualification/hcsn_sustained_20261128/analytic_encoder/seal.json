@@ -1,0 +1,734 @@
+{
+ "lookup-137": {
+  "arm": "lookup",
+  "seed": 137,
+  "parameters": 731168,
+  "setup_s": 0.6437982292845845,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 17.863469348754734,
+    "cpu_s": 17.692731928,
+    "development": {
+     "nll": 3.6396621602780326,
+     "top1": 0.08805579773321709
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "7f957da088e32f43e9d9f8dd4c5c2ccb1dad7985e1b0635d61029b15a1fe8ee4",
+    "dev_s": 0.5308837504126132,
+    "save_s": 0.004880885127931833,
+    "file": "step-312.pt",
+    "sha256": "447a334b800f90def69abcf1648ce88984f045c235f394a412537c9dfbab19e7",
+    "last_grad": 9.71304988861084,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 1085,
+    "seen": 17336,
+    "distinct": 4984,
+    "active_s": 60.01778972148895,
+    "cpu_s": 59.67848044000006,
+    "development": {
+     "nll": 3.032729676273727,
+     "top1": 0.2040104620749782
+    },
+    "dev_file": "dev-1085.npz",
+    "dev_sha256": "671ab9968a183c75a4c4d25467420202c160b48942e6f498a07c3e7faef21a9f",
+    "dev_s": 0.5295521141961217,
+    "save_s": 0.005495453253388405,
+    "file": "step-1085.pt",
+    "sha256": "98892944f6725447156fbff2bbf2e56e6b40ff2e6c5b12a913ddc3f93179914b",
+    "last_grad": 7.3932929039001465,
+    "learned_contract": {}
+   }
+  }
+ },
+ "exact-137": {
+  "arm": "exact",
+  "seed": 137,
+  "parameters": 731168,
+  "setup_s": 0.054901642724871635,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 32.05756647139788,
+    "cpu_s": 32.00042757999989,
+    "development": {
+     "nll": 3.5920736530066386,
+     "top1": 0.1002615518744551
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "6aa1e68fe21658400ec6589dde4a0c5b881225297b15be63255530ad4ac9ee7c",
+    "dev_s": 1.1203161282464862,
+    "save_s": 0.0036361198872327805,
+    "file": "step-312.pt",
+    "sha256": "3efd3ed01ff717bec13e19ee8816c3df1f513993fe1b513a48b5999ca6cf111e",
+    "last_grad": 9.873270034790039,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 574,
+    "seen": 9176,
+    "distinct": 4984,
+    "active_s": 60.00435083732009,
+    "cpu_s": 59.904172474,
+    "development": {
+     "nll": 3.3163961607228907,
+     "top1": 0.13339145597210114
+    },
+    "dev_file": "dev-574.npz",
+    "dev_sha256": "76885a3371992b3541e446bd852cf9310e5ee9ed7e6c657d822406147dc9cbaa",
+    "dev_s": 1.0648926440626383,
+    "save_s": 0.0038535119965672493,
+    "file": "step-574.pt",
+    "sha256": "11b78dd952e86ce4c690e89e410e90aa352a1616a0d54294d32aaf408f00e558",
+    "last_grad": 9.597455978393555,
+    "learned_contract": {}
+   }
+  }
+ },
+ "learn-137": {
+  "arm": "learn",
+  "seed": 137,
+  "parameters": 731170,
+  "setup_s": 0.0052530718967318535,
+  "law_first_gradient": {
+   "raw_sigma": 0.0030871229246258736,
+   "raw_premium": 7.348400231421692e-06
+  },
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 38.41546377260238,
+    "cpu_s": 38.40322085499987,
+    "development": {
+     "nll": 3.646286800217863,
+     "top1": 0.08456843940714909
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "92c10f5c30ac11ca5d86a21043f5f01fe0b7e01b6188925869bbd35faeeb89fe",
+    "dev_s": 1.0452528377063572,
+    "save_s": 0.003729446791112423,
+    "file": "step-312.pt",
+    "sha256": "64df6930c4cb35b4bddb7f372b5c510a3f48a53c291251b970957705e65c1edc",
+    "last_grad": 11.055447578430176,
+    "learned_contract": {
+     "sigma": 0.23156484433734906,
+     "premium": 0.010043992007080756
+    }
+   },
+   "clock": {
+    "step": 482,
+    "seen": 7704,
+    "distinct": 4984,
+    "active_s": 60.00520662497729,
+    "cpu_s": 59.99423458299994,
+    "development": {
+     "nll": 3.3721448851975127,
+     "top1": 0.13513513513513514
+    },
+    "dev_file": "dev-482.npz",
+    "dev_sha256": "cd8638d2bb6bb4b65c3b56c47fbb3ad177bbea594ce0497fa476ac6979511bf8",
+    "dev_s": 1.043563266750425,
+    "save_s": 0.0038588722236454487,
+    "file": "step-482.pt",
+    "sha256": "d021de9da8b8ca2c57af69ced5c66ec99e771ef593abf724d2dde85baa9beb76",
+    "last_grad": 9.098468780517578,
+    "learned_contract": {
+     "sigma": 0.23166036403547577,
+     "premium": 0.01007083986335747
+    }
+   }
+  }
+ },
+ "ramp-137": {
+  "arm": "ramp",
+  "seed": 137,
+  "parameters": 731168,
+  "setup_s": 0.005392597988247871,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 57.07096672989428,
+    "cpu_s": 57.06843837699981,
+    "development": {
+     "nll": 3.6376531122307925,
+     "top1": 0.09067131647776809
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "70b0074829385481b4d68cf527279f0a6fd08a0bddd3005c733a589f7cb3bfc0",
+    "dev_s": 2.5635001589544117,
+    "save_s": 0.003749996889382601,
+    "file": "step-312.pt",
+    "sha256": "61e11e5da911d50361675220c4a396ac82fe23e942071ee96f0e4f08e3061f03",
+    "last_grad": 13.733548164367676,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 329,
+    "seen": 5256,
+    "distinct": 4984,
+    "active_s": 60.10852391878143,
+    "cpu_s": 60.10517425299983,
+    "development": {
+     "nll": 3.507269894291236,
+     "top1": 0.11159546643417612
+    },
+    "dev_file": "dev-329.npz",
+    "dev_sha256": "f1c3e4c3fb40cbdaed031814f3d34a5c56d3566fddaec8d872875abb4030f796",
+    "dev_s": 2.6415481972508132,
+    "save_s": 0.0038655316457152367,
+    "file": "step-329.pt",
+    "sha256": "1c84992a01ab3cb2b79dccde99f86091eeed04844641b8b6d3c314d6e6b81b75",
+    "last_grad": 11.935188293457031,
+    "learned_contract": {}
+   }
+  }
+ },
+ "sdpa-137": {
+  "arm": "sdpa",
+  "seed": 137,
+  "parameters": 673056,
+  "setup_s": 0.004350035917013884,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 6.325159816071391,
+    "cpu_s": 6.324693749000232,
+    "development": {
+     "nll": 3.8415926942334258,
+     "top1": 0.06451612903225806
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "b5b2145f5cf62e1d3b4b77eba4559e4d21cbf0dbcc1a01a85c27a6ac5bbd8f45",
+    "dev_s": 0.21039555594325066,
+    "save_s": 0.0055128042586147785,
+    "file": "step-312.pt",
+    "sha256": "2dda0065fe2a04b61e41cd41d62f7aa57e9b6880903bd844618fb01851914c88",
+    "last_grad": 10.678949356079102,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 2528,
+    "seen": 40384,
+    "distinct": 4984,
+    "active_s": 60.01329951826483,
+    "cpu_s": 59.7819189129998,
+    "development": {
+     "nll": 2.5980620855814647,
+     "top1": 0.2955536181342633
+    },
+    "dev_file": "dev-2528.npz",
+    "dev_sha256": "d828a7357640ff845a551da4941e9711dac6cbb4a507970d67ccc3433ec41343",
+    "dev_s": 0.20658244285732508,
+    "save_s": 0.004611665848642588,
+    "file": "step-2528.pt",
+    "sha256": "c2df38f196cd8dfb50c84ab2a02e34795bb7ac3af610698e46a9702d1733c38a",
+    "last_grad": 7.800367832183838,
+    "learned_contract": {}
+   }
+  }
+ },
+ "exact-311": {
+  "arm": "exact",
+  "seed": 311,
+  "parameters": 731168,
+  "setup_s": 0.005494405049830675,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 50.24557718541473,
+    "cpu_s": 50.172788505999904,
+    "development": {
+     "nll": 3.8572187805116096,
+     "top1": 0.08892763731473409
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "5d44c6a97f44d11b7f49fa9c8610cdf8f7fda5d9700d5878cfb3309d99b477aa",
+    "dev_s": 1.2173738852143288,
+    "save_s": 0.004108943976461887,
+    "file": "step-312.pt",
+    "sha256": "780ee607e006436d301e4cb041ba6447d058bf99eb2ecd29e5d00b8d77b8d172",
+    "last_grad": 7.9915995597839355,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 395,
+    "seen": 6312,
+    "distinct": 4984,
+    "active_s": 60.03063518926501,
+    "cpu_s": 59.912136080000266,
+    "development": {
+     "nll": 3.7186734705077455,
+     "top1": 0.08020924149956409
+    },
+    "dev_file": "dev-395.npz",
+    "dev_sha256": "02ae4c7edcd8424562b81b664c363be379958e897deae75583754f8cb7693e28",
+    "dev_s": 1.2804606393910944,
+    "save_s": 0.004382105078548193,
+    "file": "step-395.pt",
+    "sha256": "2e2f5291381005d73726961a78ad56212c13e8938c2951379fce00d9dc7ac59a",
+    "last_grad": 9.741827011108398,
+    "learned_contract": {}
+   }
+  }
+ },
+ "learn-311": {
+  "arm": "learn",
+  "seed": 311,
+  "parameters": 731170,
+  "setup_s": 0.008714281022548676,
+  "law_first_gradient": {
+   "raw_sigma": 0.007849331945180893,
+   "raw_premium": 8.907209121389315e-05
+  },
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 53.083904158324,
+    "cpu_s": 52.873205297000595,
+    "development": {
+     "nll": 3.8554793089508457,
+     "top1": 0.0985178727114211
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "a731c2dbfa060d87b1d983d846c6979cf5bb3c571fd1a00538b22fff598fb909",
+    "dev_s": 1.454149761237204,
+    "save_s": 0.004384994972497225,
+    "file": "step-312.pt",
+    "sha256": "83457922b5ff1089e2b30d817f4e31d08be3d6b25a1f36b36014d50e89286f2a",
+    "last_grad": 9.37038516998291,
+    "learned_contract": {
+     "sigma": 0.23171672740363364,
+     "premium": 0.010048519278649361
+    }
+   },
+   "clock": {
+    "step": 345,
+    "seen": 5512,
+    "distinct": 4984,
+    "active_s": 60.203557156957686,
+    "cpu_s": 59.99009362400051,
+    "development": {
+     "nll": 3.745075587607407,
+     "top1": 0.0976460331299041
+    },
+    "dev_file": "dev-345.npz",
+    "dev_sha256": "79cb4910cff9029abc2964b05136f40b70ab04146414348a437614efe188de17",
+    "dev_s": 1.8609803821891546,
+    "save_s": 0.005938728805631399,
+    "file": "step-345.pt",
+    "sha256": "875b800ce4141f410bb44268bf0632a01525a19c53d91b53f10cac3aeeae1eb2",
+    "last_grad": 7.744225025177002,
+    "learned_contract": {
+     "sigma": 0.2317482460918048,
+     "premium": 0.010051300866537176
+    }
+   }
+  }
+ },
+ "ramp-311": {
+  "arm": "ramp",
+  "seed": 311,
+  "parameters": 731168,
+  "setup_s": 0.010562545619904995,
+  "law_first_gradient": {},
+  "history": {
+   "clock": {
+    "step": 216,
+    "seen": 3456,
+    "distinct": 3456,
+    "active_s": 60.19161901483312,
+    "cpu_s": 60.16200751400004,
+    "development": {
+     "nll": 3.873071844894679,
+     "top1": 0.07323452484742807
+    },
+    "dev_file": "dev-216.npz",
+    "dev_sha256": "d8fd47ec4d5b5cf126a00ceb15e7cadaf044c0beb0a35d08aed52e0db2836d4c",
+    "dev_s": 2.9824177413247526,
+    "save_s": 0.007114998996257782,
+    "file": "step-216.pt",
+    "sha256": "d30f5dff4b95d2011793198a538128765949525e82a61a1c311f292c166dc62e",
+    "last_grad": 3.947667121887207,
+    "learned_contract": {}
+   },
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 85.3327961852774,
+    "cpu_s": 85.30426770699972,
+    "development": {
+     "nll": 3.77931095333104,
+     "top1": 0.0959023539668701
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "82ef8f0fd0c92afd9da7cac42348de32aacfea7ddc662d87b496fb9a9b969338",
+    "dev_s": 3.0174454050138593,
+    "save_s": 0.0035703228786587715,
+    "file": "step-312.pt",
+    "sha256": "9f30a261685682cc0371d8733fd4756dfe724fef02275e9b89981a2c5f88b573",
+    "last_grad": 6.744790554046631,
+    "learned_contract": {}
+   }
+  }
+ },
+ "sdpa-311": {
+  "arm": "sdpa",
+  "seed": 311,
+  "parameters": 673056,
+  "setup_s": 0.00442458363249898,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 7.905128836166114,
+    "cpu_s": 7.907104852998941,
+    "development": {
+     "nll": 3.7139421012146205,
+     "top1": 0.1002615518744551
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "4f89052ca2424e2badd8f03561fc3974f4b15a59adb38cadfbfa2eaa4fcadd34",
+    "dev_s": 0.19414568692445755,
+    "save_s": 0.004303477238863707,
+    "file": "step-312.pt",
+    "sha256": "d3ce68d89d05c59e4409eb38fadefc469d57b9be2c13a533003b62538e0d9ac6",
+    "last_grad": 5.2317280769348145,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 2239,
+    "seen": 35768,
+    "distinct": 4984,
+    "active_s": 60.012513815891,
+    "cpu_s": 60.016637054995726,
+    "development": {
+     "nll": 2.386299733026312,
+     "top1": 0.3147340889276373
+    },
+    "dev_file": "dev-2239.npz",
+    "dev_sha256": "523812b39274d73badc8422c19a5b0dfc972d9746b9a5255ce34cfc6b341cb0a",
+    "dev_s": 0.4213524083606899,
+    "save_s": 0.006112884264439344,
+    "file": "step-2239.pt",
+    "sha256": "352accd149303d8770eebaa52f2cec03752015a40af9300806f055e60afb649e",
+    "last_grad": 6.154514312744141,
+    "learned_contract": {}
+   }
+  }
+ },
+ "lookup-311": {
+  "arm": "lookup",
+  "seed": 311,
+  "parameters": 731168,
+  "setup_s": 0.011089597828686237,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 31.12763609783724,
+    "cpu_s": 31.125107915000513,
+    "development": {
+     "nll": 3.8065546168643114,
+     "top1": 0.0985178727114211
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "d401b6df744bf45d39752cabfd1cc25deefe4a247a83b8824e958b0f352d74a1",
+    "dev_s": 0.5102358059957623,
+    "save_s": 0.006109714042395353,
+    "file": "step-312.pt",
+    "sha256": "325df5fdc2a12709eaba73f755f678d7a79e60235b53e3e445b55fcc31f09153",
+    "last_grad": 8.238706588745117,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 704,
+    "seen": 11248,
+    "distinct": 4984,
+    "active_s": 60.112791548483074,
+    "cpu_s": 60.10871597699986,
+    "development": {
+     "nll": 3.313192641827419,
+     "top1": 0.14734088927637315
+    },
+    "dev_file": "dev-704.npz",
+    "dev_sha256": "05bfd716ba7c721b903d0b7e4a72fa0e74485a91a77c86179c4c74849cb299b9",
+    "dev_s": 1.0655371369794011,
+    "save_s": 0.008822768926620483,
+    "file": "step-704.pt",
+    "sha256": "e76d1069f8629553155dcbded4e5fab9adb974b38e2e96f85609cacb9801a774",
+    "last_grad": 11.925599098205566,
+    "learned_contract": {}
+   }
+  }
+ },
+ "learn-557": {
+  "arm": "learn",
+  "seed": 557,
+  "parameters": 731170,
+  "setup_s": 0.009552032686769962,
+  "law_first_gradient": {
+   "raw_sigma": 0.006227374076843262,
+   "raw_premium": 0.0001779162703314796
+  },
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 56.576991331763566,
+    "cpu_s": 56.563671663999116,
+    "development": {
+     "nll": 3.919720459862844,
+     "top1": 0.06538796861377506
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "f1bf9222c94904f5ed152b8b66b50142285a6114499e409cb06990ed578080d2",
+    "dev_s": 1.1330767329782248,
+    "save_s": 0.006000129040330648,
+    "file": "step-312.pt",
+    "sha256": "90204c39a0e06d091ba7363410e8f254e138de089f0eda8620965ef1e9fe3469",
+    "last_grad": 8.413961410522461,
+    "learned_contract": {
+     "sigma": 0.23189879326311671,
+     "premium": 0.010042449257611398
+    }
+   },
+   "clock": {
+    "step": 334,
+    "seen": 5336,
+    "distinct": 4984,
+    "active_s": 60.015628434717655,
+    "cpu_s": 60.00244728899895,
+    "development": {
+     "nll": 3.7471628092087417,
+     "top1": 0.09154315605928509
+    },
+    "dev_file": "dev-334.npz",
+    "dev_sha256": "94f986914e9fc61a0ee6da89b700c81b00b1f38186039c4253475eed6a5e6acc",
+    "dev_s": 1.1712265899404883,
+    "save_s": 0.006027036812156439,
+    "file": "step-334.pt",
+    "sha256": "9c3e2a490b41744e072982aa8f54a64565c99d08d5dde69f4471bb62ad27faec",
+    "last_grad": 5.007172584533691,
+    "learned_contract": {
+     "sigma": 0.232028708952233,
+     "premium": 0.01004866418823581
+    }
+   }
+  }
+ },
+ "ramp-557": {
+  "arm": "ramp",
+  "seed": 557,
+  "parameters": 731168,
+  "setup_s": 0.006327367387712002,
+  "law_first_gradient": {},
+  "history": {
+   "clock": {
+    "step": 267,
+    "seen": 4272,
+    "distinct": 4272,
+    "active_s": 60.015557354316115,
+    "cpu_s": 60.01927722399762,
+    "development": {
+     "nll": 3.909384792746038,
+     "top1": 0.05405405405405406
+    },
+    "dev_file": "dev-267.npz",
+    "dev_sha256": "6f3a8987d3b304af1f3df1ff23435554c4647a4626c41af3fe6fd56eca487bb8",
+    "dev_s": 2.469495030120015,
+    "save_s": 0.004859839100390673,
+    "file": "step-267.pt",
+    "sha256": "c5448dfdd9dc1b054ca60761b869729db4c90122602ec267e96e352c14f977ac",
+    "last_grad": 2.9793710708618164,
+    "learned_contract": {}
+   },
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 70.61413751123473,
+    "cpu_s": 70.61658507099798,
+    "development": {
+     "nll": 4.045129423573846,
+     "top1": 0.05928509154315606
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "e67fcd81c0f9ec94d0ded0fccb9c7b43dc4307985af9a31fe1bdc4c631696b88",
+    "dev_s": 3.0639467290602624,
+    "save_s": 0.0047797211445868015,
+    "file": "step-312.pt",
+    "sha256": "5e75f0be97f0e35fb50f230da2fcfd32b7653484887ba24abbf9310c3768e9b0",
+    "last_grad": 12.504232406616211,
+    "learned_contract": {}
+   }
+  }
+ },
+ "sdpa-557": {
+  "arm": "sdpa",
+  "seed": 557,
+  "parameters": 673056,
+  "setup_s": 0.006057026796042919,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 11.530706298537552,
+    "cpu_s": 11.53034603199967,
+    "development": {
+     "nll": 3.881525540478067,
+     "top1": 0.08456843940714909
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "d8a84ef6cf5644120e5793f8e87c210d62d15a70b2984d50183732303400be6e",
+    "dev_s": 0.23366806795820594,
+    "save_s": 0.006051777396351099,
+    "file": "step-312.pt",
+    "sha256": "65dd79812dfd938c7b567dd7de570b419bbf28db07b68fd448aafd21290aa055",
+    "last_grad": 10.93472671508789,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 1809,
+    "seen": 28904,
+    "distinct": 4984,
+    "active_s": 60.00086590554565,
+    "cpu_s": 59.98654256400073,
+    "development": {
+     "nll": 2.4366789968918856,
+     "top1": 0.2911944202266783
+    },
+    "dev_file": "dev-1809.npz",
+    "dev_sha256": "fb3807a5a1dfcbb2b053d41604f2074b08e865b7c88fce6a38f818752adf9e55",
+    "dev_s": 0.21088567515835166,
+    "save_s": 0.0033935001119971275,
+    "file": "step-1809.pt",
+    "sha256": "af38c39627260a71fab53378493ea01876e2ba2ca8f848d6842191506e8b47f4",
+    "last_grad": 8.155949592590332,
+    "learned_contract": {}
+   }
+  }
+ },
+ "lookup-557": {
+  "arm": "lookup",
+  "seed": 557,
+  "parameters": 731168,
+  "setup_s": 0.007444616872817278,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 25.69388869823888,
+    "cpu_s": 25.648143397000013,
+    "development": {
+     "nll": 3.8829179611556133,
+     "top1": 0.07061900610287707
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "bf76e5cd5aa5d7b16f0cdd7891801bb740b9bd02783e14c42fd287c61eb43066",
+    "dev_s": 0.5023322557099164,
+    "save_s": 0.00550049589946866,
+    "file": "step-312.pt",
+    "sha256": "4e78150b2f9d3a04aade50c28dfb1553dda3b66703901e72d7f3c54da153be35",
+    "last_grad": 8.10206413269043,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 709,
+    "seen": 11328,
+    "distinct": 4984,
+    "active_s": 60.172312582843006,
+    "cpu_s": 60.109410145997344,
+    "development": {
+     "nll": 3.258717455391535,
+     "top1": 0.14298169136878813
+    },
+    "dev_file": "dev-709.npz",
+    "dev_sha256": "d13d97ad4db5fbe49a9b7b6fccb7aaa4b8ffc828dfb9a69e57d06b6435517e0d",
+    "dev_s": 1.7960150726139545,
+    "save_s": 0.011032072361558676,
+    "file": "step-709.pt",
+    "sha256": "ccd3632752d25ec448b540b5ba2d729be54621769b7c7cd8095ead7883899fca",
+    "last_grad": 9.517501831054688,
+    "learned_contract": {}
+   }
+  }
+ },
+ "exact-557": {
+  "arm": "exact",
+  "seed": 557,
+  "parameters": 731168,
+  "setup_s": 0.00905947107821703,
+  "law_first_gradient": {},
+  "history": {
+   "pass": {
+    "step": 312,
+    "seen": 4984,
+    "distinct": 4984,
+    "active_s": 36.11844307091087,
+    "cpu_s": 36.04379480599948,
+    "development": {
+     "nll": 3.938977739453129,
+     "top1": 0.06364428945074106
+    },
+    "dev_file": "dev-312.npz",
+    "dev_sha256": "18c81be0f2613b05c8a8d549fd7bec8e8dd2eda2f4f38a30c431c023fa039625",
+    "dev_s": 1.0560029270127416,
+    "save_s": 0.003945590928196907,
+    "file": "step-312.pt",
+    "sha256": "f99a35955ec009b873c6ebc1d59e562b2636596166a5687f0a15d37fcbed0c52",
+    "last_grad": 8.32558536529541,
+    "learned_contract": {}
+   },
+   "clock": {
+    "step": 538,
+    "seen": 8600,
+    "distinct": 4984,
+    "active_s": 60.01921907206997,
+    "cpu_s": 59.941297583999585,
+    "development": {
+     "nll": 3.5037467680865833,
+     "top1": 0.10897994768962511
+    },
+    "dev_file": "dev-538.npz",
+    "dev_sha256": "4f1c95b8a9a09c3eb4841ba58e0e637d304286f9c93ed5bdf9d12df08a997b25",
+    "dev_s": 1.2576853688806295,
+    "save_s": 0.00472654402256012,
+    "file": "step-538.pt",
+    "sha256": "a1d9ccc0bfe462189673d9424e699f9d776d78dd308c64000becfefd57b47948",
+    "last_grad": 9.470560073852539,
+    "learned_contract": {}
+   }
+  }
+ }
+}

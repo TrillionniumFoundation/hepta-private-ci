@@ -98,7 +98,7 @@ def score(net,v,a,tokens):
     result=[]
     for ix in np.array_split(np.arange(len(v)),(len(v)+31)//32):
         embedding=net.encode(net.front(v[ix],a[ix]))
-        result.append((12*embedding@prompts.T).numpy())
+        result.append((12*(embedding@prompts.T)).numpy())
     z=np.concatenate(result)
     if z.shape!=(1056,72) or not np.isfinite(z).all():raise ValueError("external gallery")
     return z
