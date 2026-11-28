@@ -114,7 +114,7 @@ def verify(root):
                 actual_session_wall_s=terminal["terminal_unix"]-sessions[0]["boot_unix"],source_sha256=sessions[0]["source"],
                 checked_best_and_no_wire_logits=15*1311*72,cells=condition,actor_contrasts=contrasts,quality=paired,
                 time_definition="Observed fixed-checkpoint optimization clocks. Tracked validation/I/O shown separately. Full experiment wall includes cold.")
-    
+
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()

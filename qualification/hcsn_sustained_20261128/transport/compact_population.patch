@@ -1,8 +1,6 @@
 --- a/population.py
 +++ b/population.py
-@@ -11,8 +11,9 @@
- from he_xiong import Published
- 
+@@ -13,6 +13,7 @@
  class BoundaryPopulation(nn.Module):
 -    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.)):
 +    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False):

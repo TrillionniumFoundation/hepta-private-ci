@@ -4,5 +4,5 @@
 skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,*docs/modules/runtime.agentd/evidence/2026-10-23-production-composition/owner-workspace-raw/part-*.txt,./qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log,./qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log,./evidence/actual-elf-transport-20261105-93bfc-01/archives,./evidence/actual-elf-transport-20261105-93bfc-01/transport-index.json
 check-hidden = true
 # Preserve exact Cargo crate/version lines and literal software credits or source-language metadata.
-ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b|^\s*Compiling inout v(?:0\.1\.4|0\.2\.2)\s*$|(?<=Software : )Shotcut\b|(?<=29\. )juli(?= 2014)|(?<=met 5 )juni(?=, 12 uur)|(?<=staan\. Met )als(?= doel: bredere)
+ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b|^\s*Compiling inout v(?:0\.1\.4|0\.2\.2)\s*$|(?<=Software : )Shotcut\b|(?<=29\. )juli(?= 2014)|(?<=met 5 )juni(?=, 12 uur)|(?<=staan\. Met )als(?= doel: bredere)|\bROUGE\b|(?<![A-Za-z])rouge(?=[^A-Za-z]|$)
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness,DAA
