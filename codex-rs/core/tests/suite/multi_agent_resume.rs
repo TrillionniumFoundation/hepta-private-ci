@@ -328,6 +328,11 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
             PermissionProfile::Disabled,
         )
     );
+    // The sibling may evict this idle worker at the configured residency limit.
+    worker_thread
+        .flush_rollout()
+        .await
+        .context("flush the original worker before starting the sibling")?;
 
     let sibling_spawn_args = serde_json::to_string(&json!({
         "message": SIBLING_TASK,
@@ -373,9 +378,15 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
-    sibling_thread.flush_rollout().await?;
-    worker_thread.flush_rollout().await?;
-    initial.codex.flush_rollout().await?;
+    sibling_thread
+        .flush_rollout()
+        .await
+        .context("flush the second worker")?;
+    initial
+        .codex
+        .flush_rollout()
+        .await
+        .context("flush the root")?;
     sibling_thread.shutdown_and_wait().await?;
     worker_thread.shutdown_and_wait().await?;
     drop(sibling_thread);
@@ -435,7 +446,8 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     initial.codex.shutdown_and_wait().await?;
     let resumed = resume_builder
         .resume_in_same_environment(&server, &initial)
-        .await?;
+        .await
+        .context("cold-resume the root with its original executor")?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,
