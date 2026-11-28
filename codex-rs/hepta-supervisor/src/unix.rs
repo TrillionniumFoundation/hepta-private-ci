@@ -639,7 +639,13 @@ fn read_agent_drain_frame(
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(request)?;
-    stream.shutdown(Shutdown::Write)?;
+    // macOS can report ENOTCONN after the peer has sent its reply and closed.
+    // The queued reply must still be read and validated below.
+    if let Err(error) = stream.shutdown(Shutdown::Write)
+        && error.kind() != std::io::ErrorKind::NotConnected
+    {
+        return Err(error);
+    }
     let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut response = Vec::new();
     reader.read_until(b'\n', &mut response)?;
