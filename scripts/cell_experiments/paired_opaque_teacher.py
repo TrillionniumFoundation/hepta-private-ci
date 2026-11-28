@@ -1,8 +1,10 @@
 """Consume unsigned correction observations without upgrading their authority.
 
-Only the final corrected text is a supervision candidate. The teacher's observed
-answer never appears as a prior context answer or an executed action. Native
-permission, signed native labels and the late Evaluator remain separate gates.
+Only the final corrected text is a supervision candidate. This source profile
+does not bind the student's entire history, so it cannot supply trajectory
+context. Original paired records remain retained without becoming executed
+teacher actions. Native permission, signed native labels and the late Evaluator
+remain separate gates.
 """
 
 import copy
@@ -197,30 +199,21 @@ def derive(failure, correction, originals):
 
 
 def training_example(record, mode):
-    """Encode the verified derivation; never convert teacher observations to actions."""
+    """Encode the original prompt and corrected answer, retaining the full pair."""
     data._require(
-        record.get("schema") == DERIVED and mode in ("final_answer", "trajectory"),
+        record.get("schema") == DERIVED,
         "invalid opaque derived example",
+    )
+    data._require(
+        mode == "final_answer",
+        "opaque source profile supports final_answer only; trajectory feedback is not bound",
     )
     pair = record.get("original_pair", {})
     expected = _project(pair["failure"], pair["correction"])
     data._require(
         data.canonical(expected) == data.canonical(record), "opaque derivation changed"
     )
-    segments = []
-    if mode == "trajectory":
-        for event in record["trajectory"]:
-            segments.append(
-                {
-                    "role": "tool" if event["kind"] == "observation" else "assistant",
-                    "content": event["content"],
-                    "train": False,
-                    "trainable": False,
-                    "actor": event["actor"],
-                    "kind": event["kind"],
-                }
-            )
-    segments.append(
+    segments = [
         {
             "role": "assistant",
             "content": record["final_answer"],
@@ -229,7 +222,7 @@ def training_example(record, mode):
             "actor": "answer",
             "kind": "final_answer",
         }
-    )
+    ]
     return {
         "record_id": record["record_id"],
         "input": record["task"]["input"],

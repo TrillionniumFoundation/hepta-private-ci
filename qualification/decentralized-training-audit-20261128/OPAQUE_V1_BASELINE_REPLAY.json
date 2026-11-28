@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.audit.opaque-baseline-replay.v1",
+  "baseline_commit": "ab63fa79e11ce295a5bfbbe3f56120b62d4fcbbe",
+  "source_archive_sha256": "6012d3a28a4255643290599d0b74ae14273f31464c797124aede051f55f3046e",
+  "elapsed_seconds": 0.524536753999655,
+  "original_source_bytes_unchanged": true,
+  "scope": "Original production and fixture code extracted from the pinned baseline commit; synthetic temporary originals. No production source modifications or model-quality claim.",
+  "observations": [
+    {
+      "case": "legitimate_mixed_batch",
+      "individual_example_counts": [
+        1,
+        1
+      ],
+      "mixed_exception": {
+        "type": "ValueError",
+        "message": "schema mismatch"
+      }
+    },
+    {
+      "case": "unbound_task_messages",
+      "derive_and_encoding_accepted": true,
+      "teacher_answer_in_prefix": true,
+      "prefix_roles": [
+        "user",
+        "assistant",
+        "user"
+      ],
+      "encoded_turn_count": 1
+    },
+    {
+      "case": "training_inference_prefix_mismatch",
+      "training_encoding_accepted": true,
+      "training_roles": [
+        "user",
+        "assistant",
+        "assistant"
+      ],
+      "encoded_turn_count": 1,
+      "same_prefix_inference_exception": {
+        "type": "ValueError",
+        "message": "generation requires a user or tool observation"
+      }
+    },
+    {
+      "case": "unbound_trajectory_observation",
+      "derive_and_encoding_accepted": true,
+      "teacher_answer_in_prefix": true,
+      "prefix_roles": [
+        "user",
+        "assistant",
+        "tool"
+      ],
+      "encoded_turn_count": 1
+    }
+  ]
+}

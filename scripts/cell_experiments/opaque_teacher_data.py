@@ -120,6 +120,10 @@ def validate_record(record, *, require_outcome=True):
     source_sha = sha(source.get("sha256"))
     task = _object(record.get("task"), "task")
     data._text(task.get("input"), "task.input", 8192)
+    data._require(
+        "messages" not in task,
+        "opaque source profile does not bind task.messages",
+    )
     verifier = _object(task.get("verifier"), "verifier")
     data._require(
         verifier.get("name") == "json_artifact"
