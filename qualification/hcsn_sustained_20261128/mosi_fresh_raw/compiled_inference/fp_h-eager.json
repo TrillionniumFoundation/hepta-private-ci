@@ -1,0 +1,96 @@
+{
+ "arm": "fp_h",
+ "batch_shapes": [
+  64,
+  46
+ ],
+ "cold_input_sha256": "e84b18ceca68138a1db83a812a9c67fe837046df12537018f6f14ddc01368c8a",
+ "compile_threads": 1,
+ "cpu": "AVX2",
+ "first_full_686_predict_s": 0.3967043550219387,
+ "fresh_seal_sha256": "fc024bfe4a11bcf1f95390efe0a32d2200cb532f11aa7c7c57fa15c601194858",
+ "fullgraph": false,
+ "initial_wrapper_s": 8.76840204000473e-07,
+ "max_abs_gate": 0.001,
+ "mean_abs_gate": 0.0001,
+ "mode": "eager",
+ "model_and_selected_weights_s": 0.01692697498947382,
+ "num_threads": 1,
+ "process_to_first_full_output_s": 2.8843890628777444,
+ "process_to_torch_and_checked_inputs_s": 2.470754827838391,
+ "score_file_sha256": "2c2cddb73427bae424165fb676ea974b36e2285b82767b0aee5931b352f39bc3",
+ "seeds": [
+  413,
+  677,
+  941
+ ],
+ "source_sha256": "5495733ff11fad75dea8dcc01e019a58d9480788a2bc6c39a85abdcadbfa7622",
+ "torch": "2.8.0+cpu",
+ "warm_by_seed": {
+  "413": {
+   "exact_to_original": true,
+   "max_abs_score_delta": 0.0,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 0.0,
+   "sign_flips": 0,
+   "video_MAE_delta": 0.0,
+   "wall_median": 0.3957388219423592,
+   "wall_runs": [
+    0.3957388219423592,
+    0.39500902500003576,
+    0.29140925500541925,
+    0.32955750613473356,
+    0.37970386096276343,
+    0.4512327960692346,
+    0.45117093506269157,
+    0.4672756490763277,
+    0.487425692146644
+   ]
+  },
+  "677": {
+   "exact_to_original": true,
+   "max_abs_score_delta": 0.0,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 0.0,
+   "sign_flips": 0,
+   "video_MAE_delta": 0.0,
+   "wall_median": 0.3719705529510975,
+   "wall_runs": [
+    0.47714122710749507,
+    0.46434951899573207,
+    0.41760842013172805,
+    0.3719705529510975,
+    0.3563873029779643,
+    0.3710254579782486,
+    0.387617687927559,
+    0.3667836980894208,
+    0.3683440829627216
+   ]
+  },
+  "941": {
+   "exact_to_original": true,
+   "max_abs_score_delta": 0.0,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 0.0,
+   "sign_flips": 0,
+   "video_MAE_delta": 0.0,
+   "wall_median": 0.3610941148363054,
+   "wall_runs": [
+    0.3689606699626893,
+    0.3657011669129133,
+    0.3646157698240131,
+    0.3303716431837529,
+    0.3610941148363054,
+    0.3602575419936329,
+    0.2635083319619298,
+    0.28886520210653543,
+    0.4103288990445435
+   ]
+  }
+ },
+ "weights": {
+  "413": "83800e8c79a33e91fcb7ff159b533cd2fcd1ebab72d589676ec5bc51a33e6c3c",
+  "677": "cc9f3d2af8aaffa39b6a53376279d573a6292c84eb50308bd028b18d90c1e4bd",
+  "941": "18e86f6e4349df1c7d278e74a072a8d7d8a6b3619f2100d373b6200c88df9a8b"
+ }
+}

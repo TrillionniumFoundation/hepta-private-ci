@@ -1,0 +1,96 @@
+{
+ "arm": "transformer",
+ "batch_shapes": [
+  64,
+  46
+ ],
+ "cold_input_sha256": "e84b18ceca68138a1db83a812a9c67fe837046df12537018f6f14ddc01368c8a",
+ "compile_threads": 1,
+ "cpu": "AVX2",
+ "first_full_686_predict_s": 49.21093441802077,
+ "fresh_seal_sha256": "fc024bfe4a11bcf1f95390efe0a32d2200cb532f11aa7c7c57fa15c601194858",
+ "fullgraph": true,
+ "initial_wrapper_s": 2.1928901448845863,
+ "max_abs_gate": 0.001,
+ "mean_abs_gate": 0.0001,
+ "mode": "inductor",
+ "model_and_selected_weights_s": 0.02964538289234042,
+ "num_threads": 1,
+ "process_to_first_full_output_s": 54.14900443400256,
+ "process_to_torch_and_checked_inputs_s": 2.7155313291586936,
+ "score_file_sha256": "e3f0b39b6efdbbacb02916b7c94ac8f1408518b57f852d3261be603d9df58bf9",
+ "seeds": [
+  413,
+  677,
+  941
+ ],
+ "source_sha256": "5495733ff11fad75dea8dcc01e019a58d9480788a2bc6c39a85abdcadbfa7622",
+ "torch": "2.8.0+cpu",
+ "warm_by_seed": {
+  "413": {
+   "exact_to_original": false,
+   "max_abs_score_delta": 5.960464477539062e-07,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 9.939899945050566e-08,
+   "sign_flips": 0,
+   "video_MAE_delta": 0.0,
+   "wall_median": 0.05339643498882651,
+   "wall_runs": [
+    0.05339643498882651,
+    0.05309586017392576,
+    0.0531622979324311,
+    0.05330275883898139,
+    0.053326925029978156,
+    0.05358767509460449,
+    0.05346656800247729,
+    0.0535975091625005,
+    0.053528217133134604
+   ]
+  },
+  "677": {
+   "exact_to_original": false,
+   "max_abs_score_delta": 4.76837158203125e-07,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 9.22796764457191e-08,
+   "sign_flips": 0,
+   "video_MAE_delta": 0.0,
+   "wall_median": 0.05315843294374645,
+   "wall_runs": [
+    0.053736337926238775,
+    0.05315843294374645,
+    0.05290050804615021,
+    0.05305403796955943,
+    0.053158205933868885,
+    0.053887785878032446,
+    0.05355458101257682,
+    0.053586655063554645,
+    0.05315165803767741
+   ]
+  },
+  "941": {
+   "exact_to_original": false,
+   "max_abs_score_delta": 9.5367431640625e-07,
+   "maximum_score_jitter_across_nine_repeats": 0.0,
+   "mean_abs_score_delta": 1.0013211051507176e-07,
+   "sign_flips": 0,
+   "video_MAE_delta": -5.960464477539063e-08,
+   "wall_median": 0.0424438719637692,
+   "wall_runs": [
+    0.053605551132932305,
+    0.05343705788254738,
+    0.052965078968554735,
+    0.05253000487573445,
+    0.0347513088490814,
+    0.03868892905302346,
+    0.0424438719637692,
+    0.039207363966852427,
+    0.042033829959109426
+   ]
+  }
+ },
+ "weights": {
+  "413": "2940b9e6496cff8f80544d03e415b0d48666588767152e3e71367be0e80db0bf",
+  "677": "363933fd3232d0b7e59404617576fd2f0ebd7bfdd818c77d3924c8286f2a63c7",
+  "941": "bd7da286b138d0351c177228c168f7f00d1f2e3ab369eb877fc08e0172636407"
+ }
+}

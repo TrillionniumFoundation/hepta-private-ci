@@ -1,0 +1,32 @@
+{
+ "first_timing": "Independent fresh process per method/backend; compiler-specific caches start empty by architecture. Subsequent seed weights reuse the graph. Operating-system page caches were not cleared.",
+ "scope": "Post-hoc inference performance on two sealed width-64 methods; 686 pre-extracted samples, three seeds, single CPU thread; no training.",
+ "source_sha256": "5495733ff11fad75dea8dcc01e019a58d9480788a2bc6c39a85abdcadbfa7622",
+ "summary": {
+  "fp_h": {
+   "empty_cache_process_to_first_result_compiled_s": 67.80795570393093,
+   "estimated_complete_686_sweeps_to_amortize": 613,
+   "fresh_process_to_first_result_eager_s": 2.8843890628777444,
+   "maximum_absolute_difference": 7.152557373046875e-07,
+   "mean_seed_compiled_warm_median_s": 0.2701778751021872,
+   "mean_seed_eager_warm_median_s": 0.3762678299099207,
+   "sign_changes_total": 0,
+   "source_sha": "fc024bfe4a11bcf1f95390efe0a32d2200cb532f11aa7c7c57fa15c601194858",
+   "strict_score_tolerance_and_sign_gate": true,
+   "warm_speed_ratio": 1.3926670707866362
+  },
+  "transformer": {
+   "empty_cache_process_to_first_result_compiled_s": 54.14900443400256,
+   "estimated_complete_686_sweeps_to_amortize": 5825,
+   "fresh_process_to_first_result_eager_s": 2.57105524209328,
+   "maximum_absolute_difference": 9.5367431640625e-07,
+   "mean_seed_compiled_warm_median_s": 0.04966624663211405,
+   "mean_seed_eager_warm_median_s": 0.05852381202081839,
+   "sign_changes_total": 0,
+   "source_sha": "fc024bfe4a11bcf1f95390efe0a32d2200cb532f11aa7c7c57fa15c601194858",
+   "strict_score_tolerance_and_sign_gate": true,
+   "warm_speed_ratio": 1.1783417509745353
+  }
+ },
+ "timing_runs_per_seed": 9
+}
