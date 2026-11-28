@@ -5,6 +5,8 @@ use super::start_streaming_sse_server_inner;
 use crate::responses::ResponseMock;
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::time::Sleep;
 use wiremock::Match;
 use wiremock::Request;
 use wiremock::http::HeaderMap;
@@ -22,11 +24,24 @@ pub struct StreamingSseRoute {
 pub async fn start_routed_streaming_sse_server(
     routes: Vec<StreamingSseRoute>,
 ) -> (StreamingSseServer, ResponseMock) {
+    start_routed_streaming_sse_server_with_delays(
+        routes.into_iter().map(|route| (route, None)).collect(),
+    )
+    .await
+}
+
+/// Delays each route's response headers from the instant its request is selected.
+/// Delays are awaited by owned connection tasks after releasing the route lock.
+pub async fn start_routed_streaming_sse_server_with_delays(
+    routes: Vec<(StreamingSseRoute, Option<Duration>)>,
+) -> (StreamingSseServer, ResponseMock) {
     let mut responses = Vec::new();
     let mut matchers = VecDeque::new();
-    for route in routes {
+    let mut delays = VecDeque::new();
+    for (route, delay) in routes {
         for response in route.responses {
             matchers.push_back(Arc::clone(&route.matcher));
+            delays.push_back(delay);
             responses.push(response);
         }
     }
@@ -37,6 +52,7 @@ pub async fn start_routed_streaming_sse_server(
         /*request_observer*/ None,
         Some(ResponseRoutes {
             matchers,
+            delays,
             recorded: recorded.clone(),
         }),
     )
@@ -46,11 +62,16 @@ pub async fn start_routed_streaming_sse_server(
 
 pub(super) struct ResponseRoutes {
     matchers: VecDeque<Arc<dyn Match + Send + Sync>>,
+    delays: VecDeque<Option<Duration>>,
     recorded: ResponseMock,
 }
 
 impl ResponseRoutes {
-    pub(super) fn select(&mut self, raw_headers: &str, body: Vec<u8>) -> Option<usize> {
+    pub(super) fn select(
+        &mut self,
+        raw_headers: &str,
+        body: Vec<u8>,
+    ) -> Option<(usize, Option<Sleep>)> {
         let (method, path) = parse_request_line(raw_headers)?;
         let mut headers = HeaderMap::new();
         for line in raw_headers
@@ -77,7 +98,8 @@ impl ResponseRoutes {
             .iter()
             .position(|matcher| matcher.matches(&request))?;
         self.matchers.remove(index)?;
-        Some(index)
+        let delay = self.delays.remove(index)?.map(tokio::time::sleep);
+        Some((index, delay))
     }
 }
 

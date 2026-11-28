@@ -14,6 +14,7 @@ use tokio::sync::oneshot;
 mod routes;
 pub use routes::StreamingSseRoute;
 pub use routes::start_routed_streaming_sse_server;
+pub use routes::start_routed_streaming_sse_server_with_delays;
 
 /// Streaming SSE chunk payload gated by a per-chunk signal.
 #[derive(Debug)]
@@ -218,11 +219,14 @@ async fn start_streaming_sse_server_inner(
                             let routed_body = route_requests.then(|| body.clone());
                             requests.lock().await.push(body);
                             request_notify.notify_one();
-                            let Some((chunks, completion, headers_gate)) = take_next_stream(&state, &request, routed_body).await else {
+                            let Some((chunks, completion, headers_gate, response_delay)) = take_next_stream(&state, &request, routed_body).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
                                 return;
                             };
 
+                            if let Some(delay) = response_delay {
+                                delay.await;
+                            }
                             if let Some(gate) = headers_gate
                                 && gate.await.is_err() {
                                     return;
@@ -289,19 +293,25 @@ async fn take_next_stream(
     Vec<StreamingSseChunk>,
     oneshot::Sender<i64>,
     Option<oneshot::Receiver<()>>,
+    Option<tokio::time::Sleep>,
 )> {
     let mut guard = state.lock().await;
-    let (chunks, completion) = if let Some(routes) = &mut guard.request_routes {
-        let index = routes.select(headers, body?)?;
+    let (chunks, completion, response_delay) = if let Some(routes) = &mut guard.request_routes {
+        let (index, delay) = routes.select(headers, body?)?;
         (
             guard.responses.remove(index)?,
             guard.completions.remove(index)?,
+            delay,
         )
     } else {
-        (guard.responses.pop_front()?, guard.completions.pop_front()?)
+        (
+            guard.responses.pop_front()?,
+            guard.completions.pop_front()?,
+            None,
+        )
     };
     let headers_gate = guard.first_headers_gate.take();
-    Some((chunks, completion, headers_gate))
+    Some((chunks, completion, headers_gate, response_delay))
 }
 
 async fn read_http_request(stream: &mut tokio::net::TcpStream) -> (String, Vec<u8>) {
@@ -862,21 +872,23 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
             request_routes: None,
         });
 
-        let (first_chunks, first_completion, first_headers_gate) =
+        let (first_chunks, first_completion, first_headers_gate, first_delay) =
             take_next_stream(&state, /*headers*/ "", /*body*/ None)
                 .await
                 .expect("first stream");
         assert_eq!(first_chunks[0].body, "first");
         assert!(first_headers_gate.is_none());
+        assert!(first_delay.is_none());
         let _ = first_completion.send(11);
         assert_eq!(first_rx.await.expect("first completion"), 11);
 
-        let (second_chunks, second_completion, second_headers_gate) =
+        let (second_chunks, second_completion, second_headers_gate, second_delay) =
             take_next_stream(&state, /*headers*/ "", /*body*/ None)
                 .await
                 .expect("second stream");
         assert_eq!(second_chunks[0].body, "second");
         assert!(second_headers_gate.is_none());
+        assert!(second_delay.is_none());
         let _ = second_completion.send(22);
         assert_eq!(second_rx.await.expect("second completion"), 22);
 

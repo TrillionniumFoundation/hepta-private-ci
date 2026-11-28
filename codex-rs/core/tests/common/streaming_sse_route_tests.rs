@@ -1,5 +1,6 @@
 use super::StreamingSseRoute;
 use super::start_routed_streaming_sse_server;
+use super::start_routed_streaming_sse_server_with_delays;
 use crate::responses::ResponsesRequest;
 use crate::streaming_sse::StreamingSseChunk;
 use crate::streaming_sse::StreamingSseServer;
@@ -12,6 +13,7 @@ use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpStream;
+use tokio::sync::Notify;
 use tokio::sync::oneshot;
 use tokio::time::timeout;
 
@@ -212,5 +214,72 @@ async fn routed_server_shutdown_drops_a_gate_without_sending_its_body() -> Resul
     )
     .await??;
     assert!(!String::from_utf8(bytes)?.contains("must remain gated"));
+    Ok(())
+}
+
+#[tokio::test]
+async fn delayed_headers_leave_other_routes_live_and_shutdown_cancels_the_delay() -> Result<()> {
+    let guardian_selected = Arc::new(Notify::new());
+    let notify_guardian = Arc::clone(&guardian_selected);
+    let (server, recorded) = start_routed_streaming_sse_server_with_delays(vec![
+        (
+            StreamingSseRoute {
+                matcher: Arc::new(move |request: &wiremock::Request| {
+                    let matched = request
+                        .headers
+                        .get("x-fixture-route")
+                        .and_then(|value| value.to_str().ok())
+                        == Some("guardian");
+                    if matched {
+                        notify_guardian.notify_one();
+                    }
+                    matched
+                }),
+                responses: vec![vec![StreamingSseChunk {
+                    gate: None,
+                    body: "delayed guardian".to_string(),
+                }]],
+            },
+            Some(Duration::from_secs(/*secs*/ 300)),
+        ),
+        (
+            route(
+                "parent",
+                vec![StreamingSseChunk {
+                    gate: None,
+                    body: "parent live".to_string(),
+                }],
+            ),
+            None,
+        ),
+    ])
+    .await;
+    let mut guardian = post(&server, "guardian", /*compressed*/ true).await?;
+    timeout(
+        Duration::from_secs(/*secs*/ 5),
+        guardian_selected.notified(),
+    )
+    .await?;
+    let parent = post(&server, "parent", /*compressed*/ false).await?;
+    assert_eq!(
+        timeout(Duration::from_secs(/*secs*/ 5), response(parent)).await??,
+        (200, "parent live".to_string())
+    );
+    assert_eq!(recorded.requests().len(), 2);
+    let mut first_byte = [0_u8; 1];
+    assert!(
+        timeout(
+            Duration::from_millis(/*millis*/ 200),
+            guardian.read(&mut first_byte)
+        )
+        .await
+        .is_err(),
+        "the fixed delay must precede all response headers"
+    );
+    server.shutdown().await;
+    assert_eq!(
+        timeout(Duration::from_secs(/*secs*/ 5), body(guardian)).await??,
+        String::new()
+    );
     Ok(())
 }
