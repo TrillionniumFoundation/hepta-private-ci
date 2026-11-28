@@ -386,6 +386,8 @@ fn incremental_render_does_not_add_blank_line_before_html_block() {
 
 #[test]
 fn incremental_render_preserves_heading_and_normalized_html_seams() {
+    let _theme_guard = crate::render::highlight::lock_theme_for_test();
+
     let streams: &[&[&str]] = &[
         &["Paragraph.\n\n# Heading\n\n", "Next paragraph.\n"],
         &[
