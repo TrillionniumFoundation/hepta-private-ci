@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -7,6 +8,10 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use crate::QualificationError;
+
+#[cfg(windows)]
+#[path = "durable_windows.rs"]
+mod windows;
 
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), QualificationError> {
     let mut options = OpenOptions::new();
@@ -118,6 +123,9 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
+    #[cfg(windows)]
+    windows::sync_directory(path)?;
+    #[cfg(not(windows))]
     File::open(path)?.sync_all()?;
     Ok(())
 }

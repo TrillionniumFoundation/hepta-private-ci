@@ -200,7 +200,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
     Ok(())
 }
 
@@ -238,7 +238,7 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
     Ok(())
 }
 
@@ -424,4 +424,12 @@ fn sort_value(value: &mut Value) {
 
 fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
+}
+
+fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    #[cfg(windows)]
+    windows::sync_directory(path)?;
+    #[cfg(not(windows))]
+    File::open(path)?.sync_all()?;
+    Ok(())
 }
