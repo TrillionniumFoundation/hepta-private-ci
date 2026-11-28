@@ -587,3 +587,9 @@ fn write_until(stream: &mut UnixStream, mut bytes: &[u8], deadline: Instant) -> 
 #[cfg(test)]
 #[path = "deployment_issuer_tests.rs"]
 mod tests;
+
+// Input codec qualification only. The original Root current-owner consumer
+// promotes this same module into production in the following slice.
+#[cfg(test)]
+#[path = "deployment_learning_trust_inputs.rs"]
+mod learning_trust_inputs;
