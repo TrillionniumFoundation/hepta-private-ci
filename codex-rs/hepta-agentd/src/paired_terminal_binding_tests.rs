@@ -11,6 +11,7 @@ use crate::paired_preparation::training::consumer::OriginalPairedTrainingDeliver
 use crate::terminal_learning::PairedTerminalBindingPlanV1;
 use crate::terminal_learning::PairedTerminalEventPairV1;
 use codex_hepta_learning_ledger::LedgerEvent;
+use pretty_assertions::assert_eq;
 
 const FIXTURE_NOW: u64 = 50;
 const FAILURE: &[u8] = include_bytes!("../tests/fixtures/paired-record-failure-v1.json");
