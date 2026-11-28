@@ -41,23 +41,30 @@ def _exact(stream, length, deadline):
     return bytes(chunks)
 
 
-def _receive(stream):
+def _receive_frame(stream):
     deadline = time.monotonic() + TIMEOUT
     length = struct.unpack("!I", _exact(stream, 4, deadline))[0]
     if not 0 < length <= MAX_FRAME:
         raise ValueError("peer frame exceeds the fixed bound")
-    raw = _exact(stream, length, deadline)
+    return _exact(stream, length, deadline)
+
+
+def _receive(stream):
+    raw = _receive_frame(stream)
     value = json.loads(raw)
     if canonical(value) != raw:
         raise ValueError("noncanonical peer frame")
     return value
 
 
-def _send(stream, value):
-    raw = canonical(value)
-    if not 0 < len(raw) <= MAX_FRAME:
+def _send_frame(stream, raw):
+    if type(raw) is not bytes or not 0 < len(raw) <= MAX_FRAME:
         raise ValueError("peer frame exceeds the fixed bound")
     stream.sendall(struct.pack("!I", len(raw)) + raw)
+
+
+def _send(stream, value):
+    _send_frame(stream, canonical(value))
 
 
 def _loopback(address):
@@ -87,7 +94,7 @@ def _checked_reply(reply, request):
     return reply["result"]
 
 
-def rpc(address, contract_sha256, operation, arguments):
+def rpc(address, contract_sha256, operation, arguments, *, codec=None):
     request = dict(
         schema=SCHEMA,
         contract_sha256=contract_sha256,
@@ -95,13 +102,18 @@ def rpc(address, contract_sha256, operation, arguments):
         arguments=arguments,
     )
     address = _loopback(address)
-    if len(canonical(request)) > MAX_FRAME:
+    prepared = canonical(request) if codec is None else codec.encode(request)
+    if type(prepared) is not bytes or not 0 < len(prepared) <= MAX_FRAME:
         raise ValueError("peer frame exceeds the fixed bound")
     try:
         with socket.create_connection(address, timeout=TIMEOUT) as stream:
             stream.settimeout(TIMEOUT)
-            _send(stream, request)
-            reply = _receive(stream)
+            if codec is None:
+                _send(stream, request)
+                reply = _receive(stream)
+            else:
+                _send_frame(stream, prepared)
+                reply = codec.decode(_receive_frame(stream))
     except (OSError, EOFError, ValueError, TypeError) as error:
         raise DeliveryUnknown("no complete peer response observed") from error
     return _checked_reply(reply, request)
@@ -165,7 +177,7 @@ class _Handler(socketserver.BaseRequestHandler):
     def handle(self):
         self.request.settimeout(TIMEOUT)
         try:
-            request = _receive(self.request)
+            request = self.server.receive_message(self.request)
             if (
                 type(request) is not dict
                 or set(request)
@@ -187,7 +199,7 @@ class _Handler(socketserver.BaseRequestHandler):
                 )
             except (ValueError, TypeError) as error:
                 reply.update(ok=False, result=str(error)[:240])
-            _send(self.request, reply)
+            self.server.send_message(self.request, reply)
         except (OSError, EOFError, ValueError, TypeError):
             # An invalid/partial frame never becomes a successful acknowledgment.
             return
@@ -199,11 +211,26 @@ class PeerService(socketserver.TCPServer):
     allow_reuse_address = True
     request_queue_size = 8
 
-    def __init__(self, database, contract, address=("127.0.0.1", 0)):
+    def __init__(self, database, contract, address=("127.0.0.1", 0), *, codec=None):
         address = _loopback(address)
+        if codec is not None and (getattr(codec, "contract_hash", None) != digest(contract)
+                or not callable(getattr(codec, "encode", None))
+                or not callable(getattr(codec, "decode", None))):
+            raise ValueError("peer codec is not bound to this representation contract")
+        self.codec = codec
         self.ledger = StatisticsLedger(database, contract)
         self._thread = None
         super().__init__(address, _Handler)
+
+    def receive_message(self, stream):
+        if self.codec is None:
+            return _receive(stream)
+        return self.codec.decode(_receive_frame(stream))
+
+    def send_message(self, stream, value):
+        if self.codec is None:
+            return _send(stream, value)
+        return _send_frame(stream, self.codec.encode(value))
 
     def start(self):
         if self._thread is not None:
@@ -241,7 +268,7 @@ class PeerService(socketserver.TCPServer):
 
     def sync(self, address):
         """Push missing contributions; uncertainty remains retryable by batch ID."""
-        remote = rpc(address, self.ledger.contract_hash, "inventory", {})
+        remote = rpc(address, self.ledger.contract_hash, "inventory", {}, codec=self.codec)
         known = _checked_state(remote, self.ledger.contract_hash)
         sent = 0
         for batch_id, packet_hash in _inventory(self.ledger)["material"]["batches"]:
@@ -256,6 +283,7 @@ class PeerService(socketserver.TCPServer):
                 dict(
                     packet=_packet(self.ledger, batch_id), expected_head=remote["head"]
                 ),
+                codec=self.codec,
             )
             observed = _checked_state(receipt, self.ledger.contract_hash, receipt=True)
             if observed.get(batch_id) != packet_hash:
