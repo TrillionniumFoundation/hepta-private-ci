@@ -64,6 +64,12 @@ jobs:
           grep -Eq '^//codex-rs/exec-server:exec-server-file_system_windows-test[[:space:]]+PASSED in ' "$RUNNER_TEMP/windows-sandbox-runfiles.log"
           grep -Eq '^//codex-rs/core:core-all-test[[:space:]]+PASSED in ' "$RUNNER_TEMP/windows-sandbox-runfiles.log"
           echo "Three original Windows targets: PASS, retries=0, flaky=0; full matrix remains independent."
+      - name: Capture complete original target and attempt logs
+        if: always() && !cancelled()
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: pwsh
+        run: python .github/scripts/preserve_windows_sandbox_test_logs.py
       - name: Preserve original execution evidence
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -72,6 +78,7 @@ jobs:
           path: |
             ${{ runner.temp }}/bazel-execution-logs
             ${{ runner.temp }}/windows-sandbox-runfiles.log
+            ${{ runner.temp }}/windows-sandbox-complete-test-logs
           if-no-files-found: error
       - name: Check for a clean worktree
         if: always() && !cancelled()

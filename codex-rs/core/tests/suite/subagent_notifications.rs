@@ -761,7 +761,20 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&first_child_request).await?;
+    // Each mock records parent requests before its custom matcher is evaluated.
+    // Give the original first-request wait to the actual child request.
+    let first_request_deadline = Instant::now() + Duration::from_secs(2);
+    let first_child_body = loop {
+        if let Some(request) = first_child_request.requests().into_iter().find(|request| {
+            request.body_contains_text(CHILD_PROMPT) && !request.body_contains_text(SPAWN_CALL_ID)
+        }) {
+            break request.body_json();
+        }
+        if Instant::now() >= first_request_deadline {
+            anyhow::bail!("expected the first child's matching request");
+        }
+        sleep(Duration::from_millis(10)).await;
+    };
     // ResponseMock records before its custom matcher, including parent requests.
     let request_deadline = Instant::now() + Duration::from_secs(2);
     let second_child_body = loop {
@@ -785,6 +798,10 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .as_str()
         .expect("continued child turn id");
     assert_ne!(child_thread_id, test.session_configured.thread_id);
+    assert_eq!(
+        first_child_body["client_metadata"]["thread_id"],
+        second_child_body["client_metadata"]["thread_id"],
+    );
     let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
     // Receiving the continuation request does not mean its stop hook has run.
     wait_for_event_match(child_thread.as_ref(), |event| match event {
