@@ -1,0 +1,91 @@
+{
+  "published_parent": "5ab65e021170fac2f1b32833333f220f9db31b46",
+  "published_parent_tree": "14eb396803d5c5673674967f231b9d92c40d250e",
+  "original_pr_base": "6e60365410d825778bb16b759af893985db97a6b",
+  "omission": "The initial WAL publication preserved a 1,123,667-byte immutable archive but omitted its existing blob-policy exception. The parent caught the omission after publication. The unmodified checker reproduced exactly one oversized-blob refusal over the full original PR range.",
+  "repair": "Append only this archive path and exact SHA-256 to the existing reviewed immutable-evidence allowlist, with a reason. Any changed archive bytes or another path remain subject to the unchanged limit.",
+  "archive_path": "qualification/pft-wal-clippy-20261128/evidence.tar.gz",
+  "archive_sha256": "e749c9002a93aff3a9151737c97f7a8fecc7d05ab7fc10f305bd484942e9a49a",
+  "archive_bytes": 1123667,
+  "limit_bytes": 512000,
+  "all_71_archive_members_readback_verified": true,
+  "original_failed_check": {
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "6e60365410d825778bb16b759af893985db97a6b",
+      "--head",
+      "5ab65e021170fac2f1b32833333f220f9db31b46",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 0.11241359700034081,
+    "stdout_sha256": "a755fde302170d35c5c514b7fbfa2e7df17eba304f677573b903b357cca4ffd6",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omission": "Archive was published before its 500 KiB asset exception was added; this actual original-PR-range check reproduces the policy refusal.",
+    "unchanged_policy": true,
+    "stdout": "Checked 27 changed file(s) against the 512000-byte limit.\n- .github/workflows/pft-online-regression.yml: 5696 bytes (5.6 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/action_proposal.rs: 18242 bytes (17.8 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/control_wal.rs: 38783 bytes (37.9 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/metric_policy.rs: 18489 bytes (18.1 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_linear.py: 12090 bytes (11.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_online_regression.py: 7840 bytes (7.7 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics.py: 11222 bytes (11.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/ARCHIVE.json: 373 bytes (0.4 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/BASELINE.json: 6181 bytes (6.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/FORMAT.json: 715 bytes (0.7 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/LOCAL_RESULT.json: 986 bytes (1.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_ARCHIVE.json: 270 bytes (0.3 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_FORMAT.json: 1207 bytes (1.2 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_PROTOCOL.json: 1854 bytes (1.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_RESULT.json: 1210 bytes (1.2 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/OVERFLOW_BASELINE.json: 8281 bytes (8.1 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/PROTOCOL.json: 1461 bytes (1.4 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/README.md: 6987 bytes (6.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/latest-admission.tar.gz: 43075 bytes (42.1 KiB) [binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/local-execution.tar.gz: 35179 bytes (34.4 KiB) [binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_tests.py: 16827 bytes (16.4 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/CI_BASELINE.json: 952 bytes (0.9 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/EVIDENCE.json: 482 bytes (0.5 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/PROTOCOL.json: 1888 bytes (1.8 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/README.md: 3825 bytes (3.7 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/RESULTS.json: 10785 bytes (10.5 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/evidence.tar.gz: 1123667 bytes (1097.3 KiB) [binary, blocked]\n\nFile(s) exceed the configured limit:\n- qualification/pft-wal-clippy-20261128/evidence.tar.gz: 1123667 bytes > 512000 bytes\n\nIf one of these is a real checked-in asset we want to keep, add its repo-relative path to .github/blob-size-allowlist.txt. Otherwise, shrink it or keep it out of git.\n",
+    "stderr": ""
+  },
+  "fix_checks": [
+    {
+      "name": "UNITTEST",
+      "source_commit": "38b5a8e1072a48ba9bdd81a9e54f398fa1bef8a4",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_blob_size_policy.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.6113161230005062,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "35bdad9b15c76f198b9630b0803c7ffeebef2b0fc7386c717b2241599e16162b",
+      "stdout": "",
+      "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 1.486s\n\nOK\n"
+    },
+    {
+      "name": "FIXED_RANGE",
+      "source_commit": "38b5a8e1072a48ba9bdd81a9e54f398fa1bef8a4",
+      "command": [
+        "python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "6e60365410d825778bb16b759af893985db97a6b",
+        "--head",
+        "38b5a8e1072a48ba9bdd81a9e54f398fa1bef8a4",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.08998988900020777,
+      "stdout_sha256": "a5af3abb25852b95fbe76441a6fc1d099810eaba64a98b490121d3b0d7fd5208",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "Checked 28 changed file(s) against the 512000-byte limit.\n- .github/blob-size-allowlist.txt: 133003 bytes (129.9 KiB) [non-binary, ok]\n- .github/workflows/pft-online-regression.yml: 5696 bytes (5.6 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/action_proposal.rs: 18242 bytes (17.8 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/control_wal.rs: 38783 bytes (37.9 KiB) [non-binary, ok]\n- codex-rs/hepta-cell-roles/src/metric_policy.rs: 18489 bytes (18.1 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_linear.py: 12090 bytes (11.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_online_regression.py: 7840 bytes (7.7 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics.py: 11222 bytes (11.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/ARCHIVE.json: 373 bytes (0.4 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/BASELINE.json: 6181 bytes (6.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/FORMAT.json: 715 bytes (0.7 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/LOCAL_RESULT.json: 986 bytes (1.0 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_ARCHIVE.json: 270 bytes (0.3 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_FORMAT.json: 1207 bytes (1.2 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_PROTOCOL.json: 1854 bytes (1.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/MERGE_RESULT.json: 1210 bytes (1.2 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/OVERFLOW_BASELINE.json: 8281 bytes (8.1 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/PROTOCOL.json: 1461 bytes (1.4 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/README.md: 6987 bytes (6.8 KiB) [non-binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/latest-admission.tar.gz: 43075 bytes (42.1 KiB) [binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_admission/local-execution.tar.gz: 35179 bytes (34.4 KiB) [binary, ok]\n- qualification/hcsn_closure_20261124/pft_statistics_tests.py: 16827 bytes (16.4 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/CI_BASELINE.json: 952 bytes (0.9 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/EVIDENCE.json: 482 bytes (0.5 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/PROTOCOL.json: 1888 bytes (1.8 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/README.md: 3825 bytes (3.7 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/RESULTS.json: 10785 bytes (10.5 KiB) [non-binary, ok]\n- qualification/pft-wal-clippy-20261128/evidence.tar.gz: 1123667 bytes (1097.3 KiB) [binary, allowlisted]\n",
+      "stderr": ""
+    }
+  ],
+  "policy_source_sha256": {
+    "scripts/check_blob_size.py": "28e04a7730841898c36ccfc9c24b92e4175d5a498d3990db822b3b3884664cf2",
+    "scripts/tests/test_blob_size_policy.py": "5d4b1d2d3a7c46ba3d56b80fb71966b219bf6cac98e2d5948859e67c6a5f8594",
+    ".github/workflows/blob-size-policy.yml": "4a0f656d386d3a9ddc1478c111e09105486cd8cff7e71cb0911c8bd4068ceafd"
+  },
+  "allowlist_before_sha256": "41d023a24f48e24c57a93a3aee69a2d8d815533baa6992ff538dba210d39322a",
+  "allowlist_after_sha256": "c5fb6fe51efa779f8aa968b1f5cc7e49a226603ac8e8eae78ae7c722945c1a7f",
+  "allowlist_commit": "38b5a8e1072a48ba9bdd81a9e54f398fa1bef8a4",
+  "rust_sources_changed": false,
+  "rust_tests_or_compilers_restarted": false,
+  "threshold_or_checker_or_tests_changed": false,
+  "format_order": "This metadata-only follow-up is checked before its final just fmt. Prior native receipts are retained unchanged."
+}
