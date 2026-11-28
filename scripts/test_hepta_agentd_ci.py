@@ -133,7 +133,11 @@ class WorkflowDependencyTests(unittest.TestCase):
         matched = re.search(r"(?m)^    needs:[ \t\n]*\[([^\]]+)\]$", job)
         self.assertIsNotNone(matched)
         self.assertEqual(
-            {name.strip() for name in matched.group(1).strip().removesuffix(",").split(",")}, set(LANES)
+            {
+                name.strip()
+                for name in matched.group(1).strip().removesuffix(",").split(",")
+            },
+            set(LANES),
         )
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)

@@ -163,17 +163,25 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
 
     def test_aggregate_pr_feedback_is_not_filtered_at_the_trigger(self):
         aggregate = ROOT / ".github/workflows/blocking-ci.yml"
-        triggers = aggregate.read_text().split("\non:\n", 1)[1].split("\nconcurrency:", 1)[0]
+        triggers = (
+            aggregate.read_text().split("\non:\n", 1)[1].split("\nconcurrency:", 1)[0]
+        )
         self.assertRegex(triggers, r"(?m)^  pull_request: \{\}$")
-        reusable = WORKFLOW.read_text().split("\non:\n", 1)[1].split("\npermissions:", 1)[0]
+        reusable = (
+            WORKFLOW.read_text().split("\non:\n", 1)[1].split("\npermissions:", 1)[0]
+        )
         self.assertEqual(
             re.findall(r"(?m)^  ([a-z_]+):", reusable),
             ["workflow_call", "workflow_dispatch"],
         )
-        scope = WORKFLOW.read_text().split("id: scope", 1)[1].split(
-            "      - name: Prepare native workspace prerequisites", 1
-        )[0]
-        diff_command = scope.split('git diff --quiet "$BASE_SHA" "$SOURCE_SHA" --', 1)[1]
+        scope = (
+            WORKFLOW.read_text()
+            .split("id: scope", 1)[1]
+            .split("      - name: Prepare native workspace prerequisites", 1)[0]
+        )
+        diff_command = scope.split('git diff --quiet "$BASE_SHA" "$SOURCE_SHA" --', 1)[
+            1
+        ]
         for path in (
             ".cargo/",
             "codex-rs/.cargo/",

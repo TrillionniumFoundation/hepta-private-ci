@@ -4,7 +4,8 @@
 //! Only the owning service may persist verified receipts and perform effects.
 //! Reconstruct this gate from independently verified durable receipts on restart.
 
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 /// A strict, non-skippable sequence. In particular cutover follows a
 /// generation fence rather than creating the fence after routing changes.
