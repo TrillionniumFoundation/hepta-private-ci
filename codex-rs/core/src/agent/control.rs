@@ -650,12 +650,20 @@ impl AgentControl {
             let Ok(parent_thread) = state.get_thread(parent_thread_id).await else {
                 return;
             };
-            parent_thread
+            if let Err(err) = parent_thread
                 .inject_fragment_without_turn(SubagentNotification::new(
                     child_reference.as_str(),
                     status,
                 ))
-                .await;
+                .await
+            {
+                warn!(
+                    %err,
+                    %parent_thread_id,
+                    child_reference = child_reference.as_str(),
+                    "failed to record subagent completion notification"
+                );
+            }
         });
     }
 

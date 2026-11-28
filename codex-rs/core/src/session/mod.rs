@@ -219,6 +219,7 @@ mod code_mode_warning;
 pub(crate) mod context_window;
 mod environment;
 pub(crate) mod extension_metrics;
+mod fragment_injection;
 mod handlers;
 mod history_mutation_retry;
 mod inject;
