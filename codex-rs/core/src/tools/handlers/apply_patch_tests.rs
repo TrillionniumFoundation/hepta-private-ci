@@ -1,6 +1,7 @@
 use super::*;
 use codex_apply_patch::MaybeApplyPatchVerified;
 use codex_exec_server::LOCAL_FS;
+use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemSandboxEntry;
@@ -49,23 +50,30 @@ async fn foreign_patch_paths_preserve_environment_policy_before_approval() {
     let target = foreign_cwd.join("approval.txt").unwrap();
     let action = ApplyPatchAction::new_add_for_test(&target, "held\n".to_string());
 
-    for profile in [
-        PermissionProfile::read_only(),
-        PermissionProfile::workspace_write(),
-        PermissionProfile::Disabled,
-        PermissionProfile::External {
-            network: codex_protocol::permissions::NetworkSandboxPolicy::Enabled,
-        },
+    for (profile, writable) in [
+        (PermissionProfile::read_only(), false),
+        (PermissionProfile::workspace_write(), true),
+        (PermissionProfile::Disabled, true),
+        (
+            PermissionProfile::External {
+                network: codex_protocol::permissions::NetworkSandboxPolicy::Enabled,
+            },
+            true,
+        ),
     ] {
         environment.config_mut().permission_profile =
             PermissionProfileSnapshot::legacy(profile.clone());
         let expected_policy = environment
-            .permission_profile_with_workspace_roots()
-            .file_system_sandbox_policy();
+            .permission_profile()
+            .file_system_sandbox_policy()
+            .materialize_project_roots_with_workspace_root_uris(environment.workspace_roots())
+            .unwrap();
         // Exercise failure to project the cwd and failure to project an individual target.
         for cwd in [&foreign_cwd, &native_cwd] {
             let (paths, permissions, policy) =
-                effective_patch_permissions(&session, &environment, &action, cwd).await;
+                effective_patch_permissions(&session, &environment, &action, cwd)
+                    .await
+                    .unwrap();
             assert_eq!(paths, vec![target.clone()]);
             assert_eq!(policy, expected_policy);
             assert_eq!(
@@ -86,13 +94,12 @@ async fn foreign_patch_paths_preserve_environment_policy_before_approval() {
                 &profile,
                 &policy,
                 &foreign_cwd,
-                turn.windows_sandbox_level,
+                WindowsSandboxLevel::RestrictedToken,
             );
-            let expected = match profile {
-                PermissionProfile::Disabled | PermissionProfile::External { .. } => {
-                    SafetyCheck::AutoApprove
-                }
-                PermissionProfile::Managed { .. } => SafetyCheck::AskUser,
+            let expected = if writable {
+                SafetyCheck::AutoApprove
+            } else {
+                SafetyCheck::AskUser
             };
             assert_eq!(decision, expected);
             let without_approval = assess_patch_safety(
@@ -101,7 +108,7 @@ async fn foreign_patch_paths_preserve_environment_policy_before_approval() {
                 &profile,
                 &policy,
                 &foreign_cwd,
-                turn.windows_sandbox_level,
+                WindowsSandboxLevel::RestrictedToken,
             );
             match expected {
                 SafetyCheck::AskUser => {

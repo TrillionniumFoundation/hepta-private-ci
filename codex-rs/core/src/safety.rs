@@ -128,10 +128,7 @@ fn is_write_patch_constrained_to_writable_paths(
     if file_system_sandbox_policy.has_full_disk_write_access() {
         return true;
     }
-    // TODO(anp): Make filesystem sandbox policies operate on PathUri.
-    let Ok(native_cwd) = cwd.to_abs_path() else {
-        return false;
-    };
+    let native_cwd = cwd.to_abs_path().ok();
     // Normalize a path by removing `.` and resolving `..` without touching the
     // filesystem (works even if the file does not exist).
     fn normalize(path: &Path) -> Option<PathBuf> {
@@ -152,17 +149,16 @@ fn is_write_patch_constrained_to_writable_paths(
     // and roots are converted to absolute, normalized forms before the
     // prefix check.
     let is_path_writable = |path: &PathUri| {
-        // TODO(anp): Make sandbox policy path checks accept PathUri without host projection.
-        let Ok(path) = path.to_abs_path() else {
-            return false;
+        let (Some(native_cwd), Ok(native_path)) = (native_cwd.as_ref(), path.to_abs_path()) else {
+            return file_system_sandbox_policy.can_write_path_uri_with_cwd(path, cwd);
         };
-        let abs = path.into_path_buf();
+        let abs = native_path.into_path_buf();
         let abs = match normalize(&abs) {
             Some(v) => v,
             None => return false,
         };
 
-        file_system_sandbox_policy.can_write_path_with_cwd(&abs, &native_cwd)
+        file_system_sandbox_policy.can_write_path_with_cwd(&abs, native_cwd)
     };
 
     for (path, change) in action.changes() {

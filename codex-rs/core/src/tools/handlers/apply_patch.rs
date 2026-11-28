@@ -283,23 +283,42 @@ async fn effective_patch_permissions(
     environment: &TurnEnvironment,
     action: &ApplyPatchAction,
     cwd: &PathUri,
-) -> (
-    Vec<PathUri>,
-    crate::tools::handlers::EffectiveAdditionalPermissions,
-    codex_protocol::permissions::FileSystemSandboxPolicy,
-) {
+) -> Result<
+    (
+        Vec<PathUri>,
+        crate::tools::handlers::EffectiveAdditionalPermissions,
+        codex_protocol::permissions::FileSystemSandboxPolicy,
+    ),
+    FunctionCallError,
+> {
     let environment_id = environment.selection.environment_id.as_str();
     let file_paths = file_paths_for_action(action);
-    let base_file_system_sandbox_policy = environment
-        .permission_profile_with_workspace_roots()
-        .file_system_sandbox_policy();
+    let base_file_system_sandbox_policy = if environment
+        .workspace_roots()
+        .iter()
+        .any(|root| root.to_abs_path().is_err())
+    {
+        environment
+            .permission_profile()
+            .file_system_sandbox_policy()
+            .materialize_project_roots_with_workspace_root_uris(environment.workspace_roots())
+            .map_err(|error| {
+                FunctionCallError::RespondToModel(format!(
+                    "invalid workspace permission path: {error}"
+                ))
+            })?
+    } else {
+        environment
+            .permission_profile_with_workspace_roots()
+            .file_system_sandbox_policy()
+    };
     let native_cwd = match cwd.to_abs_path() {
         Ok(cwd) => cwd,
         Err(_) => {
-            return patch_permissions_without_path_matching(
+            return Ok(patch_permissions_without_path_matching(
                 action,
                 base_file_system_sandbox_policy,
-            );
+            ));
         }
     };
     let native_file_paths = match file_paths
@@ -309,10 +328,10 @@ async fn effective_patch_permissions(
     {
         Ok(paths) => paths,
         Err(_) => {
-            return patch_permissions_without_path_matching(
+            return Ok(patch_permissions_without_path_matching(
                 action,
                 base_file_system_sandbox_policy,
-            );
+            ));
         }
     };
     let granted_permissions = merge_permission_profiles(
@@ -338,11 +357,11 @@ async fn effective_patch_permissions(
     )
     .await;
 
-    (
+    Ok((
         file_paths,
         effective_additional_permissions,
         file_system_sandbox_policy,
-    )
+    ))
 }
 
 fn patch_permissions_without_path_matching(
@@ -582,7 +601,7 @@ async fn execute_verified_patch(
 ) -> Result<String, FunctionCallError> {
     let (file_paths, effective_additional_permissions, file_system_sandbox_policy) =
         effective_patch_permissions(tool_ctx.session.as_ref(), &turn_environment, &action, cwd)
-            .await;
+            .await?;
     let apply = apply_patch::prepare_apply_patch(
         tool_ctx.step_context.turn.as_ref(),
         turn_environment.permission_profile(),
