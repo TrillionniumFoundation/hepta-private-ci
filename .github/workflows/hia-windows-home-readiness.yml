@@ -50,14 +50,14 @@ jobs:
               --build_metadata=COMMIT_SHA=${GITHUB_SHA} "$@"
           }
           run_target -- //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-original-setup.log"
-          run_target --test_arg=setup_home::tests -- //codex-rs/windows-sandbox-rs:codex-windows-sandbox-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-current-controls.log"
-          run_target --test_arg=setup::tests::setup_completion_requires_ready_artifacts -- //codex-rs/windows-sandbox-rs:codex-windows-sandbox-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-original-missing.log"
+          run_target --test_arg=setup_home::tests -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-current-controls.log"
+          run_target --test_arg=setup::tests::setup_completion_requires_ready_artifacts -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-original-missing.log"
           for log in "$RUNNER_TEMP"/home-readiness-*.log; do
             if grep -Eq 'FLAKY|test result: FAILED|Attempt #([2-9][0-9]*|1[0-9]+)' "$log"; then
               echo "::error::A failed or retried attempt remains."
               exit 1
             fi
-            grep -Eq '^//codex-rs/windows-sandbox-rs:codex-windows-sandbox(-setup-bin)?-unit-tests[[:space:]]+PASSED in ' "$log"
+            grep -Eq '^//codex-rs/windows-sandbox-rs:(codex-windows-sandbox-setup-bin|windows-sandbox-rs)-unit-tests[[:space:]]+PASSED in ' "$log"
           done
           grep -F 'HIA_MACHINE_IDENTITY_CONTROL cross_process_homes: PASS; workers=2; first_credentials_still_valid=true' "$RUNNER_TEMP/home-readiness-original-setup.log"
           grep -F 'HIA_HOME_SETUP_CONTROL same_physical_home: PASS; real_worker=true; protected_create_new=true' "$RUNNER_TEMP/home-readiness-original-setup.log"

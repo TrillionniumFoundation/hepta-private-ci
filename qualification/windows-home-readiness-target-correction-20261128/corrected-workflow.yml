@@ -1,0 +1,80 @@
+name: HIA Windows current home readiness
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-home-readiness-20261128-2ac5
+    paths:
+      - codex-rs/windows-sandbox-rs/**
+      - .github/workflows/hia-windows-home-readiness.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-setup-and-readiness:
+    name: Complete setup helper and current readiness transactions
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Original full setup helper and real cross-process readiness controls
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_target() {
+            ./.github/scripts/run-bazel-ci.sh \
+              --print-failed-action-summary \
+              --print-failed-test-logs \
+              --windows-msvc-host-platform \
+              --remote-download-toplevel \
+              -- test \
+              --platforms=//:windows_x86_64_msvc \
+              --nocache_test_results \
+              --test_output=all \
+              --test_arg=--nocapture \
+              --test_verbose_timeout_warnings \
+              --build_metadata=COMMIT_SHA=${GITHUB_SHA} "$@"
+          }
+          run_target -- //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-original-setup.log"
+          run_target --test_arg=setup_home::tests -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-current-controls.log"
+          run_target --test_arg=setup::tests::setup_completion_requires_ready_artifacts -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests 2>&1 | tee "$RUNNER_TEMP/home-readiness-original-missing.log"
+          for log in "$RUNNER_TEMP"/home-readiness-*.log; do
+            if grep -Eq 'FLAKY|test result: FAILED|Attempt #([2-9][0-9]*|1[0-9]+)' "$log"; then
+              echo "::error::A failed or retried attempt remains."
+              exit 1
+            fi
+            grep -Eq '^//codex-rs/windows-sandbox-rs:(codex-windows-sandbox-setup-bin|windows-sandbox-rs)-unit-tests[[:space:]]+PASSED in ' "$log"
+          done
+          grep -F 'HIA_MACHINE_IDENTITY_CONTROL cross_process_homes: PASS; workers=2; first_credentials_still_valid=true' "$RUNNER_TEMP/home-readiness-original-setup.log"
+          grep -F 'HIA_HOME_SETUP_CONTROL same_physical_home: PASS; real_worker=true; protected_create_new=true' "$RUNNER_TEMP/home-readiness-original-setup.log"
+          grep -F 'HIA_HOME_READINESS_CONTROL current_complete_after_writer: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'HIA_HOME_READINESS_CONTROL failed_current_generation_rejected: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'HIA_HOME_READINESS_CONTROL unrelated_home_independent: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'test result: ok. 6 passed; 0 failed; 1 ignored;' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'test result: ok. 1 passed; 0 failed; 0 ignored;' "$RUNNER_TEMP/home-readiness-original-missing.log"
+      - name: Preserve all original execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-current-home-readiness-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/bazel-execution-logs
+            ${{ runner.temp }}/home-readiness-*.log
+          if-no-files-found: error
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
