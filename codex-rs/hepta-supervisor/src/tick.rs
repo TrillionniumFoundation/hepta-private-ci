@@ -109,11 +109,23 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {
