@@ -1,4 +1,5 @@
 use super::*;
+use crate::AdapterStatus;
 use crate::adapt_codex_cell_intent;
 
 fn id(value: &str) -> StableId {
