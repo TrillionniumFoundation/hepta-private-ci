@@ -516,13 +516,23 @@ jobs:
             --report "$RUNNER_TEMP/hia-parser-receipt.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-parser-receipt.log"
 
+      - name: Reject incomplete or mislabeled native catalogs
+        if: ${{ always() && matrix.shard == 'differential' && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_build_profiles.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native39 \
+            --report "$RUNNER_TEMP/hia-build-profiles.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build-profiles.log"
+
       - name: Verify streaming output line counts and atomic ABI errors
         if: ${{ always() && matrix.shard == 'differential' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -532,7 +542,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -542,7 +552,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
@@ -552,7 +562,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Verify proposed plan literal frames and atomic ABI errors
@@ -561,7 +571,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
       - name: Verify fuzzy match literal states and atomic ABI errors
@@ -570,7 +580,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_fuzzy_match_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-fuzzy-match-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-abi.log"
 
@@ -580,7 +590,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_utf8_stream_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-utf8-stream-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-utf8-stream-abi.log"
 
@@ -590,7 +600,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_inline_hidden_tag_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-inline-hidden-tag-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-inline-hidden-tag-abi.log"
 
@@ -600,6 +610,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_retry_decision_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-retry-decision-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-retry-decision-abi.log"
 
@@ -1276,7 +1287,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1284,12 +1295,12 @@ jobs:
         if: ${{ always() && matrix.shard == 'differential' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native38. The separate owner gate requires
+          # This checkout runs original/native39. The separate owner gate requires
           # original/native16/native38 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native38 \
+            --build-profile full-native39 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1592,13 +1603,15 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current38-results-${{ matrix.shard }}
+          name: codex-hia-current39-results-${{ matrix.shard }}
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
           include-hidden-files: true
           path: |
             ${{ format('{0}/hia-native/build.json
+            {0}/hia-build-profiles.json
+            {0}/hia-build-profiles.log
             {0}/unified-component-gate/**/*.json
             {0}/unified-component-gate/**/*.jsonl
             {0}/unified-component-gate/**/*.stdout

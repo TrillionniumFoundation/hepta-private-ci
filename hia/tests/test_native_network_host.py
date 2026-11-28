@@ -363,7 +363,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library-dir", type=Path, required=True)
-    parser.add_argument("--build-profile", choices=["full-native29", "full-native30", "full-native31", "full-native32", "full-native33", "full-native34", "full-native35", "full-native36", "full-native37", "full-native38"],
+    parser.add_argument("--build-profile", choices=["full-native29", "full-native30", "full-native31", "full-native32", "full-native33", "full-native34", "full-native35", "full-native36", "full-native37", "full-native38", "full-native39"],
                         default="full-native29")
     parser.add_argument("--target-dir", type=Path, default=os.environ.get("CARGO_TARGET_DIR"))
     parser.add_argument("--rustc", default=os.environ.get("RUSTC", "rustc"))
