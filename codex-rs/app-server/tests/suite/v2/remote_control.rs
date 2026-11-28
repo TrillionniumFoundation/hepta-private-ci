@@ -61,6 +61,9 @@ use tokio::time::timeout;
 use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::Message;
 
+#[path = "remote_control_pairing_requests.rs"]
+mod pairing_requests;
+
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 const REMOTE_CONTROL_DISABLED_BY_REQUIREMENTS_MESSAGE: &str =
@@ -1113,12 +1116,12 @@ impl PairingRemoteControlBackend {
                 )
                 .await?;
 
-                let request_after_enroll = read_http_request(&listener).await?;
-                let pair_http_request = if request_after_enroll.request_line.starts_with("GET ") {
-                    read_http_request(&listener).await?
-                } else {
-                    request_after_enroll
-                };
+                let mut pairing_requests = pairing_requests::PairingRequestReader::default();
+                let pair_http_request = pairing_requests.next(&listener).await?;
+                assert_eq!(
+                    pair_http_request.request_line,
+                    "POST /backend-api/wham/remote/control/server/pair HTTP/1.1"
+                );
                 respond_with_json(
                     pair_http_request.reader.into_inner(),
                     serde_json::json!({
@@ -1134,7 +1137,7 @@ impl PairingRemoteControlBackend {
                     serde_json::json!({ "pairing_code": "pairing-code" }),
                     serde_json::json!({ "manual_pairing_code": "ABCD-EFGH" }),
                 ] {
-                    let status_http_request = read_http_request(&listener).await?;
+                    let status_http_request = pairing_requests.next(&listener).await?;
                     assert_eq!(
                         status_http_request.request_line,
                         "POST /backend-api/wham/remote/control/server/pair/status HTTP/1.1"
@@ -1150,6 +1153,7 @@ impl PairingRemoteControlBackend {
                     .await?;
                 }
                 std::future::pending::<()>().await;
+                drop(pairing_requests);
                 Ok::<(), anyhow::Error>(())
             }
             .await;
