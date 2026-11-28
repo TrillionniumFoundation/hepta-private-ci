@@ -361,6 +361,56 @@ QUALIFICATION_SOURCE_SHA256 = {
         "qa/repository-consolidation/20261119/round-03/local-time-compatibility/evid"
         "ence.tar.gz.part-002"
     ): "44c491b8c00e1230bd372bde1192202f00511eaebf6717846cb15d6198a6b118",
+    # Frozen WSP and continuous-research binary fragments reported as text by
+    # Codespell. Exact SHA-256 custody preserves every scientific artifact byte.
+    (
+        "qualification/hcsn_continuous_20261127/evidence/part012.bin"
+    ): "8ad22c69d15b4b87eebe1983b9a059d526efb93beaed0eb43e39acadcde01db8",
+    (
+        "qualification/hcsn_continuous_20261127/evidence/part019.bin"
+    ): "d8b362289b86059b6ec62de8eba9cb0b66b20b650ac33359e54f157255e953b4",
+    (
+        "qualification/hcsn_continuous_20261127/evidence/part020.bin"
+    ): "1c3b09d2cbf0925fa04dce7dadb73477faa934c226b9a4b01d5b05d59d0097d0",
+    (
+        "qualification/hcsn_continuous_20261127/evidence/part034.bin"
+    ): "af61d3bdb801460fabd46455d444ba6f65607c4b6f7b761fe9b766ec2739cbdf",
+    (
+        "qualification/wsp_20261128/late_information/blind_alias/evidence.parts/"
+        "00007.bin"
+    ): "129490aa9e013bc9c04c13775852bedbe6876f3dbda114d42da5412896646c12",
+    (
+        "qualification/wsp_20261128/late_information/blind_alias/evidence.parts/"
+        "00010.bin"
+    ): "2ae04159806317ed685125c15370bd305f4ffed120876033b31938b66cb71cc9",
+    (
+        "qualification/wsp_20261128/late_information/evidence.parts/00012.bin"
+    ): "5619819cd317ec00f3399a314464051121c3d434a4c2b10a2c4948e99087bc70",
+    (
+        "qualification/wsp_20261128/late_information/evidence.parts/00014.bin"
+    ): "cc0e1e1c353c140f3e3a5fe6f82acc4a03fcbb4f04163c7c41255175a4b330d1",
+    (
+        "qualification/wsp_20261128/late_information/evidence.parts/00037.bin"
+    ): "ca41d8a4c7b81a943a538d1b21db2077c4d08eb67d7db2a51d732d5dbeaeac6c",
+    (
+        "qualification/wsp_20261128/late_information/evidence.parts/00038.bin"
+    ): "991648e7e184e12b2f49112fd16752bf46317d6f7dfd85736efc2e230d50ec37",
+    (
+        "qualification/wsp_20261128/weightcode/artifacts/"
+        "colab_chunk02_evidence.tar.gz.part004"
+    ): "240e3bd54ec8e5b4571769baece7499f9af225819f4a089733d7107b260bf3ae",
+    (
+        "qualification/wsp_20261128/weightcode/artifacts/"
+        "colab_chunk02_evidence.tar.gz.part024"
+    ): "dd3c22278350c1837b680df303ecce8c5e7465cfe35e17cd8c69124d74f73dfc",
+    (
+        "qualification/wsp_20261128/weightcode/artifacts/"
+        "colab_chunk02_evidence.tar.gz.part026"
+    ): "dd51c52abb74cb5443a1f2403d4c9cda3e5995e45b1c7cac50a0cdb7c9db1feb",
+    (
+        "qualification/wsp_20261128/weightcode/artifacts/"
+        "colab_chunk02_evidence.tar.gz.part031"
+    ): "43ad269f600fc42e17194183ec2abeca8cb10404cceb9c6da87530c5dba2449d",
 }
 
 
