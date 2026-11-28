@@ -30,7 +30,7 @@ The source base is `85ccf3305e34c90d3d10bdb1a6294d4e6adcf893`.
 - Two earlier metadata preflights refused before checking any rule: the new
   required-boundary ID was omitted, then three local baseline files each had
   one extra trailing newline. Both originals and corrections are retained in
-  SCOPED_SOURCE_PROOF.json.gz. The five candidate Rust files did not change.
+  SCOPED_SOURCE_PROOF.json.xz. The five candidate Rust files did not change.
 - The two new synthetic controls are unexecuted. No Cargo, native test, real
   provisioning, Ledger recovery, training, or scientific experiment was run.
 - Currentness still requires the actual independent Root owner. A valid old
@@ -41,3 +41,13 @@ The original shared engineering budget and all earlier failures and timeouts
 remain unchanged. Natural hosted results, if any, must be attributed to their
 actual source head and individual jobs. This source-only slice supplies no
 runtime qualification, human consent, data-use permission or utility claim.
+
+## Lossless archive representation update
+
+The original gzip in source 4eb790 is 601,305 bytes. Its complete 838,817-byte
+payload is now retained as a single 289,272-byte XZ file, below the unchanged
+512,000-byte repository file-size gate. All 14 entries and their exact bytes
+remain present; decompression equality and both compressed hashes are recorded
+in ARCHIVE_REPACK.json. No rule, source, native test, budget or result changed.
+The original gzip remains available in that published commit. This repack does
+not assert a hosted-CI success or erase the inherited guard failures.
