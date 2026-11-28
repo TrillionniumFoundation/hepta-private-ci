@@ -1197,7 +1197,7 @@ id = "root_original_physical_login_install"
 symbol = "HostAuthorityService::with_original_logind_session"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_logind.rs"
 definition_markers = ["pub(crate) fn with_original_logind_session(", "self.logind_session.is_some()", "verify_original_login(profile, uid, &held)?", "binding: profile.original_human_binding()"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_session.rs", "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_original_logind_session\\s*\\("
 
@@ -2675,9 +2675,10 @@ required_function_order = [{ function = "fn parse(", sequence = ["let handoff = 
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
-required = ["register-learning", "--learning-profile", "--root-learning-handoff-fd", "learning_profile.is_some() != learning_handoff.is_some()", "learning_profile.is_some() && root_fd.is_none()", "PreparedHostAuthoritySession::open(&config, &registration, owner)?", "prepared.with_registered_learning(&profile)?", "prepared.seal_learning_bootstrap()", "send_root_learning_handoff(", "prepared.serve_with_ready(ready)?"]
+required = ["--original-login-pidfd", "original login pidfd requires the original native profile", "register-learning", "--learning-profile", "--root-learning-handoff-fd", "learning_profile.is_some() != learning_handoff.is_some()", "learning_profile.is_some() && root_fd.is_none()", "PreparedHostAuthoritySession::open(&config, &registration, owner)?", "prepared.with_registered_learning(&profile)?", "prepared.seal_learning_bootstrap()", "send_root_learning_handoff(", "prepared.serve_with_ready(ready)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_order = [["let learning_handoff = learning_handoff\n            .as_deref()", "inherited_descriptor(fd, &mut claimed)", "learning_profile.is_some() != learning_handoff.is_some()", "let owner = std::io::stdin().as_fd().try_clone_to_owned()?", "prepared.with_registered_learning(&profile)?", "prepared.seal_learning_bootstrap()", "let ready = ||", "send_root_learning_handoff(", "prepared.launch_native_with_ready(", "prepared.serve_with_text_and_ready(", "prepared.serve_with_ready(ready)?"]]
+required_function_order = [{ function = "fn run(", sequence = ["let original_login = options.remove(", "original_login.is_some() && native_profile.is_none()", "let original_login = original_login\n            .as_deref()", "inherited_descriptor(fd, &mut claimed)", "let owner = std::io::stdin().as_fd().try_clone_to_owned()?", "PreparedHostAuthoritySession::prepare_fresh_from_registered(", "prepared.with_original_logind_session(", "prepared.handoff_fresh_agent_filesystem()?", "PreparedHostAuthoritySession::open(&config, &registration, owner)?", "prepared.with_original_logind_session(", "prepared.with_registered_learning(&profile)?", "prepared.launch_native_with_ready("] }]
 
 
 [[boundary]]

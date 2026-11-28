@@ -2,9 +2,17 @@
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    run(std::env::args_os().skip(1))
+}
+
+#[cfg(target_os = "linux")]
+fn run(
+    arguments: impl IntoIterator<Item = std::ffi::OsString>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use codex_hepta_agentd::PreparedHostAuthoritySession;
     use std::os::fd::AsFd;
     use std::path::PathBuf;
-    let mut args = std::env::args_os().skip(1);
+    let mut args = arguments.into_iter();
     let command = args
         .next()
         .ok_or("initialize, register-writer, register-learning, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
@@ -121,6 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
         let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
+        let original_login = options.remove(std::ffi::OsStr::new("--original-login-pidfd"));
         let learning_profile = options
             .remove(std::ffi::OsStr::new("--learning-profile"))
             .map(PathBuf::from);
@@ -134,6 +143,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !options.is_empty() || !pidfd_stdin {
             return Err("unknown option or missing pre-held owner pidfd".into());
         }
+        if original_login.is_some() && native_profile.is_none() {
+            return Err("original login pidfd requires the original native profile".into());
+        }
         // Claim every numeric inherited FD before any clone/open/runtime can
         // reuse a missing number. One slot owns each FD and closes the original.
         let mut claimed = std::collections::BTreeSet::new();
@@ -142,6 +154,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
         let root_fd = root_fd
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let original_login = original_login
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -190,6 +206,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     owner,
                 ),
             )?;
+            let prepared = match original_login {
+                Some(login) => prepared.with_original_logind_session(
+                    native_profile
+                        .as_deref()
+                        .ok_or("original login pidfd requires the original native profile")?,
+                    login,
+                )?,
+                None => prepared,
+            };
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
             let prepared = match notes {
                 Some((profile, reservation, session, deployment)) => prepared
@@ -213,7 +238,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if handoff.is_some() || root_fd.is_some() && learning_handoff.is_none() {
                 return Err("open-only serving does not accept fresh handoff inputs".into());
             }
-            codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?
+            let prepared = PreparedHostAuthoritySession::open(&config, &registration, owner)?;
+            match original_login {
+                Some(login) => prepared.with_original_logind_session(
+                    native_profile
+                        .as_deref()
+                        .ok_or("original login pidfd requires the original native profile")?,
+                    login,
+                )?,
+                None => prepared,
+            }
         };
         let prepared = match learning_profile {
             Some(profile) => prepared.with_registered_learning(&profile)?,
@@ -287,6 +321,10 @@ fn inherited_descriptor(
 #[cfg(all(test, target_os = "linux"))]
 #[path = "../root_cli_descriptor_tests.rs"]
 mod descriptor_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../root_cli_login_tests.rs"]
+mod login_tests;
 
 #[cfg(not(target_os = "linux"))]
 fn main() {

@@ -207,6 +207,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 15 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests) | test(notes_thread_tool::items::tests)'
+      - name: Root CLI original descriptor ownership and login controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/root-cli-original-login.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --bin hepta-authority-host -E 'test(descriptor_tests) | test(login_tests)'
       - name: Paired preparation on the original durable journal
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
