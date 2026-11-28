@@ -107,6 +107,24 @@ jobs:
           rustc -Vv > "$RUNNER_TEMP/windows-hepta-owners/rustc.txt"
           cargo -V > "$RUNNER_TEMP/windows-hepta-owners/cargo.txt"
           cargo nextest --version > "$RUNNER_TEMP/windows-hepta-owners/nextest.txt"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import tomllib
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "windows-hepta-owners"
+          original = Path("codex-rs/.config/nextest.toml").read_text()
+          settings = tomllib.loads(original)
+          assert "store" not in settings
+          store = str(output / "nextest")
+          configured = original + "\n[store]\ndir = " + json.dumps(store) + "\n"
+          actual = tomllib.loads(configured)
+          assert actual.pop("store") == {"dir": store}
+          assert actual == settings
+          (output / "original-nextest.toml").write_text(original)
+          (output / "nextest.toml").write_text(configured)
+          PY
 
       - name: List every original test in all three owners
         shell: bash
@@ -115,6 +133,7 @@ jobs:
           set -euo pipefail
           cargo nextest list --locked --target "$CODEX_CI_TARGET" \
             --cargo-profile "$CODEX_CI_PROFILE" --profile default --message-format json \
+            --config-file "$RUNNER_TEMP/windows-hepta-owners/nextest.toml" \
             -p codex-hepta-agentd -p codex-hepta-prompt-registry \
             -p codex-hepta-shadow-qualification \
             > "$RUNNER_TEMP/windows-hepta-owners/test-list.json"
@@ -126,6 +145,7 @@ jobs:
           set -euo pipefail
           just test --locked --target "$CODEX_CI_TARGET" \
             --cargo-profile "$CODEX_CI_PROFILE" --profile default \
+            --config-file "$RUNNER_TEMP/windows-hepta-owners/nextest.toml" \
             -p codex-hepta-agentd -p codex-hepta-prompt-registry \
             -p codex-hepta-shadow-qualification \
             2>&1 | tee "$RUNNER_TEMP/windows-hepta-owners/tests.log"
@@ -141,11 +161,19 @@ jobs:
           import shutil
           import subprocess
           import sys
+          import tomllib
           import xml.etree.ElementTree as ET
 
           output = Path(os.environ["RUNNER_TEMP"]) / "windows-hepta-owners"
-          junit = Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/default/junit.xml"
+          junit = output / "nextest/default/junit.xml"
           subprocess.run([sys.executable, str(output / "source.py"), "after"], check=True)
+          original_text = (output / "original-nextest.toml").read_text()
+          source_config = Path(os.environ["GITHUB_WORKSPACE"]) / "codex-rs/.config/nextest.toml"
+          assert original_text == source_config.read_text()
+          original = tomllib.loads(original_text)
+          actual_config = tomllib.loads((output / "nextest.toml").read_text())
+          assert actual_config.pop("store") == {"dir": str(output / "nextest")}
+          assert actual_config == original
           if not junit.is_file():
               raise RuntimeError("the complete Windows test result is missing")
           shutil.copyfile(junit, output / "junit.xml")
