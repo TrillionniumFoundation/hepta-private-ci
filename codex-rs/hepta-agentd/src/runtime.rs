@@ -58,6 +58,8 @@ pub async fn run_with_shutdown(
     #[cfg(target_os = "linux")]
     let notes_thread_tools = config.take_original_notes_thread_tools();
     #[cfg(target_os = "linux")]
+    let paired_training_consumer = config.paired_training_consumer.take();
+    #[cfg(target_os = "linux")]
     let desktop_thread_tools = config.take_original_desktop_thread_tools();
     #[cfg(target_os = "linux")]
     let app_server_model_tools = if desktop_thread_tools.is_some() {
@@ -400,6 +402,13 @@ pub async fn run_with_shutdown(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        #[cfg(target_os = "linux")]
+        if let Some(consumer) = paired_training_consumer {
+            tasks.spawn_required(
+                "paired-original-material-consumer",
+                consumer.run(cancellation.clone()),
+            )?;
+        }
         #[cfg(target_os = "linux")]
         if let Some(ui) = notes_ui {
             tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;

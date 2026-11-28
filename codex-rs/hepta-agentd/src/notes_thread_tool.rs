@@ -31,6 +31,8 @@ mod proof;
 mod runtime;
 #[path = "notes_thread_status.rs"]
 mod status;
+#[path = "paired_training_trigger.rs"]
+mod training_trigger;
 use crate::notes_literal_adapter::recorded::RecordedNotesThreadOperation;
 use human::VerifiedHumanTurn;
 use proof::OriginalNotesThreadItem;
@@ -88,6 +90,7 @@ pub struct AgentdNotesThreadToolRuntime {
         Option<tokio::sync::mpsc::Receiver<crate::paired_original_turn::PendingPairedTurn>>,
     paired_preparation: Option<crate::paired_preparation::PreparationLane>,
     paired_training: Option<crate::paired_preparation::training::TrainingLane>,
+    paired_training_trigger: Option<training_trigger::OriginalTrainingTrigger>,
 }
 
 impl AgentdConfig {
@@ -134,11 +137,40 @@ impl AgentdConfig {
             paired_turns: None,
             paired_preparation: None,
             paired_training: None,
+            paired_training_trigger: None,
         }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_paired_training_consumer(
+        &mut self,
+        plan: crate::PairedTrainingPlanV1,
+        training: crate::AgentdPairedTraining,
+    ) -> Result<
+        (
+            crate::paired_preparation::training::consumer::OriginalPairedTrainingConsumer,
+            tokio::sync::oneshot::Receiver<
+                crate::paired_preparation::training::consumer::OriginalPairedTrainingDelivery,
+            >,
+        ),
+        AgentdError,
+    > {
+        if self.paired_training_trigger.is_some() || self.paired_training.is_none() {
+            return Err(invalid(
+                "original paired consumer requires one installed training lane",
+            ));
+        }
+        let (trigger, request) =
+            training_trigger::OriginalTrainingTrigger::new(plan, self.route.thread_id.clone())?;
+        let owner =
+            crate::paired_preparation::training::consumer::OriginalPairedTrainingConsumer::new(
+                training, request,
+            );
+        self.paired_training_trigger = Some(trigger);
+        Ok(owner)
+    }
+
     pub(crate) fn install_paired_training(
         &mut self,
         client: crate::AgentdPairedMaterialClient,

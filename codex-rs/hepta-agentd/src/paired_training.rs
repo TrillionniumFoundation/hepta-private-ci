@@ -3,6 +3,9 @@ use super::material_client::AgentdPairedMaterialClient;
 use super::material_client::PairedTrainingReadResult;
 use super::*;
 
+#[path = "paired_training_consumer.rs"]
+pub(crate) mod consumer;
+
 pub struct AgentdPairedTraining {
     sender: mpsc::Sender<PendingTraining>,
     registration: PairedPreparationRegistration,
