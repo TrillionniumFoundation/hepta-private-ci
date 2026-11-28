@@ -1,0 +1,24 @@
+{
+  "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "blob_paths": 8665,
+  "distinct_blobs": 8589,
+  "all_payload_bytes_verified": 97287164,
+  "nul_containing_blobs": 9,
+  "per_object_table_sha256": "81c6666431e03f20517b9cfa039ddda7941bdee2694479bc92d55b971558f09a",
+  "matched_blob_ids": {
+    "HCSN": [],
+    "Hepta Continuous Spiking": [],
+    "rollover risk and credit risk": [],
+    "free boundary": [],
+    "He Xiong": [],
+    "Chinese HCSN research terms": []
+  },
+  "patterns": {
+    "HCSN": "\\bhcsn\\b",
+    "Hepta Continuous Spiking": "hepta[\\s_-]+continuous[\\s_-]+spik",
+    "rollover risk and credit risk": "rollover[\\s_-]+risk[\\s_-]+and[\\s_-]+credit[\\s_-]+risk",
+    "free boundary": "free[\\s_-]+boundar",
+    "He Xiong": "he[\\s_\\-]+(?:(?:and|&)[\\s_\\-]+)?xiong",
+    "Chinese HCSN research terms": "连续脉冲网络|自由边界|光滑贴合"
+  }
+}
