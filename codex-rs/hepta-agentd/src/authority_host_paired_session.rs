@@ -71,7 +71,8 @@ impl BoundPaired {
             .into_iter()
             .map(|(_, path)| path)
             .collect();
-        paths.extend(learning_path);
+        let learning_path = learning_path.map(Path::to_path_buf);
+        paths.extend(learning_path.as_ref());
         paths.push(&owner.socket_path);
         validate_lane_paths(&paths, config.peer_gid)?;
         let listener = UnixListener::bind(&owner.socket_path)?;
