@@ -537,7 +537,15 @@ impl TurnContext {
             approval_policy: self.approval_policy(),
             approvals_reviewer: Some(self.config.approvals_reviewer),
             sandbox_policy: self.sandbox_policy(),
-            permission_profile: Some(self.permission_profile()),
+            permission_profile: Some(self.environments.primary().map_or_else(
+                || self.config.permissions.effective_permission_profile(),
+                |environment| {
+                    super::environment::permission_profile_for_persistence(
+                        environment.permission_profile(),
+                        Some(&environment.selection),
+                    )
+                },
+            )),
             active_permission_profile: self.environments.primary().map_or_else(
                 || self.config.permissions.active_permission_profile(),
                 TurnEnvironment::active_permission_profile,
