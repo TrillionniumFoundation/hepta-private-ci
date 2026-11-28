@@ -1,0 +1,15 @@
+{
+  "reviewer": "/root/research_training",
+  "scope": "independent static review; no compilation",
+  "base": "abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+  "findings": [
+    "Both Tokio Mutex guards end at the assignment/clone statement; no guard crosses subsequent sleep/shutdown awaits.",
+    "JoinSet task preserves std::io::Result; completed IO errors and non-cancelled JoinError propagate.",
+    "Only this fixture's serve task belongs to this JoinSet; no external AbortHandle is exposed.",
+    "client.shutdown before fixture abort preserves original ordering."
+  ],
+  "limits": [
+    "Axum internal connection/handler tasks are not all members of this JoinSet; no new global panic-observation guarantee.",
+    "No new candidate native tests or Clippy executed; source-head abaa's four-case HTTP target passed before this test-helper adjustment."
+  ]
+}

@@ -1,6 +1,5 @@
 use std::convert::Infallible;
 use std::sync::Arc;
-use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -32,6 +31,7 @@ use rmcp::service::ServiceError;
 use serde_json::Value;
 use serde_json::json;
 use tokio::net::TcpListener;
+use tokio::sync::Mutex;
 use tokio::sync::mpsc;
 use tokio::task::JoinSet;
 
@@ -78,7 +78,7 @@ async fn reply(State(state): State<Arc<ServerState>>, Json(request): Json<Value>
         }
         Some("tools/list") => {
             let call = state.calls.fetch_add(1, Ordering::SeqCst);
-            *state.last_request_id.lock().expect("request id") = request["id"].clone();
+            *state.last_request_id.lock().await = request["id"].clone();
             match state.scenario {
                 Scenario::Concurrent if request["params"]["cursor"] == "ordinary" => {
                     tokio::time::sleep(Duration::from_millis(250)).await;
@@ -122,7 +122,7 @@ async fn fixture(
     RmcpClient,
     Arc<ServerState>,
     mpsc::UnboundedReceiver<Value>,
-    JoinSet<()>,
+    JoinSet<std::io::Result<()>>,
 )> {
     let (cancelled, received_cancellation) = mpsc::unbounded_channel();
     let state = Arc::new(ServerState {
@@ -152,9 +152,7 @@ async fn fixture(
     let listener = TcpListener::bind("127.0.0.1:0").await?;
     let url = format!("http://{}/mcp", listener.local_addr()?);
     let mut tasks = JoinSet::new();
-    tasks.spawn(async move {
-        axum::serve(listener, router).await.expect("fixture server");
-    });
+    tasks.spawn(async move { axum::serve(listener, router).await });
     let client = RmcpClient::new_streamable_http_client_with_protocol_mode(
         "local-failure-test",
         &url,
@@ -182,10 +180,26 @@ async fn fixture(
     Ok((client, state, received_cancellation, tasks))
 }
 
+async fn finish_fixture(
+    client: RmcpClient,
+    mut tasks: JoinSet<std::io::Result<()>>,
+) -> anyhow::Result<()> {
+    client.shutdown().await;
+    tasks.abort_all();
+    while let Some(result) = tasks.join_next().await {
+        match result {
+            Ok(result) => result?,
+            Err(error) if error.is_cancelled() => {}
+            Err(error) => return Err(error.into()),
+        }
+    }
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn concurrent_ordinary_close_cannot_borrow_another_requests_size_failure()
 -> anyhow::Result<()> {
-    let (client, state, _cancelled, _tasks) = fixture(Scenario::Concurrent).await?;
+    let (client, state, _cancelled, tasks) = fixture(Scenario::Concurrent).await?;
     let (oversized, ordinary) = tokio::join!(
         client.list_tools(/*params*/ None, Some(Duration::from_secs(5))),
         client.list_tools_with_connector_ids(
@@ -206,13 +220,12 @@ async fn concurrent_ordinary_close_cannot_borrow_another_requests_size_failure()
     let ordinary = ordinary.err().expect("ordinary transport close");
     assert_eq!(ordinary.to_string(), "Transport closed");
     assert_eq!(state.calls.load(Ordering::SeqCst), 2);
-    client.shutdown().await;
-    Ok(())
+    finish_fixture(client, tasks).await
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn session_recovery_does_not_reuse_a_prior_local_failure() -> anyhow::Result<()> {
-    let (client, state, _cancelled, _tasks) = fixture(Scenario::Recovery).await?;
+    let (client, state, _cancelled, tasks) = fixture(Scenario::Recovery).await?;
     let first = client
         .list_tools(/*params*/ None, Some(Duration::from_secs(5)))
         .await
@@ -229,13 +242,12 @@ async fn session_recovery_does_not_reuse_a_prior_local_failure() -> anyhow::Resu
     assert_eq!(recovered.to_string(), "Transport closed");
     assert_eq!(state.initializes.load(Ordering::SeqCst), 2);
     assert_eq!(state.calls.load(Ordering::SeqCst), 3);
-    client.shutdown().await;
-    Ok(())
+    finish_fixture(client, tasks).await
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_resumed_get_close_is_not_attributed_to_the_original_post() -> anyhow::Result<()> {
-    let (client, state, _cancelled, _tasks) = fixture(Scenario::Resume).await?;
+    let (client, state, _cancelled, tasks) = fixture(Scenario::Resume).await?;
     let error = client
         .list_tools(/*params*/ None, Some(Duration::from_secs(5)))
         .await
@@ -243,13 +255,12 @@ async fn a_resumed_get_close_is_not_attributed_to_the_original_post() -> anyhow:
     assert_eq!(error.to_string(), "Transport closed");
     assert_eq!(state.resumes.load(Ordering::SeqCst), 1);
     assert_eq!(state.calls.load(Ordering::SeqCst), 1);
-    client.shutdown().await;
-    Ok(())
+    finish_fixture(client, tasks).await
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn abandoning_a_list_request_preserves_its_exact_cancellation() -> anyhow::Result<()> {
-    let (client, state, mut cancelled, _tasks) = fixture(Scenario::Abandoned).await?;
+    let (client, state, mut cancelled, tasks) = fixture(Scenario::Abandoned).await?;
     let error = client
         .list_tools(/*params*/ None, Some(Duration::from_millis(500)))
         .await
@@ -258,10 +269,9 @@ async fn abandoning_a_list_request_preserves_its_exact_cancellation() -> anyhow:
     let notification = tokio::time::timeout(Duration::from_secs(2), cancelled.recv())
         .await?
         .expect("one cancellation notification");
-    let request_id = state.last_request_id.lock().expect("request id").clone();
+    let request_id = state.last_request_id.lock().await.clone();
     assert_ne!(request_id, Value::Null);
     assert_eq!(notification["requestId"], request_id);
     assert_eq!(notification["reason"], "request abandoned by the caller");
-    client.shutdown().await;
-    Ok(())
+    finish_fixture(client, tasks).await
 }
