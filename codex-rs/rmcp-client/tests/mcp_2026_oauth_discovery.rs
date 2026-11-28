@@ -30,8 +30,8 @@ const RESOURCE_AUTHORIZATION: &str = "Bearer resource-only-secret";
 const RESOURCE_API_KEY: &str = "resource-api-key-secret";
 const RESOURCE_USER_AGENT: &str = "resource-only-user-agent";
 const MCP_USER_AGENT: &str = concat!("codex-mcp-client/", env!("CARGO_PKG_VERSION"));
-// This is a test safety ceiling, not rmcp's private redirect limit.
-const MAX_METADATA_REDIRECT_REQUESTS: u64 = 100;
+// Pinned rmcp 3.9.0 discovery_get sends ten requests before rejecting the cycle.
+const EXPECTED_METADATA_REDIRECT_REQUESTS: u64 = 10;
 const REDIRECT_DISCOVERY_TEST_TIMEOUT: Duration = Duration::from_secs(5);
 
 type DiscoveryResult = anyhow::Result<Option<StreamableHttpOAuthDiscovery>>;
@@ -105,22 +105,21 @@ async fn assert_authorization_requests_exclude_resource_headers(
     Ok(())
 }
 
-fn assert_cross_origin_redirect_rejected(
+fn assert_discovery_request_failed(
     discovery: DiscoveryResult,
-    redirect_target: &str,
+    expected_url: &str,
+    expected_source: &str,
 ) -> anyhow::Result<()> {
     let error = discovery
         .err()
-        .context("cross-origin OAuth metadata redirects must be rejected")?;
-    assert!(
-        matches!(
-            error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                    && reason.contains(redirect_target)
-        ),
-        "expected the cross-origin redirect rejection for `{redirect_target}`: {error:#}",
-    );
+        .context("the original OAuth metadata request must be rejected")?;
+    let expected_url = url::Url::parse(expected_url)?;
+    let Some(AuthError::DiscoveryRequestFailed { url, source }) = error.downcast_ref::<AuthError>()
+    else {
+        anyhow::bail!("expected a typed discovery request failure: {error:#}");
+    };
+    assert_eq!(url, &expected_url);
+    assert_eq!(source.to_string(), expected_source);
     Ok(())
 }
 
@@ -266,17 +265,14 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                 );
             }
             AuthorizationMetadataIssuer::Mismatched => {
-                let error = discovery
-                    .err()
-                    .context("a mismatched issuer must not be accepted")?;
-                assert!(
-                    matches!(
-                        error.downcast_ref::<AuthError>(),
-                        Some(AuthError::MetadataError(reason))
-                            if reason.contains("issuer does not match authorization metadata origin")
+                assert_discovery_request_failed(
+                    discovery,
+                    &format!(
+                        "{}/.well-known/oauth-authorization-server",
+                        authorization_server.uri()
                     ),
-                    "expected the original authorization-server issuer to remain bound: {error:#}",
-                );
+                    "OAuth authorization server issuer does not match authorization metadata origin",
+                )?;
             }
         }
     }
@@ -387,7 +383,17 @@ async fn legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redi
     )
     .await;
 
-    assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
+    assert_discovery_request_failed(
+        discovery,
+        &format!(
+            "{}/.well-known/oauth-authorization-server",
+            authorization_server.uri()
+        ),
+        &format!(
+            "OAuth discovery redirect to non-same-origin URL rejected: {}/redirected-authorization-metadata",
+            redirect_target.uri()
+        ),
+    )?;
     assert!(
         redirect_target
             .received_requests()
@@ -443,7 +449,7 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
             ResponseTemplate::new(302)
                 .insert_header("location", "/.well-known/oauth-authorization-server"),
         )
-        .expect(2..=MAX_METADATA_REDIRECT_REQUESTS)
+        .expect(EXPECTED_METADATA_REDIRECT_REQUESTS)
         .mount(&authorization_server)
         .await;
 
@@ -470,17 +476,14 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
     )
     .await
     .context("OAuth metadata redirect cycles must fail within the bounded discovery timeout")?;
-    let error = discovery
-        .err()
-        .context("OAuth metadata redirect cycles must be rejected")?;
-    assert!(
-        matches!(
-            error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery exceeded ") && reason.contains(" redirects")
+    assert_discovery_request_failed(
+        discovery,
+        &format!(
+            "{}/.well-known/oauth-authorization-server",
+            authorization_server.uri()
         ),
-        "expected the SDK to report its bounded OAuth discovery redirect limit: {error:#}",
-    );
+        "OAuth request exceeded 10 redirects",
+    )?;
     authorization_server.verify().await;
     resource_server.verify().await;
     assert_authorization_requests_exclude_resource_headers(&authorization_server).await?;
@@ -534,7 +537,14 @@ async fn legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects
     )
     .await;
 
-    assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
+    assert_discovery_request_failed(
+        discovery,
+        &resource_metadata_url,
+        &format!(
+            "OAuth discovery redirect to non-same-origin URL rejected: {}/redirect-target",
+            redirect_target.uri()
+        ),
+    )?;
     assert!(
         redirect_target
             .received_requests()
