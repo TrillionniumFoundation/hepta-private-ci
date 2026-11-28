@@ -1,0 +1,90 @@
+name: Windows federation workspace qualification
+
+on:
+  push:
+    branches:
+      - codex/hia-federation-workspace-20261128-03da85
+    paths:
+      - codex-rs/ext/hepta-memory/**
+      - .github/workflows/federation-workspace-qualification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Preserve exact repository source bytes
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the complete Windows memory extension target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --test_output=all \
+            --cache_test_results=no \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/ext/hepta-memory:hepta-memory-unit-tests
+      - name: Bind original and added test identities, source, and binary
+        shell: pwsh
+        run: |
+          @'
+          import hashlib, json, os, pathlib, re, subprocess
+          expected = ["advisory_observation::tests::host_input_type_round_trips_through_extension_data_init","advisory_observation::tests::host_supplied_receipt_becomes_valid_digest_only_observation","advisory_observation::tests::invalid_nested_input_is_observed_as_a_bounded_rejection","advisory_observation::tests::mismatched_turn_is_rejected_before_any_nested_digest_is_retained","advisory_observation::tests::missing_host_input_is_rejected_without_synthesizing_snapshot","advisory_observation::tests::observation_is_idempotent_and_conflicts_are_fail_closed","advisory_observation::tests::tampered_receipt_is_rejected_and_never_attached_as_authority","cognitive::federation::combined_digest_table::tests::combined_digest_table_preserves_every_exact_hash_and_citation","cognitive::federation::tests::combined_proposal_is_exact_bounded_and_owner_capability_sensitive","cognitive::federation::tests::federated_source_binding_changes_when_coverage_changes","cognitive::federation::tests::final_use_capability_window_rejects_expiry_and_clock_regression","cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send","cognitive::federation::tests::v3_compact_memory_preserves_v2_combined_fields_and_coverage_source","cognitive::federation::workspace_tests::canonical_workspace_rejects_symlink_alias_and_preserves_missing_error","cognitive::federation::workspace_tests::canonical_workspace_restores_transport_without_equating_v1_digests","cognitive::federation::workspace_tests::normalized_byte_grant_does_not_authorize_canonical_workspace","cognitive::federation::workspace_tests::physical_send_rejects_other_moved_and_retargeted_workspace","cognitive::kg_extractor::tests::extractor_normalizes_and_resolves_structured_facts","cognitive::kg_extractor::tests::extractor_rejects_duplicate_dangling_secret_nul_limits_and_provisional_facts","cognitive::kg_extractor::tests::structured_input_denies_unknown_fields_at_every_level","cognitive::tests::duplicate_read_only_replay_soak_preserves_exact_memory_binding","cognitive::tests::entity_and_graph_channels_survive_initial_compile_and_physical_revalidation","cognitive::tests::every_physical_attempt_revalidates_with_stable_source_content_and_binding","cognitive::tests::exact_directive_capture_is_digest_only_and_byte_exact","cognitive::tests::kg_generation_drift_fails_open_without_a_physical_attachment","cognitive::tests::mutation_tools_require_explicit_write_runtime_and_host_capability","cognitive::tests::one_stale_memory_drops_the_entire_two_memory_physical_attachment","cognitive::tests::prepared_revision_is_dropped_after_correction_and_after_tombstone","cognitive::tests::query_larger_than_two_kib_is_not_prepared_but_witness_remains","cognitive::tests::secret_detector_covers_common_key_shapes","cognitive::tests::structured_kg_retrieval_channels_reach_the_physical_attachment","cognitive::tools::tests::all_tool_specs_share_the_namespace_and_have_strict_object_shapes","cognitive::tools::tests::available_product_runtime_without_mutation_capability_exposes_no_write_tools","cognitive::tools::tests::bounded_explain_shape_never_exceeds_the_hard_output_limit","cognitive::tools::tests::bounded_utf8_never_splits_a_scalar","cognitive::tools::tests::conflicting_same_turn_witness_replay_is_permanently_poisoned","cognitive::tools::tests::deferred_tools_are_visible_before_turn_input_and_fail_closed_without_exact_witness","cognitive::tools::tests::exact_remember_and_correct_are_verified_and_forget_is_cas_tombstone","cognitive::tools::tests::non_exact_correct_and_forget_do_not_write_source_or_advance_verified_head","cognitive::tools::tests::non_exact_remember_is_provisional_uses_honest_source_and_never_retrieves","cognitive::tools::tests::provisional_structured_facts_fail_closed_before_source_persistence","cognitive::tools::tests::secret_like_remember_is_rejected_before_source_persistence","cognitive::tools::tests::secret_rejection_is_typed_and_stable","cognitive::tools::tests::stale_correction_cas_leaves_no_source_event","cognitive::tools::tests::structured_kg_tool_schema_is_bounded_and_denies_unknown_nested_fields","cognitive::tools::tests::unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_witness","extension::tests::cross_thread_candidate_is_rejected_before_any_prepared_attachment","extension::tests::default_shadow_recall_is_same_thread_digest_only_and_never_attaches","extension::tests::disabled_or_missing_host_identity_never_queries_state","extension::tests::feature_resolution_defaults_to_shadow_and_requires_full_read_only_conjunction","extension::tests::install_registers_only_the_three_owned_contributor_seams","extension::tests::invalid_source_time_and_empty_candidate_fail_closed_without_attachment","extension::tests::invalid_turn_or_primary_environment_is_zero_query_zero_observation","extension::tests::local_turn_lifecycle_requires_explicit_enable_and_available_store","extension::tests::missing_error_and_timeout_backends_are_typed_and_digest_only","extension::tests::observation_slot_is_exact_replay_and_conflict_protected","extension::tests::policy_gated_runtime_never_registers_legacy_turn_callback","extension::tests::query_and_summary_limits_are_utf8_byte_bounds","extension::tests::read_only_proposal_revalidates_source_and_binds_exact_physical_attempt","extension::tests::resolved_write_authority_is_frozen_into_thread_state","extension::tests::scope_drift_source_disable_and_backend_failure_never_attach","extension::tests::secret_query_is_digest_only_observed_without_querying_state","local_development_owner::tests::explicit_owner_expires_bound_lease_and_fences_old_witness","local_development_owner::tests::explicit_owner_rejects_unbound_lease_expiry","local_development_owner::tests::explicit_owner_writes_bound_witness_and_replays_without_registration","local_development_owner::tests::owner_is_explicit_and_caller_zero","local_development_owner::tests::owner_rejects_production_policy","local_lifecycle::tests::acquire_before_admit_replays_and_retries_local_admission","local_lifecycle::tests::active_lease_replays_after_host_store_restart","local_lifecycle::tests::duplicate_start_is_one_local_intent_and_stop_is_idempotent","local_lifecycle::tests::indeterminate_crash_window_replays_as_terminal_and_releases","local_lifecycle::tests::process_local_auto_compact_ids_are_not_durable_bindings","local_rehydration::tests::explicit_host_read_is_pure_and_unregistered","local_rehydration::tests::explicit_host_read_observes_existing_witness_without_writing","local_rehydration::tests::host_turn_mismatch_fails_before_executor_read","local_replay::tests::consumes_complete_read_without_rehydrating_again","local_replay::tests::consumes_not_started_read_without_writes","local_replay::tests::expired_active_bound_lease_rejects_h14_and_h16_without_writes","local_replay::tests::explicit_lifecycle_observation_is_read_only_and_not_registered","local_replay::tests::explicit_lifecycle_observation_of_complete_replay_is_idempotent","local_replay::tests::lifecycle_observation_rejects_auto_compact_and_payload_rebinding","local_replay::tests::stale_fence_and_turn_binding_fail_closed","local_replay::tests::tampered_runtime_plan_and_negative_flags_fail_closed","local_replay::tests::terminal_lease_cannot_trigger_lifecycle_observation"]
+          target = pathlib.Path("bazel-testlogs/codex-rs/ext/hepta-memory/hepta-memory-unit-tests")
+          log_data = (target / "test.log").read_bytes()
+          log = log_data.decode("utf-8")
+          cases = re.findall(r"^test ([^\r\n]+) \.\.\. (ok|FAILED|ignored)\r?$", log, re.MULTILINE)
+          assert sorted(name for name, result in cases) == expected, cases
+          assert all(result == "ok" for name, result in cases), cases
+          assert "test result: ok. 84 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;" in log, log
+          paths = ["codex-rs/ext/hepta-memory/src/cognitive/federation.rs", "codex-rs/ext/hepta-memory/src/cognitive/federation_workspace.rs", "codex-rs/ext/hepta-memory/src/cognitive/federation_workspace_tests.rs", "codex-rs/ext/hepta-memory/src/framing.rs", "codex-rs/hepta-memory/src/framing.rs", "codex-rs/hepta-fleet/src/model.rs", "codex-rs/hepta-agentd/src/state_control.rs", "codex-rs/utils/absolute-path/src/lib.rs", "codex-rs/utils/path-uri/src/lib.rs", "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock"]
+          files = {}
+          for name in paths:
+              data = pathlib.Path(name).read_bytes()
+              assert data == subprocess.check_output(["git", "show", os.environ["GITHUB_SHA"] + ":" + name]), name
+              files[name] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+          original_tests = pathlib.Path(paths[0]).read_bytes().split(b"#[cfg(test)]\nmod tests", 1)[1]
+          test_module_sha256 = hashlib.sha256(b"#[cfg(test)]\nmod tests" + original_tests).hexdigest()
+          assert test_module_sha256 == "dccdf6842daa825489d4b78892109d115861fd67eed3377d8859170e8206bbf7"
+          binary = pathlib.Path("bazel-bin/codex-rs/ext/hepta-memory/hepta-memory-unit-tests-bin.exe")
+          binary_data = binary.read_bytes()
+          evidence = {"head": os.environ["GITHUB_SHA"], "runner_os": os.environ["RUNNER_OS"], "runner_arch": os.environ["RUNNER_ARCH"], "files": files, "tests": cases, "original_test_module_sha256": test_module_sha256, "test_log_bytes": len(log_data), "test_log_sha256": hashlib.sha256(log_data).hexdigest(), "binary": binary.as_posix(), "binary_bytes": len(binary_data), "binary_sha256": hashlib.sha256(binary_data).hexdigest()}
+          out = pathlib.Path("federation-native-evidence")
+          out.mkdir()
+          (out / "source-and-tests.json").write_text(json.dumps(evidence, indent=2) + "\n")
+          print(json.dumps(evidence, sort_keys=True))
+          '@ | python -
+      - name: Upload native federation evidence
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: federation-native-evidence-windows
+          path: federation-native-evidence
+          if-no-files-found: error
