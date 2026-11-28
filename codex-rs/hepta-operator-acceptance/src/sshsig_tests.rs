@@ -81,24 +81,48 @@ impl Oracle {
     }
 
     fn sign(&self, message: &[u8], namespace: &str, hash: &str) -> Vec<u8> {
-        let mut child = Command::new(ssh_keygen_path())
+        let mut identity = sha2::Sha256::new();
+        identity.update(namespace.as_bytes());
+        identity.update([0]);
+        identity.update(hash.as_bytes());
+        identity.update([0]);
+        identity.update(message);
+        let statement = self
+            ._temporary
+            .path()
+            .join(format!("statement-{:x}", identity.finalize()));
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&statement)
+            .expect("fresh exact oracle statement");
+        file.write_all(message).expect("complete oracle statement");
+        drop(file);
+        // Use the same file-signing route as the retained original fixtures.
+        // Windows OpenSSH writes stdout in text mode; its signature file
+        // preserves the original LF envelope and the binary statement bytes.
+        let output = Command::new(ssh_keygen_path())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace, "-O", &format!("hashalg={hash}")])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()
-            .expect("start independent OpenSSH signer");
-        child
-            .stdin
-            .take()
-            .expect("signer stdin")
-            .write_all(message)
-            .expect("statement");
-        let output = child.wait_with_output().expect("wait for signer");
-        assert!(output.status.success(), "{:?}", output.status);
-        output.stdout
+            .arg(&statement)
+            .stdin(Stdio::null())
+            .output()
+            .expect("start independent OpenSSH file signer");
+        assert!(
+            output.status.success(),
+            "signing {:?}; stderr={}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(
+            std::fs::read(&statement).expect("reread signed statement"),
+            message
+        );
+        let signature = std::fs::read(statement.with_extension("sig"))
+            .expect("read actual independent signature file");
+        assert!(signature.starts_with(HEADER) && signature.ends_with(FOOTER));
+        signature
     }
 
     fn openssh(&self, message: &[u8], signature: &[u8], namespace: &str, other: bool) -> bool {
