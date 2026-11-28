@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.terminal-remaining-controls-plan.v1",
+  "parent": "2cf74e84b85178c9cd9027d771a2bff0a6010dc9",
+  "first_partial_source": "e33367318734f782eb5e921856d68ce4410e4466",
+  "first_partial_status": {
+    "exit_code": 124,
+    "passed": 19,
+    "failed": 3,
+    "without_terminal_result": 6,
+    "outer_seconds": "240.367219186",
+    "raw_sha256": "7cdb73e95a8da1e0e6b33ebb5c51fcbcde82fa2f7b166b2fb72651ba619d459d",
+    "outcome_sha256": "8e1b010fc381a9201c8050fbf2e21ce7c31ae8186bfa16ddc4ac86c89f5dd77a",
+    "whole_gate": "NOT_QUALIFIED"
+  },
+  "scope": "Only nine controls without a PASS in the original e333 raw log; retain original failures and do not rerun nineteen completed controls.",
+  "command_cap_seconds": 240,
+  "cleanup_reservation_seconds": 66,
+  "shared_cap_seconds": 3600,
+  "verified_shared_actual_before_seconds": "2967.9046997300616",
+  "verified_shared_remaining_seconds": "632.0953002699384",
+  "once_scoped_just_fix": {
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "command_cap_seconds": 260,
+    "cleanup_reservation_seconds": 66,
+    "tests_afterward": false,
+    "previously_executed": false
+  },
+  "remaining_after_reservations_seconds": "0.0953002699384",
+  "exact_tests": [
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_lifetime_tests::draining_closes_native_admission_and_cannot_finish_with_live_worker",
+    "production_composition::terminal_owner_tests::original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop",
+    "production_composition::terminal_owner_tests::recovered_replay_checks_actual_workspace_and_both_live_writer_fences",
+    "production_composition::terminal_owner_tests::unavailable_or_configured_owner_and_deadline_refuse_before_live_verifier",
+    "production_launcher::inputs::tests::paired::paired_group_and_canonical_pins_refuse_before_taking_original_rights",
+    "production_launcher::inputs::tests::paired::paired_handoff_aliases_refuse_before_any_original_descriptor_moves",
+    "production_launcher::inputs::tests::paired::paired_notes_input_transfers_one_distinct_socket_and_independent_pins",
+    "production_launcher::terminal::tests::expired_ready_handoff_and_missing_launch_cannot_create_an_inbox",
+    "production_launcher::terminal::tests::handoff_retains_the_actual_evaluator_channel_and_its_original_peer"
+  ],
+  "minimum_tests": 9,
+  "excluded_previously_passed": [
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_lifetime_tests::cancellation_before_fit_keeps_real_worker_tracked_until_exit",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::actual_ledger_append_after_prepare_invalidates_the_frozen_cut",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::evaluator_signature_old_time_role_and_changed_job_are_not_authority",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::exact_four_event_digests_and_episode_roles_refuse_relabelled_links",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::extra_real_episode_is_refused_even_with_valid_current_dataset_signature",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::late_owner_signature_fits_existing_events_and_retains_original_bytes",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::memory_replay_revocation_between_prepare_and_consume_refuses",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::original_deadline_and_actual_owner_custody_cannot_be_replaced",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::original_request_unknown_retained_raw_and_canonical_mismatches_refuse",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::preparation_retains_exact_records_and_current_dataset_without_a_fit",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::runtime_tests::dropped_late_signature_is_required_failure_without_a_success_reply",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::runtime_tests::late_evaluator_returns_native_receipt_and_scopes_followup_commands",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::runtime_tests::missing_evaluator_and_foreign_pins_refuse_before_intake_attachment",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::paired_binding_tests::runtime_tests::original_deadline_and_cancellation_end_pending_delivery_without_a_read",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint",
+    "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate",
+    "production_composition::terminal_owner_tests::assembly_rechecks_original_live_authority_before_claim"
+  ],
+  "fixture_source_pins": {
+    "codex-rs/hepta-agentd/src/production_terminal_owner_tests.rs": "cb3c7b1be6d733d0cb3ef2d9f7c1f1d12cce28c6590bec98d4a31d93dfb78e34",
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime_tests.rs": "4c34ca43523892388eafb1e6e4b06f36fa03250d03dc53a03a294da32769bf4b"
+  },
+  "production_sources_changed_since_e333": false,
+  "control_scope_correction": "The retained host clone prevents fresh AgentdConfig from reacquiring its original writer lock. The actual repeat factory on the same Config remains checked. This run does not claim the clone reaches factory CAS through a second Config.",
+  "planned_model_fits": 0,
+  "native_executed_at_plan_creation": false,
+  "scientific_budgets_changed": false,
+  "genuine_user_training": false,
+  "adoption": false,
+  "proof_of_useful_work": false,
+  "created_at_utc": "2026-11-28T05:00:52.494925+00:00"
+}
