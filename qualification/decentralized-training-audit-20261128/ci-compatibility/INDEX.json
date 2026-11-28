@@ -1,0 +1,322 @@
+{
+  "schema": "hepta-ci-compatibility-evidence-index-v1",
+  "source_base_commit": "1383c6f4cdd271bc8eabffe664892b9b5e878749",
+  "source_candidate_commit": "f74d0ccde0ac0ad9e1a9819a3bdec4d08ce39919",
+  "source_candidate_tree": "76ce2459c31f9f84c30ad8e0928d976b024c8c7d",
+  "source_files": [
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+      "bytes": 10812,
+      "sha256": "2c28623a2adb23569666faf061c46bf5eebc607bc50f3ad76654ed32e79490dd",
+      "base_blob": "785aa4e1956c95a1b3319315ce1b135be6e0f713",
+      "git_blob": "031c34cd7d6e45d7f8718da2f826c8c6e530d3c3",
+      "validation": "Exact bytes frozen for first native build; dependency SIGKILL prevented all test execution."
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "bytes": 27258,
+      "sha256": "e38c111c5577cb14e5139c26af553beba29e895778fd797a7a61e6ca1620075b",
+      "base_blob": "204c669dfaf6d798e05687f2b15a451fa0faf7be",
+      "git_blob": "21d6db515988274d0624335afd856d11770489cb",
+      "validation": "Exact bytes frozen for first native build; dependency SIGKILL prevented all test execution."
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "bytes": 19630,
+      "sha256": "c3bff162cf235f168ce807d170deb2a42e2b72d153ce8f99d49d790939123fb6",
+      "base_blob": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+      "git_blob": "8ffbb1b99edca5c451b6d1f344fe4a3d6c3877d6",
+      "validation": "Original B4 roster passed 125/125 on these exact bytes before commit; no change since."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "bytes": 14239,
+      "sha256": "8fbaa5e1909769bd3d9138323b1c0e708d4d26f704173e2a0034113d441f498a",
+      "base_blob": "127f782101bbc926a7dd48b570857d270b550215",
+      "git_blob": "ca7dfffe43d3fc4442b248d4b47bcf1120858955",
+      "validation": "Original B4 roster passed 125/125 on these exact bytes before commit; no change since."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "bytes": 46775,
+      "sha256": "3815135f41e21f4238f2efa1016b7393181187c35c441c4902d13fd8a9ba5a96",
+      "base_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+      "git_blob": "0640254cc1f993bc290a516a7ca94d15d17b84a4",
+      "validation": "Original B4 roster passed 125/125 on these exact bytes before commit; no change since."
+    }
+  ],
+  "archive": {
+    "path": "raw-evidence.tar.gz",
+    "bytes": 1477737,
+    "sha256": "ec5c387e6cfac5006461e7c06fed1ea3f84d4108421e1e20fc29c1288498ad8f"
+  },
+  "archive_members": [
+    {
+      "path": "AI395_READ_ONLY_FALLBACK.json",
+      "bytes": 629,
+      "sha256": "bf47a89f6aa7647c24fd9ad8d01d02874b94e23efbc6cbd1f6f42eef8fd99edb"
+    },
+    {
+      "path": "B4_PATCH.diff",
+      "bytes": 2160,
+      "sha256": "25d88a349a015d483d1d58d7d5cdb5bedccc35858d7c8e3178fd7d0fbf502f40"
+    },
+    {
+      "path": "B4_PATCH_MANIFEST.json",
+      "bytes": 1761,
+      "sha256": "efcc8672832faad599511d18f0c333271d32b00fea3212fa6d88c250141c7d0b"
+    },
+    {
+      "path": "CARGO_DENY_LOG_FALLBACK.json",
+      "bytes": 292,
+      "sha256": "9e76971ae7025f4f286e8d521d35b48884ab4311cde29576a5ebece6f3e2b33e"
+    },
+    {
+      "path": "CI_CLASSIFICATION.json",
+      "bytes": 18703,
+      "sha256": "b42ad92eb76c7a44d71a016aa30f2ea5d6d77f009a4cd1cbd262b4a01bdf8854"
+    },
+    {
+      "path": "PUBLICATION.diff",
+      "bytes": 6088,
+      "sha256": "efdbf13404a9253cdfb1d0d4be8de935565b04baeebfab26ae7ba5e89de35813"
+    },
+    {
+      "path": "RESOURCE_CLEANUP_20261128.json",
+      "bytes": 18407,
+      "sha256": "a300966eb64d44f80fdf6ff0587661e91f1cbbd4e7ae487a9c8a8e49e6c902db"
+    },
+    {
+      "path": "RUSTSEC_TRACKED_LOCK_COMPARISON.json",
+      "bytes": 3304,
+      "sha256": "0dadd8bbca804b76a1a40f4dfe6a256fd7d622a6669c8fce28d15013f1820577"
+    },
+    {
+      "path": "cargo-deny-action/Dockerfile",
+      "bytes": 469,
+      "sha256": "4b9a4bda5227d5f52c991a01ef6fe5e4c2dd4f0b882ede3b8ba62190d4ae549b"
+    },
+    {
+      "path": "cargo-deny-action/action.yml",
+      "bytes": 1764,
+      "sha256": "3dff843bdbd6593a189ec7a5c23cd19e53e6fbf95e4e1ec298c7fd5b249535f3"
+    },
+    {
+      "path": "cargo-deny-gh.stderr.log",
+      "bytes": 157,
+      "sha256": "69f5519080eaf4c3a8900ff6c94fe8295d61829c17161fb23806005b55bc84b9"
+    },
+    {
+      "path": "cargo-deny-repro/CHECK_RESULT.json",
+      "bytes": 1702,
+      "sha256": "0914ee2fd74ff16823e1deda2f73e277e582851d53b56dd2025c002b4fc1b9a9"
+    },
+    {
+      "path": "cargo-deny-repro/FETCH_DB_RESULT.json",
+      "bytes": 437,
+      "sha256": "aecf23b627dbd70ae18555edbaaa3355266c32b7c095501f5f9c8d288bb96e5b"
+    },
+    {
+      "path": "cargo-deny-repro/MISSING_CACHE.json",
+      "bytes": 9374,
+      "sha256": "213592e2464dc471a636d966822d94f26b1316787a68911457c712a733136e51"
+    },
+    {
+      "path": "cargo-deny-repro/OFFICIAL_RELEASE.json",
+      "bytes": 978,
+      "sha256": "977ac90080cc7f345e40c8284cbb87ea7083a70ff0d3c7580575a9a344e4278b"
+    },
+    {
+      "path": "cargo-deny-repro/cargo-deny-0.19.0-advisory-db.rs",
+      "bytes": 32729,
+      "sha256": "846eefddf9eb6ce5f324e8abbf652bd9385084e9265d46b23e70c57efe487e86"
+    },
+    {
+      "path": "cargo-deny-repro/check.stderr.log",
+      "bytes": 364,
+      "sha256": "cf611e9d36131cc1f4f071cc093140978a5623155230f52d1c53e676271d973b"
+    },
+    {
+      "path": "cargo-deny-repro/check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cargo-deny-repro/fetch-db.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cargo-deny-repro/fetch-db.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cargo-deny-repro/fetch_db.py",
+      "bytes": 1510,
+      "sha256": "124a3d42dd8e4c181dcf202509c3063cd47a10f687bae807887de6f27ad9a7a8"
+    },
+    {
+      "path": "cargo-deny-repro/matrix-sdk-0.20.0.Cargo.toml",
+      "bytes": 8029,
+      "sha256": "7abc78df1d984ae9b1d5193502b04b3604da541be5b8e2d97d4ceaf208776989"
+    },
+    {
+      "path": "cargo-deny-repro/repro.py",
+      "bytes": 2496,
+      "sha256": "f9fccf554b8d2432338dd70649285faa1f6357a768220c1102659228505897b6"
+    },
+    {
+      "path": "job-140961221223.log",
+      "bytes": 291229,
+      "sha256": "b382a1185fb6e220246d029e4e41c4d10396a2541dcc5aadb71bdfeb9088f467"
+    },
+    {
+      "path": "job-140961221297.log",
+      "bytes": 909089,
+      "sha256": "57ead0308be2dc8848f17c6c7350a138cc0938ea83ee582651e1eef59018a795"
+    },
+    {
+      "path": "job-140961221528.log",
+      "bytes": 1364043,
+      "sha256": "1e675561a303ebadadb48b60f31cf546595d0a0c8801af98e585d302e1dfcf7d"
+    },
+    {
+      "path": "job-140961221570.log",
+      "bytes": 1375577,
+      "sha256": "d01ff8ea842b66fbed07f39ef00ccf60b52913c12f90cd5e553ac95b419d985b"
+    },
+    {
+      "path": "mcp-controls-01/FROZEN.json",
+      "bytes": 12703,
+      "sha256": "3e2543867fbc8e94289267cd65c0d93cdd7c3bdc42badad8e52cab8c99520a73"
+    },
+    {
+      "path": "mcp-controls-01/RESULT.json",
+      "bytes": 12071,
+      "sha256": "486977979a6a063d849d7459cf76191fe79b5e2703d3905dcb162d65574234c0"
+    },
+    {
+      "path": "mcp-controls-01/native.log",
+      "bytes": 9685,
+      "sha256": "33eae99257c4518ab9324776b72a3b41fa6a984a864a24a3ef7da85a5539b952"
+    },
+    {
+      "path": "prepare_publication.py",
+      "bytes": 9861,
+      "sha256": "42c9007a7e82614a83b9926e73d6500399e40d26c8b1cf41f6ee822119b8e59e"
+    },
+    {
+      "path": "repo-checks-fixed/FMT_RESULT.json",
+      "bytes": 159,
+      "sha256": "8ffdc91bef52b6ff9aa149e69e0918cb7825a14e66758886756fd34899227f44"
+    },
+    {
+      "path": "repo-checks-fixed/RESULT.json",
+      "bytes": 606,
+      "sha256": "6143b75ada40030e7b618b5fa3c5c85926dfb878e2ccd8de2e19e956b781da27"
+    },
+    {
+      "path": "repo-checks-fixed/fmt.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "repo-checks-fixed/fmt.stdout.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "repo-checks-fixed/source-after.json",
+      "bytes": 1482013,
+      "sha256": "2af967f229b17d52dc0f8c3812a88fcf7023a03c28465e2cf64570078a3170e5"
+    },
+    {
+      "path": "repo-checks-fixed/source-before.json",
+      "bytes": 1482013,
+      "sha256": "2af967f229b17d52dc0f8c3812a88fcf7023a03c28465e2cf64570078a3170e5"
+    },
+    {
+      "path": "repo-checks-fixed/stderr.log",
+      "bytes": 226,
+      "sha256": "9410003fe4818d63c730020db3b14cd19b0d27ea0916dac115add4398c7175c4"
+    },
+    {
+      "path": "repo-checks-fixed/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "run_mcp_controls.py",
+      "bytes": 4299,
+      "sha256": "5941a3f1247a6265fe7cb05235af05040128e9562fd3bb4db5451c8638e0d3b6"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2024-0449.md",
+      "bytes": 870,
+      "sha256": "99da8fa8d7ce73ca12b32cadedef33ff160d120dd63a338447a8fa70eac0d549"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0318.md",
+      "bytes": 749,
+      "sha256": "c0949dd67483de64aed6271c8ace350dc1b905ccb7b0a76e1efa3bfd553de6f0"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0319.md",
+      "bytes": 365,
+      "sha256": "007e3cd8483c1048401637e8543b504adb01d7ba494642879aacc9846effc469"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0346.md",
+      "bytes": 1023,
+      "sha256": "b697bd44f6d67c02b6412a72b7f07d6642eab287f1f8b793c413c1b49686d081"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0347.md",
+      "bytes": 1757,
+      "sha256": "e6fb3b9d437bc9693a883c7161ed3fd96e9b37c7c267e717b75c5b46f1fb3338"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0348.md",
+      "bytes": 1102,
+      "sha256": "3c98dd39b01a85ad4f932aa92c3e57e55db5ee070a2229ebdce8f9d0025b690a"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0349.md",
+      "bytes": 1762,
+      "sha256": "60733cd13bff0fa7feadf707230564f1923f69881aa069b8a08f1581de7910d1"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0367.md",
+      "bytes": 1102,
+      "sha256": "a3ceec31db85c2e07a2b8daf0a7a17a5a624601bb256cedab4c508750ff677df"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0368.md",
+      "bytes": 998,
+      "sha256": "c056588fb9936466517e99b8644aab34804502a01f34c6cae323bd40e4e63ba0"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0369.md",
+      "bytes": 685,
+      "sha256": "4bed2ec03d7b53525422dc136075476eaeb644e2ab3483547a525437ae722dc5"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0370.md",
+      "bytes": 655,
+      "sha256": "55991b6a4484c3541c8091cb16cf7446c8610de09ac642ab3ff88c332e394bf0"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0371.md",
+      "bytes": 563,
+      "sha256": "3e618914dab3ef0d6d2434f42ac8aa1947cb1738fd156b4f0092d6c7ad53b394"
+    },
+    {
+      "path": "rustsec-tracked/RUSTSEC-2026-0372.md",
+      "bytes": 566,
+      "sha256": "e03677b3351db11984e2fd3bd839b6368cfc3a93aca08c4401980264b228635d"
+    }
+  ],
+  "archive_members_verified": true,
+  "source_trees_and_hashes_are_not_runtime_qualification": true
+}

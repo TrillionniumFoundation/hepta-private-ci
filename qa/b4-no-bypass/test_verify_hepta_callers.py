@@ -713,7 +713,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                 "async fn connect(",
             ),
             (
-                "let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id()).await?;",
+                "let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id(), OriginalHumanInput::First).await?;",
                 "async fn run_bound(",
             ),
             (
