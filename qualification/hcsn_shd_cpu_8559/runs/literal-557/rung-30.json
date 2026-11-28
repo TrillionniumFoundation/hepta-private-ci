@@ -1,0 +1,39 @@
+{
+  "step": 104,
+  "fit_cpu_s": 30.15173073899993,
+  "fit_wall_s": 92.1674322330091,
+  "overhead_wall_s": 10.543021333996876,
+  "best": {
+    "dev_macro": 0.048084113746881485,
+    "dev_nll": 2.9686453342437744,
+    "step": 104,
+    "budget": 30,
+    "fit_cpu_s": 30.15173073899993
+  },
+  "validation": [
+    {
+      "dev_macro": 0.048084113746881485,
+      "dev_nll": 2.9686453342437744,
+      "step": 104,
+      "budget": 30,
+      "fit_cpu_s": 30.15173073899993
+    }
+  ],
+  "resumes": 0,
+  "loss": 2.9602534770965576,
+  "last_matched": 64,
+  "arm": "literal",
+  "seed": 557,
+  "budget": 30,
+  "param_count": 13076,
+  "train_records": 6645,
+  "dev_records": 1511,
+  "data_setup_wall_s": 0.9287207429988484,
+  "selected_hash": "e824566bb6eaddd5c0d919a207f52bced7f24c91155e3817b1113b7aee1878d7",
+  "torch_version": "2.8.0+cpu",
+  "affinity": [
+    7
+  ],
+  "rss_highwater_kib": 495356,
+  "observed_at": 1795830138.4373415
+}
