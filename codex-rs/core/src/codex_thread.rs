@@ -336,6 +336,19 @@ impl CodexThread {
         self.session.flush_rollout().await
     }
 
+    /// Waits for terminalization owners already registered on this thread.
+    /// Integration fixtures call this after observing a terminal event, with
+    /// exclusive control of submissions to the thread.
+    #[doc(hidden)]
+    pub async fn wait_for_terminalization_for_test(&self) {
+        let pending = self
+            .session
+            .pending_task_terminalization_completions_except(/*excluded_identity*/ None);
+        for completion in pending {
+            completion.wait().await;
+        }
+    }
+
     pub async fn submit_with_trace(
         &self,
         op: Op,
