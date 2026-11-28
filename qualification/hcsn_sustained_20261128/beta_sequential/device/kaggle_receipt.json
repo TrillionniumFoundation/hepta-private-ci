@@ -1,0 +1,40 @@
+{
+  "request": "hcsn-9de7-matched-beta-device-v1",
+  "provider": "kaggle",
+  "provider_request_id": "hc-40420c8cbb53add78f48c7135cf58f5a8f71087c",
+  "source_sha256": "fc393433b62807af88b457924a8469b612a2c75d88578cf3bd16e559717c799c",
+  "source_bytes": 190301,
+  "configuration": {
+    "network": "disabled",
+    "visibility": "private_notebook"
+  },
+  "kernel_id": 148102695,
+  "version": 1,
+  "identity_verified": false,
+  "terminal": {
+    "accelerator_execution_verification": "requires_task_specific_artifact",
+    "accelerator_requested": "T4",
+    "compute_succeeded": true,
+    "provider_terminal_state": "COMPLETE"
+  },
+  "state": "COLLECTED",
+  "created_utc": "2026-11-28T14:45:58.346162+00:00",
+  "collected_utc": "2026-11-28T14:52:11.539120+00:00",
+  "files": [
+    {
+      "name": "hepta-execution-manifest.json",
+      "bytes": 221,
+      "sha256": "92d50d08f2f3ded5dc0f1b8e314b3c539a016cc1cf7c7c64394d475d3e2ea324"
+    },
+    {
+      "name": "result.json",
+      "bytes": 5558,
+      "sha256": "87e5649cfd09f0de6dca4c7324b5f40ac5348efd050dde3fc9b06d534ee93ac0"
+    }
+  ],
+  "actual": {
+    "torch": "2.11.0+cpu",
+    "cuda_available": false,
+    "accelerator_arithmetic_verified": false
+  }
+}
