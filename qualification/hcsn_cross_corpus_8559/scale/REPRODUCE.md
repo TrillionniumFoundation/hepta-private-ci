@@ -4,6 +4,7 @@ From the study directory, the normal stages are:
 
 ```sh
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+python sources.py /data/rsicd /data/ucm
 python scale/acquire.py /data/corpora
 python scale/data.py /data/rsicd /data/ucm /data/corpora /work/scale/data
 python scale/linear_scale.py /work/scale
