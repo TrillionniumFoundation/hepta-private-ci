@@ -107,6 +107,18 @@ impl ResolvedWindowsSandboxPermissions {
         self.file_system.has_full_disk_read_access()
     }
 
+    pub(crate) fn has_write_policy(&self) -> bool {
+        self.file_system
+            .entries
+            .iter()
+            .any(|entry| entry.access.can_write())
+    }
+
+    /// Whether this filesystem policy needs the broker's enforcement.
+    pub fn requires_elevated_filesystem(&self, has_overrides: bool) -> bool {
+        has_overrides || !self.has_full_disk_read_access() || self.has_write_policy()
+    }
+
     pub(crate) fn has_symbolic_root_read_access(&self, cwd: &Path) -> bool {
         self.file_system.entries.iter().any(|entry| {
             matches!(&entry.path, FileSystemPath::Special { value: Root })
@@ -432,6 +444,55 @@ mod tests {
         .expect("token mode");
 
         assert_eq!(WindowsSandboxTokenMode::WritableRootsCapability, token_mode);
+    }
+
+    #[test]
+    fn only_unmodified_read_only_filesystem_policy_uses_the_legacy_backend() -> Result<()> {
+        let workspace = TempDir::new()?;
+        let roots = workspace_roots_for(workspace.path());
+        let readonly =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &PermissionProfile::read_only(),
+                &roots,
+            )?;
+        let writable =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &PermissionProfile::workspace_write(),
+                &roots,
+            )?;
+
+        assert!(!readonly.requires_elevated_filesystem(false));
+        assert!(readonly.requires_elevated_filesystem(true));
+        assert!(writable.requires_elevated_filesystem(false));
+
+        let temporary_write = PermissionProfile::Managed {
+            file_system: ManagedFileSystemPermissions::Restricted {
+                entries: vec![
+                    FileSystemSandboxEntry {
+                        path: FileSystemPath::Special { value: Root },
+                        access: FileSystemAccessMode::Read,
+                        missing_path_behavior: None,
+                    },
+                    FileSystemSandboxEntry {
+                        path: FileSystemPath::Special {
+                            value: FileSystemSpecialPath::Tmpdir,
+                        },
+                        access: FileSystemAccessMode::Write,
+                        missing_path_behavior: None,
+                    },
+                ],
+                glob_scan_max_depth: None,
+            },
+            network: NetworkSandboxPolicy::Restricted,
+        };
+        let temporary_write =
+            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                &temporary_write,
+                &roots,
+            )?;
+        assert!(temporary_write.has_full_disk_read_access());
+        assert!(temporary_write.requires_elevated_filesystem(false));
+        Ok(())
     }
 
     #[test]

@@ -13,8 +13,9 @@ doctest = false
 workspace = true
 
 [dependencies]
+time = { workspace = true }
+codex-utils-time = { workspace = true }
 anyhow = { workspace = true }
-chrono = { workspace = true }
 codex-backend-client = { workspace = true }
 codex-core = { workspace = true }
 codex-config = { workspace = true }

@@ -1,8 +1,6 @@
 use super::RemotePluginDirectoryItem;
 use super::RemotePluginScope;
 use super::RemotePluginServiceConfig;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_login::CodexAuth;
 use serde::Deserialize;
 use serde::Serialize;
@@ -58,7 +56,7 @@ impl RemotePluginCatalogCacheKey {
 struct RemotePluginCatalogDiskCache {
     schema_version: u8,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    fetched_at: Option<DateTime<Utc>>,
+    fetched_at: Option<codex_utils_time::Timestamp>,
     plugins: Vec<RemotePluginDirectoryItem>,
 }
 
@@ -109,7 +107,7 @@ pub(crate) fn load_cached_directory_plugins(
         return None;
     }
 
-    let freshness = if is_fresh(cache.fetched_at, Utc::now()) {
+    let freshness = if is_fresh(cache.fetched_at, codex_utils_time::Timestamp::now()) {
         RemotePluginCatalogCacheFreshness::Fresh
     } else {
         RemotePluginCatalogCacheFreshness::Stale
@@ -133,7 +131,7 @@ pub(crate) fn write_cached_directory_plugins(
     let cache_path = cache_path(codex_home, &cache_key);
     let Ok(contents) = serde_json::to_string_pretty(&RemotePluginCatalogDiskCache {
         schema_version: REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
-        fetched_at: Some(Utc::now()),
+        fetched_at: Some(codex_utils_time::Timestamp::now()),
         plugins: plugins.to_vec(),
     }) else {
         return;
@@ -175,15 +173,19 @@ fn cache_path(codex_home: &Path, cache_key: &RemotePluginCatalogCacheKey) -> Pat
         .join(format!("{cache_key_hash:016x}.json"))
 }
 
-fn is_fresh(fetched_at: Option<DateTime<Utc>>, now: DateTime<Utc>) -> bool {
+fn is_fresh(
+    fetched_at: Option<codex_utils_time::Timestamp>,
+    now: codex_utils_time::Timestamp,
+) -> bool {
     let Some(fetched_at) = fetched_at else {
         return false;
     };
-    let Ok(ttl) = chrono::Duration::from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
+    let Some(ttl) = codex_utils_time::duration_from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL)
+    else {
         return false;
     };
     let age = now.signed_duration_since(fetched_at);
-    age >= chrono::Duration::zero() && age <= ttl
+    age >= time::Duration::ZERO && age <= ttl
 }
 
 #[cfg(test)]

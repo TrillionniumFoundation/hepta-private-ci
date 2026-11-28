@@ -1,7 +1,6 @@
 use super::super::reset_credits::ResetCreditOption;
 use super::super::reset_credits::reset_credit_options;
 use super::*;
-use chrono::TimeZone;
 use codex_app_server_protocol::ConsumeAccountRateLimitResetCreditOutcome;
 use codex_app_server_protocol::ConsumeAccountRateLimitResetCreditResponse;
 use codex_app_server_protocol::RateLimitResetCredit;
@@ -50,11 +49,21 @@ fn reset_credit_with_title(id: &str, expires_at: Option<i64>, title: &str) -> Ra
 }
 
 fn expiry_timestamp(day: u32, hour: u32, minute: u32) -> i64 {
-    chrono::Local
-        .with_ymd_and_hms(2026, 6, day, hour, minute, 0)
-        .single()
-        .expect("valid test timestamp")
-        .timestamp()
+    let civil = jiff::civil::DateTime::new(
+        2026,
+        6,
+        i8::try_from(day).expect("valid day"),
+        i8::try_from(hour).expect("valid hour"),
+        i8::try_from(minute).expect("valid minute"),
+        0,
+        0,
+    )
+    .expect("valid test timestamp");
+    jiff::tz::TimeZone::system()
+        .to_ambiguous_timestamp(civil)
+        .unambiguous()
+        .expect("unambiguous test timestamp")
+        .as_second()
 }
 
 fn show_rate_limit_reset_confirmation_from_event(

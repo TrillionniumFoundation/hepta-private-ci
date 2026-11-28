@@ -1352,88 +1352,14 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-#[cfg(not(feature = "production-cognitive-write"))]
-async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
-    const UNAVAILABLE_CALL: &str = "unavailable-recall";
-    const QUERY: &str = "unavailable runtime probe";
-
-    let mut fleet = FleetHarness::new()?;
-    let agent = fleet.register(AGENT_A, "workspace-a")?;
-    let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
-    let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
-    std::fs::create_dir(&blocking_path)?;
-
-    fleet.start(&agent)?;
-    let (control, _) = fleet.wait_ready(&agent, 1).await?;
-    ensure!(control.health().await?.ready, "agentd did not stay ready");
-    let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    let unavailable = responses::mount_sse_sequence(
-        &model,
-        vec![
-            tool_sse(
-                "unavailable-response",
-                UNAVAILABLE_CALL,
-                "recall",
-                json!({ "query": QUERY }),
-            ),
-            final_sse("unavailable-final"),
-        ],
-    )
-    .await;
-    product.run_turn(&thread, QUERY).await?;
-    assert_physical_request_count_stable(&unavailable, 2, "unavailable cognitive read").await?;
-    let requests = unavailable.requests();
-    assert_no_cognitive_reference(&requests[0])?;
-    for operation in ["remember", "correct", "forget"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_none(),
-            "unavailable runtime incorrectly advertised write tool {operation}"
-        );
-    }
-    for operation in ["recall", "explain"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_some(),
-            "unavailable runtime incorrectly removed read tool {operation}"
-        );
-    }
-    assert_no_cognitive_reference(&requests[1])?;
-    let output = unavailable
-        .function_call_output_text(UNAVAILABLE_CALL)
-        .context("unavailable tool output did not reach the model")?;
-    let typed: Value = serde_json::from_str(&output)?;
-    ensure!(typed["error"]["code"] == "hepta_cognitive_unavailable");
-    ensure!(
-        typed["error"]["message"]
-            .as_str()
-            .is_some_and(|message| message.contains("storage_unavailable")),
-        "typed error omitted the sanitized stable reason"
-    );
-    ensure!(
-        !output.contains(blocking_path.to_string_lossy().as_ref())
-            && !output.to_ascii_lowercase().contains("sqlite"),
-        "typed unavailable error leaked storage details"
-    );
-
-    product.shutdown().await?;
-    Ok(())
-}
-
-/// The named Agentd product mutation profile has a stronger startup contract
-/// than a read-only build: an unavailable cognitive store must stop before App
-/// Server can serve a turn. The qualification witness feature is deliberately
-/// irrelevant to this gate.
-#[cfg(feature = "production-cognitive-write")]
+/// Every daemon profile requires the real critical cognitive owner for readiness.
+/// Unavailable-runtime tool responses are covered at the extension boundary.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-a-qualification-unavailable")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
     let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
     std::fs::create_dir(&blocking_path)?;
 
@@ -1464,12 +1390,32 @@ async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()
                 .map(|log| String::from_utf8_lossy(&log.bytes))
                 .collect::<String>();
             ensure!(
-                logs.contains("cognitive write runtime unavailable"),
+                logs.contains(if cfg!(feature = "production-cognitive-write") {
+                    "cognitive write runtime unavailable"
+                } else {
+                    "critical cognitive owner unavailable"
+                }),
                 "cognitive-writer startup omitted the fail-closed error; logs={logs:?}"
             );
             ensure!(
                 !snapshot.healthy,
                 "cognitive-writer startup rejection was reported healthy"
+            );
+            ensure!(
+                !agent.layout.agentd_control_socket().exists(),
+                "unavailable critical owner opened the control socket before rejection"
+            );
+            ensure!(
+                !agent.layout.app_server_socket().exists(),
+                "unavailable critical owner opened App Server before rejection"
+            );
+            let requests = model
+                .received_requests()
+                .await
+                .context("provider request recording unavailable")?;
+            ensure!(
+                requests.is_empty(),
+                "unavailable critical owner contacted the provider before rejection"
             );
             return Ok(());
         }
@@ -2315,6 +2261,9 @@ async fn read_kg_sqlite_evidence(
             && immutable_relation_count == immutable_relations,
         "immutable KG fact rows did not match their fact-set receipt"
     );
+    // This fresh, single-memory fixture uses G14 revision facts instead of
+    // copying kg_nodes and kg_edges. Require their storage witness and count
+    // active cited facts directly, keeping tombstones out of the projection.
     let (
         generation,
         receipt_fact_set_sha256,
@@ -2342,18 +2291,47 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
     ) = sqlx::query_as(
+        // New generations store an immutable revision-fact cut, not legacy
+        // graph copies. Count its physical facts with the exact generation,
+        // memory, and source bindings before checking the receipt below.
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
+                (SELECT COUNT(*) FROM kg_revision_entities AS n
+                 JOIN kg_projection_generation_receipts AS h
+                   ON h.projection_scope = r.projection_scope
+                  AND h.trigger_memory_id = n.memory_id
+                  AND h.trigger_memory_revision = n.memory_revision
+                  AND h.generation = (
+                      SELECT MAX(x.generation)
+                      FROM kg_projection_generation_receipts AS x
+                      WHERE x.projection_scope = r.projection_scope
+                        AND x.trigger_memory_id = n.memory_id
+                        AND x.generation <= r.generation
+                  )
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.trigger_memory_id
+                  AND m.revision = h.trigger_memory_revision
+                 WHERE m.verification = 'verified' AND m.lifecycle = 'active'
                    AND n.memory_id = r.trigger_memory_id
                    AND n.memory_revision = r.trigger_memory_revision
                    AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
+                (SELECT COUNT(*) FROM kg_revision_relations AS e
+                 JOIN kg_projection_generation_receipts AS h
+                   ON h.projection_scope = r.projection_scope
+                  AND h.trigger_memory_id = e.memory_id
+                  AND h.trigger_memory_revision = e.memory_revision
+                  AND h.generation = (
+                      SELECT MAX(x.generation)
+                      FROM kg_projection_generation_receipts AS x
+                      WHERE x.projection_scope = r.projection_scope
+                        AND x.trigger_memory_id = e.memory_id
+                        AND x.generation <= r.generation
+                  )
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.trigger_memory_id
+                  AND m.revision = h.trigger_memory_revision
+                 WHERE m.verification = 'verified' AND m.lifecycle = 'active'
                    AND e.memory_id = r.trigger_memory_id
                    AND e.memory_revision = r.trigger_memory_revision
                    AND e.source_id = ? AND e.source_revision = 1)
@@ -2362,7 +2340,11 @@ async fn read_kg_sqlite_evidence(
            ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
-         WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
+         JOIN kg_projection_generation_storage AS storage
+           ON storage.projection_scope = r.projection_scope
+          AND storage.generation = r.generation
+         WHERE storage.storage_mode = 'revision_facts_v1'
+           AND r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
     .bind(expected_source_id)
     .bind(expected_source_id)
@@ -2377,7 +2359,9 @@ async fn read_kg_sqlite_evidence(
     );
     ensure!(
         node_count == actual_node_count && edge_count == actual_edge_count,
-        "current projection rows did not match their generation receipt"
+        "current projection facts did not match generation {generation} for revision \
+         {memory_revision}: nodes {actual_node_count}/{node_count}, \
+         edges {actual_edge_count}/{edge_count}"
     );
     Ok(KgProjectionEvidence {
         generation: u64::try_from(generation)?,

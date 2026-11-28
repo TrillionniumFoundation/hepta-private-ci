@@ -342,30 +342,17 @@ impl AclSetupFailureFixture {
         ])
     }
 
-    fn assert_rejected(&self, error: anyhow::Error) {
+    fn assert_rejected_before_spawn(&self, error: anyhow::Error) {
         assert_eq!(
-            (
-                error.to_string(),
-                error.root_cause().to_string(),
-                self.marker.try_exists().expect("inspect process marker"),
-            ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
-                false,
-            ),
+            error.to_string(),
+            "write-capable filesystem policies require the elevated Windows sandbox"
         );
+        assert!(!self.marker.try_exists().expect("inspect process marker"));
     }
 }
 
 #[test]
-fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_session_requires_broker_before_spawn() {
     let _guard = legacy_process_test_guard();
     // Keep privilege removal local to this thread, including the native setup
     // calls in the current-thread runtime. The process token remains unchanged.
@@ -395,12 +382,14 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
+        fixture.assert_rejected_before_spawn(
+            result.expect_err("unsupported policy must prevent session spawn"),
+        );
     });
 }
 
 #[test]
-fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_capture_requires_broker_before_spawn() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
@@ -417,9 +406,28 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
         std::slice::from_ref(&fixture.protected_file),
         /*use_private_desktop*/ true,
     );
-    fixture.assert_rejected(
+    fixture.assert_rejected_before_spawn(
         result
             .map(|_| ())
-            .expect_err("ACL setup failure must prevent capture spawn"),
+            .expect_err("unsupported policy must prevent capture spawn"),
     );
+}
+
+#[test]
+fn protected_fixture_reports_acl_setup_failure_without_launching_a_process() -> anyhow::Result<()> {
+    let _guard = legacy_process_test_guard();
+    let _caller = PrivilegeRestrictedCaller::enter();
+    let fixture = AclSetupFailureFixture::new();
+    let capability = LocalSid::from_string("S-1-5-21-51-61-71-81")?;
+    // SAFETY: the test owns the fixture and the validated SID remains live.
+    let error =
+        unsafe { crate::add_deny_write_ace(fixture.protected_file.as_path(), capability.as_ptr()) }
+            .expect_err("the protected test file must reject deny ACL changes");
+    assert!(error.chain().any(|cause| {
+        cause
+            .downcast_ref::<std::io::Error>()
+            .is_some_and(|error| error.raw_os_error() == Some(ERROR_ACCESS_DENIED as i32))
+    }));
+    assert!(!fixture.marker.try_exists()?);
+    Ok(())
 }

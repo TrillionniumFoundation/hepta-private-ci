@@ -1,15 +1,12 @@
 use super::*;
 use crate::exec_output::StreamOutput;
 use crate::protocol::RateLimitWindow;
-use chrono::DateTime;
-use chrono::Duration as ChronoDuration;
-use chrono::TimeZone;
-use chrono::Utc;
 use codex_http_client::HttpResponse;
 use http::Response as RawHttpResponse;
 use http::StatusCode;
 use pretty_assertions::assert_eq;
 use std::time::Duration;
+use time::Duration as TimeDuration;
 
 #[test]
 fn codex_err_debug_preserves_legacy_shape() {
@@ -73,12 +70,10 @@ fn retryability_preserves_error_details_distinctions() {
 }
 
 fn rate_limit_snapshot() -> RateLimitSnapshot {
-    let primary_reset_at = Utc
-        .with_ymd_and_hms(2024, 1, 1, 1, 0, 0)
+    let primary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 1, 0, 0)
         .unwrap()
         .timestamp();
-    let secondary_reset_at = Utc
-        .with_ymd_and_hms(2024, 1, 1, 2, 0, 0)
+    let secondary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 2, 0, 0)
         .unwrap()
         .timestamp();
     RateLimitSnapshot {
@@ -102,7 +97,7 @@ fn rate_limit_snapshot() -> RateLimitSnapshot {
     }
 }
 
-fn with_now_override<T>(now: DateTime<Utc>, f: impl FnOnce() -> T) -> T {
+fn with_now_override<T>(now: codex_utils_time::Timestamp, f: impl FnOnce() -> T) -> T {
     NOW_OVERRIDE.with(|cell| {
         *cell.borrow_mut() = Some(now);
         let result = f();
@@ -320,8 +315,8 @@ fn usage_limit_reached_error_formats_default_when_none() {
 
 #[test]
 fn usage_limit_reached_error_formats_team_plan() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::hours(1);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -428,8 +423,8 @@ fn usage_limit_reached_error_formats_default_for_other_plans() {
 
 #[test]
 fn usage_limit_reached_error_formats_pro_plan_with_reset() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::hours(1);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -448,8 +443,8 @@ fn usage_limit_reached_error_formats_pro_plan_with_reset() {
 
 #[test]
 fn usage_limit_reached_error_hides_upsell_for_non_codex_limit_name() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::hours(1);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -475,8 +470,8 @@ fn usage_limit_reached_error_hides_upsell_for_non_codex_limit_name() {
 
 #[test]
 fn usage_limit_reached_includes_minutes_when_available() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::minutes(5);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::minutes(5);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -619,8 +614,8 @@ fn unexpected_status_includes_identity_auth_details() {
 
 #[test]
 fn usage_limit_reached_includes_hours_and_minutes() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::hours(3) + ChronoDuration::minutes(32);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::hours(3) + TimeDuration::minutes(32);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -639,9 +634,9 @@ fn usage_limit_reached_includes_hours_and_minutes() {
 
 #[test]
 fn usage_limit_reached_includes_days_hours_minutes() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
     let resets_at =
-        base + ChronoDuration::days(2) + ChronoDuration::hours(3) + ChronoDuration::minutes(5);
+        base + TimeDuration::days(2) + TimeDuration::hours(3) + TimeDuration::minutes(5);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -658,8 +653,8 @@ fn usage_limit_reached_includes_days_hours_minutes() {
 
 #[test]
 fn usage_limit_reached_less_than_minute() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::seconds(30);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::seconds(30);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
@@ -676,8 +671,8 @@ fn usage_limit_reached_less_than_minute() {
 
 #[test]
 fn usage_limit_reached_with_promo_message() {
-    let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    let resets_at = base + ChronoDuration::seconds(30);
+    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let resets_at = base + TimeDuration::seconds(30);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
         let err = UsageLimitReachedError {
