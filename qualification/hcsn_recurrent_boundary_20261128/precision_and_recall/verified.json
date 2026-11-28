@@ -1,0 +1,393 @@
+{
+  "precision": [
+    {
+      "epsilon": 0.001,
+      "base": 51.604948263872956,
+      "walls": [
+        51.60516026329492,
+        51.60641780667715
+      ],
+      "log_wire": [
+        4.108113536289786e-06,
+        2.8476375427308066e-05
+      ],
+      "exact_rate_contrast": 3.0733752985012686e-05,
+      "checks": [
+        {
+          "dtype": "torch.float32",
+          "codec": "absolute",
+          "stored": [
+            51.605159759521484,
+            51.60641860961914
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244472127599781,
+            0.8244779784479972
+          ],
+          "rate_contrast": 3.076568801907431e-05
+        },
+        {
+          "dtype": "torch.float32",
+          "codec": "centered_log",
+          "stored": [
+            4.108113444090122e-06,
+            2.847637551894877e-05
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244472250726004,
+            0.8244779588258137
+          ],
+          "rate_contrast": 3.073375321327454e-05
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "absolute",
+          "stored": [
+            51.59375,
+            51.59375
+          ],
+          "distinguishable": false,
+          "receiver_rates": [
+            0.8241681899916549,
+            0.8241681899916549
+          ],
+          "rate_contrast": 0.0
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "centered_log",
+          "stored": [
+            4.112720489501953e-06,
+            2.849102020263672e-05
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244472308833891,
+            0.8244779772950734
+          ],
+          "rate_contrast": 3.074641168432368e-05
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "absolute",
+          "stored": [
+            51.5,
+            51.5
+          ],
+          "distinguishable": false,
+          "receiver_rates": [
+            0.8218635570692474,
+            0.8218635570692474
+          ],
+          "rate_contrast": 0.0
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "centered_log",
+          "stored": [
+            4.112720489501953e-06,
+            2.849102020263672e-05
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244472308833891,
+            0.8244779772950734
+          ],
+          "rate_contrast": 3.074641168432368e-05
+        }
+      ],
+      "noise": [
+        {
+          "sd": 1e-05,
+          "best_equal_prior_error": 0.11153351574540338
+        },
+        {
+          "sd": 5e-05,
+          "best_equal_prior_error": 0.40373831787191694
+        },
+        {
+          "sd": 0.0001,
+          "best_equal_prior_error": 0.45151234871928086
+        },
+        {
+          "sd": 0.0005,
+          "best_equal_prior_error": 0.4902794320732483
+        },
+        {
+          "sd": 0.001,
+          "best_equal_prior_error": 0.49513935527910624
+        }
+      ]
+    },
+    {
+      "epsilon": 0.005,
+      "base": 51.604948263872956,
+      "walls": [
+        51.6060085101278,
+        51.61231009995562
+      ],
+      "log_wire": [
+        2.0545226747549892e-05,
+        0.00014264738691657571
+      ],
+      "exact_rate_contrast": 0.00015395686145525111,
+      "checks": [
+        {
+          "dtype": "torch.float32",
+          "codec": "absolute",
+          "stored": [
+            51.60600662231445,
+            51.612308502197266
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.824467910096188,
+            0.8246218740704396
+          ],
+          "rate_contrast": 0.00015396397425160302
+        },
+        {
+          "dtype": "torch.float32",
+          "codec": "centered_log",
+          "stored": [
+            2.0545227016555145e-05,
+            0.00014264739002101123
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244679562327839,
+            0.8246219130978181
+          ],
+          "rate_contrast": 0.00015395686503416606
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "absolute",
+          "stored": [
+            51.59375,
+            51.625
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8241681899916549,
+            0.8249316570905045
+          ],
+          "rate_contrast": 0.0007634670988496683
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "centered_log",
+          "stored": [
+            2.0563602447509766e-05,
+            0.00014269351959228516
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244679794078514,
+            0.8246219712474956
+          ],
+          "rate_contrast": 0.00015399183964415197
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "absolute",
+          "stored": [
+            51.5,
+            51.5
+          ],
+          "distinguishable": false,
+          "receiver_rates": [
+            0.8218635570692474,
+            0.8218635570692474
+          ],
+          "rate_contrast": 0.0
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "centered_log",
+          "stored": [
+            2.0503997802734375e-05,
+            0.0001430511474609375
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8244679042345449,
+            0.8246224220630473
+          ],
+          "rate_contrast": 0.00015451782850239848
+        }
+      ],
+      "noise": [
+        {
+          "sd": 1e-05,
+          "best_equal_prior_error": 5.136559330987847e-10
+        },
+        {
+          "sd": 5e-05,
+          "best_equal_prior_error": 0.11103892049119635
+        },
+        {
+          "sd": 0.0001,
+          "best_equal_prior_error": 0.27076174540707376
+        },
+        {
+          "sd": 0.0005,
+          "best_equal_prior_error": 0.4514090555572823
+        },
+        {
+          "sd": 0.001,
+          "best_equal_prior_error": 0.4756592644329023
+        }
+      ]
+    },
+    {
+      "epsilon": 0.025,
+      "base": 51.604948263872956,
+      "walls": [
+        51.61025573952246,
+        51.642112031458396
+      ],
+      "log_wire": [
+        0.00010284290391959947,
+        0.0007198998031354967
+      ],
+      "exact_rate_contrast": 0.0007769992066790632,
+      "checks": [
+        {
+          "dtype": "torch.float32",
+          "codec": "absolute",
+          "stored": [
+            51.61025619506836,
+            51.642112731933594
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8245717437161606,
+            0.8253487488529792
+          ],
+          "rate_contrast": 0.0007770051368185538
+        },
+        {
+          "dtype": "torch.float32",
+          "codec": "centered_log",
+          "stored": [
+            0.00010284290328854695,
+            0.0007198997773230076
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8245717325869262,
+            0.8253487317619403
+          ],
+          "rate_contrast": 0.0007769991750141703
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "absolute",
+          "stored": [
+            51.625,
+            51.65625
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8249316570905045,
+            0.8256927952345797
+          ],
+          "rate_contrast": 0.0007611381440751908
+        },
+        {
+          "dtype": "torch.float16",
+          "codec": "centered_log",
+          "stored": [
+            0.00010281801223754883,
+            0.0007200241088867188
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8245717012048683,
+            0.8253488881253989
+          ],
+          "rate_contrast": 0.000777186920530526
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "absolute",
+          "stored": [
+            51.5,
+            51.75
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8218635570692474,
+            0.8279624847560039
+          ],
+          "rate_contrast": 0.006098927686756461
+        },
+        {
+          "dtype": "torch.bfloat16",
+          "codec": "centered_log",
+          "stored": [
+            0.000102996826171875,
+            0.000720977783203125
+          ],
+          "distinguishable": true,
+          "receiver_rates": [
+            0.8245719266492498,
+            0.8253500874949549
+          ],
+          "rate_contrast": 0.0007781608457050337
+        }
+      ],
+      "noise": [
+        {
+          "sd": 1e-05,
+          "best_equal_prior_error": 2.565229791794948e-209
+        },
+        {
+          "sd": 5e-05,
+          "best_equal_prior_error": 3.4022337906263676e-10
+        },
+        {
+          "sd": 0.0001,
+          "best_equal_prior_error": 0.001016787667700719
+        },
+        {
+          "sd": 0.0005,
+          "best_equal_prior_error": 0.2685985980946313
+        },
+        {
+          "sd": 0.001,
+          "best_equal_prior_error": 0.37884012785838733
+        }
+      ]
+    }
+  ],
+  "uniform_iid_random_address": {
+    "reported_hcsn_stream": {
+      "bytes": 5376,
+      "q": 256,
+      "max_n_99pct": 5486,
+      "min_error": {
+        "4096": 0.0,
+        "8192": 0.24376613761198604,
+        "16384": 0.5480975224622473,
+        "32768": 0.7315498568759577,
+        "131072": 0.9016547803014066
+      }
+    },
+    "reported_lif_stream": {
+      "bytes": 3072,
+      "q": 256,
+      "max_n_99pct": 3134,
+      "min_error": {
+        "4096": 0.1683727479861681,
+        "8192": 0.5003532044905397,
+        "16384": 0.703352112551223,
+        "32768": 0.8225115833388227,
+        "131072": 0.9327953515054296
+      }
+    }
+  }
+}
