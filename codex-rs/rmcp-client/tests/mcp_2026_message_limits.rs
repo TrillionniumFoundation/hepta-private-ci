@@ -28,6 +28,7 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 
 const MAX_MCP_MESSAGE_BYTES: usize = 8 * 1024 * 1024;
+const MAX_MCP_HTTP_ERROR_BODY_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum OversizedHttpResponse {
@@ -177,8 +178,13 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
                 .await
                 .expect_err("oversized tools response must be rejected");
             let error = format!("{error:#}");
+            let maximum_bytes = if oversized == OversizedHttpResponse::ToolError {
+                MAX_MCP_HTTP_ERROR_BODY_BYTES
+            } else {
+                MAX_MCP_MESSAGE_BYTES
+            };
             assert!(
-                error.contains("8388608 bytes")
+                error.contains(&format!("MCP response body exceeds {maximum_bytes} bytes"))
                     || (oversized == OversizedHttpResponse::ToolSseEvent
                         && (error.contains("timed out") || error.contains("Transport closed"))),
                 "unexpected {oversized:?} error: {error}"

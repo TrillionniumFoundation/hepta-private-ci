@@ -45,7 +45,7 @@ def pair(root, *, training_allowed=True):
 
 
 class PairedOpaqueTeacherTests(unittest.TestCase):
-    def test_actual_source_dispatch_and_native_encoder_mask_failure_without_answer_leak(
+    def test_actual_source_dispatch_preserves_pair_and_only_supervises_final_answer(
         self,
     ):
         with TemporaryDirectory() as tmp:
@@ -58,19 +58,25 @@ class PairedOpaqueTeacherTests(unittest.TestCase):
                     "correction": data.record_digest(correction),
                 },
             )
+            self.assertEqual(
+                derived["original_pair"],
+                {"failure": failure, "correction": correction},
+            )
             self.assertFalse(correction["trajectory"][0]["executed"])
             for protocol in (chat_protocol.LEGACY, chat_protocol.NATIVE):
                 example = chat_protocol.training_examples(
-                    [derived], "trajectory", protocol
+                    [derived], "final_answer", protocol
                 )[0]
                 self.assertEqual(
                     [(s["content"], s["train"]) for s in example["segments"]],
-                    [("0", False), ("1", True)],
+                    [("1", True)],
                 )
                 messages, duplicates = chat_protocol.training_messages(example)
                 self.assertEqual([m["content"] for m in messages if m["train"]], ["1"])
                 self.assertEqual(duplicates, 0)
                 self.assertNotIn("1", [m["content"] for m in messages[:-1]])
+                with self.assertRaisesRegex(ValueError, "final_answer only"):
+                    chat_protocol.training_examples([derived], "trajectory", protocol)
 
     def test_capture_preserves_denied_training_and_both_consumers_refuse(self):
         with TemporaryDirectory() as tmp:
@@ -120,7 +126,7 @@ class PairedOpaqueTeacherTests(unittest.TestCase):
             derived["trajectory"][0]["trainable"] = True
             with self.assertRaisesRegex(ValueError, "derivation changed"):
                 chat_protocol.training_examples(
-                    [derived], "trajectory", chat_protocol.NATIVE
+                    [derived], "final_answer", chat_protocol.NATIVE
                 )
             originals.chmod(0o755)
             with self.assertRaisesRegex(ValueError, "private owned"):

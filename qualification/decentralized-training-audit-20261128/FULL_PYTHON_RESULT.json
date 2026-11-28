@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.audit.full-python-integrity.v1",
+  "head": "06b1889ae08978a905f1dc31373099013ef7647b",
+  "command": [
+    "/workspace/scratch/5bdf905e9cad/circuit-env/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "--start-directory",
+    "scripts/cell_experiments",
+    "--top-level-directory",
+    "scripts",
+    "--pattern",
+    "test_*.py",
+    "--verbose"
+  ],
+  "timeout_seconds": 600,
+  "environment_overrides": {
+    "PYTHONPATH": "scripts:sdk/python/src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1"
+  },
+  "scope": "Original discovery inventory, including authored/isolated capture, actual CPU tensor updates and local fixture process tests. No downloaded model, live teacher, real-user task, native adoption, or independent scientific benefit is claimed.",
+  "elapsed_seconds": 383.8597324970001,
+  "exit_code": 0,
+  "timed_out": false,
+  "sources_unchanged": true,
+  "source_manifest_sha256": "ceb5edd0d84961f430a0f508a9cf0095eef91508f1b3674e075c4926b800008b",
+  "log_sha256": "32cc0fae6cc1771a8ab6d31011ca167aa540dcb50936801e2e65344dd87cf945"
+}

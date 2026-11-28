@@ -1,0 +1,70 @@
+{
+  "schema": "hepta-ci-compatibility-results-v1",
+  "base_commit": "1383c6f4cdd271bc8eabffe664892b9b5e878749",
+  "source_candidate_commit": "f74d0ccde0ac0ad9e1a9819a3bdec4d08ce39919",
+  "source_candidate_tree": "76ce2459c31f9f84c30ad8e0928d976b024c8c7d",
+  "source_commits": [
+    "3331112f1a1dc71b30ed2cc9fb1d8a10a8b3d5f9",
+    "f74d0ccde0ac0ad9e1a9819a3bdec4d08ce39919"
+  ],
+  "b4": {
+    "passed": 125,
+    "failed": 0,
+    "duration_ns": 18408211342,
+    "native_authority_effects_qualified": false,
+    "source_identity_note": "RESULT source_commit names the clean base before patch commit. Its patch digest and complete 10758-file before/after maps bind the actual tested modified tree; all three B4 publication files match those maps."
+  },
+  "mcp": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-rmcp-client",
+      "--test",
+      "mcp_2026_message_limits",
+      "--test",
+      "mcp_2026_oauth_discovery",
+      "--locked"
+    ],
+    "tests_executed": 0,
+    "exit_code": 101,
+    "duration_ns": 155122576309,
+    "rustc_signal": 9,
+    "failed_dependency": "rama-http",
+    "host_oom_kill_before": 29,
+    "host_oom_kill_after": 30,
+    "source_unchanged": true,
+    "status": "BUILD_BLOCKED_NO_TEST_RESULT",
+    "retry_started": false,
+    "retry_note": "Prepared runner never launched; parent requested publication with the original failure preserved instead of another local compile."
+  },
+  "native_kill_causality": {
+    "observed_rustc_signal": 9,
+    "observed_host_oom_kill_counter": [
+      29,
+      30
+    ],
+    "per_pid_oom_record_obtained": false,
+    "cause": "NOT_ESTABLISHED",
+    "scope": "Host-wide counter is a correlation. Only SIGKILL during dependency compilation is directly established for this rustc process."
+  },
+  "original_ci": {
+    "run_id": 46138718716,
+    "head": "1383c6f4cdd271bc8eabffe664892b9b5e878749",
+    "merge_checkout": "a9eb90bacee91535d379f13e7daf528c6c89402e",
+    "source_correspondence_note": "Relevant original sources were unchanged from PR base; no independently rerun baseline workflow is claimed."
+  },
+  "remaining_open": [
+    "MCP assertion migrations have no local native test result; original remote gates remain required.",
+    "Legacy SSE local body-limit error propagation: separate uncompiled draft, excluded from this package.",
+    "Five restricted proxy functional controls require a safe capability implementation or explicit fixture transport.",
+    "SDK OAuth conformance subprocess fixture uses distinct loopback origins without an explicit capability.",
+    "Original cargo-deny raw log and original RustSec database revision unknown; current frozen repro stopped before checks on missing cached packages.",
+    "Full CI, including other platform jobs, is not qualified by this package."
+  ],
+  "full_ci_qualified": false,
+  "production_policy_changes": false,
+  "test_skips_added": false,
+  "raw_archive_sha256": "ec5c387e6cfac5006461e7c06fed1ea3f84d4108421e1e20fc29c1288498ad8f",
+  "evidence_only_directory": true
+}

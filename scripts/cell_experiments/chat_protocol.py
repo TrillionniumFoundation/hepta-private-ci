@@ -9,7 +9,7 @@ evidence that the base model learned a tool role.
 
 import hashlib
 
-from .data import build_sft_examples
+from .data import MAX_RECORDS, build_sft_examples
 
 LEGACY = "legacy_v1"
 NATIVE = "native_chat_v2"
@@ -86,20 +86,34 @@ def training_examples(records, mode, protocol):
         raise ValueError("unsupported training protocol")
     from . import paired_opaque_teacher
 
-    if len(records) == 1 and records[0].get("schema") == paired_opaque_teacher.DERIVED:
-        example = paired_opaque_teacher.training_example(records[0], mode)
-        if protocol == NATIVE:
-            example["initial_messages"] = inference_messages(
-                records[0]["task"]["input"], records[0]["task"].get("messages")
+    if not isinstance(records, list) or not 0 < len(records) <= MAX_RECORDS:
+        raise ValueError("bounded records required")
+    opaque_examples, ordinary_records = {}, []
+    for index, record in enumerate(records):
+        if not isinstance(record, dict):
+            raise ValueError("record object required")
+        if record.get("schema") == paired_opaque_teacher.DERIVED:
+            opaque_examples[index] = paired_opaque_teacher.training_example(
+                record, mode
             )
-        return [example]
-    examples = build_sft_examples(records, mode)
-    for record, example in zip(records, examples):
+        else:
+            ordinary_records.append(record)
+    # Retain the complete record.v1 batch admission, including group separation.
+    ordinary_examples = iter(
+        build_sft_examples(ordinary_records, mode) if ordinary_records else []
+    )
+    examples, seen = [], set()
+    for index, record in enumerate(records):
+        if record["record_id"] in seen:
+            raise ValueError("duplicate record id")
+        seen.add(record["record_id"])
+        is_opaque = index in opaque_examples
+        example = opaque_examples[index] if is_opaque else next(ordinary_examples)
         if protocol == NATIVE:
             example["initial_messages"] = inference_messages(
                 record["task"]["input"], record["task"].get("messages")
             )
-        if mode == "trajectory":
+        if mode == "trajectory" and not is_opaque:
             for event, segment in zip(record["trajectory"], example["segments"]):
                 default = protocol == LEGACY or event["actor"] != "student"
                 flag = event.get("trainable", default)
@@ -109,6 +123,7 @@ def training_examples(records, mode, protocol):
                     segment["trainable"] = flag
                 else:
                     segment["train"] = segment["train"] and flag
+        examples.append(example)
     return examples
 
 
@@ -161,8 +176,13 @@ def encode_native_turns(tokenizer, example, limit):
     for index, message in enumerate(messages):
         if not message["train"]:
             continue
-        prefix = tokenizer.apply_chat_template(
-            wire[:index], tokenize=False, add_generation_prompt=True
+        prefix = render_prompt(
+            tokenizer,
+            example["input"],
+            [
+                {"role": prior["role"], "content": prior["content"]}
+                for prior in messages[:index]
+            ],
         )
         complete = tokenizer.apply_chat_template(
             wire[: index + 1], tokenize=False, add_generation_prompt=False

@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-training-audit-encoder-validation-v1",
+  "base": "ab63fa79e11ce295a5bfbbe3f56120b62d4fcbbe",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "cell_experiments.test_opaque_batches",
+    "cell_experiments.test_opaque_context",
+    "cell_experiments.test_paired_opaque_teacher",
+    "cell_experiments.test_chat_protocol",
+    "cell_experiments.test_data",
+    "cell_experiments.test_paired_source",
+    "-v"
+  ],
+  "timeout_seconds": 30,
+  "exit_code": 0,
+  "elapsed_seconds": 0.3102267959998244,
+  "source_sha256": {
+    "scripts/cell_experiments/chat_protocol.py": "06532ed8e30b69f1835e517b760ee90dda79da3dc8ff3a6e62397c8340aec1cd",
+    "scripts/cell_experiments/opaque_teacher_data.py": "2b4389f8a443ea7796865b2ddabcdcee57c09578e2e1e50407e8a5f16c2987fe",
+    "scripts/cell_experiments/paired_opaque_teacher.py": "f3a7ee5073b35648c04244f354eeec3e561ada9866ac3c393dfa1c63f28cc428",
+    "scripts/cell_experiments/paired_source.py": "7110947aa4af337bbccbd1279b148656d521664a0eb4bbfcb28de2ff6a093116",
+    "scripts/cell_experiments/data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+    "scripts/cell_experiments/test_opaque_batches.py": "5cb6629156357dd68a0f6532ad4985a5052e961ce1497b9b50dae61df041e89c",
+    "scripts/cell_experiments/test_opaque_context.py": "db479379ba81a37550ea98dc6c1e5dbcd81c2abd6f91e77d513675f1963f8731",
+    "scripts/cell_experiments/test_paired_opaque_teacher.py": "9738ffe844d3e41fafc3e8fc9ef73bd54af10b7b5864ad2e9e1370c92c7214a4",
+    "scripts/cell_experiments/test_chat_protocol.py": "e2d214214745d099532d637f93984df90059b79537f7e3372c2b92d26e972974",
+    "scripts/cell_experiments/test_data.py": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0",
+    "scripts/cell_experiments/test_paired_source.py": "8b0cc9179aa669fefc4c55964ef87701a815f90e030ff222d5f418a7fa988c92"
+  },
+  "sources_unchanged": true,
+  "log_sha256": "03f03d90963afb1ed6bda8de41464f02d5bf94516bbc7ff8d5721e28f1d60880",
+  "scope": "local fixture capture, batch encoding and source-bound context; no training or human sessions",
+  "native_owner_connected": false,
+  "teacher_calls": 0,
+  "fits": 0
+}

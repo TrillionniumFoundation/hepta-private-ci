@@ -115,9 +115,9 @@ fn assert_cross_origin_redirect_rejected(
     assert!(
         matches!(
             error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                    && reason.contains(redirect_target)
+            Some(AuthError::DiscoveryRequestFailed { source, .. })
+                if source.to_string().contains("OAuth discovery redirect to non-same-origin URL rejected")
+                    && source.to_string().contains(redirect_target)
         ),
         "expected the cross-origin redirect rejection for `{redirect_target}`: {error:#}",
     );
@@ -272,8 +272,9 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                 assert!(
                     matches!(
                         error.downcast_ref::<AuthError>(),
-                        Some(AuthError::MetadataError(reason))
-                            if reason.contains("issuer does not match authorization metadata origin")
+                        Some(AuthError::DiscoveryRequestFailed { url, source })
+                            if url.as_str() == format!("{}{authorization_metadata_path}", authorization_server.uri())
+                                && source.to_string().contains("issuer does not match authorization metadata origin")
                     ),
                     "expected the original authorization-server issuer to remain bound: {error:#}",
                 );
@@ -476,8 +477,9 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
     assert!(
         matches!(
             error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery exceeded ") && reason.contains(" redirects")
+            Some(AuthError::DiscoveryRequestFailed { url, source })
+                if url.as_str() == format!("{}/.well-known/oauth-authorization-server", authorization_server.uri())
+                    && source.to_string() == "OAuth request exceeded 10 redirects"
         ),
         "expected the SDK to report its bounded OAuth discovery redirect limit: {error:#}",
     );

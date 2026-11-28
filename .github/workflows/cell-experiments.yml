@@ -5,12 +5,18 @@ on:
     paths:
       - "scripts/cell_experiments/**"
       - "scripts/hepta_cells/**"
+      - "sdk/python/src/**"
+      - "sdk/python/pyproject.toml"
+      - "sdk/python/uv.lock"
       - "qualification/cell-experiments-v2-20261116/task-fixtures/**"
       - ".github/workflows/cell-experiments.yml"
   push:
     paths:
       - "scripts/cell_experiments/**"
       - "scripts/hepta_cells/**"
+      - "sdk/python/src/**"
+      - "sdk/python/pyproject.toml"
+      - "sdk/python/uv.lock"
       - "qualification/cell-experiments-v2-20261116/task-fixtures/**"
       - ".github/workflows/cell-experiments.yml"
   workflow_dispatch:
@@ -28,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      PYTHONPATH: scripts
+      PYTHONPATH: scripts:sdk/python/src
       PYTHONDONTWRITEBYTECODE: "1"
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
@@ -55,7 +61,7 @@ jobs:
             --disable-pip-version-check --only-binary=:all: \
             numpy==2.3.5 transformers==4.57.3 peft==0.18.0 \
             tokenizers==0.22.2 accelerate==1.16.0 safetensors==0.7.0 \
-            huggingface-hub==0.36.2
+            huggingface-hub==0.36.2 pydantic==2.13.4
       - name: Run every experiment integrity test
         run: |
           for module in data coding_sft campaign adoption composition interaction; do
