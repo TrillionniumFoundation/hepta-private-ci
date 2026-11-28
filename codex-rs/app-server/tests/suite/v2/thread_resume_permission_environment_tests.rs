@@ -6,6 +6,8 @@ use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::create_mock_responses_server_repeating_assistant;
 use codex_app_server_protocol::ActivePermissionProfile;
+use codex_app_server_protocol::JSONRPCErrorError;
+use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxPolicy;
 use codex_app_server_protocol::ThreadHistoryMode;
 use codex_app_server_protocol::ThreadResumeParams;
@@ -19,6 +21,7 @@ use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_rollout::RolloutRecorder;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use core_test_support::is_wine_exec_test_environment;
 use core_test_support::test_codex::TestEnv;
 use pretty_assertions::assert_eq;
 use std::path::Path;
@@ -103,7 +106,12 @@ async fn last_native_environments(path: &Path) -> Result<Vec<TurnContextEnvironm
 #[tokio::test]
 async fn cold_resume_preserves_native_paths_and_rebuilds_changed_policy_roots() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
-    for (changed, roots_only) in [(false, false), (true, false), (false, true)] {
+    for (changed_access, roots_only) in [
+        (None, false),
+        (Some("deny"), false),
+        (Some("read"), false),
+        (None, true),
+    ] {
         let codex_home = TempDir::new()?;
         write_dev_permission_config(&server.uri(), codex_home.path(), ":workspace")?;
         let mut origin = TestAppServer::builder()
@@ -172,13 +180,14 @@ async fn cold_resume_preserves_native_paths_and_rebuilds_changed_policy_roots() 
                 .success()
         );
         assert_eq!(last_native_environments(&path).await?, expected);
+        let persisted_environments = expected.clone();
 
-        if changed {
+        if let Some(access) = changed_access {
             MockResponsesConfig::new(&server.uri())
                 .with_root_config("default_permissions = \":danger-full-access\"")
-                .with_extra_config(
-                    "[permissions.dev]\nextends = \":workspace\"\n\n[permissions.dev.filesystem.\":workspace_roots\"]\n\".native-resume-denied\" = \"deny\"",
-                )
+                .with_extra_config(&format!(
+                    "[permissions.dev]\nextends = \":workspace\"\n\n[permissions.dev.filesystem.\":workspace_roots\"]\n\".native-resume-denied\" = \"{access}\""
+                ))
                 .write(codex_home.path())?;
             expected[0].workspace_roots = vec![selected.cwd.inferred_native_path_string()];
         }
@@ -194,6 +203,37 @@ async fn cold_resume_preserves_native_paths_and_rebuilds_changed_policy_roots() 
                 ..Default::default()
             })
             .await?;
+        if changed_access == Some("deny") && is_wine_exec_test_environment() {
+            // Wine uses the unelevated Windows executor, which must reject deny-read
+            // restrictions. The read-only carveout above still exercises a successful
+            // same-base policy change and native root reconstruction on this executor.
+            let error = timeout(
+                DEFAULT_READ_TIMEOUT,
+                resumed.read_stream_until_error_message(RequestId::Integer(request)),
+            )
+            .await??;
+            assert_eq!(
+                error.error,
+                JSONRPCErrorError {
+                    code: -32603,
+                    message: format!(
+                        "error resuming thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `{}`: failed to prepare fs sandbox: failed to prepare windows sandbox wrapper: windows unelevated restricted-token sandbox cannot enforce deny-read restrictions directly; refusing to run unsandboxed",
+                        expected[0].environment_id,
+                    ),
+                    data: None,
+                },
+            );
+            assert_eq!(
+                last_native_environments(&path).await?,
+                persisted_environments
+            );
+            assert!(
+                timeout(DEFAULT_READ_TIMEOUT, resumed.shutdown_gracefully())
+                    .await??
+                    .success()
+            );
+            continue;
+        }
         let response: ThreadResumeResponse =
             timeout(DEFAULT_READ_TIMEOUT, resumed.read_response(request)).await??;
         assert_eq!(
