@@ -7,6 +7,9 @@
 
 #![forbid(unsafe_code)]
 
+/// Logical shared encoder and private head residency accounting.
+pub mod composition;
+
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
