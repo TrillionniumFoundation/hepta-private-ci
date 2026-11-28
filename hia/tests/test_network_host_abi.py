@@ -37,6 +37,7 @@ FULL_MODULE_PROFILES = {
     'full-native38': [*MODULES, 'output_lines', 'output_item_budget', 'format_env_display', 'citation_stream_parser', 'proposed_plan_parser', 'fuzzy_match', 'utf8_stream', 'inline_hidden_tag', 'retry_decision'],
 }
 FULL_MODULE_PROFILES['full-native39'] = [*FULL_MODULE_PROFILES['full-native38'], 'datetime_cache']
+FULL_MODULE_PROFILES['full-native41'] = [*FULL_MODULE_PROFILES['full-native39'], 'duration_units', 'datetime_arithmetic']
 
 
 def words(*values):
@@ -249,6 +250,7 @@ def native_inputs(library, source, profile, report):
             'full37_manifest_verified': profile == 'full-native37',
             'full38_manifest_verified': profile == 'full-native38',
             'full39_manifest_verified': profile == 'full-native39',
+            'full41_manifest_verified': profile == 'full-native41',
             'scope': f'Existing native-selfhost report, all {len(modules)} module artifacts and three fixed-point image identities; no compilation performed by this raw gate.'}
     else:
         raise RuntimeError('unknown native build profile')
@@ -397,7 +399,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native29', 'full-native30', 'full-native31', 'full-native32', 'full-native33', 'full-native34', 'full-native35', 'full-native36', 'full-native37', 'full-native38', 'full-native39', 'local-incremental'],
+    parser.add_argument('--build-profile', choices=['full-native29', 'full-native30', 'full-native31', 'full-native32', 'full-native33', 'full-native34', 'full-native35', 'full-native36', 'full-native37', 'full-native38', 'full-native39', 'full-native41', 'local-incremental'],
                         default='full-native29', help='Default requires all twenty-nine modules; local incremental evidence must be selected explicitly.')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
