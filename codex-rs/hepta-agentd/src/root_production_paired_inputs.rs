@@ -107,6 +107,19 @@ impl RootPairedTrainingHandoffV1 {
 }
 
 impl AgentdRootPairedTrainingInputsV1 {
+    /// Compare against the already retained Root scope before allocating an
+    /// owner. This returns no client, capability, permission or new plan.
+    pub(crate) fn require_original_training_binding(
+        &self,
+        expected: &AgentdIdentity,
+        plan: &PairedTrainingPlanV1,
+    ) -> Result<(), AgentdError> {
+        if &self.identity != expected || &self.plan != plan {
+            return Err(refused("original paired training binding differs"));
+        }
+        Ok(())
+    }
+
     /// Compose only with an already installed real terminal owner and its live
     /// Evaluator exchange. The raw Root plan and canonical pins stay distinct.
     pub(crate) fn install_original_terminal_consumer(

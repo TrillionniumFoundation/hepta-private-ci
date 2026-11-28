@@ -1041,6 +1041,8 @@ pub use production_launcher::AgentdProductionLaunch;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionStartup;
 #[cfg(target_os = "linux")]
+pub use production_launcher::OriginalPairedEvaluatorInboxReceiverV1;
+#[cfg(target_os = "linux")]
 pub use production_root_composition::AgentdRootProductionAttachment;
 #[cfg(target_os = "linux")]
 pub use production_root_composition::attach_root_notes_operation_host;

@@ -70,10 +70,15 @@ impl PairedTerminalEvaluatorRequestV1 {
         self.reply
             .send(evidence)
             .map_err(|_| TerminalLearningErrorV1::Unavailable)?;
-        tokio::time::timeout_at(self.end, self.completion)
+        let result = tokio::time::timeout_at(self.end, self.completion)
             .await
             .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
-            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+        // A ready completion cannot revive an expired original exchange.
+        if Instant::now() >= self.end {
+            return Err(TerminalLearningErrorV1::CommitUncertain);
+        }
+        result
     }
 }
 

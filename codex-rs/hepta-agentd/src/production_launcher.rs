@@ -35,6 +35,10 @@ mod notes_deployment;
 #[path = "production_desktop_deployment.rs"]
 mod desktop_deployment;
 
+#[path = "production_terminal_launch.rs"]
+mod terminal;
+pub use terminal::OriginalPairedEvaluatorInboxReceiverV1;
+
 enum Startup {
     Ordinary(Box<AgentdConfig>),
     Root(Box<RootStartup>),
@@ -69,6 +73,7 @@ pub struct AgentdProductionLaunch {
         crate::AgentdRootPairedTrainingInputsV1,
         crate::PairedRecordPinsV1,
     )>,
+    terminal_learning: Option<terminal::RetainedPairedLearningOwnersV1>,
     session_end: Instant,
 }
 
@@ -231,6 +236,7 @@ impl AgentdProductionStartup {
                         root,
                         inputs,
                         paired_training,
+                        terminal_learning: None,
                         session_end,
                     }),
                 ))
@@ -250,6 +256,11 @@ impl AgentdProductionLaunch {
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         config.require_root_learning_assembled()?;
+        if self.paired_training.is_some() && self.terminal_learning.is_none() {
+            return Err(AgentdError::Invalid(
+                "original paired launch requires existing Ledger and Evaluator owners".into(),
+            ));
+        }
         let RuntimeInputs {
             primary,
             notes,
@@ -484,8 +495,14 @@ impl AgentdProductionLaunch {
                 remaining(deadline)?;
             }
             if let Some((paired, records)) = self.paired_training {
-                config =
-                    paired.install_original_terminal_consumer(config, records, self.session_end)?;
+                config = terminal::attach_original_paired_learning(
+                    config,
+                    self.terminal_learning,
+                    paired,
+                    records,
+                    self.session_end,
+                )
+                .await?;
             }
             let result = crate::run(config, arg0_paths).await;
             // Keep the authenticated Root feed and original checkpoint/grant

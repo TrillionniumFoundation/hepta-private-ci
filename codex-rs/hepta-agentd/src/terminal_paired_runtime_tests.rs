@@ -26,8 +26,9 @@ async fn late_evaluator_returns_native_receipt_and_scopes_followup_commands() {
         .with_original_paired_policy(plan, evaluator)
         .unwrap();
     let (send, receive) = oneshot::channel();
+    let original_end = Instant::now() + Duration::from_secs(/*secs*/ 5);
     bootstrap
-        .install_original_paired_delivery(receive, Instant::now() + Duration::from_secs(30))
+        .install_original_paired_delivery(receive, original_end)
         .unwrap();
     assert!(send.send(delivery).is_ok());
     let clock = Arc::new(AtomicU64::new(FIXTURE_NOW));
@@ -68,10 +69,22 @@ async fn late_evaluator_returns_native_receipt_and_scopes_followup_commands() {
         clock.store(signed.issued_at, Ordering::SeqCst);
         signed
     };
-    let receipt = request.submit_signed_evidence(signed).await.unwrap();
+    let mut submitted = Box::pin(request.submit_signed_evidence(signed));
+    // Send the same real signature, then leave its completion future unpolled.
+    poll_fn(|context| {
+        assert!(submitted.as_mut().poll(context).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+    // The existing queued exact readback proves the one fit actually completed
+    // and its receipt is already available before the original deadline.
+    let receipt = tokio::time::timeout_at(tokio::time::Instant::from_std(original_end), queued)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(Instant::now() < original_end);
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     assert_eq!((receipt.source_records, receipt.training_samples), (4, 2));
-    assert_eq!(queued.await.unwrap(), receipt);
     assert_eq!(
         handle.submit(fixture.request.clone()).await.unwrap_err(),
         TerminalLearningErrorV1::WrongScope
@@ -89,6 +102,11 @@ async fn late_evaluator_returns_native_receipt_and_scopes_followup_commands() {
     assert_eq!(
         handle.readback(fixture.request.clone()).await.unwrap(),
         receipt
+    );
+    tokio::time::sleep_until(tokio::time::Instant::from_std(original_end)).await;
+    assert_eq!(
+        submitted.await.unwrap_err(),
+        TerminalLearningErrorV1::CommitUncertain
     );
     cancellation.cancel();
     worker.await.unwrap().unwrap();
