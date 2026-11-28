@@ -23,6 +23,11 @@ pub use material::PairedTrainingMaterialManifestV1;
 #[path = "deployment_paired_consumer.rs"]
 mod consumer;
 
+#[path = "deployment_paired_enrollment.rs"]
+mod enrollment;
+#[path = "deployment_paired_enrollment_root.rs"]
+mod enrollment_root;
+
 #[path = "deployment_paired_admission.rs"]
 mod admission;
 pub(crate) use admission::OriginalPairedTrainingAdmission;
@@ -116,28 +121,8 @@ impl HostAuthorityPairedRegistration {
             | crate::PairedLearningDataUse::RequestConsumerRun { .. }
             | crate::PairedLearningDataUse::ReportConsumerOutcome { .. } => {}
         }
-        let scope = Digest32::of_bytes(&serde_json::to_vec(&(
-            "hepta.paired-learning.preparation-scope.v1",
-            p.study.to_string(),
-            p.enrollment.to_string(),
-            p.principal_id.as_str(),
-        ))?)
-        .into_array();
-        let enrollment = AuthorityLeaseBinding {
-            principal_id: p.principal_id.clone(),
-            operation_class: "runtime.hepta.paired_enrollment.v1".into(),
-            destination_id: crate::paired_preparation::DESTINATION.into(),
-            scope_sha256: scope,
-            payload_sha256: Digest32::of_bytes(&serde_json::to_vec(&(
-                "hepta.paired-enrollment.registration.v1",
-                p.study.to_string(),
-                p.enrollment.to_string(),
-                p.frozen_materials.to_string(),
-                p.principal_id.as_str(),
-                p.policy_generation.get(),
-            ))?)
-            .into_array(),
-        };
+        let enrollment = Self::enrollment_binding_for(p)?;
+        let scope = enrollment.scope_sha256;
         let effect = AuthorityLeaseBinding {
             principal_id: writer.registered_agent_id.as_str().into(),
             operation_class: "runtime.hepta.paired_material_use.v1".into(),
@@ -163,6 +148,33 @@ impl HostAuthorityPairedRegistration {
         Ok((enrollment, effect, policy))
     }
 
+    fn enrollment_binding_for(
+        p: &crate::PairedPreparationRegistration,
+    ) -> io::Result<AuthorityLeaseBinding> {
+        let scope = Digest32::of_bytes(&serde_json::to_vec(&(
+            "hepta.paired-learning.preparation-scope.v1",
+            p.study.to_string(),
+            p.enrollment.to_string(),
+            p.principal_id.as_str(),
+        ))?)
+        .into_array();
+        Ok(AuthorityLeaseBinding {
+            principal_id: p.principal_id.clone(),
+            operation_class: "runtime.hepta.paired_enrollment.v1".into(),
+            destination_id: crate::paired_preparation::DESTINATION.into(),
+            scope_sha256: scope,
+            payload_sha256: Digest32::of_bytes(&serde_json::to_vec(&(
+                "hepta.paired-enrollment.registration.v1",
+                p.study.to_string(),
+                p.enrollment.to_string(),
+                p.frozen_materials.to_string(),
+                p.principal_id.as_str(),
+                p.policy_generation.get(),
+            ))?)
+            .into_array(),
+        })
+    }
+
     fn effect_id(&self) -> String {
         format!(
             "paired-effect.original-delivery.v1.{}",
@@ -171,10 +183,14 @@ impl HostAuthorityPairedRegistration {
     }
 
     fn enrollment_id(&self) -> io::Result<String> {
+        Self::enrollment_id_for(&self.preparation)
+    }
+
+    fn enrollment_id_for(p: &crate::PairedPreparationRegistration) -> io::Result<String> {
         let identity = serde_json::to_vec(&(
             "hepta.paired-enrollment.identity.v1",
-            self.preparation.study.to_string(),
-            self.preparation.principal_id.as_str(),
+            p.study.to_string(),
+            p.principal_id.as_str(),
         ))?;
         Ok(format!(
             "paired-enrollment.v1.{}",

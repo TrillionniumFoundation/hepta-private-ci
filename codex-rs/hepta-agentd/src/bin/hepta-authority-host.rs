@@ -137,6 +137,9 @@ fn run(
         let paired_profile = options
             .remove(std::ffi::OsStr::new("--paired-training-profile"))
             .map(PathBuf::from);
+        let paired_enrollment_intent = options
+            .remove(std::ffi::OsStr::new("--paired-enrollment-intent"))
+            .map(PathBuf::from);
         let paired_failure = options.remove(std::ffi::OsStr::new("--paired-training-failure-fd"));
         let paired_correction =
             options.remove(std::ffi::OsStr::new("--paired-training-correction-fd"));
@@ -153,6 +156,11 @@ fn run(
         }
         if original_login.is_some() && native_profile.is_none() {
             return Err("original login pidfd requires the original native profile".into());
+        }
+        if paired_enrollment_intent.is_some() && paired_profile.is_none() {
+            return Err(
+                "explicit paired enrollment requires the complete original paired group".into(),
+            );
         }
         let paired_slots = [
             paired_profile.is_some(),
@@ -260,6 +268,10 @@ fn run(
                     )?,
                 (None, None, None) => prepared,
                 _ => return Err("complete original paired training inputs required".into()),
+            };
+            let prepared = match paired_enrollment_intent {
+                Some(intent) => prepared.with_original_paired_enrollment_intent(&intent)?,
+                None => prepared,
             };
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
             let prepared = match notes {
