@@ -3633,7 +3633,7 @@ required_function_order = [{ function = "fn from_original_production_owner(", se
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["terminal_owner_claimed: std::sync::atomic::AtomicBool", "terminal_owner_claimed: std::sync::atomic::AtomicBool::default()"]
+required = ["terminal_owner_claimed: Arc<std::sync::atomic::AtomicBool>", "terminal_owner_claimed: Arc::new(std::sync::atomic::AtomicBool::default())"]
 forbidden = ["terminal_owner_claimed.store"]
 required_function_order = []
 
