@@ -29,6 +29,7 @@ use windows_sys::Win32::System::Pipes::CreatePipe;
 use windows_sys::Win32::System::Threading::CREATE_NO_WINDOW;
 use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
 use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
+use windows_sys::Win32::System::Threading::DETACHED_PROCESS;
 use windows_sys::Win32::System::Threading::EXTENDED_STARTUPINFO_PRESENT;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::STARTF_USESTDHANDLES;
@@ -46,18 +47,19 @@ pub struct CreatedProcess {
 pub enum ConsoleMode {
     Inherit,
     NoWindow,
+    Detached,
 }
 
 impl ConsoleMode {
     pub fn for_piped_command(command: &[String]) -> Self {
         // Keep in sync with codex_exec_server::CODEX_FS_HELPER_ARG1 without
-        // introducing a dependency cycle. A filesystem helper consumes its
-        // request over pipes and must not attach to the parent's console.
+        // introducing a dependency cycle. Filesystem helpers have all three
+        // standard handles on pipes and do not need any Windows console.
         if command
             .get(1)
             .is_some_and(|arg| arg == "--codex-run-as-fs-helper")
         {
-            Self::NoWindow
+            Self::Detached
         } else {
             Self::Inherit
         }
@@ -124,10 +126,9 @@ pub unsafe fn create_process_as_user(
     let cwd_wide = to_wide(cwd);
     let env_block_len = env_block.len();
     let console_flags = match (&stdio, console_mode) {
+        (Some(_), ConsoleMode::Detached) => DETACHED_PROCESS,
         (Some(_), ConsoleMode::NoWindow) => CREATE_NO_WINDOW,
-        (Some(_), ConsoleMode::Inherit)
-        | (None, ConsoleMode::Inherit)
-        | (None, ConsoleMode::NoWindow) => 0,
+        (Some(_), ConsoleMode::Inherit) | (None, _) => 0,
     };
     let attr_count = if stdio.is_some() { 2 } else { 1 };
     let mut attrs = ProcThreadAttributeList::new(attr_count)?;
@@ -376,11 +377,11 @@ mod tests {
     use super::ConsoleMode;
 
     #[test]
-    fn only_filesystem_helper_mode_skips_console_attachment() {
+    fn only_filesystem_helper_mode_uses_detached_creation() {
         let command = ["codex.exe", "--codex-run-as-fs-helper"].map(String::from);
         assert!(matches!(
             ConsoleMode::for_piped_command(&command),
-            ConsoleMode::NoWindow
+            ConsoleMode::Detached
         ));
 
         let ordinary = ["codex.exe", "exec", "--codex-run-as-fs-helper"].map(String::from);
