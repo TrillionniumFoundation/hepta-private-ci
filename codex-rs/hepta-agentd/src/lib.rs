@@ -1087,6 +1087,12 @@ mod terminal_learning_runtime;
 mod terminal_learning_types;
 
 pub use terminal_learning::AgentdTerminalLearningOwnerV1;
+#[cfg(target_os = "linux")]
+pub use terminal_learning_runtime::PairedTerminalCompositionV1;
+#[cfg(target_os = "linux")]
+pub use terminal_learning_runtime::PairedTerminalEvaluatorInboxV1;
+#[cfg(target_os = "linux")]
+pub use terminal_learning_runtime::PairedTerminalEvaluatorRequestV1;
 pub use terminal_learning_runtime::TerminalLearningHandleV1;
 pub use terminal_learning_runtime::TerminalLearningRuntimeBootstrapV1;
 pub use terminal_learning_runtime::terminal_learning_channel_v1;
