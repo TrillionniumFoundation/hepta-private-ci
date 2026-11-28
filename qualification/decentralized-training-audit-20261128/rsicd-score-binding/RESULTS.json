@@ -1,0 +1,61 @@
+{
+  "baseline": {
+    "status": "BUG_REPRODUCED",
+    "subject": "previously tested first patch, with verified Path but no immutable bytes",
+    "subject_sha256": "be2c943d7fc1f77c68501fe1a3d59bd8b26826f5d0c66eb3c8389e073dbc5a28",
+    "selected_path": "literal-109-60.npz",
+    "replacement_count": 1,
+    "replacement_checkpoint": "np.load entry after cache SHA checks",
+    "expected_paired_cider_mean": -3.3333333333333335,
+    "actual_paired_cider_mean": -3.3333333333333335,
+    "model_constructions": 0,
+    "scientific_model_or_quality_evidence": false
+  },
+  "candidate": {
+    "tests_run": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "elapsed_s": 0.529450949979946
+  },
+  "runtime": {
+    "executable": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "torch": "2.8.0+cpu",
+    "cpu_affinity": [
+      0
+    ],
+    "nice": 10,
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "max_rss_kib": 205780
+  },
+  "elapsed_s_including_import_and_baseline": 4.164315650006756,
+  "source_sha256": {
+    "candidate/qualification/hcsn_sustained_20261128/generation/fit.py": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80",
+    "candidate/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "candidate/qualification/hcsn_sustained_20261128/rsicd_external/evaluate.py": "f8acac9f11f0ebe1205466194788aea126ddf9cfb8ed533e87dae6aa3734d5e7",
+    "candidate/qualification/hcsn_sustained_20261128/rsicd_external/metrics.py": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32",
+    "candidate/qualification/hcsn_sustained_20261128/rsicd_external/test_evaluate_cache.py": "9de28add37f507ee21c995811b6df91170302160150bfc067039a8cad8c2f63c",
+    "original/qualification/hcsn_sustained_20261128/generation/fit.py": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80",
+    "original/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "original/qualification/hcsn_sustained_20261128/rsicd_external/evaluate.py": "cb843ca0f8885f0ddbeb7c4a93c1ec003bb12556a82a54a15362a7a0d3aec8a0",
+    "original/qualification/hcsn_sustained_20261128/rsicd_external/metrics.py": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32",
+    "v1-tested/qualification/hcsn_sustained_20261128/generation/fit.py": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80",
+    "v1-tested/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "v1-tested/qualification/hcsn_sustained_20261128/rsicd_external/evaluate.py": "be2c943d7fc1f77c68501fe1a3d59bd8b26826f5d0c66eb3c8389e073dbc5a28",
+    "v1-tested/qualification/hcsn_sustained_20261128/rsicd_external/metrics.py": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32",
+    "v1-tested/qualification/hcsn_sustained_20261128/rsicd_external/test_evaluate_cache.py": "768ccd61ad13370177362c110f70b2658c94d3b11e7062bbc784d90422403b10",
+    "run_controls_v2.py": "3de2515b2b61654c95b5491ba0d3fc0879bdb7df99320b9b1a22929b1a84173e"
+  },
+  "source_unchanged_during_execution": true,
+  "new_model_training": false,
+  "new_model_inference": false,
+  "previous_round_results": "evidence/run-1/RESULTS.json"
+}

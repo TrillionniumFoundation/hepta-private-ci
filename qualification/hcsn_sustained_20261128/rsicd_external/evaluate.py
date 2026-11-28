@@ -1,5 +1,6 @@
 """Free-run every held caption after the joint selection seal and record per-image references and scores."""
 from collections import Counter
+from io import BytesIO
 import hashlib
 import json
 from pathlib import Path
@@ -86,7 +87,7 @@ def scores(root,material):
     unique_rs=[[list(v) for v in dict.fromkeys(tuple(v) for v in group)] for group in rs]
     dedup=CaptionMetrics(unique_rs)
     scores_root=root/"generation";scores_root.mkdir(exist_ok=True)
-    winner={};stored={};examples=sorted(range(len(ids)),key=lambda i:hashlib.sha256(("hcsn-free-example-"+ids[i]).encode()).digest())[:8]
+    winner={};stored={};score_arrays={};examples=sorted(range(len(ids)),key=lambda i:hashlib.sha256(("hcsn-free-example-"+ids[i]).encode()).digest())[:8]
     def evaluate_arrays(captions,stopped,nll=None,count=None):
         shift=[captions[i] for i in np.roll(np.arange(len(ids)),1)]
         m,by=metric.evaluate(captions);wrong,wb=metric.evaluate(shift);uniq,uq=dedup.evaluate(captions)
@@ -108,7 +109,7 @@ def scores(root,material):
         for which in ("best","final"):
             r=item[which];identity=r["sha256"]
             if identity in stored:
-                winner[k+"-"+which]=stored[identity];continue
+                winner[k+"-"+which],score_arrays[k+"-"+which]=stored[identity];continue
             prefix=scores_root/(k+"-"+str(r["gate"]));result_path=prefix.with_suffix(".json");score_path=prefix.with_suffix(".npz")
             if not result_path.exists():
                 tic=time.perf_counter();net=Captioner(arm,int(seed),d.vocab,root/"law4.npz")
@@ -129,14 +130,20 @@ def scores(root,material):
                     examples=[dict(filename=ids[i],generated=" ".join(captions[i]),reference_count=len(rs[i])) for i in examples]))
                 print(k,which,r["gate"],summary["aligned"]["cider_d"],flush=True)
             out=read(result_path)
-            if out["model_sha256"]!=identity or sha(score_path)!=out["score_sha256"]:raise ValueError("score or state identity")
-            winner[k+"-"+which]=out;stored[identity]=out
+            if (out["model_sha256"]!=identity or out["gate"]!=r["gate"]
+                    or out["score_file"]!=score_path.name):raise ValueError("score or state identity")
+            score_bytes=score_path.read_bytes()
+            if hashlib.sha256(score_bytes).hexdigest()!=out["score_sha256"]:raise ValueError("score or state identity")
+            with np.load(BytesIO(score_bytes),allow_pickle=False) as archive:
+                arrays={field:archive[field] for field in ("aligned_cider","aligned_rouge","shifted_cider","shifted_rouge")}
+            for array in arrays.values():array.setflags(write=False)
+            winner[k+"-"+which]=out;score_arrays[k+"-"+which]=arrays;stored[identity]=(out,arrays)
     rng=np.random.default_rng(415297);bootstrap=rng.integers(0,len(ids),size=(4000,len(ids)))
     def interval(delta):
         return [float(delta.mean()),*np.quantile(delta[bootstrap].mean(1),[.025,.975]).tolist()]
     averages={};pairs={};sensitivity={}
     def load_array(k,field):
-        with np.load(scores_root/winner[k]["score_file"]) as z:return z[field]
+        return score_arrays[k][field]
     for which in ("best","final"):
         averages[which]={};pairs[which]={};sensitivity[which]={}
         for arm in ARMS:
