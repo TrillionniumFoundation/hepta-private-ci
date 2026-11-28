@@ -444,7 +444,7 @@ mod tests {
         }
     }
 
-    async fn recovery_fixture(
+    pub(super) async fn recovery_fixture(
         feature_enabled: bool,
         turn_id: &str,
     ) -> (
@@ -485,7 +485,11 @@ mod tests {
         (session, turn_context, authority, store)
     }
 
-    async fn mark_ready(session: &Session, turn_id: &str, authority: &Arc<TurnRecoveryAuthority>) {
+    pub(super) async fn mark_ready(
+        session: &Session,
+        turn_id: &str,
+        authority: &Arc<TurnRecoveryAuthority>,
+    ) {
         let baseline = session.rollout_persistence_failure_generation();
         assert_eq!(
             session
@@ -501,7 +505,10 @@ mod tests {
         );
     }
 
-    async fn recovery_markers(session: &Session, turn_id: &str) -> Vec<TurnRecoveryCandidateState> {
+    pub(super) async fn recovery_markers(
+        session: &Session,
+        turn_id: &str,
+    ) -> Vec<TurnRecoveryCandidateState> {
         session
             .live_thread()
             .expect("test fixture has live persistence")
@@ -853,3 +860,7 @@ mod tests {
         session.abort_all_tasks(TurnAbortReason::Replaced).await;
     }
 }
+
+#[cfg(test)]
+#[path = "fragment_injection_recovery_tests.rs"]
+mod fragment_recovery_tests;

@@ -1,0 +1,141 @@
+{
+  "actual_terminals": {
+    "original-admission-and-notification-v1": {
+      "elapsed": 3.9038506669458,
+      "returncode": 0,
+      "source_after": {
+        "codex-rs/core/src/agent/control.rs": "ac3170f969082297c998ae9d919be0421a9ad2337fa95382b612161e2e9dd60f",
+        "codex-rs/core/src/codex_thread.rs": "0c4ae6644ac2e2b5af43f950588b4b5f7cc797edcf4971357ea53a5750050f2f",
+        "codex-rs/core/src/session/fragment_injection.rs": "26e95a18eec5f9f488f78afa2f24202aab3635171535feee788c3db7363d0a94",
+        "codex-rs/core/src/session/fragment_injection_recovery_tests.rs": "0f9221e4db71ae0fd7022a7f0083b07bc5eb85060a66db7ab48a5eab27215e02",
+        "codex-rs/core/src/session/fragment_injection_tests.rs": "d102cdf32b3e681da76f7795448e513867399eb925436dc105aefc30f66d0791",
+        "codex-rs/core/src/session/inject.rs": "628eb898d8f35577f275be7d9b65c0cacfbcdf9d1448cf03fcac4d385b7566cc",
+        "codex-rs/core/src/session/mod.rs": "b0bc8566f21eedd32e18a3724ff17f3d4c6f1453be875c7549ed0aa1168068f7",
+        "codex-rs/core/tests/suite/subagent_notifications.rs": "17d92843a1784e431f65274a466413d7e421cd45dfedc1f227d6b0bb6b33f66a"
+      },
+      "source_unchanged": true
+    },
+    "original-subagent-notifications-v1": {
+      "elapsed": 46.39285195781849,
+      "returncode": 0,
+      "source_after": {
+        "codex-rs/core/src/agent/control.rs": "ac3170f969082297c998ae9d919be0421a9ad2337fa95382b612161e2e9dd60f",
+        "codex-rs/core/src/codex_thread.rs": "0c4ae6644ac2e2b5af43f950588b4b5f7cc797edcf4971357ea53a5750050f2f",
+        "codex-rs/core/src/session/fragment_injection.rs": "26e95a18eec5f9f488f78afa2f24202aab3635171535feee788c3db7363d0a94",
+        "codex-rs/core/src/session/fragment_injection_recovery_tests.rs": "0f9221e4db71ae0fd7022a7f0083b07bc5eb85060a66db7ab48a5eab27215e02",
+        "codex-rs/core/src/session/fragment_injection_tests.rs": "d102cdf32b3e681da76f7795448e513867399eb925436dc105aefc30f66d0791",
+        "codex-rs/core/src/session/inject.rs": "628eb898d8f35577f275be7d9b65c0cacfbcdf9d1448cf03fcac4d385b7566cc",
+        "codex-rs/core/src/session/mod.rs": "b0bc8566f21eedd32e18a3724ff17f3d4c6f1453be875c7549ed0aa1168068f7",
+        "codex-rs/core/tests/suite/subagent_notifications.rs": "17d92843a1784e431f65274a466413d7e421cd45dfedc1f227d6b0bb6b33f66a"
+      },
+      "source_unchanged": true
+    },
+    "targeted-unit-v4": {
+      "elapsed": 20.7179997919593,
+      "returncode": 0,
+      "source_after": {
+        "codex-rs/core/src/agent/control.rs": "ac3170f969082297c998ae9d919be0421a9ad2337fa95382b612161e2e9dd60f",
+        "codex-rs/core/src/codex_thread.rs": "0c4ae6644ac2e2b5af43f950588b4b5f7cc797edcf4971357ea53a5750050f2f",
+        "codex-rs/core/src/session/fragment_injection.rs": "26e95a18eec5f9f488f78afa2f24202aab3635171535feee788c3db7363d0a94",
+        "codex-rs/core/src/session/fragment_injection_recovery_tests.rs": "0f9221e4db71ae0fd7022a7f0083b07bc5eb85060a66db7ab48a5eab27215e02",
+        "codex-rs/core/src/session/fragment_injection_tests.rs": "d102cdf32b3e681da76f7795448e513867399eb925436dc105aefc30f66d0791",
+        "codex-rs/core/src/session/inject.rs": "628eb898d8f35577f275be7d9b65c0cacfbcdf9d1448cf03fcac4d385b7566cc",
+        "codex-rs/core/src/session/mod.rs": "b0bc8566f21eedd32e18a3724ff17f3d4c6f1453be875c7549ed0aa1168068f7",
+        "codex-rs/core/tests/suite/subagent_notifications.rs": "17d92843a1784e431f65274a466413d7e421cd45dfedc1f227d6b0bb6b33f66a"
+      },
+      "source_unchanged": true
+    }
+  },
+  "base": "446d1448c85c50e7ea501329413e2286e050f00b",
+  "change": "Retain the original items; preserve live-task admission; await captured Finish fences without session locks, then repeat full admission. Abort, Suspend, start, shutdown and recovery failures remain refusals.",
+  "evidence": {
+    "all_members_and_modes_read_back": true,
+    "bytes": 828285,
+    "members": 79,
+    "path": "complete-original-evidence.tar.gz",
+    "raw_bytes": 4330148,
+    "sha256": "4aeb83596d48ebf2ddd0155ecdedb2f69aaaa0cb57a29b88134fb2121acc35b8"
+  },
+  "generic_injection_production_prefix_exact": true,
+  "native_hia_qualification": false,
+  "original_integration_preservation": {
+    "only_insertions": true,
+    "splices": [
+      [
+        "insert",
+        925,
+        925,
+        925,
+        971
+      ]
+    ],
+    "whole_original_sha256": "1f017d35bd5b4c267989ab2237e8427169a19bb92b89c4744745945ea392408b"
+  },
+  "remaining": [
+    "Merged current Windows CLI/exec-server/core original three-consumer workflow"
+  ],
+  "retained_failures": [
+    "Windows547 original full log, both notification timeout attempts",
+    "targeted v1 newly written test error-pattern compilation failure",
+    "targeted v2 new assertion incorrectly required generated message identity/time to stay unset",
+    "targeted v3 new timestamp test incorrectly used Value instead of Number"
+  ],
+  "root_cause": "Legacy completion arrives during the exact Finish boundary and the old no-new-turn injection rejects it without recording it.",
+  "schema": "codex.subagent-notification-exact-finish.v1",
+  "source_pins": {
+    "codex-rs/core/src/agent/control.rs": {
+      "bytes": 32657,
+      "sha256": "ac3170f969082297c998ae9d919be0421a9ad2337fa95382b612161e2e9dd60f"
+    },
+    "codex-rs/core/src/codex_thread.rs": {
+      "bytes": 49803,
+      "sha256": "0c4ae6644ac2e2b5af43f950588b4b5f7cc797edcf4971357ea53a5750050f2f"
+    },
+    "codex-rs/core/src/session/fragment_injection.rs": {
+      "bytes": 4552,
+      "sha256": "26e95a18eec5f9f488f78afa2f24202aab3635171535feee788c3db7363d0a94"
+    },
+    "codex-rs/core/src/session/fragment_injection_recovery_tests.rs": {
+      "bytes": 5410,
+      "sha256": "0f9221e4db71ae0fd7022a7f0083b07bc5eb85060a66db7ab48a5eab27215e02"
+    },
+    "codex-rs/core/src/session/fragment_injection_tests.rs": {
+      "bytes": 12351,
+      "sha256": "d102cdf32b3e681da76f7795448e513867399eb925436dc105aefc30f66d0791"
+    },
+    "codex-rs/core/src/session/inject.rs": {
+      "bytes": 33389,
+      "sha256": "628eb898d8f35577f275be7d9b65c0cacfbcdf9d1448cf03fcac4d385b7566cc"
+    },
+    "codex-rs/core/src/session/mod.rs": {
+      "bytes": 216750,
+      "sha256": "b0bc8566f21eedd32e18a3724ff17f3d4c6f1453be875c7549ed0aa1168068f7"
+    },
+    "codex-rs/core/tests/suite/subagent_notifications.rs": {
+      "bytes": 109853,
+      "sha256": "17d92843a1784e431f65274a466413d7e421cd45dfedc1f227d6b0bb6b33f66a"
+    }
+  },
+  "status": "MAC_SOURCE_AND_ORIGINAL_SCOPES_PASS",
+  "tests": {
+    "complete_original_admission_and_new_scope": {
+      "passed": 43,
+      "retries": 0,
+      "test_seconds": 2.642
+    },
+    "complete_original_subagent_notifications_plus_one": {
+      "new": 1,
+      "original": 31,
+      "original_deadline_seconds": 6,
+      "original_without_wait_seconds": 0.214,
+      "passed": 32,
+      "retries": 0,
+      "test_seconds": 10.841
+    },
+    "new_deterministic_scope": {
+      "passed": 18,
+      "test_seconds": 1.013
+    }
+  },
+  "windows_qualification": false
+}

@@ -926,6 +926,52 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     Ok(())
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn late_subagent_notification_is_recorded_once_without_a_followup_turn() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = start_mock_server().await;
+    let (test, _spawned_id) =
+        setup_turn_one_with_spawned_child(&server, Some(Duration::from_millis(250))).await?;
+
+    let history = timeout(Duration::from_secs(6), async {
+        loop {
+            let history = history_annotations::response_items(&test.codex).await;
+            if history_annotations::has_content_kinds(
+                &history,
+                &["multi_agent.subagent_notification"],
+            ) {
+                break history;
+            }
+            sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await?;
+    let notifications = history
+        .iter()
+        .filter(|item| {
+            item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                == json!(["multi_agent.subagent_notification"])
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(notifications.len(), 1);
+    assert_eq!(notifications[0]["role"], json!("user"));
+    let text = notifications[0]["content"][0]["text"]
+        .as_str()
+        .expect("notification text");
+    assert!(text.contains("<subagent_notification>"));
+    assert!(text.contains("child done"));
+    assert!(
+        server
+            .received_requests()
+            .await
+            .expect("recorded provider requests")
+            .iter()
+            .all(|request| !body_contains(request, TURN_2_NO_WAIT_PROMPT))
+    );
+    Ok(())
+}
+
 #[test_case(ThreadHistoryMode::Legacy; "legacy")]
 #[test_case(ThreadHistoryMode::Paginated; "paginated")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
