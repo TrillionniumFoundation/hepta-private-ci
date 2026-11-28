@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.terminal-native-drain-qualification.v1",
+  "status": "NOT_QUALIFIED",
+  "source": "0195e00d2883db5208de6cab8119cb6304b231c9",
+  "command_cap_seconds": 145,
+  "actual_outer_seconds": 145.487661068,
+  "wrapper_exit": 124,
+  "command_exit": -9,
+  "timed_out": true,
+  "executed_tests": 0,
+  "native_fits": 0,
+  "failure_phase": "compile_timeout_before_test_execution",
+  "corrected_assertion_outcome": "not_observed",
+  "source_changed": false,
+  "already_passed_27_rerun": false,
+  "prior_receipts_unchanged": true,
+  "archive": "NATIVE_ATTEMPT_1.json.gz",
+  "archive_sha256": "b8917a4fdfccec5fef5a205226870805dff374d7c5f181499af23ca8cf3a892c",
+  "archive_bytes": 7793,
+  "raw_source_files": [
+    {
+      "path": "NAMED_TEST_COVERAGE.json",
+      "bytes": 626,
+      "sha256": "70c1578c62921bd571b6106ec0e874fcbfa9a7c2be857ff0d370c1da4802b628"
+    },
+    {
+      "path": "NATIVE_BEFORE.json",
+      "bytes": 2047,
+      "sha256": "3c3b8735aa0c2df6332a07384722436f1ff5380a5f678284656da6c26289e52c"
+    },
+    {
+      "path": "NATIVE_OUTCOME.json",
+      "bytes": 2590,
+      "sha256": "dd5e81e764885c007977859200a25b768bb9ec861362e06a28a3675972b86330"
+    },
+    {
+      "path": "NATIVE_RAW.log",
+      "bytes": 19710,
+      "sha256": "f9d2b001b2c2f311d4a961f49b6e0e42f1d92db5d55b420fd51aa32b01a9d7fd"
+    },
+    {
+      "path": "SETUP_OUTCOME.json",
+      "bytes": 137,
+      "sha256": "08a585ed16c78967f5d4cc818667dbb9702f5dede1f5bebd6eaff81cc7fad2f0"
+    },
+    {
+      "path": "paired-terminal.json",
+      "bytes": 1694,
+      "sha256": "f90717accbebcd87d5171cd4cfe2e48069d13ed580aac2fbaabfb76c8447d599"
+    }
+  ],
+  "shared_native_pool": {
+    "cap_seconds": "3600",
+    "spent_before_seconds": "3102.1593757750616",
+    "spent_after_seconds": "3247.6470368430616",
+    "remaining_after_seconds": "352.3529631569384"
+  },
+  "real_user_training_claim": false,
+  "scientific_result_changed": false
+}
