@@ -1,0 +1,2645 @@
+{
+  "selection_sha256": "ef5cf212da61512f5887aa004d6f608ea73b941a80ea0dfbd9ed85c5eeb57aed",
+  "held_images": 964,
+  "original_references": 4820,
+  "unique_references_histogram": {
+    "4": 428,
+    "3": 271,
+    "2": 203,
+    "5": 60,
+    "1": 2
+  },
+  "baselines": {
+    "most_frequent": {
+      "aligned": {
+        "bleu4": 0.04623958808993114,
+        "rouge_l": 0.21895272922507572,
+        "cider_d": 0.08735084685306063,
+        "unique_captions": 1,
+        "empty": 0,
+        "mean_length": 16.0,
+        "distinct_ngram_fraction": {
+          "1": 0.0009725103734439834,
+          "2": 0.001037344398340249,
+          "3": 0.001037344398340249,
+          "4": 0.001037344398340249
+        },
+        "length_capped": null
+      },
+      "shifted": {
+        "bleu4": 0.04623958808993114,
+        "rouge_l": 0.21895272922507572,
+        "cider_d": 0.08735084685306063,
+        "unique_captions": 1,
+        "empty": 0,
+        "mean_length": 16.0,
+        "distinct_ngram_fraction": {
+          "1": 0.0009725103734439834,
+          "2": 0.001037344398340249,
+          "3": 0.001037344398340249,
+          "4": 0.001037344398340249
+        }
+      },
+      "deduplicated": {
+        "bleu4": 0.04623958808993114,
+        "rouge_l": 0.21895272922507572,
+        "cider_d": 0.08938777397461863,
+        "unique_captions": 1,
+        "empty": 0,
+        "mean_length": 16.0,
+        "distinct_ngram_fraction": {
+          "1": 0.0009725103734439834,
+          "2": 0.001037344398340249,
+          "3": 0.001037344398340249,
+          "4": 0.001037344398340249
+        }
+      }
+    },
+    "nearest_thumbnail": {
+      "aligned": {
+        "bleu4": 0.06900969613444924,
+        "rouge_l": 0.2574939976568533,
+        "cider_d": 0.17656493866316741,
+        "unique_captions": 804,
+        "empty": 0,
+        "mean_length": 10.659751037344398,
+        "distinct_ngram_fraction": {
+          "1": 0.059361619307123394,
+          "2": 0.24119415807560138,
+          "3": 0.4242932438907523,
+          "4": 0.5507854821235103
+        },
+        "length_capped": null
+      },
+      "shifted": {
+        "bleu4": 0.07796019544036879,
+        "rouge_l": 0.25852530904072846,
+        "cider_d": 0.16517644309982327,
+        "unique_captions": 804,
+        "empty": 0,
+        "mean_length": 10.659751037344398,
+        "distinct_ngram_fraction": {
+          "1": 0.059361619307123394,
+          "2": 0.24119415807560138,
+          "3": 0.4242932438907523,
+          "4": 0.5507854821235103
+        }
+      },
+      "deduplicated": {
+        "bleu4": 0.06900969613444924,
+        "rouge_l": 0.2574939976568533,
+        "cider_d": 0.18240141465496426,
+        "unique_captions": 804,
+        "empty": 0,
+        "mean_length": 10.659751037344398,
+        "distinct_ngram_fraction": {
+          "1": 0.059361619307123394,
+          "2": 0.24119415807560138,
+          "3": 0.4242932438907523,
+          "4": 0.5507854821235103
+        }
+      }
+    }
+  },
+  "averages": {
+    "best": {
+      "literal": {
+        "bleu4": 0.07217808745981086,
+        "rouge_l": 0.28509672574513295,
+        "cider_d": 0.175123566223061,
+        "unique_captions": 75.66666666666667,
+        "length_capped": 2.0,
+        "mean_length": 13.032157676348547,
+        "teacher_forced_nll": 3.175935984241526
+      },
+      "smooth": {
+        "bleu4": 0.0973287786168252,
+        "rouge_l": 0.2873845271658287,
+        "cider_d": 0.19418685047222298,
+        "unique_captions": 64.0,
+        "length_capped": 0.0,
+        "mean_length": 10.91804979253112,
+        "teacher_forced_nll": 3.1576764044824874
+      },
+      "lif": {
+        "bleu4": 0.09566961932368723,
+        "rouge_l": 0.2818097873746559,
+        "cider_d": 0.16712321796445972,
+        "unique_captions": 39.0,
+        "length_capped": 0.0,
+        "mean_length": 13.580221300138312,
+        "teacher_forced_nll": 3.1401444999966848
+      },
+      "sdpa": {
+        "bleu4": 0.08632540199475515,
+        "rouge_l": 0.29023552827338184,
+        "cider_d": 0.2033710571456944,
+        "unique_captions": 103.0,
+        "length_capped": 25.333333333333332,
+        "mean_length": 11.768326417704012,
+        "teacher_forced_nll": 3.1966507453261044
+      }
+    },
+    "final": {
+      "literal": {
+        "bleu4": 0.10246618486296394,
+        "rouge_l": 0.2995823588841084,
+        "cider_d": 0.19329803579235263,
+        "unique_captions": 116.0,
+        "length_capped": 0.3333333333333333,
+        "mean_length": 11.801521438450898,
+        "teacher_forced_nll": 3.2743160353154805
+      },
+      "smooth": {
+        "bleu4": 0.09892481024162958,
+        "rouge_l": 0.2956689963929653,
+        "cider_d": 0.21586481232389912,
+        "unique_captions": 135.0,
+        "length_capped": 0.0,
+        "mean_length": 11.178423236514524,
+        "teacher_forced_nll": 3.2383966888446665
+      },
+      "lif": {
+        "bleu4": 0.09888635582327449,
+        "rouge_l": 0.30235355060679264,
+        "cider_d": 0.18166818876418875,
+        "unique_captions": 100.33333333333333,
+        "length_capped": 0.0,
+        "mean_length": 12.014868603042878,
+        "teacher_forced_nll": 3.1772268083167052
+      },
+      "sdpa": {
+        "bleu4": 0.10372356179846563,
+        "rouge_l": 0.30493412216401106,
+        "cider_d": 0.23039613446779272,
+        "unique_captions": 173.0,
+        "length_capped": 2.3333333333333335,
+        "mean_length": 11.075726141078839,
+        "teacher_forced_nll": 3.3090308919119615
+      }
+    }
+  },
+  "paired_image_deltas": {
+    "best": {
+      "literal-minus-smooth": {
+        "cider": [
+          -0.01906328424916199,
+          -0.03264561642904831,
+          -0.005054317192913435
+        ],
+        "rouge": [
+          -0.002287801420695739,
+          -0.008011956604176272,
+          0.003545346357576969
+        ]
+      },
+      "literal-minus-lif": {
+        "cider": [
+          0.00800034825860126,
+          -0.0034061271056698497,
+          0.018886400276921612
+        ],
+        "rouge": [
+          0.0032869383704770814,
+          -0.0018884310008812476,
+          0.008725224149061453
+        ]
+      },
+      "literal-minus-sdpa": {
+        "cider": [
+          -0.028247490922633414,
+          -0.04138656429484361,
+          -0.015382540873058076
+        ],
+        "rouge": [
+          -0.005138802528248861,
+          -0.010362446556496716,
+          0.00012964066554203263
+        ]
+      }
+    },
+    "final": {
+      "literal-minus-smooth": {
+        "cider": [
+          -0.022566776531546474,
+          -0.039983227270647945,
+          -0.006038828404758108
+        ],
+        "rouge": [
+          0.0039133624911431115,
+          -0.0017971653019129797,
+          0.009850311867392896
+        ]
+      },
+      "literal-minus-lif": {
+        "cider": [
+          0.011629847028163888,
+          -0.004933743635271061,
+          0.027911396363953456
+        ],
+        "rouge": [
+          -0.002771191722684202,
+          -0.00982625433090207,
+          0.004574907643559103
+        ]
+      },
+      "literal-minus-sdpa": {
+        "cider": [
+          -0.03709809867544007,
+          -0.052457403259469,
+          -0.02163292604309695
+        ],
+        "rouge": [
+          -0.005351763279902691,
+          -0.011357893642790233,
+          0.0006988353050096066
+        ]
+      }
+    }
+  },
+  "aligned_minus_shifted": {
+    "best": {
+      "literal": {
+        "cider": [
+          0.0016830348752641597,
+          -0.008620038576417506,
+          0.011915888143666979
+        ],
+        "rouge": [
+          0.002087976307832581,
+          -0.0026690741645567576,
+          0.006850567643856377
+        ]
+      },
+      "smooth": {
+        "cider": [
+          -0.0024783761242503743,
+          -0.01783966402295828,
+          0.012274396674879574
+        ],
+        "rouge": [
+          -0.0006491656678097408,
+          -0.006662534667893047,
+          0.0051649205235617685
+        ]
+      },
+      "lif": {
+        "cider": [
+          0.004716171362480791,
+          -0.0029195268155824045,
+          0.012778334594779396
+        ],
+        "rouge": [
+          0.0005524048110455449,
+          -0.00254272342311852,
+          0.0036344691477692703
+        ]
+      },
+      "sdpa": {
+        "cider": [
+          0.005276635597437954,
+          -0.005681488601771218,
+          0.015716746723870054
+        ],
+        "rouge": [
+          0.0008896981318366263,
+          -0.004001036652020501,
+          0.005735070112943445
+        ]
+      }
+    },
+    "final": {
+      "literal": {
+        "cider": [
+          -0.0008456090797302881,
+          -0.013034173037043323,
+          0.011259541279374353
+        ],
+        "rouge": [
+          0.001570222519043545,
+          -0.0032006700283473024,
+          0.006218398826165347
+        ]
+      },
+      "smooth": {
+        "cider": [
+          0.0012861803069062177,
+          -0.013538047961624704,
+          0.015607953783766752
+        ],
+        "rouge": [
+          -0.0001468731465337449,
+          -0.00603149911148095,
+          0.0052447664381385884
+        ]
+      },
+      "lif": {
+        "cider": [
+          0.004993642367100969,
+          -0.007916898254094567,
+          0.01767628382232309
+        ],
+        "rouge": [
+          0.0038047110866327237,
+          -0.000850120327884126,
+          0.008672108373973114
+        ]
+      },
+      "sdpa": {
+        "cider": [
+          0.007772656910765388,
+          -0.007751345451350344,
+          0.022739671589419284
+        ],
+        "rouge": [
+          0.00168110492679553,
+          -0.004525643885672839,
+          0.007885015465211972
+        ]
+      }
+    }
+  },
+  "results": {
+    "literal-109-best": {
+      "model_sha256": "b53c6fb0ceddf5ae421dc0f0264418b1f8f2018ee16f0fd49d16dcb626c31c5f",
+      "gate": 300,
+      "score_file": "literal-109-300.npz",
+      "score_sha256": "a954498f95e898b0efed44c45af19b706296dd5ed4f9ed86ca2429de52d43866",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.07361156023891151,
+          "rouge_l": 0.28762335570242437,
+          "cider_d": 0.18224857727074562,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.605809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.007150518412584912,
+            "2": 0.017312206572769953,
+            "3": 0.026457883369330453,
+            "4": 0.033992285438765674
+          },
+          "length_capped": 5
+        },
+        "shifted": {
+          "bleu4": 0.06764397623646128,
+          "rouge_l": 0.283462121461225,
+          "cider_d": 0.17496969900742035,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.605809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.007150518412584912,
+            "2": 0.017312206572769953,
+            "3": 0.026457883369330453,
+            "4": 0.033992285438765674
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.07361156023891151,
+          "rouge_l": 0.28762335570242437,
+          "cider_d": 0.20059079212374833,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.605809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.007150518412584912,
+            "2": 0.017312206572769953,
+            "3": 0.026457883369330453,
+            "4": 0.033992285438765674
+          }
+        },
+        "teacher_forced_nll": 3.11158716299817
+      },
+      "seconds": 29.796458239667118,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a bridge is on a river with many buildings on two sides of it",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is on a river with many buildings on two sides of it",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and a road are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a large number of trees are planted around the railway station",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and a pond are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        }
+      ]
+    },
+    "literal-109-final": {
+      "model_sha256": "94d2719d67cd5b94e2370297d19674373a014c9a9e83606e72ac01120df334ac",
+      "gate": 900,
+      "score_file": "literal-109-900.npz",
+      "score_sha256": "318e5ffeb9b7dd092062ee9411f86dfcd853f75ca5b2679c1c6e32493a45c2c2",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10404325404872264,
+          "rouge_l": 0.30602125992182433,
+          "cider_d": 0.19388741986602767,
+          "unique_captions": 153,
+          "empty": 0,
+          "mean_length": 11.477178423236515,
+          "distinct_ngram_fraction": {
+            "1": 0.010303687635574838,
+            "2": 0.026138613861386138,
+            "3": 0.041484238178633975,
+            "4": 0.055433186490455214
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10158611538756791,
+          "rouge_l": 0.30324869024876694,
+          "cider_d": 0.19393982874967924,
+          "unique_captions": 153,
+          "empty": 0,
+          "mean_length": 11.477178423236515,
+          "distinct_ngram_fraction": {
+            "1": 0.010303687635574838,
+            "2": 0.026138613861386138,
+            "3": 0.041484238178633975,
+            "4": 0.055433186490455214
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10404325404872264,
+          "rouge_l": 0.30602125992182433,
+          "cider_d": 0.2170772932383581,
+          "unique_captions": 153,
+          "empty": 0,
+          "mean_length": 11.477178423236515,
+          "distinct_ngram_fraction": {
+            "1": 0.010303687635574838,
+            "2": 0.026138613861386138,
+            "3": 0.041484238178633975,
+            "4": 0.055433186490455214
+          }
+        },
+        "teacher_forced_nll": 3.3624581849470245
+      },
+      "seconds": 33.51598020410165,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are around a building near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees and some buildings are in a medium residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are around a building near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees are around a gray black black black black black black",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and some buildings are around a football field",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings are in a piece of bareland",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many green trees and some buildings are in a resort with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees are around a building near a road",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-109-best": {
+      "model_sha256": "7cbd17e46cf54f74e815ea93815bb06b05374e7ca5929df87fce8452afa0153c",
+      "gate": 300,
+      "score_file": "smooth-109-300.npz",
+      "score_sha256": "cc6d1d5fb40841ec679eff52ec9933fbb0707ca0d6d82544f52e7cf2b39ab6d5",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.143206027163558,
+          "rouge_l": 0.3328916134982787,
+          "cider_d": 0.2108546671377431,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 10.016597510373444,
+          "distinct_ngram_fraction": {
+            "1": 0.006420878210439105,
+            "2": 0.015071329958582605,
+            "3": 0.02355072463768116,
+            "4": 0.0320816085156712
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.1461327445662386,
+          "rouge_l": 0.33020252311876264,
+          "cider_d": 0.21077116612147004,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 10.016597510373444,
+          "distinct_ngram_fraction": {
+            "1": 0.006420878210439105,
+            "2": 0.015071329958582605,
+            "3": 0.02355072463768116,
+            "4": 0.0320816085156712
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.143206027163558,
+          "rouge_l": 0.3328916134982787,
+          "cider_d": 0.2499086628864688,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 10.016597510373444,
+          "distinct_ngram_fraction": {
+            "1": 0.006420878210439105,
+            "2": 0.015071329958582605,
+            "3": 0.02355072463768116,
+            "4": 0.0320816085156712
+          }
+        },
+        "teacher_forced_nll": 3.156226885069097
+      },
+      "seconds": 26.045946849975735,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are in two sides of a curved green river",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and green trees are in a school",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are in two sides of a curved green river",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees are in two sides of a curved green river",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and green trees are in a school",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a piece of yellow beach is between a beach and a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are in a school",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees are in two sides of a curved green river",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-109-final": {
+      "model_sha256": "943a5448ba248086609914678efe89664e96290698ec01d832ecd223053a178a",
+      "gate": 900,
+      "score_file": "smooth-109-900.npz",
+      "score_sha256": "7e38fd2d3c8f4957b8fa42db3b4112975dc59cd1bda19da940eddb013ac3183f",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.0901169648747903,
+          "rouge_l": 0.28454788686527305,
+          "cider_d": 0.24671420028049523,
+          "unique_captions": 189,
+          "empty": 0,
+          "mean_length": 11.435684647302905,
+          "distinct_ngram_fraction": {
+            "1": 0.011973875181422351,
+            "2": 0.03449304174950298,
+            "3": 0.055628847845206685,
+            "4": 0.07378258730939498
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.08537300539825407,
+          "rouge_l": 0.2839049307777683,
+          "cider_d": 0.24819300670401076,
+          "unique_captions": 189,
+          "empty": 0,
+          "mean_length": 11.435684647302905,
+          "distinct_ngram_fraction": {
+            "1": 0.011973875181422351,
+            "2": 0.03449304174950298,
+            "3": 0.055628847845206685,
+            "4": 0.07378258730939498
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.0901169648747903,
+          "rouge_l": 0.28454788686527305,
+          "cider_d": 0.26142470108482224,
+          "unique_captions": 189,
+          "empty": 0,
+          "mean_length": 11.435684647302905,
+          "distinct_ngram_fraction": {
+            "1": 0.011973875181422351,
+            "2": 0.03449304174950298,
+            "3": 0.055628847845206685,
+            "4": 0.07378258730939498
+          }
+        },
+        "teacher_forced_nll": 3.2403545753434
+      },
+      "seconds": 32.80004291282967,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a baseball field is surrounded by many green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a playground is near a road with many green trees in two sides of it",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a small road is in a piece of green forest",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is on a river with some buildings in two sides of it",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and several buildings are near a viaduct shaped like a circle",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a piece of yellow beach is near a piece of yellow ocean with boats on it",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a playground is surrounded by many green trees and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a bridge is on a river with some buildings in two sides of it",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-109-best": {
+      "model_sha256": "87f4d68ce2a79486d6368610e994067f6b441d668b62157db8cda9c6163fe630",
+      "gate": 300,
+      "score_file": "lif-109-300.npz",
+      "score_sha256": "808eccc7db8d2dafe0e2c14d26eda04cd324aca0d7554b406d56e92ad91d3c66",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.0997660069114726,
+          "rouge_l": 0.3006985620857108,
+          "cider_d": 0.15712870424447783,
+          "unique_captions": 23,
+          "empty": 0,
+          "mean_length": 15.148340248962656,
+          "distinct_ngram_fraction": {
+            "1": 0.002533725946723276,
+            "2": 0.004325830339467703,
+            "3": 0.005364891518737673,
+            "4": 0.006233455725386389
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10269882507416317,
+          "rouge_l": 0.3014704405555336,
+          "cider_d": 0.15797118609122623,
+          "unique_captions": 23,
+          "empty": 0,
+          "mean_length": 15.148340248962656,
+          "distinct_ngram_fraction": {
+            "1": 0.002533725946723276,
+            "2": 0.004325830339467703,
+            "3": 0.005364891518737673,
+            "4": 0.006233455725386389
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.0997660069114726,
+          "rouge_l": 0.3006985620857108,
+          "cider_d": 0.17886510604963307,
+          "unique_captions": 23,
+          "empty": 0,
+          "mean_length": 15.148340248962656,
+          "distinct_ngram_fraction": {
+            "1": 0.002533725946723276,
+            "2": 0.004325830339467703,
+            "3": 0.005364891518737673,
+            "4": 0.006233455725386389
+          }
+        },
+        "teacher_forced_nll": 3.1404683590728006
+      },
+      "seconds": 29.828917606268078,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some ripples are in a piece of yellow desert",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many buildings and some green trees are in a school with a playground and a playground",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-109-final": {
+      "model_sha256": "342c9c01e0a4870585d2dfeeb573067d4fcebe752226ba390534907e8943fe86",
+      "gate": 900,
+      "score_file": "lif-109-900.npz",
+      "score_sha256": "510b6e1e17bd3daa844e43670f1fc15b99e1faf1366b7be09f19e94b4367f66a",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.11137429370250657,
+          "rouge_l": 0.31070222765405,
+          "cider_d": 0.20490498000302473,
+          "unique_captions": 124,
+          "empty": 0,
+          "mean_length": 11.484439834024895,
+          "distinct_ngram_fraction": {
+            "1": 0.011290759642308735,
+            "2": 0.02592262788166617,
+            "3": 0.0386087717379416,
+            "4": 0.04988384888128133
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10822903681375644,
+          "rouge_l": 0.30437166559649265,
+          "cider_d": 0.1963659961717189,
+          "unique_captions": 124,
+          "empty": 0,
+          "mean_length": 11.484439834024895,
+          "distinct_ngram_fraction": {
+            "1": 0.011290759642308735,
+            "2": 0.02592262788166617,
+            "3": 0.0386087717379416,
+            "4": 0.04988384888128133
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.11137429370250657,
+          "rouge_l": 0.31070222765405,
+          "cider_d": 0.2370817304890507,
+          "unique_captions": 124,
+          "empty": 0,
+          "mean_length": 11.484439834024895,
+          "distinct_ngram_fraction": {
+            "1": 0.011290759642308735,
+            "2": 0.02592262788166617,
+            "3": 0.0386087717379416,
+            "4": 0.04988384888128133
+          }
+        },
+        "teacher_forced_nll": 3.1386000333849995
+      },
+      "seconds": 24.4751112209633,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees and meadows are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees and meadows are around a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees and a pond are in a park near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and some green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some white snows cover part of irregular khaki mountain",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees and meadows are in a park near a road",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-109-best": {
+      "model_sha256": "c9aeab62e3d800d6f670b76bbdce103511f27c3aca90dfeda17cfd319ee9f1d1",
+      "gate": 300,
+      "score_file": "sdpa-109-300.npz",
+      "score_sha256": "a53f220245ff3a9547558d20660ed823198e932336df6cc35720e43e16f5a714",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.07619296485180747,
+          "rouge_l": 0.2812819964236331,
+          "cider_d": 0.2061112662287,
+          "unique_captions": 121,
+          "empty": 0,
+          "mean_length": 12.841286307053942,
+          "distinct_ngram_fraction": {
+            "1": 0.007189595282332983,
+            "2": 0.018046430135786246,
+            "3": 0.029279494785188022,
+            "4": 0.039422367450195006
+          },
+          "length_capped": 21
+        },
+        "shifted": {
+          "bleu4": 0.07169915229389616,
+          "rouge_l": 0.28316191630284276,
+          "cider_d": 0.20494559492199588,
+          "unique_captions": 121,
+          "empty": 0,
+          "mean_length": 12.841286307053942,
+          "distinct_ngram_fraction": {
+            "1": 0.007189595282332983,
+            "2": 0.018046430135786246,
+            "3": 0.029279494785188022,
+            "4": 0.039422367450195006
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.07619296485180747,
+          "rouge_l": 0.2812819964236331,
+          "cider_d": 0.2195365371411837,
+          "unique_captions": 121,
+          "empty": 0,
+          "mean_length": 12.841286307053942,
+          "distinct_ngram_fraction": {
+            "1": 0.007189595282332983,
+            "2": 0.018046430135786246,
+            "3": 0.029279494785188022,
+            "4": 0.039422367450195006
+          }
+        },
+        "teacher_forced_nll": 3.195105739486312
+      },
+      "seconds": 25.640396051108837,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a baseball field is near a road with several green trees and a parking lot",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a baseball field is near a road with parking lot and several green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a baseball field is surrounded by many green trees and several buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is on a river with many green trees and buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and green trees are around a playground with three basketball fields in it",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a large number of trees are planted on the land",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are around a playground with three basketball fields in it",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a baseball field is near a road with parking lot and several green trees",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-109-final": {
+      "model_sha256": "0553ab04db9071097b34bd561bb960fea79a8e3f43533d4d59483bbf7f332409",
+      "gate": 900,
+      "score_file": "sdpa-109-900.npz",
+      "score_sha256": "96e1f28e50fe5b020ed6d1eafc05f9ed95ebd14c989b05d2d1c9cf46af4bcb25",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10058031896934452,
+          "rouge_l": 0.29831118089852143,
+          "cider_d": 0.19048949737076884,
+          "unique_captions": 126,
+          "empty": 0,
+          "mean_length": 10.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010009099181073703,
+            "2": 0.025092416265262686,
+            "3": 0.03842772824312445,
+            "4": 0.048292613230461495
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.09281840804980383,
+          "rouge_l": 0.29532700492721364,
+          "cider_d": 0.1786030054909772,
+          "unique_captions": 126,
+          "empty": 0,
+          "mean_length": 10.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010009099181073703,
+            "2": 0.025092416265262686,
+            "3": 0.03842772824312445,
+            "4": 0.048292613230461495
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10058031896934452,
+          "rouge_l": 0.29831118089852143,
+          "cider_d": 0.2121027837840204,
+          "unique_captions": 126,
+          "empty": 0,
+          "mean_length": 10.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010009099181073703,
+            "2": 0.025092416265262686,
+            "3": 0.03842772824312445,
+            "4": 0.048292613230461495
+          }
+        },
+        "teacher_forced_nll": 3.2947423500345825
+      },
+      "seconds": 20.957971513271332,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are around a building with a car",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and green trees are in a medium residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are around a building with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many buildings are around a park with many green trees and a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings are around a park with many green trees and a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings are around a playground with two basketball fields",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are around a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many buildings and green trees are in a medium residential area",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-271-best": {
+      "model_sha256": "1a676ad8dbcc4a1c5d4d15571cf5a6173e405936ea780fec406e7eed2b5d98f9",
+      "gate": 300,
+      "score_file": "smooth-271-300.npz",
+      "score_sha256": "bfd08a5dd9a52c82f4fa90fe8c2c522eca5ebdfd6636d5465aaae3e3ca8e6a39",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.08376504539677386,
+          "rouge_l": 0.26629649901787417,
+          "cider_d": 0.18356630790466863,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 10.855809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.006211180124223602,
+            "2": 0.014314282707083464,
+            "3": 0.020499004334075203,
+            "4": 0.025881420837184737
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.08033781162908224,
+          "rouge_l": 0.26462355695820644,
+          "cider_d": 0.18447159617843514,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 10.855809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.006211180124223602,
+            "2": 0.014314282707083464,
+            "3": 0.020499004334075203,
+            "4": 0.025881420837184737
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.08376504539677386,
+          "rouge_l": 0.26629649901787417,
+          "cider_d": 0.2002684795849108,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 10.855809128630705,
+          "distinct_ngram_fraction": {
+            "1": 0.006211180124223602,
+            "2": 0.014314282707083464,
+            "3": 0.020499004334075203,
+            "4": 0.025881420837184737
+          }
+        },
+        "teacher_forced_nll": 3.168176896626799
+      },
+      "seconds": 30.725771482102573,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a building with a swimming pool is surrounded by green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a building with a swimming pool is surrounded by green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a building with a swimming pool is surrounded by green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a building with a swimming pool is surrounded by green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "some green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a large building is near a road with cars",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a large number of trees were planted around the factory",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a building with a swimming pool is surrounded by green trees",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-271-final": {
+      "model_sha256": "63d2b609588c8910e2aeaecdc02a161effe1278cb6adc474ea66eaa26b4b8ccc",
+      "gate": 900,
+      "score_file": "smooth-271-900.npz",
+      "score_sha256": "3ef9c88e15344db9deac65b85bf65594aeeaca0e724d544b892b02d411fae1a6",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10012253789698072,
+          "rouge_l": 0.291012650952341,
+          "cider_d": 0.1891152497467027,
+          "unique_captions": 118,
+          "empty": 0,
+          "mean_length": 10.616182572614107,
+          "distinct_ngram_fraction": {
+            "1": 0.010748485440687903,
+            "2": 0.028047464940668825,
+            "3": 0.04466650614013966,
+            "4": 0.05734132388994824
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10374633024014095,
+          "rouge_l": 0.2937134273106769,
+          "cider_d": 0.19002857085446678,
+          "unique_captions": 118,
+          "empty": 0,
+          "mean_length": 10.616182572614107,
+          "distinct_ngram_fraction": {
+            "1": 0.010748485440687903,
+            "2": 0.028047464940668825,
+            "3": 0.04466650614013966,
+            "4": 0.05734132388994824
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10012253789698072,
+          "rouge_l": 0.291012650952341,
+          "cider_d": 0.20716525814207137,
+          "unique_captions": 118,
+          "empty": 0,
+          "mean_length": 10.616182572614107,
+          "distinct_ngram_fraction": {
+            "1": 0.010748485440687903,
+            "2": 0.028047464940668825,
+            "3": 0.04466650614013966,
+            "4": 0.05734132388994824
+          }
+        },
+        "teacher_forced_nll": 3.1528225198948463
+      },
+      "seconds": 35.8290401538834,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a baseball field is near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees are near a viaduct",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a baseball field is near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is over a river with some buildings and green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees are in two sides of a river with a bridge",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings are in an industrial area",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are in a resort with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a baseball field is near a road",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-271-best": {
+      "model_sha256": "67a875a063fa2c83cd9e2c11512c203d405c044717d2016a6d4b8634172e2a12",
+      "gate": 300,
+      "score_file": "lif-271-300.npz",
+      "score_sha256": "b3644f397e7585cc107bb04e7ebbd80c43e7d9233f0554623fed88abd2cd7b02",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.05855516282394513,
+          "rouge_l": 0.24312848455758992,
+          "cider_d": 0.1519272543591887,
+          "unique_captions": 41,
+          "empty": 0,
+          "mean_length": 14.859958506224066,
+          "distinct_ngram_fraction": {
+            "1": 0.0034205933682373473,
+            "2": 0.006361799266521967,
+            "3": 0.00927643784786642,
+            "4": 0.01172045832240007
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.058355880194164794,
+          "rouge_l": 0.24321015813828492,
+          "cider_d": 0.14943867250878998,
+          "unique_captions": 41,
+          "empty": 0,
+          "mean_length": 14.859958506224066,
+          "distinct_ngram_fraction": {
+            "1": 0.0034205933682373473,
+            "2": 0.006361799266521967,
+            "3": 0.00927643784786642,
+            "4": 0.01172045832240007
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.05855516282394513,
+          "rouge_l": 0.24312848455758992,
+          "cider_d": 0.16084882166867132,
+          "unique_captions": 41,
+          "empty": 0,
+          "mean_length": 14.859958506224066,
+          "distinct_ngram_fraction": {
+            "1": 0.0034205933682373473,
+            "2": 0.006361799266521967,
+            "3": 0.00927643784786642,
+            "4": 0.01172045832240007
+          }
+        },
+        "teacher_forced_nll": 3.1256709325920515
+      },
+      "seconds": 30.45870919711888,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "a playground with two basketball fields and a tennis field in it is surrounded by many",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a yellow beach is near a piece of yellow desert",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a playground with a basketball field in it is surrounded by many buildings and many buildings",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-271-final": {
+      "model_sha256": "60d0cad83375a620df907098107973ef8528ccf6468b4021e20c338918d9cdf6",
+      "gate": 900,
+      "score_file": "lif-271-900.npz",
+      "score_sha256": "6127deb635f03c648d5effa8571405857030105b7366d10b7e5cb33edc15e0aa",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.08366754415802857,
+          "rouge_l": 0.29043268589109333,
+          "cider_d": 0.16485765566405305,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 12.299792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.006241039048663237,
+            "2": 0.011291655191407325,
+            "3": 0.015207976634102125,
+            "4": 0.018627997769102064
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.08665510275995471,
+          "rouge_l": 0.29212853065162636,
+          "cider_d": 0.16845038924065703,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 12.299792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.006241039048663237,
+            "2": 0.011291655191407325,
+            "3": 0.015207976634102125,
+            "4": 0.018627997769102064
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.08366754415802857,
+          "rouge_l": 0.29043268589109333,
+          "cider_d": 0.18262453334770004,
+          "unique_captions": 52,
+          "empty": 0,
+          "mean_length": 12.299792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.006241039048663237,
+            "2": 0.011291655191407325,
+            "3": 0.015207976634102125,
+            "4": 0.018627997769102064
+          }
+        },
+        "teacher_forced_nll": 3.15276016444731
+      },
+      "seconds": 26.509405947756022,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees and a pond are in a park near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and green trees are in a commercial area",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "it is a piece of yellow bareland",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are in a school with a playground and two playgrounds",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-271-best": {
+      "model_sha256": "51402935e06b188299204e445e72fa72cc625e6525904b4bdcbc76d1b6da67c3",
+      "gate": 300,
+      "score_file": "sdpa-271-300.npz",
+      "score_sha256": "662f257731c90d23394a679b59289abee7727c2874c0fa3e4ba86d298f6cbd62",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.1117488553734844,
+          "rouge_l": 0.3058362673465458,
+          "cider_d": 0.2004537008245929,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 12.060165975103734,
+          "distinct_ngram_fraction": {
+            "1": 0.00653707207982109,
+            "2": 0.014818983305196024,
+            "3": 0.024644256547741803,
+            "4": 0.034234027936798715
+          },
+          "length_capped": 55
+        },
+        "shifted": {
+          "bleu4": 0.1075670624395639,
+          "rouge_l": 0.30540541445325076,
+          "cider_d": 0.19206361476114078,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 12.060165975103734,
+          "distinct_ngram_fraction": {
+            "1": 0.00653707207982109,
+            "2": 0.014818983305196024,
+            "3": 0.024644256547741803,
+            "4": 0.034234027936798715
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.1117488553734844,
+          "rouge_l": 0.3058362673465458,
+          "cider_d": 0.22468965567105822,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 12.060165975103734,
+          "distinct_ngram_fraction": {
+            "1": 0.00653707207982109,
+            "2": 0.014818983305196024,
+            "3": 0.024644256547741803,
+            "4": 0.034234027936798715
+          }
+        },
+        "teacher_forced_nll": 3.222989234688175
+      },
+      "seconds": 26.47430900298059,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees are around a building with a football field in it",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees are around a building with a bridge",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings are near a park with many green trees and a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some planes are parked in an airport near some buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are in two sides of a road in a medium residential",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-271-final": {
+      "model_sha256": "8da0e20f8c14fdd8e292049b4cbe9260eb239ab2569bcbea5b3114809bf608fb",
+      "gate": 900,
+      "score_file": "sdpa-271-900.npz",
+      "score_sha256": "a77022abb19fe78a1ee5719479358439ed04bb4e81e149da397ec0130e1773d4",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10475581208979189,
+          "rouge_l": 0.30287714814038036,
+          "cider_d": 0.26842922627373,
+          "unique_captions": 206,
+          "empty": 0,
+          "mean_length": 10.95643153526971,
+          "distinct_ngram_fraction": {
+            "1": 0.011077447453133877,
+            "2": 0.030735569910398,
+            "3": 0.05304609682649988,
+            "4": 0.07548891786179922
+          },
+          "length_capped": 6
+        },
+        "shifted": {
+          "bleu4": 0.09818898779590145,
+          "rouge_l": 0.3004977599645496,
+          "cider_d": 0.2589134285331753,
+          "unique_captions": 206,
+          "empty": 0,
+          "mean_length": 10.95643153526971,
+          "distinct_ngram_fraction": {
+            "1": 0.011077447453133877,
+            "2": 0.030735569910398,
+            "3": 0.05304609682649988,
+            "4": 0.07548891786179922
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10475581208979189,
+          "rouge_l": 0.30287714814038036,
+          "cider_d": 0.29441132959406974,
+          "unique_captions": 206,
+          "empty": 0,
+          "mean_length": 10.95643153526971,
+          "distinct_ngram_fraction": {
+            "1": 0.011077447453133877,
+            "2": 0.030735569910398,
+            "3": 0.05304609682649988,
+            "4": 0.07548891786179922
+          }
+        },
+        "teacher_forced_nll": 3.3171095033262668
+      },
+      "seconds": 24.1992719611153,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a building with a swimming pool is surrounded by some green trees and meadows",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a large number of trees were planted around the church",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a building with a swimming pool is surrounded by many green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a large number of trees were planted around the church",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and some buildings are in a park near a river",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings and some green trees are around a playground",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a large number of trees were planted around the church",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a large number of trees were planted around the church",
+          "reference_count": 5
+        }
+      ]
+    },
+    "literal-271-best": {
+      "model_sha256": "1b44485c5d01d136a913e04e61d03190cdcf876971717911445f3144025d806d",
+      "gate": 300,
+      "score_file": "literal-271-300.npz",
+      "score_sha256": "a874c5463712135616d813b208fc0c7c035a69a32e205732fc7f0251bb4bdeed",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.06206655619532526,
+          "rouge_l": 0.27466588112492674,
+          "cider_d": 0.1655709379340934,
+          "unique_captions": 87,
+          "empty": 0,
+          "mean_length": 14.273858921161827,
+          "distinct_ngram_fraction": {
+            "1": 0.003997093023255814,
+            "2": 0.009377930603313536,
+            "3": 0.014283299526707234,
+            "4": 0.019138755980861243
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.06887296198421525,
+          "rouge_l": 0.27576555716536616,
+          "cider_d": 0.16891363930461406,
+          "unique_captions": 87,
+          "empty": 0,
+          "mean_length": 14.273858921161827,
+          "distinct_ngram_fraction": {
+            "1": 0.003997093023255814,
+            "2": 0.009377930603313536,
+            "3": 0.014283299526707234,
+            "4": 0.019138755980861243
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.06206655619532526,
+          "rouge_l": 0.27466588112492674,
+          "cider_d": 0.1797526567872457,
+          "unique_captions": 87,
+          "empty": 0,
+          "mean_length": 14.273858921161827,
+          "distinct_ngram_fraction": {
+            "1": 0.003997093023255814,
+            "2": 0.009377930603313536,
+            "3": 0.014283299526707234,
+            "4": 0.019138755980861243
+          }
+        },
+        "teacher_forced_nll": 3.2645137997996483
+      },
+      "seconds": 35.23075812635943,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a bridge is on a river with some green trees and several buildings in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a bridge is on a river with some green trees and several buildings in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a bridge is on a river with some green trees and several buildings in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is on a river with a bridge on it and some green trees in",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and some green trees are in a school",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a playground with a football field next to it is near a road and some green",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a playground with a football field next to it is surrounded by many green trees and",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a bridge is on a river with some green trees and several buildings in two sides",
+          "reference_count": 5
+        }
+      ]
+    },
+    "literal-271-final": {
+      "model_sha256": "b25bf7394e040ffbf1fce5641a40244ffc6865c68e16520288bbcd1419a00eb1",
+      "gate": 900,
+      "score_file": "literal-271-900.npz",
+      "score_sha256": "9a993df4ccea8dc3ddb752cf6f78a0a4bcd753fd8862a48256b54b6e1e138186",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.09847551584045373,
+          "rouge_l": 0.28662344837190673,
+          "cider_d": 0.21326143560852853,
+          "unique_captions": 102,
+          "empty": 0,
+          "mean_length": 11.179460580912863,
+          "distinct_ngram_fraction": {
+            "1": 0.008258327920571587,
+            "2": 0.02343829613777642,
+            "3": 0.036162278223528084,
+            "4": 0.04514901712111604
+          },
+          "length_capped": 1
+        },
+        "shifted": {
+          "bleu4": 0.09561316371938174,
+          "rouge_l": 0.28572921172081744,
+          "cider_d": 0.21077391055533493,
+          "unique_captions": 102,
+          "empty": 0,
+          "mean_length": 11.179460580912863,
+          "distinct_ngram_fraction": {
+            "1": 0.008258327920571587,
+            "2": 0.02343829613777642,
+            "3": 0.036162278223528084,
+            "4": 0.04514901712111604
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.09847551584045373,
+          "rouge_l": 0.28662344837190673,
+          "cider_d": 0.23021170892751228,
+          "unique_captions": 102,
+          "empty": 0,
+          "mean_length": 11.179460580912863,
+          "distinct_ngram_fraction": {
+            "1": 0.008258327920571587,
+            "2": 0.02343829613777642,
+            "3": 0.036162278223528084,
+            "4": 0.04514901712111604
+          }
+        },
+        "teacher_forced_nll": 3.174640111665849
+      },
+      "seconds": 34.298566760029644,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a building with a swimming pool is surrounded by many sparse green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a playground is surrounded by many green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a building with a swimming pool is surrounded by many sparse green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a building is near a church",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees are around a stadium with a football field in it",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "it is a piece of khaki bareland",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a playground is surrounded by many green trees and buildings",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a building with a swimming pool is surrounded by many sparse green trees",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-463-best": {
+      "model_sha256": "3f8f42da802908cea9d0fc4e7ee8cff33ee42e35fc40036858f243767d579b3c",
+      "gate": 300,
+      "score_file": "lif-463-300.npz",
+      "score_sha256": "8bc8bdd40ccda13768ee0ac7bfa09099d85cd9f9015dc87e2023b30701d6a861",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.12868768823564394,
+          "rouge_l": 0.30160231548066696,
+          "cider_d": 0.1923136952897127,
+          "unique_captions": 53,
+          "empty": 0,
+          "mean_length": 10.732365145228215,
+          "distinct_ngram_fraction": {
+            "1": 0.006475932727624202,
+            "2": 0.012577275634193136,
+            "3": 0.017581373247802328,
+            "4": 0.022269922189428495
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.12771516507305855,
+          "rouge_l": 0.2990915489970125,
+          "cider_d": 0.17981128120592066,
+          "unique_captions": 53,
+          "empty": 0,
+          "mean_length": 10.732365145228215,
+          "distinct_ngram_fraction": {
+            "1": 0.006475932727624202,
+            "2": 0.012577275634193136,
+            "3": 0.017581373247802328,
+            "4": 0.022269922189428495
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.12868768823564394,
+          "rouge_l": 0.30160231548066696,
+          "cider_d": 0.21876168956025918,
+          "unique_captions": 53,
+          "empty": 0,
+          "mean_length": 10.732365145228215,
+          "distinct_ngram_fraction": {
+            "1": 0.006475932727624202,
+            "2": 0.012577275634193136,
+            "3": 0.017581373247802328,
+            "4": 0.022269922189428495
+          }
+        },
+        "teacher_forced_nll": 3.1542942083252017
+      },
+      "seconds": 20.184248354751617,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a piece of green ocean are near a piece of bareland",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees are in two sides of a curved river",
+          "reference_count": 5
+        }
+      ]
+    },
+    "lif-463-final": {
+      "model_sha256": "9d0f27c6b85ce928a2d4231db4e23d0c2078c9f2db5f36c2f5316317c4a173ff",
+      "gate": 900,
+      "score_file": "lif-463-900.npz",
+      "score_sha256": "0e20e1b63e0e9c5c16d589c51ca8a7dc5423c96ebae442ac05cbd689384697ca",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10161722960928833,
+          "rouge_l": 0.3059257382752345,
+          "cider_d": 0.17524193062548848,
+          "unique_captions": 125,
+          "empty": 0,
+          "mean_length": 12.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.009053219392503595,
+            "2": 0.0235836020267158,
+            "3": 0.035183500151653016,
+            "4": 0.04402374817967963
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.09555069157673605,
+          "rouge_l": 0.29914632231236055,
+          "cider_d": 0.16520725377888745,
+          "unique_captions": 125,
+          "empty": 0,
+          "mean_length": 12.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.009053219392503595,
+            "2": 0.0235836020267158,
+            "3": 0.035183500151653016,
+            "4": 0.04402374817967963
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10161722960928833,
+          "rouge_l": 0.3059257382752345,
+          "cider_d": 0.19780295477157486,
+          "unique_captions": 125,
+          "empty": 0,
+          "mean_length": 12.260373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.009053219392503595,
+            "2": 0.0235836020267158,
+            "3": 0.035183500151653016,
+            "4": 0.04402374817967963
+          }
+        },
+        "teacher_forced_nll": 3.2403202271178055
+      },
+      "seconds": 27.526865541003644,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees and some buildings are in a school with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees and some buildings are in a school with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees and some buildings are in a school with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and green trees are in a resort with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "several green trees are near a piece of bareland",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are in a resort with a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees and some buildings are in a park with a pond",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-463-best": {
+      "model_sha256": "c8b56a476098f80e6faae0cbc77b0457d56b648ca43f46eff605c1ae0e0cd30e",
+      "gate": 300,
+      "score_file": "sdpa-463-300.npz",
+      "score_sha256": "ead473b02502a31213dc3f91b69fa89c3bd67fa27945e4325b2dd7ed8ff81608",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.07103438575897358,
+          "rouge_l": 0.2835883210499667,
+          "cider_d": 0.2035482043837903,
+          "unique_captions": 90,
+          "empty": 0,
+          "mean_length": 10.403526970954356,
+          "distinct_ngram_fraction": {
+            "1": 0.006979758699770665,
+            "2": 0.0151130722559294,
+            "3": 0.023700777681767683,
+            "4": 0.032366540563261874
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.07169877240725331,
+          "rouge_l": 0.27947015966854216,
+          "cider_d": 0.19727405496163272,
+          "unique_captions": 90,
+          "empty": 0,
+          "mean_length": 10.403526970954356,
+          "distinct_ngram_fraction": {
+            "1": 0.006979758699770665,
+            "2": 0.0151130722559294,
+            "3": 0.023700777681767683,
+            "4": 0.032366540563261874
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.07103438575897358,
+          "rouge_l": 0.2835883210499667,
+          "cider_d": 0.21684001997775992,
+          "unique_captions": 90,
+          "empty": 0,
+          "mean_length": 10.403526970954356,
+          "distinct_ngram_fraction": {
+            "1": 0.006979758699770665,
+            "2": 0.0151130722559294,
+            "3": 0.023700777681767683,
+            "4": 0.032366540563261874
+          }
+        },
+        "teacher_forced_nll": 3.171857261803825
+      },
+      "seconds": 23.063026438001543,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a building is near a piece of green meadow",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a playground is near a road with many cars",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a building is surrounded by many green trees and a pond",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a playground is near a road with many green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many buildings and green trees are around a viaduct with a circle circle center building",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a square with a brown land is near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a playground is near a road with many cars",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a building is near a river with many green trees",
+          "reference_count": 5
+        }
+      ]
+    },
+    "sdpa-463-final": {
+      "model_sha256": "e479baa41368b7d3a3199c6249485afb27128ef774687403ed134a82fb5e9115",
+      "gate": 900,
+      "score_file": "sdpa-463-900.npz",
+      "score_sha256": "3131f067267a2f459a71481cb1b224c5fc3c58b57567ce63b91119f0c40585e5",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10583455433626048,
+          "rouge_l": 0.31361403745313143,
+          "cider_d": 0.23226967975887935,
+          "unique_captions": 187,
+          "empty": 0,
+          "mean_length": 12.010373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010623596476075315,
+            "2": 0.02920670812134916,
+            "3": 0.04797927461139896,
+            "4": 0.06562284135390284
+          },
+          "length_capped": 1
+        },
+        "shifted": {
+          "bleu4": 0.1022045084180934,
+          "rouge_l": 0.3139342868198834,
+          "cider_d": 0.23035399864692951,
+          "unique_captions": 187,
+          "empty": 0,
+          "mean_length": 12.010373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010623596476075315,
+            "2": 0.02920670812134916,
+            "3": 0.04797927461139896,
+            "4": 0.06562284135390284
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10583455433626048,
+          "rouge_l": 0.31361403745313143,
+          "cider_d": 0.25579396728426446,
+          "unique_captions": 187,
+          "empty": 0,
+          "mean_length": 12.010373443983402,
+          "distinct_ngram_fraction": {
+            "1": 0.010623596476075315,
+            "2": 0.02920670812134916,
+            "3": 0.04797927461139896,
+            "4": 0.06562284135390284
+          }
+        },
+        "teacher_forced_nll": 3.3152408223750367
+      },
+      "seconds": 26.726807850878686,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a baseball field is near several green trees and a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees and a pond are in a park near a road",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a building with a swimming pool is surrounded by many green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a church is near a road with some green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and some buildings are in a park",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings and green trees are near a road in an industrial area",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are in a school with a playground and a baseball field",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a bridge is over a river with many green trees in two sides",
+          "reference_count": 5
+        }
+      ]
+    },
+    "literal-463-best": {
+      "model_sha256": "85b13ce9c4e02a8d42e396550c8d1d65b74f7b371cfc7d840378a70977a12164",
+      "gate": 300,
+      "score_file": "literal-463-300.npz",
+      "score_sha256": "aabacd0e4d8866f6cda092d919812985014e6958bec0f03b863d15abd2bb1189",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.0808561459451958,
+          "rouge_l": 0.29300094040804786,
+          "cider_d": 0.17755118346434395,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 13.216804979253112,
+          "distinct_ngram_fraction": {
+            "1": 0.004944666823640216,
+            "2": 0.011208287339729983,
+            "3": 0.017201516692869692,
+            "4": 0.02203269367448472
+          },
+          "length_capped": 1
+        },
+        "shifted": {
+          "bleu4": 0.08330814150354318,
+          "rouge_l": 0.28979856968531,
+          "cider_d": 0.1764382557313561,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 13.216804979253112,
+          "distinct_ngram_fraction": {
+            "1": 0.004944666823640216,
+            "2": 0.011208287339729983,
+            "3": 0.017201516692869692,
+            "4": 0.02203269367448472
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.0808561459451958,
+          "rouge_l": 0.29300094040804786,
+          "cider_d": 0.1967839652756423,
+          "unique_captions": 64,
+          "empty": 0,
+          "mean_length": 13.216804979253112,
+          "distinct_ngram_fraction": {
+            "1": 0.004944666823640216,
+            "2": 0.011208287339729983,
+            "3": 0.017201516692869692,
+            "4": 0.02203269367448472
+          }
+        },
+        "teacher_forced_nll": 3.1517069899267596
+      },
+      "seconds": 35.84067368367687,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are around a building with a swimming pool is near some green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many green trees and some buildings are in a school with a playground and two basketball",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a football field is surrounded by green trees",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees are around a building with a swimming pool is surrounded by many green",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and some buildings are in a school with a playground and a football",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "some buildings are in two sides of a railway station",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many green trees and some buildings are in a school with a playground and a football",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a football field is surrounded by green trees",
+          "reference_count": 5
+        }
+      ]
+    },
+    "literal-463-final": {
+      "model_sha256": "29189e6898a59c0903c8623cc50351e0bc5dbc90727007b77a4707ed2590b610",
+      "gate": 900,
+      "score_file": "literal-463-900.npz",
+      "score_sha256": "ed3669078d60e70edb8c799f2bbf617e4061cfd2e22c958abe80278a7f9e2d58",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10487978469971543,
+          "rouge_l": 0.30610236835859406,
+          "cider_d": 0.1727452519025017,
+          "unique_captions": 93,
+          "empty": 0,
+          "mean_length": 12.74792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.007811864268858329,
+            "2": 0.01836644591611479,
+            "3": 0.028182607856384517,
+            "4": 0.036181760136213686
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10708276144518741,
+          "rouge_l": 0.30505850712561,
+          "cider_d": 0.1777171953112346,
+          "unique_captions": 93,
+          "empty": 0,
+          "mean_length": 12.74792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.007811864268858329,
+            "2": 0.01836644591611479,
+            "3": 0.028182607856384517,
+            "4": 0.036181760136213686
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10487978469971543,
+          "rouge_l": 0.30610236835859406,
+          "cider_d": 0.19582872565102755,
+          "unique_captions": 93,
+          "empty": 0,
+          "mean_length": 12.74792531120332,
+          "distinct_ngram_fraction": {
+            "1": 0.007811864268858329,
+            "2": 0.01836644591611479,
+            "3": 0.028182607856384517,
+            "4": 0.036181760136213686
+          }
+        },
+        "teacher_forced_nll": 3.2858498093335684
+      },
+      "seconds": 34.775947568938136,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees are around a square with many people",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and some green trees are in a resort with parking lots and beach",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees are around a square with many people",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many buildings and some green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and several buildings are around a square with many people",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "many pieces of yellow farmlands are together",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and some green trees are in a resort with parking lots and beach",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees are around a square with many people",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-463-best": {
+      "model_sha256": "73c0277471b5b4dffed62d3b254cfcf152a7b8852520001df8700f6a621357ce",
+      "gate": 300,
+      "score_file": "smooth-463-300.npz",
+      "score_sha256": "94052810792b58e4c0781f064f06944a373374a455e8ae3431618c407f3cbd45",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.06501526329014376,
+          "rouge_l": 0.2629654689813333,
+          "cider_d": 0.18813957637425727,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.881742738589212,
+          "distinct_ngram_fraction": {
+            "1": 0.006373319364414178,
+            "2": 0.01544327931363203,
+            "3": 0.023619567499475122,
+            "4": 0.030833917309039945
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.06950807046791671,
+          "rouge_l": 0.26927499842394625,
+          "cider_d": 0.19475291748951487,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.881742738589212,
+          "distinct_ngram_fraction": {
+            "1": 0.006373319364414178,
+            "2": 0.01544327931363203,
+            "3": 0.023619567499475122,
+            "4": 0.030833917309039945
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.06501526329014376,
+          "rouge_l": 0.2629654689813333,
+          "cider_d": 0.2019012953758001,
+          "unique_captions": 76,
+          "empty": 0,
+          "mean_length": 11.881742738589212,
+          "distinct_ngram_fraction": {
+            "1": 0.006373319364414178,
+            "2": 0.01544327931363203,
+            "3": 0.023619567499475122,
+            "4": 0.030833917309039945
+          }
+        },
+        "teacher_forced_nll": 3.1486254317515674
+      },
+      "seconds": 32.36990059213713,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "a large number of tall trees were planted around the square",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "a large number of houses are built on the land",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "a large number of tall trees were planted around the square",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "a bridge is on a river with many green trees in two sides",
+          "reference_count": 5
+        }
+      ]
+    },
+    "smooth-463-final": {
+      "model_sha256": "9fad819f5e2abc8cdfb14f5d2e72b8b92f8cfbf3f790e7c02b84c2a26a10d84e",
+      "gate": 900,
+      "score_file": "smooth-463-900.npz",
+      "score_sha256": "8e7bfd7a99a6f6189702e7bef7d87db17bdd23d7e4a4a941146cb082ba53f93f",
+      "metrics": {
+        "aligned": {
+          "bleu4": 0.10653492795311771,
+          "rouge_l": 0.3114464513612818,
+          "cider_d": 0.21176498694449938,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 11.483402489626556,
+          "distinct_ngram_fraction": {
+            "1": 0.00975609756097561,
+            "2": 0.02364931723728478,
+            "3": 0.036972216145263616,
+            "4": 0.04830031792614331
+          },
+          "length_capped": 0
+        },
+        "shifted": {
+          "bleu4": 0.10338543358648268,
+          "rouge_l": 0.3098292505300519,
+          "cider_d": 0.20551431849250115,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 11.483402489626556,
+          "distinct_ngram_fraction": {
+            "1": 0.00975609756097561,
+            "2": 0.02364931723728478,
+            "3": 0.036972216145263616,
+            "4": 0.04830031792614331
+          }
+        },
+        "deduplicated": {
+          "bleu4": 0.10653492795311771,
+          "rouge_l": 0.3114464513612818,
+          "cider_d": 0.245133299078348,
+          "unique_captions": 98,
+          "empty": 0,
+          "mean_length": 11.483402489626556,
+          "distinct_ngram_fraction": {
+            "1": 0.00975609756097561,
+            "2": 0.02364931723728478,
+            "3": 0.036972216145263616,
+            "4": 0.04830031792614331
+          }
+        },
+        "teacher_forced_nll": 3.3220129712957522
+      },
+      "seconds": 33.307592967990786,
+      "examples": [
+        {
+          "filename": "sparseresidential_61.jpg",
+          "generated": "many green trees and several buildings are around a building with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "parking_55.jpg",
+          "generated": "many buildings and green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "river_400.jpg",
+          "generated": "many green trees and several buildings are around a building with a swimming pool",
+          "reference_count": 5
+        },
+        {
+          "filename": "church_60.jpg",
+          "generated": "many green trees and a pond are in a park",
+          "reference_count": 5
+        },
+        {
+          "filename": "farmland_55.jpg",
+          "generated": "many green trees and several buildings are around a square with many people",
+          "reference_count": 5
+        },
+        {
+          "filename": "bareland_53.jpg",
+          "generated": "many buildings and bareland are in an industrial area",
+          "reference_count": 5
+        },
+        {
+          "filename": "00637.jpg",
+          "generated": "many buildings and green trees are in a dense residential area",
+          "reference_count": 5
+        },
+        {
+          "filename": "park_53.jpg",
+          "generated": "many green trees and several buildings are around a building with a swimming pool",
+          "reference_count": 5
+        }
+      ]
+    }
+  },
+  "elapsed_s": 708.6976998620667
+}
