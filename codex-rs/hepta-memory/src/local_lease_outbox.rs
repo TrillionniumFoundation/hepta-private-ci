@@ -388,6 +388,13 @@ impl std::fmt::Debug for LocalLeaseOutbox {
     }
 }
 
+struct OutcomeTransition<'a> {
+    kind: &'a str,
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
+}
+
 impl LocalLeaseOutbox {
     /// Acquire generation one, or replay an exact active acquisition.
     pub(crate) async fn acquire(
@@ -2579,11 +2586,13 @@ impl LocalLeaseOutbox {
             .append_outcome_in_transaction(
                 &mut transaction,
                 occurrence_key,
-                kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                OutcomeTransition {
+                    kind,
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2606,11 +2615,13 @@ impl LocalLeaseOutbox {
         self.append_outcome_in_transaction(
             transaction,
             occurrence_key,
-            "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            OutcomeTransition {
+                kind: "reconcile_committed",
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2619,12 +2630,15 @@ impl LocalLeaseOutbox {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         occurrence_key: String,
-        kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        transition: OutcomeTransition<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let OutcomeTransition {
+            kind,
+            allowed,
+            resulting_state,
+            allow_exact_replay,
+        } = transition;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
