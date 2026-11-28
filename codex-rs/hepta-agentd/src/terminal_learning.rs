@@ -39,6 +39,8 @@ pub(crate) use paired_binding::PairedTerminalBindingPlanV1;
 #[cfg(target_os = "linux")]
 pub(crate) use paired_binding::PairedTerminalEventPairV1;
 #[cfg(target_os = "linux")]
+pub(crate) use paired_binding::PairedTerminalLearningReceiptV1;
+#[cfg(target_os = "linux")]
 pub(crate) use paired_binding::PreparedPairedTerminalV1;
 
 type JobResult = Result<TerminalLearningReceiptV1, TerminalLearningErrorV1>;

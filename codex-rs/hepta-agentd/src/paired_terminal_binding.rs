@@ -12,8 +12,10 @@ use std::time::Instant;
 
 use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_memory::SharedExperiencePurposeV1;
 use codex_hepta_memory::SharedExperienceUseV1;
 use codex_hepta_types::Digest32;
@@ -25,6 +27,7 @@ use crate::PairedRecordIdentityV1;
 use crate::PairedRecordPinsV1;
 use crate::PairedTrainingPlanV1;
 use crate::TerminalLearningErrorV1;
+use crate::TerminalLearningReceiptV1;
 use crate::TerminalLearningRequestV1;
 use crate::identify_original_paired_records_v1;
 use crate::paired_preparation::training::consumer::OriginalPairedTrainingDelivery;
@@ -82,6 +85,16 @@ impl PreparedPairedTerminalV1 {
     }
 }
 
+/// A retained result of the existing native fit, with its separate signed pair
+/// association and original bytes. The native receipt remains DENY_ALL.
+pub(crate) struct PairedTerminalLearningReceiptV1 {
+    pub(crate) records: PairedRecordIdentityV1,
+    pub(crate) plan: PairedTerminalBindingPlanV1,
+    pub(crate) binding_payload: Vec<u8>,
+    pub(crate) binding_evidence: SignedLearningEvidenceV1,
+    pub(crate) training: TerminalLearningReceiptV1,
+}
+
 impl AgentdTerminalLearningOwnerV1 {
     /// No fit or ledger append. `end` is the original supervised intake deadline;
     /// preparing or waiting for a signature never extends it.
@@ -124,6 +137,85 @@ impl AgentdTerminalLearningOwnerV1 {
             ledger: Arc::clone(&self.ledger), replay: Arc::clone(&self.replay),
             jobs: Arc::clone(&self.jobs), compute: Arc::clone(&self.compute),
         })
+    }
+
+    /// The signature is a late input. Startup pins cannot supply permission or a
+    /// signature for a fresh original turn/delivery which does not yet exist.
+    pub(crate) async fn consume_paired_original_v1(
+        &self,
+        prepared: PreparedPairedTerminalV1,
+        evidence: SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<PairedTerminalLearningReceiptV1, TerminalLearningErrorV1> {
+        if tokio::time::Instant::now() >= prepared.end {
+            return Err(TerminalLearningErrorV1::DeadlineExceeded);
+        }
+        if !Arc::ptr_eq(&self.ledger, &prepared.ledger)
+            || !Arc::ptr_eq(&self.replay, &prepared.replay)
+            || !Arc::ptr_eq(&self.jobs, &prepared.jobs)
+            || !Arc::ptr_eq(&self.compute, &prepared.compute)
+            || evidence.issued_at < prepared.prepared_at
+        {
+            return Err(TerminalLearningErrorV1::WrongScope);
+        }
+        let started = Instant::now();
+        let training = tokio::time::timeout_at(prepared.end, async {
+            self.verify_pair_signature(&prepared, &evidence, now)?;
+            self.revalidate_pair(&prepared, now).await?;
+            let training = self.train_until(
+                prepared.plan.training.clone(), projected_now(now, started), prepared.end,
+            ).await?;
+            // A fit may have completed when current authority or the current
+            // dataset changes. Retain the native job; never label this no-work.
+            self.revalidate_pair(&prepared, projected_now(now, started)).await
+                .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+            self.verify_pair_signature(&prepared, &evidence, projected_now(now, started))
+                .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+            if training.candidate.dataset() != &prepared.dataset
+                || training.training_samples != 2
+            {
+                return Err(TerminalLearningErrorV1::CommitUncertain);
+            }
+            Ok(training)
+        }).await.map_err(|_| TerminalLearningErrorV1::CommitUncertain)??;
+        if tokio::time::Instant::now() >= prepared.end {
+            return Err(TerminalLearningErrorV1::CommitUncertain);
+        }
+        Ok(PairedTerminalLearningReceiptV1 {
+            records: prepared.records, plan: prepared.plan,
+            binding_payload: prepared.payload, binding_evidence: evidence, training,
+        })
+    }
+
+    async fn revalidate_pair(
+        &self,
+        prepared: &PreparedPairedTerminalV1,
+        now: u64,
+    ) -> Result<(), TerminalLearningErrorV1> {
+        let (source, dataset) = self.paired_context(&prepared.plan, now).await?;
+        if source != prepared.source || dataset != prepared.dataset {
+            return Err(TerminalLearningErrorV1::Conflict);
+        }
+        Ok(())
+    }
+
+    fn verify_pair_signature(
+        &self,
+        prepared: &PreparedPairedTerminalV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<(), TerminalLearningErrorV1> {
+        let ledger = self.ledger.try_lock().map_err(|error| match error {
+            TryLockError::WouldBlock => TerminalLearningErrorV1::Busy,
+            TryLockError::Poisoned(_) => TerminalLearningErrorV1::Unavailable,
+        })?;
+        let verified = ledger.verifier().verify(
+            LearningEvidenceRoleV1::Evaluator, evidence, &prepared.payload, now,
+        ).map_err(owner_error)?;
+        if verified.principal() != &prepared.dataset.producer {
+            return Err(TerminalLearningErrorV1::WrongScope);
+        }
+        Ok(())
     }
 
     async fn paired_context(
