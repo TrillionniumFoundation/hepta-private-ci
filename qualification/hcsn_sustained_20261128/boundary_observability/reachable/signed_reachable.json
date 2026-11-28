@@ -1,0 +1,144 @@
+{
+  "torch": "2.13.0+rocm10.0.0",
+  "atoms": 32,
+  "states_per_arm": 729,
+  "data_sha256": "f67e802472014da4766d999977975089428a5e577302d8e8a3ad4cb437677580",
+  "rows": [
+    {
+      "path": "step",
+      "flow_to_boundary": 0,
+      "recurrent_weight": 0.55,
+      "imposed_physical_gain": 0.12,
+      "restoring_gain": 0.4,
+      "panic_gain": 0.6,
+      "shared_zero_frames_after_compensating": 1,
+      "next_common_input": 0.77,
+      "noise_free_minimax_radius": 0.058709378237249726,
+      "at_low_high_indices": [
+        548,
+        546
+      ],
+      "flows": [
+        0.29574773103679786,
+        0.4131664875112973
+      ],
+      "next_log_boundaries": [
+        0.17386033910513024,
+        0.17386033910513024
+      ],
+      "restoring_drift": [
+        -0.04047489213091993,
+        -0.007642727241353182
+      ],
+      "panic_drift": [
+        -0.12558475184274237,
+        -0.08761015926103356
+      ],
+      "max_abs_compensation": 0.10117793029870596,
+      "restore_law_error": 0,
+      "first_message_const": true
+    },
+    {
+      "path": "step",
+      "flow_to_boundary": 0.25,
+      "recurrent_weight": 0.55,
+      "imposed_physical_gain": 0.12,
+      "restoring_gain": 0.4,
+      "panic_gain": 0.6,
+      "shared_zero_frames_after_compensating": 0,
+      "next_common_input": 0.77,
+      "noise_free_minimax_radius": 0.1337375817335399,
+      "at_low_high_indices": [
+        521,
+        546
+      ],
+      "flows": [
+        0.22434635391588592,
+        0.4918215173829657
+      ],
+      "next_log_boundaries": [
+        0.17404371445578598,
+        0.17761568801158054
+      ],
+      "restoring_drift": [
+        -0.04617097604401384,
+        -0.0015420781752043366
+      ],
+      "panic_drift": [
+        -0.14774663044542594,
+        -0.065546291541967
+      ],
+      "max_abs_compensation": 0.18374326727967055,
+      "restore_law_error": 0,
+      "first_message_const": true
+    },
+    {
+      "path": "linear_log",
+      "flow_to_boundary": 0,
+      "recurrent_weight": 0.55,
+      "imposed_physical_gain": 0.12,
+      "restoring_gain": 0.4,
+      "panic_gain": 0.6,
+      "shared_zero_frames_after_compensating": 1,
+      "next_common_input": 0.77,
+      "noise_free_minimax_radius": 0.041858598314897355,
+      "at_low_high_indices": [
+        26,
+        546
+      ],
+      "flows": [
+        0.24672041839231068,
+        0.3304376150221054
+      ],
+      "next_log_boundaries": [
+        0.17386033910513024,
+        0.17386033910513024
+      ],
+      "restoring_drift": [
+        -0.03609150054293436,
+        -0.008970401584976527
+      ],
+      "panic_drift": [
+        -0.1234408200961506,
+        -0.09145181027186287
+      ],
+      "max_abs_compensation": 0.10117793029870596,
+      "restore_law_error": 0,
+      "first_message_const": true
+    },
+    {
+      "path": "linear_log",
+      "flow_to_boundary": 0.25,
+      "recurrent_weight": 0.55,
+      "imposed_physical_gain": 0.12,
+      "restoring_gain": 0.4,
+      "panic_gain": 0.6,
+      "shared_zero_frames_after_compensating": 0,
+      "next_common_input": 0.77,
+      "noise_free_minimax_radius": 0.1072740134210425,
+      "at_low_high_indices": [
+        512,
+        546
+      ],
+      "flows": [
+        0.188015110504178,
+        0.402563137346263
+      ],
+      "next_log_boundaries": [
+        0.17476952499595647,
+        0.17680673946360562
+      ],
+      "restoring_drift": [
+        -0.04204697596469774,
+        -0.002975383381967997
+      ],
+      "panic_drift": [
+        -0.14791160512563556,
+        -0.06954590132254927
+      ],
+      "max_abs_compensation": 0.16237181000104622,
+      "restore_law_error": 0,
+      "first_message_const": true
+    }
+  ]
+}
