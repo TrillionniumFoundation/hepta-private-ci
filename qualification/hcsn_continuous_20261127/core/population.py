@@ -11,8 +11,11 @@ from torch import nn
 from he_xiong import Published
 
 class BoundaryPopulation(nn.Module):
-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None):
+    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step"):
         super().__init__()
+        if boundary_path not in ("step", "linear_log"):
+            raise ValueError("boundary_path must be step or linear_log")
+        self.boundary_path=boundary_path
         self.matrix_free=matrix_free
         self.cache_prices=cache_prices
         if initial_physical_gain is not None and not math.isfinite(initial_physical_gain):
@@ -62,6 +65,37 @@ class BoundaryPopulation(nn.Module):
         surv=torch.where((margin>0)[...,None],surv,torch.zeros_like(surv))
         hit=torch.where(margin>0,self.physical_passage(x,self.dt,mu),torch.ones_like(x))
         return surv,hit
+    def ramp_transport(self,mass,relative_mu):
+        # Contract bounded blocks in probability space. Integrate each reflected
+        # Gaussian in log space before multiplying by the potentially large tilt.
+        scale=self.prices.p.sigma*math.sqrt(self.dt)
+        variance=self.prices.var
+        def bins(mean):
+            lower=(torch.cat((self.cuts.new_zeros(1),self.cuts[:-1]))-mean[...,None])/scale
+            upper=(self.cuts-mean[...,None])/scale
+            right=lower>0
+            far=torch.where(right,-upper,lower)
+            near=torch.where(right,-lower,upper)
+            lfar=torch.special.log_ndtr(far);lnear=torch.special.log_ndtr(near)
+            inside=lnear+torch.log(-torch.expm1(lfar-lnear))
+            tail=torch.special.log_ndtr((mean-self.cuts[-1])/scale)[...,None]
+            return torch.cat((inside,tail),dim=-1)
+        survivor=torch.zeros_like(mass)
+        flow=torch.zeros_like(mass[...,0])
+        for start in range(0,len(self.grid),32):
+            x=self.grid[start:start+32]
+            drift=relative_mu*self.dt
+            log_weight=-2*relative_mu*x/variance
+            ldirect=bins(x+drift)
+            lref=bins(-x+drift)+log_weight[...,None]
+            # Killed density is nonnegative. Roundoff can reverse its sign in extreme tails.
+            delta=(lref-ldirect).clamp_max(0)
+            alive=torch.exp(ldirect)*(-torch.expm1(delta))
+            part=mass[...,start:start+32]
+            survivor=survivor+(part[...,None]*alive).sum(-2)
+            flow=flow+(part*self.physical_passage(x,self.dt,relative_mu)).sum(-1)
+        return survivor,flow
+
     def priced_channels(self,P):
         p=self.prices;x=self.grid.expand(*P.shape,-1);principal=P[...,None].expand_as(x)
         E=p.equity(x,principal)
@@ -87,13 +121,29 @@ class BoundaryPopulation(nn.Module):
         u=self.sender(frame)+self.recurrent(old_b)+(old_value.tanh()*self.feedback).sum(-1)
         P=self.prices.p.P0*(1+.28*u.tanh());b=torch.log(self.prices.boundary(P)/self.prices.B0)
         mu=None if self.physical_gain is None else (self.prices.mu-self.physical_gain*u.tanh())[...,None]
-        if self.matrix_free:
+        shift=old_b-b
+        transport_mu=mu
+        if self.boundary_path=="linear_log":
+            # In the moving frame a linear log-boundary adds a constant relative drift.
+            physical_mu=self.prices.mu if mu is None else mu
+            transport_mu=physical_mu+shift[...,None]/self.dt
+            shift=torch.zeros_like(shift)
+        use_fft=self.matrix_free
+        if self.boundary_path=="linear_log" and use_fft:
+            # A strongly inward relative drift can amplify FFT roundoff through
+            # the reflected image. Fall back before its worst-case amplification
+            # spends more than about one third of this dtype's precision.
+            max_log_weight=(-2*transport_mu.detach()*self.grid[-1]/self.prices.var).amax()
+            use_fft=bool(max_log_weight < -math.log(torch.finfo(self.grid.dtype).eps)/3)
+        if use_fft:
             from fft_transport import transported_mass
-            newmass,flow=transported_mass(mass,old_b-b,self.grid,
-                sigma=self.prices.p.sigma,a=self.prices.a if mu is None else mu/self.prices.var,dt=self.dt)
+            newmass,flow=transported_mass(mass,shift,self.grid,
+                sigma=self.prices.p.sigma,a=self.prices.a if transport_mu is None else transport_mu/self.prices.var,dt=self.dt)
+        elif self.boundary_path=="linear_log":
+            newmass,flow=self.ramp_transport(mass,transport_mu)
         else:
             margin=self.grid+old_b[...,None]-b[...,None]
-            surv,hit=self.kernels(margin,mu)
+            surv,hit=self.kernels(margin,transport_mu)
             flow=(mass*hit).sum(-1)
             newmass=(mass[...,None]*surv).sum(-2)
         newmass=newmass+refractory[...,None]*self.reset_weights
@@ -118,13 +168,13 @@ class BoundaryPopulation(nn.Module):
         return torch.stack(outputs),state
 
 class ContinuousSpikingNetwork(nn.Module):
-    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None):
+    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step"):
         super().__init__()
         if port not in ('boundary','priced','augmented'):raise ValueError('unknown message port')
         self.port=port
-        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain)
+        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path)
         channels={'boundary':1,'priced':4,'augmented':4+len(self.first.probe_horizons)}[port]
-        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain)
+        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path)
         self.head=nn.Linear(width*(4+len(self.second.probe_horizons)),outputs,dtype=torch.float64)
         self.channels=channels
     def forward(self,frames,state=None):

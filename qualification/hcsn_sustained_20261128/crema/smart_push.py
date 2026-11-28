@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-import tempfile
 import time
 
 from archive import BRANCH, PREFIX, sha
@@ -31,28 +30,47 @@ def publish(files, kind, root, repo):
     for attempt in range(6):
         run(git + ["fetch", "--quiet", "--no-tags", "--depth=1", "--filter=blob:none", "origin", "refs/heads/" + BRANCH])
         head = run(git + ["rev-parse", "FETCH_HEAD"]).decode().strip()
-        with tempfile.TemporaryDirectory(dir=root) as folder:
-            env = dict(os.environ, GIT_INDEX_FILE=str(Path(folder) / "index"))
-            def operation(args, data=None):
-                return subprocess.run(git + args, env=env, input=data, check=True,
-                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=900).stdout.decode().strip()
-            operation(["read-tree", head])
-            operation(["update-index", "--index-info"], "".join(entries).encode())
-            tree = operation(["write-tree"])
-            if tree == operation(["rev-parse", head + "^{tree}"]):
-                return head
-            commit = operation(["-c", "user.name=Hepta Research", "-c", "user.email=hepta-research@users.noreply.github.com",
-                                "commit-tree", tree, "-p", head, "-m", "Archive verified CREMA-D " + kind + " research"])
-            try:
-                operation(["push", "--quiet", "origin", commit + ":refs/heads/" + BRANCH])
-            except subprocess.CalledProcessError as exc:
-                if attempt == 5:
-                    raise RuntimeError(exc.stderr.decode(errors="replace")[-900:]) from exc
-                time.sleep(5)
-                continue
-            actual = run(git + ["ls-remote", "--heads", "origin", "refs/heads/" + BRANCH]).decode().split()[0]
-            if actual == commit:
-                return commit
+        def operation(args, data=None):
+            return subprocess.run(git + args, input=data, check=True, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, timeout=900).stdout
+        tree = operation(["rev-parse", head + "^{tree}"]).decode().strip()
+        components = (PREFIX + kind).strip("/").split("/")
+        def update_subtree(existing, depth):
+            items = {}
+            if existing:
+                for row in operation(["ls-tree","-z",existing]).split(b"\0"):
+                    if row:
+                        desc, name = row.split(b"\t",1)
+                        items[name] = desc
+            if depth == len(components):
+                for entry in entries:
+                    metadata, name = entry.rstrip("\n").split("\t",1)
+                    mode, blob = metadata.split()
+                    items[Path(name).name.encode()] = (mode+" blob "+blob).encode()
+            else:
+                name = components[depth].encode()
+                previous = items.get(name)
+                if previous and previous.split()[1] != b"tree":
+                    raise ValueError("destination has a file where a tree is expected")
+                child = update_subtree(previous.split()[-1].decode() if previous else None,depth+1)
+                items[name] = ("040000 tree "+child).encode()
+            payload=b"".join(v+b"\t"+n+b"\0" for n,v in items.items())
+            return operation(["mktree","--missing","-z"],payload).decode().strip()
+        updated = update_subtree(tree,0)
+        if updated == tree:
+            return head
+        commit = operation(["-c", "user.name=Hepta Research", "-c", "user.email=hepta-research@users.noreply.github.com",
+                            "commit-tree", updated, "-p", head, "-m", "Archive verified CREMA-D " + kind + " research"]).decode().strip()
+        try:
+            operation(["push", "--quiet", "origin", commit + ":refs/heads/" + BRANCH])
+        except subprocess.CalledProcessError as exc:
+            if attempt == 5:
+                raise RuntimeError(exc.stderr.decode(errors="replace")[-900:]) from exc
+            time.sleep(5)
+            continue
+        actual = run(git + ["ls-remote", "--heads", "origin", "refs/heads/" + BRANCH]).decode().split()[0]
+        if actual == commit:
+            return commit
     raise RuntimeError("concurrent results update")
 
 
