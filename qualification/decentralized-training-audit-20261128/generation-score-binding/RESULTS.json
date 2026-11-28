@@ -1,0 +1,86 @@
+{
+  "baseline": {
+    "status": "BUG_REPRODUCED",
+    "subject_commit": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+    "subject_git_blob_oid": "0120c439acbdf7a699ebec16c91cce9128b232bf",
+    "expected_score_file": "literal-109-60.npz",
+    "consumed_different_file": "alternate.npz",
+    "different_file_load_count": 20,
+    "expected_paired_cider_mean": -3.3333333333333335,
+    "actual_paired_cider_mean": -3.3333333333333335,
+    "cached_json_means_unchanged": true,
+    "model_constructions": 0,
+    "scientific_model_or_quality_evidence": false
+  },
+  "candidate": {
+    "tests_run": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "elapsed_s": 0.9796331760007888
+  },
+  "runtime": {
+    "executable": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "torch": "2.8.0+cpu",
+    "cpu_affinity": [
+      0
+    ],
+    "nice": 10,
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "max_rss_kib": 209160
+  },
+  "elapsed_s_including_import_and_baselines": 4.468538489891216,
+  "source_sha256": {
+    "candidate/qualification/hcsn_sustained_20261128/generation/evaluate.py": "f8acac9f11f0ebe1205466194788aea126ddf9cfb8ed533e87dae6aa3734d5e7",
+    "candidate/qualification/hcsn_sustained_20261128/generation/fit.py": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80",
+    "candidate/qualification/hcsn_sustained_20261128/generation/metrics.py": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32",
+    "candidate/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "candidate/qualification/hcsn_sustained_20261128/generation/test_generation_evaluate_cache.py": "9de28add37f507ee21c995811b6df91170302160150bfc067039a8cad8c2f63c",
+    "original/qualification/hcsn_sustained_20261128/generation/evaluate.py": "cb843ca0f8885f0ddbeb7c4a93c1ec003bb12556a82a54a15362a7a0d3aec8a0",
+    "original/qualification/hcsn_sustained_20261128/generation/fit.py": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80",
+    "original/qualification/hcsn_sustained_20261128/generation/metrics.py": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32",
+    "original/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "run_generation_controls.py": "e6ba4ea38bb2d829d9a51daba7aaddac3e963fcce7786d5a9733c809cdb63500"
+  },
+  "actual_tested_entry": "/home/qian-qi/hepta-audit-20261128-5bdf/resume-currentness/generation-mirror/candidate/qualification/hcsn_sustained_20261128/generation/evaluate.py",
+  "actual_dependency_oids": {
+    "base": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+    "sources": [
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/evaluate.py",
+        "git_blob_oid": "0120c439acbdf7a699ebec16c91cce9128b232bf",
+        "bytes": 9312,
+        "sha256": "cb843ca0f8885f0ddbeb7c4a93c1ec003bb12556a82a54a15362a7a0d3aec8a0"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/metrics.py",
+        "git_blob_oid": "b6d76c475bb6d0c40df4155b191eeb4b2db1dfbd",
+        "bytes": 3842,
+        "sha256": "c106bd8ac186495caf6089730dfb221f45151908cec1b165922f1e05c6b32c32"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/fit.py",
+        "git_blob_oid": "94642e5cb0c5f45d39fa5c1b1d426e693d856967",
+        "bytes": 7359,
+        "sha256": "f83958a0066e37bbaf35755300633fd0a212f5e042da8a54dca01486b2442a80"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/model.py",
+        "git_blob_oid": "c6976977202eb48ce06a91c23d49cd5467b10fbe",
+        "bytes": 5923,
+        "sha256": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec"
+      }
+    ]
+  },
+  "source_unchanged_during_execution": true,
+  "new_model_training": false,
+  "new_model_inference": false
+}
