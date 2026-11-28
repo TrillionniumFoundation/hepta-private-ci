@@ -1,0 +1,360 @@
+{
+  "actors": 16,
+  "contrasts": {
+    "epoch1/signed-minus-free": {
+      "actor95": [
+        [
+          -0.0012253039729171625,
+          0.0022140545066431706
+        ],
+        [
+          -0.0012722646310432569,
+          0.0007633587786259542
+        ]
+      ],
+      "mean": [
+        0.0005279342400147484,
+        -0.0002542588354945334
+      ]
+    },
+    "epoch1/signed-minus-noforce": {
+      "actor95": [
+        [
+          -0.12162065473931014,
+          -0.03603033563997087
+        ],
+        [
+          -0.004844374002372564,
+          0.0073791348600508915
+        ]
+      ],
+      "mean": [
+        -0.07653399147615168,
+        0.001271294177472667
+      ]
+    },
+    "epoch1/signed-minus-nonfinancial": {
+      "actor95": [
+        [
+          0.043771747761948636,
+          0.08250017791505786
+        ],
+        [
+          -0.007627765064836003,
+          0.0038138825324180023
+        ]
+      ],
+      "mean": [
+        0.06223094600735548,
+        -0.002288329519450801
+      ]
+    },
+    "time60/signed-minus-free": {
+      "actor95": [
+        [
+          -0.20544670299586593,
+          0.003255497099904567
+        ],
+        [
+          -0.005089155717804125,
+          0.017811704834605598
+        ]
+      ],
+      "mean": [
+        -0.10092932837284829,
+        0.006102212051868803
+      ]
+    },
+    "time60/signed-minus-noforce": {
+      "actor95": [
+        [
+          -0.12977350145419395,
+          -0.03358200265102115
+        ],
+        [
+          0.0002542588354945339,
+          0.023924015158567638
+        ]
+      ],
+      "mean": [
+        -0.08065421229095393,
+        0.012204424103737605
+      ]
+    },
+    "time60/signed-minus-nonfinancial": {
+      "actor95": [
+        [
+          -0.05299345934449596,
+          0.0776414871340614
+        ],
+        [
+          -0.015001271294177474,
+          0.009146341463414639
+        ]
+      ],
+      "mean": [
+        0.010080930710891335,
+        -0.002542588354945335
+      ]
+    }
+  },
+  "means": {
+    "epoch1": {
+      "free": [
+        3.9444522675360076,
+        0.07704042715484365
+      ],
+      "noforce": [
+        4.021514193252174,
+        0.07551487414187644
+      ],
+      "nonfinancial": [
+        3.882749255768667,
+        0.0790744978387999
+      ],
+      "signed": [
+        3.9449802017760223,
+        0.07678616831934909
+      ]
+    },
+    "time60": {
+      "free": [
+        3.7226925620224836,
+        0.11238240528858379
+      ],
+      "noforce": [
+        3.7024174459405894,
+        0.10628019323671499
+      ],
+      "nonfinancial": [
+        3.611682302938744,
+        0.12102720569539793
+      ],
+      "signed": [
+        3.6217632336496357,
+        0.11848461734045257
+      ]
+    }
+  },
+  "metrics": {
+    "free-137/epoch1": {
+      "active_s": 24.206020194571465,
+      "cpu_s": 24.19874123899988,
+      "held_file": "free-137/epoch1-held.npz",
+      "held_sha": "1724c604a451aa614a6819a97c4696e5be04aa817bcc53539ee2627e648ef024",
+      "nll": 3.9908403528696126,
+      "steps": 312,
+      "top1": 0.08009153318077804
+    },
+    "free-137/time60": {
+      "active_s": 60.01270521292463,
+      "cpu_s": 60.00528000499968,
+      "held_file": "free-137/time60-held.npz",
+      "held_sha": "87f0ff0be6748073725f55beda89c087596d85d0b803ab75550c27da6b5006ee",
+      "nll": 3.408850494702699,
+      "steps": 832,
+      "top1": 0.12662090007627766
+    },
+    "free-311/epoch1": {
+      "active_s": 22.056562833487988,
+      "cpu_s": 22.033368913999958,
+      "held_file": "free-311/epoch1-held.npz",
+      "held_sha": "b7f1031cfcb060765d3b991077a83777498b3b1b3816c2856bdcfcf473eeef42",
+      "nll": 3.882737387654238,
+      "steps": 312,
+      "top1": 0.06864988558352403
+    },
+    "free-311/time60": {
+      "active_s": 60.05029262602329,
+      "cpu_s": 60.027293320999945,
+      "held_file": "free-311/time60-held.npz",
+      "held_sha": "1e8278752de4eb256006219590faf2a69c105907efcbee6fc2d06e102f5dee73",
+      "nll": 3.5895612350394157,
+      "steps": 846,
+      "top1": 0.11899313501144165
+    },
+    "free-557/epoch1": {
+      "active_s": 47.89518243866041,
+      "cpu_s": 23.94694557300005,
+      "held_file": "free-557/epoch1-held.npz",
+      "held_sha": "f4b213aa62d006d6d76b1e7397c17801532bc3483eb3da73c7129c704bd6ec2b",
+      "nll": 3.9597790620841717,
+      "steps": 312,
+      "top1": 0.08237986270022883
+    },
+    "free-557/time60": {
+      "active_s": 60.02236881526187,
+      "cpu_s": 31.266122630000055,
+      "held_file": "free-557/time60-held.npz",
+      "held_sha": "cb59b30c187bd84b18d6c7cb49e401c9d959d9e689fa946eba25dd390c67d840",
+      "nll": 4.1696659563253355,
+      "steps": 418,
+      "top1": 0.09153318077803203
+    },
+    "noforce-137/epoch1": {
+      "active_s": 21.698632147163153,
+      "cpu_s": 21.70033977100016,
+      "held_file": "noforce-137/epoch1-held.npz",
+      "held_sha": "8c3949caeb95ebca937fa4255a948d0265a2b5a30769282ddacd3abce538feca",
+      "nll": 4.156741574294288,
+      "steps": 312,
+      "top1": 0.06712433257055683
+    },
+    "noforce-137/time60": {
+      "active_s": 60.01888439478353,
+      "cpu_s": 60.023638212000265,
+      "held_file": "noforce-137/time60-held.npz",
+      "held_sha": "ea4c97ef04e241ae484f15367f8188c5c1240a2362dc85a868c4ef5d5d230870",
+      "nll": 3.721175090752924,
+      "steps": 858,
+      "top1": 0.12967200610221205
+    },
+    "noforce-311/epoch1": {
+      "active_s": 21.89447347028181,
+      "cpu_s": 21.88921893800004,
+      "held_file": "noforce-311/epoch1-held.npz",
+      "held_sha": "28543735880aaa74cba829f73e184739163eec343b80b2fcc24c0590b9a50b9b",
+      "nll": 3.933557153831084,
+      "steps": 312,
+      "top1": 0.08085430968726164
+    },
+    "noforce-311/time60": {
+      "active_s": 60.011655994690955,
+      "cpu_s": 59.998962733999846,
+      "held_file": "noforce-311/time60-held.npz",
+      "held_sha": "6ca3d8fd3fd7bb3945d8744b9ee418a78ba2275d60c58e8c05f23c2cf2acf428",
+      "nll": 3.4536134141620924,
+      "steps": 848,
+      "top1": 0.14111365369946605
+    },
+    "noforce-557/epoch1": {
+      "active_s": 67.24682168196887,
+      "cpu_s": 27.294441679000002,
+      "held_file": "noforce-557/epoch1-held.npz",
+      "held_sha": "932e13f8408ab51530479d713d15fd2f6efc39a38f7223974c873e40fd53d121",
+      "nll": 3.9742438516311513,
+      "steps": 312,
+      "top1": 0.07856598016781083
+    },
+    "noforce-557/time60": {
+      "active_s": 60.122396452352405,
+      "cpu_s": 24.111079460000013,
+      "held_file": "noforce-557/time60-held.npz",
+      "held_sha": "854116e3ae73f6794555c67167c291845f31e55ad822be5cdac0265648fa49b3",
+      "nll": 3.9324638329067523,
+      "steps": 274,
+      "top1": 0.04805491990846682
+    },
+    "nonfinancial-137/epoch1": {
+      "active_s": 21.711320702452213,
+      "cpu_s": 21.709426195000177,
+      "held_file": "nonfinancial-137/epoch1-held.npz",
+      "held_sha": "1529f2b6250c626e5633f94bfa087f84baeb7960ac1b10ba55d68d561620b08a",
+      "nll": 3.9183634882373464,
+      "steps": 312,
+      "top1": 0.07627765064836003
+    },
+    "nonfinancial-137/time60": {
+      "active_s": 60.01784491771832,
+      "cpu_s": 60.00483128500018,
+      "held_file": "nonfinancial-137/time60-held.npz",
+      "held_sha": "af48abef6f64362194a7648460f81eb6d85057b227c0cac62147dda4f8a1d7a3",
+      "nll": 3.2074403978194357,
+      "steps": 854,
+      "top1": 0.15484363081617086
+    },
+    "nonfinancial-311/epoch1": {
+      "active_s": 21.31038292311132,
+      "cpu_s": 21.310883530000027,
+      "held_file": "nonfinancial-311/epoch1-held.npz",
+      "held_sha": "87f8adcfe60d52437af58040e4808f799e42d4ddc111b2380ec41da1ff9ea67b",
+      "nll": 3.846415142523389,
+      "steps": 312,
+      "top1": 0.07704042715484363
+    },
+    "nonfinancial-311/time60": {
+      "active_s": 60.05455610854551,
+      "cpu_s": 60.04807585299996,
+      "held_file": "nonfinancial-311/time60-held.npz",
+      "held_sha": "3a104b5d49c47c6d72ca55fef4aaa875762e5b3cae9e4e75fa341c01eb26f510",
+      "nll": 3.403786040236578,
+      "steps": 871,
+      "top1": 0.14797864225781845
+    },
+    "nonfinancial-557/epoch1": {
+      "active_s": 73.4363888851367,
+      "cpu_s": 28.440651920999994,
+      "held_file": "nonfinancial-557/epoch1-held.npz",
+      "held_sha": "50e64f0e26d1deed7bf02a25774eb638dcc684689297ebefb657b1feaa7fa4db",
+      "nll": 3.8834691365452656,
+      "steps": 312,
+      "top1": 0.08390541571319603
+    },
+    "nonfinancial-557/time60": {
+      "active_s": 60.103852436412126,
+      "cpu_s": 23.544681015,
+      "held_file": "nonfinancial-557/time60-held.npz",
+      "held_sha": "c34d3214acabc3065955d9e7a2ac17d9063bc93b82371aff1960e67495d43aad",
+      "nll": 4.223820470760218,
+      "steps": 259,
+      "top1": 0.060259344012204424
+    },
+    "signed-137/epoch1": {
+      "active_s": 21.839030407834798,
+      "cpu_s": 21.809245897999997,
+      "held_file": "signed-137/epoch1-held.npz",
+      "held_sha": "fed7196e375e55c0f1642a38ddd0484ac71bd77bd11178c2898da96305f8d2b1",
+      "nll": 3.9926111776822037,
+      "steps": 312,
+      "top1": 0.07932875667429443
+    },
+    "signed-137/time60": {
+      "active_s": 60.00968098593876,
+      "cpu_s": 59.976304759000044,
+      "held_file": "signed-137/time60-held.npz",
+      "held_sha": "0978dff6f9a3e3cbaf8e8fa934f83b23c051cb229da076f2d4032d8261abc793",
+      "nll": 3.4366603341074886,
+      "steps": 811,
+      "top1": 0.14416475972540047
+    },
+    "signed-311/epoch1": {
+      "active_s": 21.460707643069327,
+      "cpu_s": 21.461347559000387,
+      "held_file": "signed-311/epoch1-held.npz",
+      "held_sha": "420e8c91de21c77570318bf803bf9517fa778c53aceec4779f81c6c916f4f2b8",
+      "nll": 3.882614153728671,
+      "steps": 312,
+      "top1": 0.06864988558352403
+    },
+    "signed-311/time60": {
+      "active_s": 60.00171024585143,
+      "cpu_s": 59.99528285100041,
+      "held_file": "signed-311/time60-held.npz",
+      "held_sha": "5893d3228f0bccf1fae2eaa355880160f6d5b15abb64452409902e65588a9f43",
+      "nll": 3.446820641160797,
+      "steps": 854,
+      "top1": 0.13272311212814644
+    },
+    "signed-557/epoch1": {
+      "active_s": 55.37010232033208,
+      "cpu_s": 24.418653642999963,
+      "held_file": "signed-557/epoch1-held.npz",
+      "held_sha": "52776161684c5084aad545786b0994307677e7b96a7924e35d4a53e5b9a26b80",
+      "nll": 3.9597152739171926,
+      "steps": 312,
+      "top1": 0.08237986270022883
+    },
+    "signed-557/time60": {
+      "active_s": 60.06536202412099,
+      "cpu_s": 26.505121224999932,
+      "held_file": "signed-557/time60-held.npz",
+      "held_sha": "9258c54098cf59989d9fdeaa3d3125123992e9b1a6f0a6f7077363334ada1fa7",
+      "nll": 3.98180872568062,
+      "steps": 338,
+      "top1": 0.07856598016781083
+    }
+  },
+  "replayed_scores": 4247424,
+  "seal_sha256": "47f46785a775dbc24be053bcafc674f7fa2a3c0242f359e6615bf15762d78e57",
+  "signed_superiority": false
+}
