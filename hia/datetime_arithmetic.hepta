@@ -279,3 +279,164 @@ block invalid()
   error:u64 = const() {"value":1}
   ret(invalid_days,error)
 end
+fn timestamp_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-8334601228800}
+  maximum:i64 = const() {"value":8210266876799}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  range_ok:bool = bool.and(after_minimum,before_maximum)
+  branch range_ok fraction(seconds,nanos) invalid()
+block fraction(fraction_seconds:i64,fraction_nanos:u64)
+  minute:i64 = const() {"value":60}
+  last:i64 = const() {"value":59}
+  billion:u64 = const() {"value":1000000000}
+  two_billion:u64 = const() {"value":2000000000}
+  minute_index:i64 = call(fraction_seconds,minute) {"function":"floor_div"}
+  minute_start:i64 = int.mul.checked(minute_index,minute)
+  within_minute:i64 = int.sub.checked(fraction_seconds,minute_start)
+  leap_position:bool = compare.eq(within_minute,last)
+  ordinary:bool = compare.lt(fraction_nanos,billion)
+  fraction_bound:bool = compare.lt(fraction_nanos,two_billion)
+  position_ok:bool = bool.or(ordinary,leap_position)
+  valid:bool = bool.and(fraction_bound,position_ok)
+  ret(valid)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn delta_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-9223372036854776}
+  maximum:i64 = const() {"value":9223372036854775}
+  minimum_fraction:u64 = const() {"value":193000000}
+  maximum_fraction:u64 = const() {"value":807000000}
+  billion:u64 = const() {"value":1000000000}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  seconds_ok:bool = bool.and(after_minimum,before_maximum)
+  fraction_ok:bool = compare.lt(nanos,billion)
+  not_minimum:bool = compare.ne(seconds,minimum)
+  not_maximum:bool = compare.ne(seconds,maximum)
+  after_fraction_minimum:bool = compare.ge(nanos,minimum_fraction)
+  before_fraction_maximum:bool = compare.le(nanos,maximum_fraction)
+  lower_ok:bool = bool.or(not_minimum,after_fraction_minimum)
+  upper_ok:bool = bool.or(not_maximum,before_fraction_maximum)
+  basic_ok:bool = bool.and(seconds_ok,fraction_ok)
+  endpoint_ok:bool = bool.and(lower_ok,upper_ok)
+  valid:bool = bool.and(basic_ok,endpoint_ok)
+  ret(valid)
+end
+fn delta_parts(seconds:i64,nanos:u64) -> (i64,i64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  zero:i64 = const() {"value":0}
+  zero_word:u64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  billion:i64 = const() {"value":1000000000}
+  negative:bool = compare.lt(seconds,zero)
+  fractional:bool = compare.gt(nanos,zero_word)
+  adjust:bool = bool.and(negative,fractional)
+  seconds_adjustment:i64 = select(adjust,one,zero)
+  fraction_adjustment:i64 = select(adjust,billion,zero)
+  fraction:i64 = int.cast(nanos) {"mode":"checked"}
+  whole:i64 = int.add.checked(seconds,seconds_adjustment)
+  remainder:i64 = int.sub.checked(fraction,fraction_adjustment)
+  ret(whole,remainder)
+end
+fn add_datetime(seconds:i64,nanos:u64,delta_seconds:i64,delta_nanos:i64) -> (u64,i64,u64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64,delta_seconds:i64,delta_nanos:i64)
+  billion:i64 = const() {"value":1000000000}
+  fraction:i64 = int.cast(nanos) {"mode":"checked"}
+  leap:bool = compare.ge(fraction,billion)
+  branch leap leap_check(seconds,fraction,delta_seconds,delta_nanos) normal(seconds,fraction,delta_seconds,delta_nanos)
+block leap_check(leap_seconds:i64,leap_fraction:i64,leap_delta_seconds:i64,leap_delta_nanos:i64)
+  leap_zero:i64 = const() {"value":0}
+  two_billion:i64 = const() {"value":2000000000}
+  positive_seconds:bool = compare.gt(leap_delta_seconds,leap_zero)
+  positive_fraction:bool = compare.gt(leap_delta_nanos,leap_zero)
+  leap_limit:i64 = int.sub.checked(two_billion,leap_delta_nanos)
+  fraction_escapes:bool = compare.ge(leap_fraction,leap_limit)
+  fractional_escape:bool = bool.and(positive_fraction,fraction_escapes)
+  forward_escape:bool = bool.or(positive_seconds,fractional_escape)
+  branch forward_escape forward(leap_seconds,leap_fraction,leap_delta_seconds,leap_delta_nanos) backward_check(leap_seconds,leap_fraction,leap_delta_seconds,leap_delta_nanos)
+block forward(forward_seconds:i64,forward_fraction:i64,forward_delta_seconds:i64,forward_delta_nanos:i64)
+  forward_billion:i64 = const() {"value":1000000000}
+  ordinary_fraction:i64 = int.sub.checked(forward_fraction,forward_billion)
+  jump normal(forward_seconds,ordinary_fraction,forward_delta_seconds,forward_delta_nanos)
+block backward_check(back_seconds:i64,back_fraction:i64,back_delta_seconds:i64,back_delta_nanos:i64)
+  back_zero:i64 = const() {"value":0}
+  negative_seconds:bool = compare.lt(back_delta_seconds,back_zero)
+  branch negative_seconds backward(back_seconds,back_fraction,back_delta_seconds,back_delta_nanos) stay(back_seconds,back_fraction,back_delta_nanos)
+block backward(backward_seconds:i64,backward_fraction:i64,backward_delta_seconds:i64,backward_delta_nanos:i64)
+  backward_billion:i64 = const() {"value":1000000000}
+  backward_one:i64 = const() {"value":1}
+  backward_ordinary_fraction:i64 = int.sub.checked(backward_fraction,backward_billion)
+  backward_ordinary_seconds:i64 = int.add.checked(backward_seconds,backward_one)
+  jump normal(backward_ordinary_seconds,backward_ordinary_fraction,backward_delta_seconds,backward_delta_nanos)
+block stay(stay_seconds:i64,stay_fraction:i64,stay_delta_nanos:i64)
+  stay_nanos:i64 = int.add.checked(stay_fraction,stay_delta_nanos)
+  stay_word:u64 = int.cast(stay_nanos) {"mode":"checked"}
+  stay_valid:u64 = const() {"value":1}
+  ret(stay_valid,stay_seconds,stay_word)
+block normal(normal_seconds:i64,normal_fraction:i64,normal_delta_seconds:i64,normal_delta_nanos:i64)
+  whole:i64 = int.add.checked(normal_seconds,normal_delta_seconds)
+  fractional:i64 = int.add.checked(normal_fraction,normal_delta_nanos)
+  normal_zero:i64 = const() {"value":0}
+  normal_one:i64 = const() {"value":1}
+  normal_minus_one:i64 = const() {"value":-1}
+  normal_billion:i64 = const() {"value":1000000000}
+  negative_billion:i64 = const() {"value":-1000000000}
+  borrow:bool = compare.lt(fractional,normal_zero)
+  carry:bool = compare.ge(fractional,normal_billion)
+  carry_seconds:i64 = select(carry,normal_one,normal_zero)
+  carry_fraction:i64 = select(carry,negative_billion,normal_zero)
+  seconds_adjustment:i64 = select(borrow,normal_minus_one,carry_seconds)
+  fraction_adjustment:i64 = select(borrow,normal_billion,carry_fraction)
+  result_seconds:i64 = int.add.checked(whole,seconds_adjustment)
+  result_fraction:i64 = int.add.checked(fractional,fraction_adjustment)
+  result_nanos:u64 = int.cast(result_fraction) {"mode":"checked"}
+  result_valid:bool = call(result_seconds,result_nanos) {"function":"timestamp_valid"}
+  branch result_valid present(result_seconds,result_nanos) absent()
+block present(present_seconds:i64,present_nanos:u64)
+  present_valid:u64 = const() {"value":1}
+  ret(present_valid,present_seconds,present_nanos)
+block absent()
+  absent_valid:u64 = const() {"value":0}
+  absent_seconds:i64 = const() {"value":0}
+  absent_nanos:u64 = const() {"value":0}
+  ret(absent_valid,absent_seconds,absent_nanos)
+end
+fn difference(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64)
+  day:i64 = const() {"value":86400}
+  billion:i64 = const() {"value":1000000000}
+  billion_word:u64 = const() {"value":1000000000}
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  minus_one:i64 = const() {"value":-1}
+  left_day:i64 = call(left_seconds,day) {"function":"floor_div"}
+  right_day:i64 = call(right_seconds,day) {"function":"floor_div"}
+  left_start:i64 = int.mul.checked(left_day,day)
+  right_start:i64 = int.mul.checked(right_day,day)
+  left_sod:i64 = int.sub.checked(left_seconds,left_start)
+  right_sod:i64 = int.sub.checked(right_seconds,right_start)
+  after:bool = compare.gt(left_sod,right_sod)
+  before:bool = compare.lt(left_sod,right_sod)
+  left_leap:bool = compare.ge(left_nanos,billion_word)
+  right_leap:bool = compare.ge(right_nanos,billion_word)
+  add_leap:bool = bool.and(after,right_leap)
+  subtract_leap:bool = bool.and(before,left_leap)
+  minus_adjustment:i64 = select(subtract_leap,minus_one,zero)
+  leap_adjustment:i64 = select(add_leap,one,minus_adjustment)
+  seconds:i64 = int.sub.checked(left_seconds,right_seconds)
+  with_leap:i64 = int.add.checked(seconds,leap_adjustment)
+  left_fraction:i64 = int.cast(left_nanos) {"mode":"checked"}
+  right_fraction:i64 = int.cast(right_nanos) {"mode":"checked"}
+  fraction:i64 = int.sub.checked(left_fraction,right_fraction)
+  fraction_seconds:i64 = call(fraction,billion) {"function":"floor_div"}
+  whole_fraction:i64 = int.mul.checked(fraction_seconds,billion)
+  positive_fraction:i64 = int.sub.checked(fraction,whole_fraction)
+  result_seconds:i64 = int.add.checked(with_leap,fraction_seconds)
+  result_nanos:u64 = int.cast(positive_fraction) {"mode":"checked"}
+  ret(result_seconds,result_nanos)
+end
