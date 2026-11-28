@@ -1,0 +1,34 @@
+--- a/population.py
++++ b/population.py
+@@ -11,8 +11,9 @@
+ from he_xiong import Published
+ 
+ class BoundaryPopulation(nn.Module):
+-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.)):
++    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False):
+         super().__init__()
++        self.matrix_free=matrix_free
+         if atoms<3 or width<1 or dt<=0 or not 0<reset<1.30 or any(t<=0 for t in probe_horizons):
+             raise ValueError('invalid population geometry or horizon')
+         self.width=width; self.dt=float(dt); self.probe_horizons=tuple(probe_horizons)
+@@ -59,10 +60,16 @@
+         mass,refractory,old_b,old_value=state
+         u=self.sender(frame)+self.recurrent(old_b)+(old_value.tanh()*self.feedback).sum(-1)
+         P=self.prices.p.P0*(1+.28*u.tanh());b=torch.log(self.prices.boundary(P)/self.prices.B0)
+-        margin=self.grid+old_b[...,None]-b[...,None]
+-        surv,hit=self.kernels(margin)
+-        flow=(mass*hit).sum(-1)
+-        newmass=(mass[...,None]*surv).sum(-2)+refractory[...,None]*self.reset_weights
++        if self.matrix_free:
++            from fft_transport import transported_mass
++            newmass,flow=transported_mass(mass,old_b-b,self.grid,
++                sigma=self.prices.p.sigma,a=self.prices.a,dt=self.dt)
++        else:
++            margin=self.grid+old_b[...,None]-b[...,None]
++            surv,hit=self.kernels(margin)
++            flow=(mass*hit).sum(-1)
++            newmass=(mass[...,None]*surv).sum(-2)
++        newmass=newmass+refractory[...,None]*self.reset_weights
+         E,L=self.priced_channels(P)
+         v=torch.stack([(newmass*E).sum(-1)/20.,(newmass*L).sum(-1)/20.],dim=-1)
+         probes=[(newmass*self.prices.passage(self.grid,t)).sum(-1) for t in self.probe_horizons]
