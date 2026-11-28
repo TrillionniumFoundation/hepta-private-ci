@@ -1,6 +1,10 @@
 //! Real native owner and Memory fixtures; locally scoped test keys are not
 //! production training or adoption evidence.
 
+#[cfg(target_os = "linux")]
+#[path = "paired_terminal_binding_tests.rs"]
+mod paired_binding_tests;
+
 use std::future::Future;
 use std::future::poll_fn;
 use std::sync::Arc;

@@ -31,6 +31,18 @@ use crate::TerminalLearningRequestV1;
 use crate::TerminalLearningSourceLineageV1;
 use crate::terminal_learning_types::TerminalLearningModeV1;
 
+#[cfg(target_os = "linux")]
+#[path = "paired_terminal_binding.rs"]
+mod paired_binding;
+#[cfg(target_os = "linux")]
+pub(crate) use paired_binding::PairedTerminalBindingPlanV1;
+#[cfg(target_os = "linux")]
+pub(crate) use paired_binding::PairedTerminalEventPairV1;
+#[cfg(target_os = "linux")]
+pub(crate) use paired_binding::PairedTerminalLearningReceiptV1;
+#[cfg(target_os = "linux")]
+pub(crate) use paired_binding::PreparedPairedTerminalV1;
+
 type JobResult = Result<TerminalLearningReceiptV1, TerminalLearningErrorV1>;
 
 #[derive(Clone)]
@@ -96,12 +108,38 @@ impl AgentdTerminalLearningOwnerV1 {
         now: u64,
     ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         request.job_digest(&self.agent_id, &self.producer_id)?;
-        tokio::time::timeout(
-            Duration::from_millis(request.budget.maximum_wall_milliseconds),
-            self.execute(request, now, TerminalLearningModeV1::Train),
+        let end = tokio::time::Instant::now()
+            + Duration::from_millis(request.budget.maximum_wall_milliseconds);
+        self.train_until(request, now, end).await
+    }
+
+    /// A stricter supervised end does not change signed request identity. It
+    /// reaches the blocking worker as well as the async wait. Atomic fits remain
+    /// non-preemptible; expiry cannot prove that no work occurred.
+    pub(crate) async fn train_until(
+        &self,
+        request: TerminalLearningRequestV1,
+        now: u64,
+        end: tokio::time::Instant,
+    ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
+        request.job_digest(&self.agent_id, &self.producer_id)?;
+        let end = end.min(
+            tokio::time::Instant::now()
+                + Duration::from_millis(request.budget.maximum_wall_milliseconds),
+        );
+        if tokio::time::Instant::now() >= end {
+            return Err(TerminalLearningErrorV1::DeadlineExceeded);
+        }
+        let result = tokio::time::timeout_at(
+            end,
+            self.execute(request, now, TerminalLearningModeV1::Train, end.into_std()),
         )
         .await
-        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
+        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+        if tokio::time::Instant::now() >= end {
+            return Err(TerminalLearningErrorV1::CommitUncertain);
+        }
+        result
     }
 
     /// Current owner-authenticated readback of an existing job. Missing state
@@ -112,9 +150,10 @@ impl AgentdTerminalLearningOwnerV1 {
         now: u64,
     ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         request.job_digest(&self.agent_id, &self.producer_id)?;
+        let end = Instant::now() + Duration::from_millis(request.budget.maximum_wall_milliseconds);
         tokio::time::timeout(
             Duration::from_millis(request.budget.maximum_wall_milliseconds),
-            self.execute(request, now, TerminalLearningModeV1::Readback),
+            self.execute(request, now, TerminalLearningModeV1::Readback, end),
         )
         .await
         .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
@@ -125,7 +164,11 @@ impl AgentdTerminalLearningOwnerV1 {
         request: TerminalLearningRequestV1,
         now: u64,
         mode: TerminalLearningModeV1,
+        end: Instant,
     ) -> JobResult {
+        if Instant::now() >= end {
+            return Err(TerminalLearningErrorV1::DeadlineExceeded);
+        }
         let digest = request.job_digest(&self.agent_id, &self.producer_id)?;
         let state = {
             let mut jobs = self
@@ -177,7 +220,7 @@ impl AgentdTerminalLearningOwnerV1 {
         {
             return Err(TerminalLearningErrorV1::Conflict);
         }
-        check_deadline(&request, projected_now(now, admitted_at))?;
+        check_work_budget(&request, now, admitted_at, end)?;
         // Claim the operation and lane together. A concurrent retry observes
         // Computing (unknown), never a Busy result implying its work did not run.
         // No await separates this claim from submitting the native job.
@@ -219,11 +262,12 @@ impl AgentdTerminalLearningOwnerV1 {
         let job = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let result = (|| {
-                check_work_budget(&native_request, now, admitted_at)?;
+                check_work_budget(&native_request, now, admitted_at, end)?;
                 let _ = ready.send(());
                 let remaining =
                     Duration::from_millis(native_request.budget.maximum_wall_milliseconds)
-                        .saturating_sub(admitted_at.elapsed());
+                        .saturating_sub(admitted_at.elapsed())
+                        .min(end.saturating_duration_since(Instant::now()));
                 let source =
                     authorization
                         .recv_timeout(remaining)
@@ -233,7 +277,15 @@ impl AgentdTerminalLearningOwnerV1 {
                                 TerminalLearningErrorV1::CommitUncertain
                             }
                         })??;
-                fit_native(&ledger, &native_request, digest, source, now, admitted_at)
+                fit_native(
+                    &ledger,
+                    &native_request,
+                    digest,
+                    source,
+                    now,
+                    admitted_at,
+                    end,
+                )
             })();
             let mut jobs = jobs
                 .lock()
@@ -266,13 +318,10 @@ impl AgentdTerminalLearningOwnerV1 {
         authorize
             .try_send(authorization)
             .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
-        let result = tokio::time::timeout(
-            Duration::from_millis(request.budget.maximum_wall_milliseconds),
-            job,
-        )
-        .await
-        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
-        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+        let result = tokio::time::timeout_at(tokio::time::Instant::from_std(end), job)
+            .await
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
         // An atomic native fit cannot be preempted. Over-budget results are
         // rejected; the single permit prevents overlapping abandoned jobs.
         self.verify_readback(result, &request, projected_now(now, admitted_at))
@@ -319,8 +368,9 @@ fn fit_native(
     source: SharedExperienceUseV1,
     now: u64,
     started: Instant,
+    end: Instant,
 ) -> JobResult {
-    check_work_budget(request, now, started)?;
+    check_work_budget(request, now, started, end)?;
     let ledger = match ledger.try_lock() {
         Ok(ledger) => ledger,
         Err(TryLockError::WouldBlock) => return Err(TerminalLearningErrorV1::Busy),
@@ -342,7 +392,7 @@ fn fit_native(
     {
         return Err(TerminalLearningErrorV1::Capacity);
     }
-    check_work_budget(request, now, started)?;
+    check_work_budget(request, now, started, end)?;
     let source_lineage = TerminalLearningSourceLineageV1 {
         owner_id: source.owner_id().clone(),
         policy_id: source.policy_id().clone(),
@@ -353,6 +403,9 @@ fn fit_native(
             .parse()
             .map_err(|_| TerminalLearningErrorV1::Conflict)?,
     };
+    // This gates a new native fit invocation. Its synchronous atomic work can
+    // finish after end; the checks below refuse to release such a result.
+    check_work_budget(request, now, started, end)?;
     let candidate = AgentdSharedReplayHostV1::fit_from_source(
         source,
         &ledger,
@@ -362,14 +415,14 @@ fn fit_native(
     )
     .map_err(owner_error)?;
     let payload = encode_tabular_payload_v1(candidate.artifact()).map_err(owner_error)?;
-    check_work_budget(request, now, started)?;
+    check_work_budget(request, now, started, end)?;
     if payload.len() as u64 > request.budget.maximum_artifact_bytes {
         return Err(TerminalLearningErrorV1::Capacity);
     }
     ledger
         .revalidate_dataset_snapshot(&dataset, projected_now(now, started))
         .map_err(owner_error)?;
-    check_work_budget(request, now, started)?;
+    check_work_budget(request, now, started, end)?;
     let elapsed_microseconds = u64::try_from(started.elapsed().as_micros())
         .map_err(|_| TerminalLearningErrorV1::Capacity)?;
     Ok(TerminalLearningReceiptV1 {
@@ -416,8 +469,11 @@ fn check_work_budget(
     request: &TerminalLearningRequestV1,
     now: u64,
     started: Instant,
+    end: Instant,
 ) -> Result<(), TerminalLearningErrorV1> {
-    if started.elapsed() > Duration::from_millis(request.budget.maximum_wall_milliseconds) {
+    if Instant::now() >= end
+        || started.elapsed() > Duration::from_millis(request.budget.maximum_wall_milliseconds)
+    {
         return Err(TerminalLearningErrorV1::DeadlineExceeded);
     }
     check_deadline(request, projected_now(now, started))
