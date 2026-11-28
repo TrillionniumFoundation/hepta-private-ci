@@ -377,6 +377,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/original-terminal-owner.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(production_composition::terminal_owner_tests::)'
+      - name: Original paired launcher owner handoff
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-owner-handoff.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(production_launcher::terminal::tests::)'
       - name: Verify unchanged reviewed source
         run: |
           set -euo pipefail
