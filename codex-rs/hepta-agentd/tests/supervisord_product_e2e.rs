@@ -17,6 +17,7 @@ use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
+use cleanup_fence::StoppedWaitRequest;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
@@ -46,6 +47,8 @@ const AGENT_IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
 
+#[path = "support/supervisord_cleanup.rs"]
+mod cleanup_fence;
 #[path = "support/supervisord_failure.rs"]
 mod failure_diagnostics;
 
@@ -222,7 +225,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         &before_drain.control_fence,
         &accepted,
     )?;
-    wait_for_stopped(&client, &agents[4], &mut process_guard).await?;
+    wait_for_stopped(
+        &client,
+        &agents[4],
+        &mut process_guard,
+        StoppedWaitRequest::Observe,
+    )
+    .await?;
     let stopped = client
         .snapshot(agents[4].agent_id.clone())
         .await
@@ -251,7 +260,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         &before_stop.control_fence,
         &accepted,
     )?;
-    wait_for_stopped(&client, &agents[3], &mut process_guard).await?;
+    wait_for_stopped(
+        &client,
+        &agents[3],
+        &mut process_guard,
+        StoppedWaitRequest::Observe,
+    )
+    .await?;
     let stopped = client
         .snapshot(agents[3].agent_id.clone())
         .await
@@ -289,7 +304,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         &initial_a.control_fence,
         &accepted,
     )?;
-    wait_for_stopped(&client, &agents[0], &mut process_guard).await?;
+    wait_for_stopped(
+        &client,
+        &agents[0],
+        &mut process_guard,
+        StoppedWaitRequest::Observe,
+    )
+    .await?;
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline)
         .await
         .context("supervisord fixture stage=after_agent_a_kill helper=assert_peers_unchanged")?;
@@ -465,18 +486,15 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         )?;
 
     for agent in &agents {
-        let before = restarted_client
-            .snapshot(agent.agent_id.clone())
-            .await
-            .context("supervisord fixture stage=cleanup_before_kill method=Snapshot")?;
-        let accepted = restarted_client
-            .kill(before.control_fence.clone())
-            .await
-            .context("supervisord fixture stage=cleanup_kill method=Kill")?;
-        assert_mutation_accepted(SupervisordMutation::Kill, &before.control_fence, &accepted)?;
-    }
-    for agent in &agents {
-        wait_for_stopped(&restarted_client, agent, &mut process_guard).await?;
+        // Cleanup has no cross-Agent ordering assertion. Charge each fenced
+        // request and its terminal observation to the existing stopped budget.
+        wait_for_stopped(
+            &restarted_client,
+            agent,
+            &mut process_guard,
+            StoppedWaitRequest::KillCurrentFence,
+        )
+        .await?;
     }
     restarted_daemon.kill()?;
     Ok(())
@@ -646,27 +664,72 @@ async fn wait_for_stopped(
     client: &SupervisordClient,
     agent: &AgentFixture,
     process_guard: &mut AgentProcessGuard,
+    request: StoppedWaitRequest,
 ) -> Result<()> {
     let deadline = Instant::now() + READY_TIMEOUT;
-    let mut last = None;
-    loop {
-        if let Ok(status) = client.snapshot(agent.agent_id.clone()).await {
-            process_guard.observe(&status)?;
-            if status.lifecycle == AgentLifecycle::Stopped
-                && !status.active
-                && status.process_id.is_none()
-            {
-                return Ok(());
+    let wait = async {
+        let mut last = None;
+        let mut kill_pending = matches!(request, StoppedWaitRequest::KillCurrentFence);
+        let mut stale_kill_rejections = 0_u32;
+        loop {
+            let snapshot = client.snapshot(agent.agent_id.clone()).await;
+            if kill_pending {
+                let before = snapshot
+                    .context("supervisord fixture stage=cleanup_before_kill method=Snapshot")?;
+                process_guard.observe(&before)?;
+                match client.kill(before.control_fence.clone()).await {
+                    Ok(accepted) => {
+                        assert_mutation_accepted(
+                            SupervisordMutation::Kill,
+                            &before.control_fence,
+                            &accepted,
+                        )?;
+                        kill_pending = false;
+                        if stale_kill_rejections > 0 {
+                            eprintln!(
+                                "supervisord cleanup refreshed rejected fences: agent={} stale_rejections={stale_kill_rejections}",
+                                agent.agent_id,
+                            );
+                        }
+                    }
+                    Err(error) if cleanup_fence::is_stale_cleanup_kill(&error) => {
+                        // The daemon rejected this request before any effect.
+                        // Only the next fresh Snapshot may authorize another Kill.
+                        stale_kill_rejections =
+                            stale_kill_rejections.saturating_add(/*rhs*/ 1);
+                    }
+                    Err(error) => {
+                        return Err(error)
+                            .context("supervisord fixture stage=cleanup_kill method=Kill");
+                    }
+                }
+                last = Some(before);
+            } else if let Ok(status) = snapshot {
+                process_guard.observe(&status)?;
+                if status.lifecycle == AgentLifecycle::Stopped
+                    && !status.active
+                    && status.process_id.is_none()
+                {
+                    return Ok(());
+                }
+                last = Some(status);
             }
-            last = Some(status);
+            if Instant::now() >= deadline {
+                bail!(
+                    "timed out waiting for agent {} to stop; last={last:?}",
+                    agent.agent_id
+                );
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
         }
-        if Instant::now() >= deadline {
-            bail!(
-                "timed out waiting for agent {} to stop; last={last:?}",
-                agent.agent_id
-            );
+    };
+    match request {
+        StoppedWaitRequest::Observe => wait.await,
+        StoppedWaitRequest::KillCurrentFence => {
+            tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), wait)
+                .await
+                .context("supervisord fixture cleanup exceeded existing stopped deadline")?
         }
-        tokio::time::sleep(Duration::from_millis(25)).await;
     }
 }
 
