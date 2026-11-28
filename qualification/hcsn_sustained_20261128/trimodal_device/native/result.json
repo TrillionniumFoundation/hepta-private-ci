@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "device": {
+    "torch": "2.13.0+rocm10.0.0",
+    "compiled_cuda": null,
+    "device_count": 1,
+    "cuda_available": true,
+    "nvidia_smi_present": false,
+    "driver": {
+      "ctypes_library": null,
+      "libcuda_load": false
+    },
+    "name": "AMD Radeon 8060S Graphics",
+    "actual_dot": 140.0,
+    "rocm": "7.15.26333"
+  },
+  "seed": 137,
+  "arms": [
+    "financial",
+    "sdpa_matched"
+  ],
+  "rows": [
+    {
+      "arm": "financial",
+      "seed": 137,
+      "width": 32,
+      "parameters": 9690,
+      "example_device": "cuda:0",
+      "model_device": "cuda:0",
+      "physical_interpolation_error": [
+        2.1571808076004725e-06,
+        8.227269210347998e-07,
+        5.852240955450672e-07
+      ],
+      "rows": [
+        {
+          "labels": [
+            "epoch1"
+          ],
+          "steps": 156,
+          "examples": 14952,
+          "targets": 200672,
+          "update_s": 2.413082421757281,
+          "elapsed_s": 3.424294926226139,
+          "dev_nll": [
+            2.2271992213383283,
+            2.201543392033979,
+            2.053394573738718
+          ],
+          "weights": "financial-epoch1.npz",
+          "weights_sha256": "91c4b8046f5ab4ddbf16ef688f58019651aa0e11cad707bf1d081c1d01b44191",
+          "dev_scores": "financial-epoch1-dev.npz",
+          "dev_scores_sha256": "e1903d810bfd7d9a9b3d6457a76e00d242e2375b7eb01910efe9d86fb575c471"
+        },
+        {
+          "labels": [
+            "time60"
+          ],
+          "steps": 10359,
+          "examples": 992880,
+          "targets": 13325761,
+          "update_s": 60.005557174794376,
+          "elapsed_s": 63.414682168047875,
+          "dev_nll": [
+            1.5726534279872246,
+            1.84598151594077,
+            0.3385138156888857
+          ],
+          "weights": "financial-time60.npz",
+          "weights_sha256": "1b1c1cd59254bd6267ad4170788c132cd69f585e3733c11e10d69b5a73d43f03",
+          "dev_scores": "financial-time60-dev.npz",
+          "dev_scores_sha256": "2c2e2bb5be329e7117aa9962c0838442c5e13d78b260d9179cc01246c6c6b992"
+        }
+      ],
+      "selected_weights": "financial-time60.npz",
+      "selected_test_nll": [
+        1.566615330424143,
+        1.8403098889620606,
+        0.35195631627762014
+      ],
+      "test_scores": "financial-selected-test.npz",
+      "test_sha256": "521a8aac7a5591feb5c797876ad323bbc82230f49774a381dd7d801d7a0ccf27"
+    },
+    {
+      "arm": "sdpa_matched",
+      "seed": 137,
+      "width": 18,
+      "parameters": 9810,
+      "example_device": "cuda:0",
+      "model_device": "cuda:0",
+      "physical_interpolation_error": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": [
+        {
+          "labels": [
+            "epoch1"
+          ],
+          "steps": 156,
+          "examples": 14952,
+          "targets": 200672,
+          "update_s": 1.2808266473002732,
+          "elapsed_s": 1.479179640300572,
+          "dev_nll": [
+            2.0417805673804414,
+            2.0441802261808295,
+            0.9072259553644787
+          ],
+          "weights": "sdpa_matched-epoch1.npz",
+          "weights_sha256": "3f17204ff7b71d47ecb6695dce58320d372e7a07d7ba2a2ef07dd2706d8cce2f",
+          "dev_scores": "sdpa_matched-epoch1-dev.npz",
+          "dev_scores_sha256": "0c6e7db831b7f40d86f5fa00428553e48687f8523ee413fa35ab207385606dcd"
+        },
+        {
+          "labels": [
+            "time60"
+          ],
+          "steps": 9470,
+          "examples": 907680,
+          "targets": 12181975,
+          "update_s": 60.01099652098492,
+          "elapsed_s": 62.49320646515116,
+          "dev_nll": [
+            1.0830852277437095,
+            1.761890832461072,
+            0.30671110438987786
+          ],
+          "weights": "sdpa_matched-time60.npz",
+          "weights_sha256": "5e9dc5057a3a9048ccb6917e9dd7831c88ea8c7eb00de513221a11a0ba7ecf2f",
+          "dev_scores": "sdpa_matched-time60-dev.npz",
+          "dev_scores_sha256": "12a03ce607d51742b5556ada2d752cbcdcb9e1e7bed2ba6fa041c223dda7d7ad"
+        }
+      ],
+      "selected_weights": "sdpa_matched-time60.npz",
+      "selected_test_nll": [
+        0.9726608818299968,
+        1.765171348205637,
+        0.3132938487920812
+      ],
+      "test_scores": "sdpa_matched-selected-test.npz",
+      "test_sha256": "25f5f862d7a926593bfef303d29bb37fbb6039be419bf90540e1f8ba9f188838"
+    }
+  ],
+  "precomputed_contract_tables": {
+    "sha256": "f020c9bd846da915a9fb85d6d659962d82bd34a3edf14e30a5c8b2a3d285f902",
+    "nodes": 2049,
+    "source_model_sha256": "cc45f69f00bafe9942d84d86b50a7bebb5e48f92da454e4a0df1f834408ed114"
+  },
+  "input_sha256": "c74ae69666a2bf58a8147071dd9aa9fd67e00397966640d937634b0f05a16fd2",
+  "conditional_counts": [
+    14952,
+    3441,
+    3933
+  ],
+  "recordings": 7442,
+  "endpoint": "native_gpu_full_epoch_and_sixty_seconds"
+}

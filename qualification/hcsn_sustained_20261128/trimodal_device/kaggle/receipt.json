@@ -1,0 +1,59 @@
+{
+  "provider": "kaggle",
+  "request_id": "hcsn-9de7-full-trimodal-cuda-seed137-v1",
+  "provider_request_id": "hc-05a3168ba53acb458e1ffd69a8c87389bb876adf",
+  "kernel_id": 148105349,
+  "notebook_version": 1,
+  "state": "COLLECTED",
+  "visibility": "private_notebook",
+  "network": "disabled",
+  "outcome": {
+    "accelerator_execution_verification": "requires_task_specific_artifact",
+    "accelerator_requested": "T4",
+    "compute_succeeded": true,
+    "provider_terminal_state": "COMPLETE"
+  },
+  "created_utc": "2026-11-28T14:59:36.342092+00:00",
+  "collected_utc": "2026-11-28T15:05:01.409040+00:00",
+  "source_sha256": "d3f5a5babe7b48d3238baab3ee7761dbfe119459b7b58dfbe14022476cda863f",
+  "source_bytes": 114509,
+  "files": [
+    {
+      "name": "hepta-execution-manifest.json",
+      "bytes": 329,
+      "sha256": "533e1222164f822dad241d5d0a5037e91bb0a49f0894c46530a59fb3803dd897"
+    },
+    {
+      "name": "raw.tar.gz",
+      "bytes": 53,
+      "sha256": "f31e5b8716ec1ae2633cabd444bf149f87c1dd5b97e9ec80097a42824519aee4"
+    },
+    {
+      "name": "result.json",
+      "bytes": 404,
+      "sha256": "b9bd59802fe7a6d5a0a57e6a577efd1958c9ef2c2fba720005a6d79fa09266f1"
+    }
+  ],
+  "task_result": {
+    "schema": 1,
+    "device": {
+      "torch": "2.11.0+cpu",
+      "compiled_cuda": null,
+      "device_count": 0,
+      "cuda_available": false,
+      "nvidia_smi_present": false,
+      "driver": {
+        "ctypes_library": null,
+        "libcuda_load": false
+      }
+    },
+    "seed": 137,
+    "arms": [
+      "financial",
+      "sdpa_matched"
+    ],
+    "rows": [],
+    "endpoint": "requested_cuda_unavailable",
+    "train_updates": 0
+  }
+}
