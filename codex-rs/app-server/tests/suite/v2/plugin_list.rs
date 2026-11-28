@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use app_test_support::ChatGptAuthFixture;
@@ -4592,7 +4593,10 @@ async fn wait_for_remote_plugin_list_scope_request_count(
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
-    .await??;
+    .await
+    .with_context(|| {
+        format!("waiting for exactly {expected_count} catalog list requests for scope {scope}")
+    })??;
     Ok(())
 }
 
@@ -4635,7 +4639,8 @@ async fn wait_for_cached_remote_catalog_plugin_ids(
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
-    .await??;
+    .await
+    .with_context(|| format!("waiting for catalog cache plugin IDs {expected_plugin_ids:?}"))??;
     Ok(())
 }
 
@@ -4647,6 +4652,10 @@ fn cached_remote_catalog_plugin_ids(codex_home: &std::path::Path) -> Result<Vec<
     let mut plugin_ids = Vec::new();
     for entry in std::fs::read_dir(cache_dir)? {
         let path = entry?.path();
+        // Atomic writes stage a temporary sibling before publishing the JSON.
+        if path.extension().and_then(|extension| extension.to_str()) != Some("json") {
+            continue;
+        }
         let cached_catalog: serde_json::Value = serde_json::from_slice(&std::fs::read(path)?)?;
         let Some(plugins) = cached_catalog["plugins"].as_array() else {
             continue;
