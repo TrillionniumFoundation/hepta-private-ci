@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "source_head": "abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+  "source_tree": "2fc3b7caa9c223f6ebdc189dc891c52faead86eb",
+  "generic_ci_merge": "fa49613b9a21a5d86cd577f09ed8dd171479203c",
+  "original_logs": [
+    {
+      "repo_name": "job-140993807176-original.log.gz",
+      "bytes": 87365,
+      "sha256": "529bc8b51a93e2cda0ce907ef7d226157aef393f696ea5e9996e6247a45016b7",
+      "raw_bytes": 841938,
+      "raw_sha256": "c62bf97628983a24e2bc85007ffd624d96ce8826593766c76e64cb2c3b1f984a",
+      "job_id": 140993807176,
+      "scope": "Bazel Clippy Linux GNU"
+    },
+    {
+      "repo_name": "job-140993300683-original.log.gz",
+      "bytes": 62521,
+      "sha256": "669af711c33d7459a8da590fa0184f01a3ac6f3de797cba8ee74f31c0db5e306",
+      "raw_bytes": 324046,
+      "raw_sha256": "1beda189069af6b27533d277e764ba408f63250f8c901da5f5c9fadda54200d5",
+      "job_id": 140993300683,
+      "scope": "Restricted HTTP source head"
+    },
+    {
+      "repo_name": "job-140993806982-original.log.gz",
+      "bytes": 46332,
+      "sha256": "194e294ae379dc3f679d6b17b068cc140297782f999e77915bd3850b447f8cde",
+      "raw_bytes": 310253,
+      "raw_sha256": "37a313fcf02fe9c1dd84319d958b32c2872115856204913aa9e465e374496efa",
+      "job_id": 140993806982,
+      "scope": "Repository formatting"
+    },
+    {
+      "repo_name": "job-140993807172-original.log.gz",
+      "bytes": 134905,
+      "sha256": "1fee9d5ede9b77c102299637713010cdd9ab6ff63d5a50f087343509238926d4",
+      "raw_bytes": 1341772,
+      "raw_sha256": "ccb6128a5c9c0dc94b6c427822e898f40a9ca97a74b6153d4b441d1fd15e7191",
+      "job_id": 140993807172,
+      "scope": "Bazel Linux MUSL"
+    },
+    {
+      "repo_name": "job-140993807199-original.log.gz",
+      "bytes": 133761,
+      "sha256": "5bb5df3c72409a685b0a5ed8995a461090e771c50ab8102b31e794787d630782",
+      "raw_bytes": 1348664,
+      "raw_sha256": "cbee73d3b52b84f3b91bd2bba409511d9a8b4f4e007d551765c9ce3c38af7bac",
+      "job_id": 140993807199,
+      "scope": "Bazel Linux GNU"
+    },
+    {
+      "repo_name": "job-140993807055-original.log.gz",
+      "bytes": 84696,
+      "sha256": "b3b2af6c58612dd2ff643d2b904d51442091183ded4462026a03bfb97141a269",
+      "raw_bytes": 917358,
+      "raw_sha256": "6ccf5bb2869b7b6cb9401002e5661972fac0bbcd31f163300ed5509bfa2ec4e5",
+      "job_id": 140993807055,
+      "scope": "SDK TypeScript"
+    }
+  ],
+  "qualification": {
+    "source_head_original_http_oauth_wrapper_controls": {
+      "passed": 46,
+      "failed": 0,
+      "suites": [
+        9,
+        3,
+        12,
+        19,
+        3
+      ]
+    },
+    "new_sse_http_target": {
+      "job": 140993807199,
+      "status": "PASSED",
+      "cached": false,
+      "reported_seconds": 1.4,
+      "declared_cases": 4,
+      "individual_case_names_observed_in_job_log": false
+    },
+    "rmcp_unit_target": {
+      "job": 140993807199,
+      "status": "PASSED",
+      "cached": true,
+      "reported_seconds": 23.0,
+      "new_unit_cases_reported_fresh": false
+    },
+    "new_helper_candidate": {
+      "native_tests": "not_run",
+      "clippy": "not_run",
+      "validation": "explicit Rust 1.96.0 rustfmt/check and independent static review only"
+    },
+    "hosted_cargo_deny": {
+      "job": 140993807036,
+      "diagnostic": "UNKNOWN; tool transport error is separately retained, not a job log"
+    },
+    "overall_generic_ci": "FAILED; five proxy/OAuth-related targets, SDK conformance, formatting and Clippy remain separately classified"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "inputs": [
+    {
+      "name": "just",
+      "url": "https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+      "bytes": 2257502,
+      "sha256": "c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59",
+      "filename": "just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+      "archive": true
+    },
+    {
+      "name": "uv",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "bytes": 23914165,
+      "sha256": "c0f3236f146e55472663cfbcc9be3042a9f1092275bbe3fe2a56a6cbfd3da5ce",
+      "filename": "uv-x86_64-unknown-linux-gnu.tar.gz",
+      "archive": true
+    },
+    {
+      "name": "dotslash",
+      "url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-linux-musl.x86_64.v0.5.9.tar.gz",
+      "bytes": 842816,
+      "sha256": "4c75c6eb7890ae35993b962073f6d9bbe78b42b81a5691303ad70f63bfbf7196",
+      "filename": "dotslash-linux-musl.x86_64.v0.5.9.tar.gz",
+      "archive": true
+    },
+    {
+      "name": "buildifier",
+      "url": "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64",
+      "bytes": 7757842,
+      "sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "filename": "buildifier-linux-amd64",
+      "archive": false
+    }
+  ],
+  "results": [
+    {
+      "name": "just",
+      "url": "https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+      "ok": true,
+      "bytes": 2257502,
+      "sha256": "c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59",
+      "executable_sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_rc": 0,
+      "version": "just 1.51.0\n",
+      "wall_seconds": 8.34426742605865
+    },
+    {
+      "name": "uv",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.11.3/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "ok": true,
+      "bytes": 23914165,
+      "sha256": "c0f3236f146e55472663cfbcc9be3042a9f1092275bbe3fe2a56a6cbfd3da5ce",
+      "executable_sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438",
+      "version_rc": 0,
+      "version": "uv 0.11.3 (x86_64-unknown-linux-gnu)\n",
+      "wall_seconds": 17.937699982896447
+    },
+    {
+      "name": "dotslash",
+      "url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-linux-musl.x86_64.v0.5.9.tar.gz",
+      "ok": true,
+      "bytes": 842816,
+      "sha256": "4c75c6eb7890ae35993b962073f6d9bbe78b42b81a5691303ad70f63bfbf7196",
+      "executable_sha256": "2d7880483256edf24e1c8b3e903ca174a723e70d945ffb1a16363c51cb271018",
+      "version_rc": 0,
+      "version": "DotSlash 0.5.9\n",
+      "wall_seconds": 9.743793258909136
+    },
+    {
+      "name": "buildifier",
+      "url": "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64",
+      "ok": true,
+      "bytes": 7757842,
+      "sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "executable_sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "version_rc": 0,
+      "version": "buildifier version: 8.5.1-3-g0951e28 \nbuildifier scm revision: 0951e28ad5a191e4d421d3899f3259e3e0f1aa54 \n",
+      "wall_seconds": 66.93313172040507
+    }
+  ]
+}

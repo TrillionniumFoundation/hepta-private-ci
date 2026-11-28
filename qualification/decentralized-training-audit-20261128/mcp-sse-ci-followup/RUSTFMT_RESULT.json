@@ -1,0 +1,49 @@
+{
+  "records": [
+    {
+      "command": [
+        "/home/qq/.cargo/bin/rustfmt",
+        "+1.96.0",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0916559137403965,
+      "stdout": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n",
+      "stderr": "",
+      "before_sha256": "465607c986d04a1577bd79cd1b0ecc7debb153001700dd525d612d23cf792a98",
+      "after_sha256": "465607c986d04a1577bd79cd1b0ecc7debb153001700dd525d612d23cf792a98"
+    },
+    {
+      "command": [
+        "/home/qq/.cargo/bin/rustfmt",
+        "+1.96.0",
+        "--config-path",
+        "/home/qq/hepta-audit-20261128-5bdf/sse-format/candidate/codex-rs/rustfmt.toml",
+        "/home/qq/hepta-audit-20261128-5bdf/sse-format/candidate/codex-rs/rmcp-client/tests/mcp_sse_local_failures.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.05482652969658375,
+      "stdout": "",
+      "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n",
+      "before_sha256": "465607c986d04a1577bd79cd1b0ecc7debb153001700dd525d612d23cf792a98",
+      "after_sha256": "369d1959b8078119fe959675e970679de5ed26ac91251c2ce685097e084b0202"
+    },
+    {
+      "command": [
+        "/home/qq/.cargo/bin/rustfmt",
+        "+1.96.0",
+        "--check",
+        "--config-path",
+        "/home/qq/hepta-audit-20261128-5bdf/sse-format/candidate/codex-rs/rustfmt.toml",
+        "/home/qq/hepta-audit-20261128-5bdf/sse-format/candidate/codex-rs/rmcp-client/tests/mcp_sse_local_failures.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014693703036755323,
+      "stdout": "",
+      "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n",
+      "before_sha256": "369d1959b8078119fe959675e970679de5ed26ac91251c2ce685097e084b0202",
+      "after_sha256": "369d1959b8078119fe959675e970679de5ed26ac91251c2ce685097e084b0202"
+    }
+  ],
+  "native_compile": "not_run"
+}

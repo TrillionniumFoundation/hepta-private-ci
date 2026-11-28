@@ -1,0 +1,150 @@
+{
+  "scope": "actual original just fmt in explicitly partial synthetic Git inventory; not a full repository check",
+  "source_ref": "abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+  "support": [
+    {
+      "path": "scripts/format.py",
+      "bytes": 16599,
+      "blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "path": "scripts/uv.lock",
+      "bytes": 6220,
+      "blob": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "bytes": 177,
+      "blob": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+    },
+    {
+      "path": "tools/buildifier",
+      "bytes": 2172,
+      "blob": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+      "sha256": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6"
+    },
+    {
+      "path": "justfile",
+      "bytes": 7838,
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 23124,
+      "blob": "949cc8b52f89e5efef8b35387f0df1376b1398d8",
+      "sha256": "f8d784ee95b8568f032b3138bf9b520ee7f7e6d5708194c9c72bbab2f167d4a5"
+    },
+    {
+      "path": "codex-rs/rmcp-client/Cargo.toml",
+      "bytes": 2543,
+      "blob": "1a88c3aedbe8aeccb5ce2debd97681de04d38116",
+      "sha256": "630a65afa578517edb7bb67ba50963dc8d8f182cfe313d6538c30523d034c047"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "bytes": 2030,
+      "blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "path": "codex-rs/rustfmt.toml",
+      "bytes": 164,
+      "blob": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "bytes": 78,
+      "blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_sse_local_failures.rs",
+      "before_sha256": "369d1959b8078119fe959675e970679de5ed26ac91251c2ce685097e084b0202",
+      "after_sha256": "369d1959b8078119fe959675e970679de5ed26ac91251c2ce685097e084b0202",
+      "bytes": 10690,
+      "git_blob": "11a2bc7d3ae341b7828c8a97c3729856c3ae20f4"
+    },
+    {
+      "path": "codex-rs/rmcp-client/BUILD.bazel",
+      "before_sha256": "0f07764a1c07427fcc64f6e122177f10c2a7f74750a5d7d5ab9976780464dbcd",
+      "after_sha256": "0f07764a1c07427fcc64f6e122177f10c2a7f74750a5d7d5ab9976780464dbcd",
+      "bytes": 257,
+      "git_blob": "356a1a7cf6e1820968def9771b1c9ecbc3cab23d"
+    },
+    {
+      "path": "scripts/cell_experiments/paired_consumer_circuit.py",
+      "before_sha256": "3db9a0c0fce454590332b7df2535283500cedff239e38bf74465e281733202e1",
+      "after_sha256": "2583ab190b99f5c28713e1b85a3ef635df205fb2576ab8e805dfd3bd0720b8e0",
+      "bytes": 3219,
+      "git_blob": "3d606d26bf97daa3b9da6cff4b11f29a7433eee4",
+      "ast_identical": true
+    },
+    {
+      "path": "scripts/cell_experiments/selected_session_mcp.py",
+      "before_sha256": "3146ace01fb8cf0830098fa2912d47544d1a67573884092560f9b6212026200b",
+      "after_sha256": "a2194847ba67446ad6a2e48269e471d89e8dc1098b0a1c2aa90cebee0b24399e",
+      "bytes": 14461,
+      "git_blob": "7db9e41ddaa12dc84d5e09b581a4a7378e4ccbef",
+      "ast_identical": true
+    },
+    {
+      "path": "scripts/cell_experiments/test_paired_consumer.py",
+      "before_sha256": "74dba670d4dbe7cced2263a8dd86b9c88eaf68457ead3550556a739e49519a5d",
+      "after_sha256": "a5d8ad0e852edbf77b7d76478d6f4d8f7126c9f82f683f9406057f074f46d6cd",
+      "bytes": 12254,
+      "git_blob": "ab86ef928fa7650f8a112f18f566fcd34b87f653",
+      "ast_identical": true
+    },
+    {
+      "path": "scripts/cell_experiments/test_paired_consumer_circuit.py",
+      "before_sha256": "ac29528b78d57b386455fed9c5976befe767dcb26b69244244c981c3a2f9c26b",
+      "after_sha256": "788e43bfffecc6b9f872a09b3294ffcd5781543dee7728b9b3f1d9e3f874b514",
+      "bytes": 5650,
+      "git_blob": "f9a2fad3650752506b3fb36544feb196fdcb1f46",
+      "ast_identical": true
+    },
+    {
+      "path": "scripts/run_security_lock_scope_v1.py",
+      "before_sha256": "a6e69676dd9738d94312224d0578c99e8c0e1338159111a86da74e2179b4f936",
+      "after_sha256": "91c5b80070feac43db031532d92df98e8e138778c436f9b81ef1d6cf66a63107",
+      "bytes": 48188,
+      "git_blob": "610d480a6e7917b02d948851b06f8ec716533b8f",
+      "ast_identical": true
+    }
+  ],
+  "commands": [
+    {
+      "args": [
+        "/home/qq/hepta-audit-20261128-5bdf/root/format-tools/bin/just",
+        "fmt"
+      ],
+      "cwd": "/home/qq/hepta-audit-20261128-5bdf/root/format-worktree/codex-rs",
+      "exit_code": 0,
+      "wall_seconds": 9.374801480211318,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "/home/qq/hepta-audit-20261128-5bdf/root/format-tools/bin/just",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "/home/qq/hepta-audit-20261128-5bdf/root/format-worktree/codex-rs",
+      "exit_code": 0,
+      "wall_seconds": 0.12416855711489916,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "synthetic_git_head": "6030675a1ec93f3263c0e919dc16ef99f4861198",
+  "actual_initial_scope": "?? codex-rs/rmcp-client/BUILD.bazel\n?? codex-rs/rmcp-client/tests/mcp_sse_local_failures.rs\n?? scripts/cell_experiments/paired_consumer_circuit.py\n?? scripts/cell_experiments/selected_session_mcp.py\n?? scripts/cell_experiments/test_paired_consumer.py\n?? scripts/cell_experiments/test_paired_consumer_circuit.py\n?? scripts/run_security_lock_scope_v1.py\n",
+  "status": "PASS"
+}

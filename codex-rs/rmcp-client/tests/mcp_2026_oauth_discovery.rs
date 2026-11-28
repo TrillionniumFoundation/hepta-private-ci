@@ -132,6 +132,10 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
     let authorization_server = MockServer::start().await;
     let resource_url = format!("{}/mcp", resource_server.uri());
     let resource_metadata_url = format!("{}/resource-metadata", resource_server.uri());
+    let authorization_discovery_url = format!(
+        "{}/.well-known/oauth-authorization-server",
+        authorization_server.uri()
+    );
 
     Mock::given(method("GET"))
         .and(path("/mcp"))
@@ -238,13 +242,7 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                         "GET",
                         format!("{}{resource_metadata_path}", resource_server.uri()),
                     ),
-                    (
-                        "GET",
-                        format!(
-                            "{}/.well-known/oauth-authorization-server",
-                            authorization_server.uri()
-                        ),
-                    ),
+                    ("GET", authorization_discovery_url.clone()),
                     (
                         "GET",
                         format!(
@@ -269,14 +267,19 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                 let error = discovery
                     .err()
                     .context("a mismatched issuer must not be accepted")?;
-                assert!(
-                    matches!(
-                        error.downcast_ref::<AuthError>(),
-                        Some(AuthError::DiscoveryRequestFailed { url, source })
-                            if url.as_str() == format!("{}{authorization_metadata_path}", authorization_server.uri())
-                                && source.to_string().contains("issuer does not match authorization metadata origin")
-                    ),
-                    "expected the original authorization-server issuer to remain bound: {error:#}",
+                let Some(AuthError::DiscoveryRequestFailed { url, source }) =
+                    error.downcast_ref::<AuthError>()
+                else {
+                    panic!(
+                        "expected the original authorization-server issuer to remain bound: {error:#}"
+                    );
+                };
+                // The SDK retains the initiating discovery URL even when the adapter
+                // followed same-origin redirects before rejecting the metadata.
+                assert_eq!(url.as_str(), authorization_discovery_url);
+                assert_eq!(
+                    source.to_string(),
+                    "OAuth authorization server issuer does not match authorization metadata origin",
                 );
             }
         }

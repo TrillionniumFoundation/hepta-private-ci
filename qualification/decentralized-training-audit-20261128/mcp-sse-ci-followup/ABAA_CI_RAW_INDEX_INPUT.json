@@ -1,0 +1,148 @@
+{
+  "source_head": "abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+  "source_tree": "2fc3b7caa9c223f6ebdc189dc891c52faead86eb",
+  "raw_logs": [
+    {
+      "path": "ci-logs/abaa/job-140993807176-original.log",
+      "job_id": 140993807176,
+      "scope": "Bazel Clippy Linux GNU",
+      "utf16_code_units": 841936,
+      "source_markers": [
+        "2026-11-28T13:29:44.5064235Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/7269/merge (fa49613b9a21a5d86cd577f09ed8dd171479203c)",
+        "2026-11-28T13:29:53.6621627Z HEAD is now at fa49613b Merge abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261 into c076d74a013a9be0b969fd42c3932fdcee74e3f0"
+      ]
+    },
+    {
+      "path": "ci-logs/abaa/job-140993300683-original.log",
+      "job_id": 140993300683,
+      "scope": "Restricted HTTP source head",
+      "utf16_code_units": 323804,
+      "source_markers": [
+        "2026-11-28T13:27:20.9419175Z   SOURCE_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:20.9420498Z   TESTED_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:29.5755778Z HEAD is now at abaa4fc0 Match locked rmcp constructors and discovery error URL in tests",
+        "2026-11-28T13:27:29.7356770Z   SOURCE_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:29.7357240Z   TESTED_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:29.7620726Z   SOURCE_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:29.7621286Z   TESTED_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261",
+        "2026-11-28T13:27:29.7836018Z   SOURCE_SHA: abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261"
+      ]
+    },
+    {
+      "path": "ci-logs/abaa/job-140993806982-original.log",
+      "job_id": 140993806982,
+      "scope": "Repository formatting",
+      "utf16_code_units": 310197,
+      "source_markers": [
+        "2026-11-28T13:30:47.9945124Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/repo-checks.yml@refs/pull/7269/merge (fa49613b9a21a5d86cd577f09ed8dd171479203c)",
+        "2026-11-28T13:30:52.8074673Z HEAD is now at fa49613b Merge abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261 into c076d74a013a9be0b969fd42c3932fdcee74e3f0"
+      ]
+    },
+    {
+      "path": "ci-logs/abaa/job-140993807172-original.log",
+      "job_id": 140993807172,
+      "scope": "Bazel Linux MUSL",
+      "utf16_code_units": 1341770,
+      "source_markers": [
+        "2026-11-28T13:29:42.4691710Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/7269/merge (fa49613b9a21a5d86cd577f09ed8dd171479203c)",
+        "2026-11-28T13:29:53.5204637Z HEAD is now at fa49613b Merge abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261 into c076d74a013a9be0b969fd42c3932fdcee74e3f0"
+      ]
+    },
+    {
+      "path": "ci-logs/abaa/job-140993807199-original.log",
+      "job_id": 140993807199,
+      "scope": "Bazel Linux GNU",
+      "utf16_code_units": 1348662,
+      "source_markers": [
+        "2026-11-28T13:29:41.4851785Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/7269/merge (fa49613b9a21a5d86cd577f09ed8dd171479203c)",
+        "2026-11-28T13:29:50.1921052Z HEAD is now at fa49613b Merge abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261 into c076d74a013a9be0b969fd42c3932fdcee74e3f0"
+      ]
+    },
+    {
+      "path": "ci-logs/abaa/job-140993807055-original.log",
+      "job_id": 140993807055,
+      "scope": "SDK TypeScript",
+      "utf16_code_units": 917280,
+      "source_markers": [
+        "2026-11-28T13:30:27.6210850Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/sdk.yml@refs/pull/7269/merge (fa49613b9a21a5d86cd577f09ed8dd171479203c)",
+        "2026-11-28T13:30:37.7368755Z HEAD is now at fa49613b Merge abaa4fc0eb4d87f0dd2d9e1b3bcdb0c5620de261 into c076d74a013a9be0b969fd42c3932fdcee74e3f0"
+      ]
+    }
+  ],
+  "cargo_deny": {
+    "job_id": 140993807036,
+    "raw_log_obtained": false,
+    "tool_error": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed",
+    "steps": {
+      "id": 140993807036,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 46149654249,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Enforce tracked RustSec no-suppression policy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run ./.github/actions/setup-ci-build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    }
+  },
+  "transport": "Exact tool-decoded UTF-8 text, JSON framed then base64 transport; no CI rerun"
+}
