@@ -278,6 +278,9 @@ jobs:
 
           (
             cd codex-rs
+            # Use the workspace compiler even inside a registry crate's source tree.
+            workspace_toolchain="$(rustup show active-toolchain)"
+            RUSTUP_TOOLCHAIN="${workspace_toolchain%% *}" \
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
