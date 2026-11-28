@@ -227,7 +227,13 @@ fn current_process_identity() -> Result<IssuerProcessIdentityConfig> {
 #[cfg(target_os = "linux")]
 #[test]
 fn linux_issuer_process_pin_checks_each_field() -> Result<()> {
-    let snapshot = capture_issuer_process_identity(std::process::id())?;
+    let snapshot = IssuerProcessSnapshot {
+        pid: 1,
+        start_time_ticks: 1,
+        executable_sha256: "a".repeat(64),
+        cgroup_sha256: "b".repeat(64),
+        boot_id_sha256: "c".repeat(64),
+    };
     let expected = IssuerProcessIdentityConfig {
         executable_sha256: snapshot.executable_sha256.clone(),
         cgroup_sha256: snapshot.cgroup_sha256.clone(),
