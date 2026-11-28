@@ -19,8 +19,7 @@ def main(root):
                 for kind,seal in list(ready.items()):
                     if not seal.exists():continue
                     folder=root/("scores-"+kind)
-                    if not (folder/"terminal.json").exists():
-                        subprocess.run([sys.executable,"-u",str(root/"score.py"),str(root),str(source),str(study),str(analytic),kind],check=True)
+                    subprocess.run([sys.executable,"-u",str(root/"score.py"),str(root),str(source),str(study),str(analytic),kind],check=True)
                     if not (folder/"terminal.json").exists():raise ValueError("missing terminal")
                     del ready[kind]
             if ready:time.sleep(40)

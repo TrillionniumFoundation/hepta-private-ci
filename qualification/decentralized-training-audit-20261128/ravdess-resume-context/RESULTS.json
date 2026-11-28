@@ -1,0 +1,134 @@
+{
+  "schema": "ravdess-resume-integrity-controls-v1",
+  "source_base": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+  "source_manifest": {
+    "base": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+    "sources": [
+      {
+        "path": "qualification/hcsn_sustained_20261128/ravdess/score.py",
+        "git_blob_oid": "a48c6f89e63379505699299fecf8782d1d71eafb",
+        "bytes": 8593,
+        "sha256": "144bf218c43fe394ffd0133920b254e2f1bcff202b5ad35023a7251602732ab5"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/ravdess/complete.py",
+        "git_blob_oid": "38e179ae2a75541d9d115c64cafa6b24b26fd331",
+        "bytes": 1258,
+        "sha256": "592a0394efa786f1e345ccf2296dd2604b672dbd76e5af45bff8da842ff8e2d4"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py",
+        "git_blob_oid": "d1738f5233eecaca9b15181091d7d33407fb6c80",
+        "bytes": 2080,
+        "sha256": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py",
+        "git_blob_oid": "4583827336c95e5e80eb5ddd2034dc0f56805d3e",
+        "bytes": 4546,
+        "sha256": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/crema/study.py",
+        "git_blob_oid": "bd044668c683dbf5369b8518833df1cdfee9d35b",
+        "bytes": 12201,
+        "sha256": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py",
+        "git_blob_oid": "17974a4ef6b8179d2c32bf6584f93c7947b80ef5",
+        "bytes": 1449,
+        "sha256": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py",
+        "git_blob_oid": "c983b96683eece73c4605bfb6b677fad4e806380",
+        "bytes": 4491,
+        "sha256": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/model.py",
+        "git_blob_oid": "c6976977202eb48ce06a91c23d49cd5467b10fbe",
+        "bytes": 5923,
+        "sha256": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec"
+      }
+    ]
+  },
+  "scope": "Synthetic filesystem/context/receipt controls. Actual controller subprocess, checked scalar tensor loading, and original module definitions. Numerical score_panel is explicitly replaced; no scientific model construction, inference or training.",
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "test_elapsed_s": 0.6254315569531173,
+  "total_elapsed_s": 4.770458450075239,
+  "max_rss_kib": 207288,
+  "runtime": {
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "torch": "2.8.0+cpu"
+  },
+  "affinity": [
+    0
+  ],
+  "nice": 10,
+  "thread_limits": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "before": {
+    "candidate/qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70",
+    "candidate/qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a",
+    "candidate/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+    "candidate/qualification/hcsn_sustained_20261128/crema/study.py": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+    "candidate/qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584",
+    "candidate/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/complete.py": "0a7ffe5a9d9037fc9441a870d0d7c4fd29e89307abd3e596e1662f493674ded6",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/score.py": "b8ae3e07ccdf3cdb16336e8d9e9201c4b63352201b849da1d1b69caadacb046e",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/test_ravdess_resume.py": "d136604022c06cfa737ddb8d578945d31368c2a23093113e28ea867cc340870a",
+    "original/qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70",
+    "original/qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a",
+    "original/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+    "original/qualification/hcsn_sustained_20261128/crema/study.py": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+    "original/qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584",
+    "original/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "original/qualification/hcsn_sustained_20261128/ravdess/complete.py": "592a0394efa786f1e345ccf2296dd2604b672dbd76e5af45bff8da842ff8e2d4",
+    "original/qualification/hcsn_sustained_20261128/ravdess/score.py": "144bf218c43fe394ffd0133920b254e2f1bcff202b5ad35023a7251602732ab5",
+    "run_resume_controls_v2.py": "8e067795a6d91b34e1a0173381c45af5f363c2c3f6815a952fc3b1d40f1f82de"
+  },
+  "after": {
+    "candidate/qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70",
+    "candidate/qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a",
+    "candidate/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+    "candidate/qualification/hcsn_sustained_20261128/crema/study.py": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+    "candidate/qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584",
+    "candidate/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/complete.py": "0a7ffe5a9d9037fc9441a870d0d7c4fd29e89307abd3e596e1662f493674ded6",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/score.py": "b8ae3e07ccdf3cdb16336e8d9e9201c4b63352201b849da1d1b69caadacb046e",
+    "candidate/qualification/hcsn_sustained_20261128/ravdess/test_ravdess_resume.py": "d136604022c06cfa737ddb8d578945d31368c2a23093113e28ea867cc340870a",
+    "original/qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70",
+    "original/qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a",
+    "original/qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+    "original/qualification/hcsn_sustained_20261128/crema/study.py": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+    "original/qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584",
+    "original/qualification/hcsn_sustained_20261128/generation/model.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+    "original/qualification/hcsn_sustained_20261128/ravdess/complete.py": "592a0394efa786f1e345ccf2296dd2604b672dbd76e5af45bff8da842ff8e2d4",
+    "original/qualification/hcsn_sustained_20261128/ravdess/score.py": "144bf218c43fe394ffd0133920b254e2f1bcff202b5ad35023a7251602732ab5",
+    "run_resume_controls_v2.py": "8e067795a6d91b34e1a0173381c45af5f363c2c3f6815a952fc3b1d40f1f82de"
+  },
+  "source_unchanged": true,
+  "baseline": {
+    "original_entry": "qualification/hcsn_sustained_20261128/ravdess/score.py",
+    "original_git_blob": "a48c6f89e63379505699299fecf8782d1d71eafb",
+    "fixture": "Explicit synthetic source modules and tiny genuine NPZ/scalar tensor files; no model",
+    "terminal_bytes": "{}",
+    "return": null,
+    "source_selection_files_exist": false,
+    "changed_selected_weight": "evidence/run-2/legacy-inner-baseline/study/run/literal-137/scalar.pt",
+    "specifications_calls": 0,
+    "inference_calls": 0
+  },
+  "scientific_model_forward_calls": 0,
+  "training_calls": 0
+}
