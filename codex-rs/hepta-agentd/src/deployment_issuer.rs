@@ -70,9 +70,11 @@ pub use notes::RootNotesGrantAdmission;
 #[path = "deployment_paired.rs"]
 mod paired;
 pub use paired::HostAuthorityPairedRegistration;
+pub(crate) use paired::OriginalPairedTrainingAdmission;
 pub use paired::PairedRootObservation;
 pub use paired::PairedTrainingMaterialManifestV1;
 pub(crate) use paired::RegisteredRootPaired;
+pub use paired::RootPairedTrainingPlanV1;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);

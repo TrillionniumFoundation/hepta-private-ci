@@ -270,6 +270,8 @@ pub use deployment_issuer::RootIssuedNotesGrantObservation;
 pub use deployment_issuer::RootIssuedNotesGrantSelection;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::RootNotesGrantAdmission;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::RootPairedTrainingPlanV1;
 mod android_runtime;
 #[cfg(target_os = "linux")]
 mod calculator_bootstrap;
@@ -963,6 +965,8 @@ pub use paired_preparation::PairedPreparationRequest;
 pub use paired_preparation::PairedPreparationResponse;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::PairedTrainingMaterials;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedTrainingPlanV1;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::PairedTrainingReadResult;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;

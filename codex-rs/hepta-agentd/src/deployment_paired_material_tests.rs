@@ -11,6 +11,9 @@ use support::FAILURE;
 use support::PeerInput;
 use support::TrainingFixture;
 
+#[path = "deployment_paired_admission_tests.rs"]
+mod admission;
+
 fn frame(raw: &[u8]) -> serde_json::Value {
     assert!(raw.len() >= 4);
     let count = u32::from_be_bytes(raw[..4].try_into().unwrap()) as usize;

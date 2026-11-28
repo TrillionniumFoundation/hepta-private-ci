@@ -23,6 +23,11 @@ pub use material::PairedTrainingMaterialManifestV1;
 #[path = "deployment_paired_consumer.rs"]
 mod consumer;
 
+#[path = "deployment_paired_admission.rs"]
+mod admission;
+pub(crate) use admission::OriginalPairedTrainingAdmission;
+pub use admission::RootPairedTrainingPlanV1;
+
 /// Trusted launcher metadata, not proof of a human turn or material custody.
 /// The original Registry must already contain the exact enrollment and effect.
 #[derive(Clone, Debug, PartialEq, Eq)]
