@@ -71,6 +71,17 @@ FILE_GROUPS = {
     },
 }
 
+# These integration fixtures cross production Bazel dependency boundaries
+# that Cargo's dev-dependency feature set does not fully exercise. Keep the
+# full Bazel matrix active for either source path.
+BAZEL_SENSITIVE_TESTS = frozenset(
+    {
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+        "codex-rs/hepta-automation/tests/automation.rs",
+    }
+)
+
+
 CANONICAL_DOC_GROUPS = {
     "docs/modules/MODULES.json": {"lifecycle"},
     "docs/architecture/ARCHITECTURE.json": set(GROUPS),
@@ -133,6 +144,13 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
         if path in FILE_GROUPS:
             selected.update(FILE_GROUPS[path])
+            continue
+
+        if path in BAZEL_SENSITIVE_TESTS:
+            # Exercise the Bazel product dependency boundary as well as native
+            # owner tests; this fixture has a known Cargo/Bazel feature split.
+            selected.update(GROUPS)
+            full_repo = True
             continue
 
         if len(parts) > 2 and parts[0] == "codex-rs":
