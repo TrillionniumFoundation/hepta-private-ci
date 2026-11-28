@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.paired-startup-ci-closeout-source.v1",
+  "inspected_source": "0195e00d2883db5208de6cab8119cb6304b231c9",
+  "parent_commit": "3871fbb62d4c3f69d07ce8651d488309c5363be8",
+  "parent_tree": "ad11211ab7839f3fda0f9e47416d2ddfc8c699ae",
+  "parent_rust_tree": "1334371addbcba5e5f281461d99fbc5bb7a35dea",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "before_sha256": "95da443a50a1fac7bd6f397f134b5d17bc235f42a29094a1d0747f55f3746c70",
+      "after_sha256": "6a1fd9f44d75f01a4aea430102b29dc58b65723af2676ad9b60277a836289c7e",
+      "added": 1,
+      "deleted": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_cli_paired_tests.rs",
+      "before_sha256": "8f5df790e072ddae5a3e47c67eccc9f1cf27c6698a9ed7a39a612d8fe636e808",
+      "after_sha256": "f28711a20343fae6ad091e4e39c4d65e60ebf49e9faa6379f9e9ebf6f100e0f6",
+      "added": 23,
+      "deleted": 18
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_terminal_owner_tests.rs",
+      "before_sha256": "cb3c7b1be6d733d0cb3ef2d9f7c1f1d12cce28c6590bec98d4a31d93dfb78e34",
+      "after_sha256": "3d0543f0e0598d094791c17d3d32d16fa624e77a618389f602716f45293fbc6e",
+      "added": 33,
+      "deleted": 25
+    },
+    {
+      "path": "codex-rs/agent-identity/src/timestamp.rs",
+      "before_sha256": "c4406d5f2bdad7eee253f7ac3c5f61b9627219ec549385eede08621310a18b96",
+      "after_sha256": "90f0e72e6ddbea7f76bcd8061f83c7b7df9245f77797dd98b3fbbb8615da4cd1",
+      "added": 9,
+      "deleted": 5
+    },
+    {
+      "path": "codex-rs/otel/src/events/shared.rs",
+      "before_sha256": "db9fbaf9c764265f3e9dc010ec08707ed472be3ef00b7c88e1741f771711789f",
+      "after_sha256": "f56532e4b6603dd57e284ae0e79527e956b0eaff1291513d239edecab19a49a6",
+      "added": 10,
+      "deleted": 5
+    },
+    {
+      "path": "codex-rs/network-proxy/src/network_policy.rs",
+      "before_sha256": "beb97c56a88d583f1dcec15fc23e6a1840946e9c1aa2dd4a61645f52f84dad39",
+      "after_sha256": "08988223e7857210e95845f4b8e2e2d391441f7e3b1fb75161fbf575e7fdcba8",
+      "added": 10,
+      "deleted": 5
+    },
+    {
+      "path": "codex-rs/exec-server/src/server/handler.rs",
+      "before_sha256": "fd3d32646bff7ec11d4be1956de2b2011af4d707b0e4d66592fe431962672ef1",
+      "after_sha256": "121d59ca3704e33dad649ebaec6b6c7f69b0b8dd2f5f9a4b11dbadad59019137",
+      "added": 3,
+      "deleted": 1
+    }
+  ],
+  "hosted_ci_failure_provenance": {
+    "pr_head": "6eba6064ab0bed37ba5fe4654c7596bc18088b9b",
+    "source_head_job": 140871947094,
+    "blocking_checkout": "6a3a00ed011deb1ae3c7b94d00e5d092b2510220",
+    "both_checkout_trees": "d373715e6cfd00ecd01300c553eb4cfc37d42c36",
+    "other_jobs": [
+      140872360245,
+      140872359571,
+      140872359394,
+      140872360217
+    ]
+  },
+  "actual_format": {
+    "helper_two_files": {
+      "exit": 0,
+      "seconds": 0.4496877668425441
+    },
+    "additional_four_first": {
+      "exit": 1,
+      "seconds": 0.3617084890138358,
+      "cause": "isolated original crate Cargo manifests missing; no rustfmt/source mutation"
+    },
+    "additional_four_after_exact_context": {
+      "exit": 0,
+      "seconds": 0.8302871610503644,
+      "source_unchanged": true
+    }
+  },
+  "full_original_caller_proof": {
+    "status": "NOT_QUALIFIED_FULL_CLI_TIMEOUT_FRESH_PARALLEL_PENDING",
+    "root": "0195e00d2883db5208de6cab8119cb6304b231c9",
+    "external_manifest_sha256": "6a1fd9f44d75f01a4aea430102b29dc58b65723af2676ad9b60277a836289c7e",
+    "checker_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+    "manifest_object_delta": "only original paired startup added to existing seal_bytes product callers; all other fields equal",
+    "four_additional_paths_have_boundary_or_protected_rows": false,
+    "original_cli_elapsed_seconds": "900.021999451",
+    "original_cli_stdout_bytes": 0,
+    "original_cli_stderr_bytes": 0,
+    "original_cli_outcome_sha256": "3eb4e980c70ec91d9e4e25ece950e935676ac4bbd6cc2f78217543e5d999fe57",
+    "historical_unproven_lexical_cache_used": false
+  },
+  "native": {
+    "last_actual_source": "0195e00d2883db5208de6cab8119cb6304b231c9",
+    "last_status": "NOT_QUALIFIED_BUILD_TIMEOUT",
+    "last_seconds": "145.487661068",
+    "last_tests_executed": 0,
+    "last_new_fits": 0,
+    "earlier_distinct_passes_across_e333_and_6eba": 27,
+    "single_full_28_pass_claim": false,
+    "shared_original_cap_seconds": 3600,
+    "shared_actual_seconds": "3247.6470368430616",
+    "shared_remaining_seconds": "352.3529631569384",
+    "once_scoped_fix_executed": false,
+    "once_scoped_fix_cap_seconds": 220,
+    "once_scoped_fix_wrapper_reserve_seconds": 66,
+    "E1_E6_budgets_changed": false
+  },
+  "claims": {
+    "clippy_suppression_added": false,
+    "dependency_or_lock_changed": false,
+    "production_authority_changed": false,
+    "signed_timestamp_bytes_intended_unchanged": true,
+    "http_missing_original_scope_fails_closed": true,
+    "all_ci_passed": false,
+    "production_training_or_adoption_qualified": false
+  },
+  "archives": [
+    {
+      "path": "qualification/paired-startup-ci-closeout-20261128/HOSTED_CI_ORIGINALS.json.gz",
+      "bytes": 442408,
+      "sha256": "309d550687289fa6737d9a9395c42324465bd8b1c90ca6fb9e5ff0ad7b1c0d8c"
+    },
+    {
+      "path": "qualification/paired-startup-ci-closeout-20261128/NATIVE_ORIGINALS.json.gz",
+      "bytes": 85494,
+      "sha256": "d8bd8cd659233e481b2ad23ca0f3b7121c5bf10f2d072d3202c5c5934434b192"
+    },
+    {
+      "path": "qualification/paired-startup-ci-closeout-20261128/VALIDATION_ORIGINALS.json.gz",
+      "bytes": 26491,
+      "sha256": "54a2252583e6e2c5815b8e4d8f9abfcedce3fd0eb3f2afc59e7248249731bb49"
+    }
+  ]
+}

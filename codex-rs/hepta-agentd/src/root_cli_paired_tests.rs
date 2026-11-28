@@ -26,19 +26,24 @@ fn arguments() -> Vec<OsString> {
     .to_vec()
 }
 
-fn offer(args: &mut Vec<OsString>, peers: &mut Vec<UnixStream>, slot: &str) -> String {
-    let (offered, peer) = UnixStream::pair().unwrap();
+fn offer(
+    args: &mut Vec<OsString>,
+    peers: &mut Vec<UnixStream>,
+    slot: &str,
+) -> std::io::Result<String> {
+    let (offered, peer) = UnixStream::pair()?;
     let number = offered.into_raw_fd().to_string();
     args.extend([OsString::from(slot), OsString::from(&number)]);
     peers.push(peer);
-    number
+    Ok(number)
 }
 
-fn assert_closed(peers: Vec<UnixStream>) {
+fn assert_closed(peers: Vec<UnixStream>) -> std::io::Result<()> {
     for mut peer in peers {
-        peer.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
-        assert_eq!(peer.read(&mut [0]).unwrap(), 0);
+        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
+        assert_eq!(peer.read(&mut [0])?, 0);
     }
+    Ok(())
 }
 
 #[test]
@@ -67,12 +72,12 @@ fn incomplete_paired_group_is_refused_before_claim_or_root_open() {
 }
 
 #[test]
-fn paired_handoff_cannot_alias_original_root_and_all_claims_close() {
+fn paired_handoff_cannot_alias_original_root_and_all_claims_close() -> std::io::Result<()> {
     let mut args = arguments();
     let mut peers = Vec::new();
-    offer(&mut args, &mut peers, "--root-handoff-fd");
-    let root = offer(&mut args, &mut peers, "--root-pidfd");
-    offer(&mut args, &mut peers, "--original-login-pidfd");
+    offer(&mut args, &mut peers, "--root-handoff-fd")?;
+    let root = offer(&mut args, &mut peers, "--root-pidfd")?;
+    offer(&mut args, &mut peers, "--original-login-pidfd")?;
     args.extend(
         [
             "--root-paired-training-handoff-fd",
@@ -89,11 +94,11 @@ fn paired_handoff_cannot_alias_original_root_and_all_claims_close() {
         error.to_string(),
         "one distinct inherited descriptor numbered at least 3 is required per slot"
     );
-    assert_closed(peers);
+    assert_closed(peers)
 }
 
 #[test]
-fn paired_material_slots_cannot_alias_and_rejection_closes_originals() {
+fn paired_material_slots_cannot_alias_and_rejection_closes_originals() -> std::io::Result<()> {
     let mut args = arguments();
     let mut peers = Vec::new();
     for slot in [
@@ -102,9 +107,9 @@ fn paired_material_slots_cannot_alias_and_rejection_closes_originals() {
         "--original-login-pidfd",
         "--root-paired-training-handoff-fd",
     ] {
-        offer(&mut args, &mut peers, slot);
+        offer(&mut args, &mut peers, slot)?;
     }
-    let failure = offer(&mut args, &mut peers, "--paired-training-failure-fd");
+    let failure = offer(&mut args, &mut peers, "--paired-training-failure-fd")?;
     args.extend([
         OsString::from("--paired-training-correction-fd"),
         OsString::from(failure),
@@ -114,11 +119,11 @@ fn paired_material_slots_cannot_alias_and_rejection_closes_originals() {
         error.to_string(),
         "one distinct inherited descriptor numbered at least 3 is required per slot"
     );
-    assert_closed(peers);
+    assert_closed(peers)
 }
 
 #[test]
-fn absent_paired_material_fd_refuses_before_any_runtime_or_root_open() {
+fn absent_paired_material_fd_refuses_before_any_runtime_or_root_open() -> std::io::Result<()> {
     let mut args = arguments();
     let mut peers = Vec::new();
     for slot in [
@@ -127,7 +132,7 @@ fn absent_paired_material_fd_refuses_before_any_runtime_or_root_open() {
         "--original-login-pidfd",
         "--root-paired-training-handoff-fd",
     ] {
-        offer(&mut args, &mut peers, slot);
+        offer(&mut args, &mut peers, slot)?;
     }
     args.extend(
         [
@@ -146,5 +151,5 @@ fn absent_paired_material_fd_refuses_before_any_runtime_or_root_open() {
             .raw_os_error(),
         Some(libc::EBADF)
     );
-    assert_closed(peers);
+    assert_closed(peers)
 }
