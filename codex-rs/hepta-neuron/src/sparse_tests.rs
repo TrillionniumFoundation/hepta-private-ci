@@ -209,6 +209,30 @@ fn damaged_checkpoint_is_rejected() {
 }
 
 #[test]
+fn production_sparse_width_and_top_k_ratio_are_exact_at_split_boundaries() {
+    for (width, top_k, accepted) in [
+        (5, 1, true),
+        (9, 1, true),
+        (9, 2, false),
+        (10, 2, true),
+        (10, 3, false),
+        (256, 2, false),
+        (256, 3, true),
+        (256, 51, true),
+        (256, 52, false),
+    ] {
+        let mut config = config();
+        config.width = width;
+        config.top_k = top_k;
+        assert_eq!(
+            config.digest().is_ok(),
+            accepted,
+            "unexpected production Q24 admission width={width} top_k={top_k}"
+        );
+    }
+}
+
+#[test]
 fn invalid_dimensions_and_extreme_top_k_fail_without_overflow() {
     for (width, top_k) in [
         (0, 1),
