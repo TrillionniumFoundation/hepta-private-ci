@@ -1,0 +1,12 @@
+{
+  "old_sha256": "733c7732c4a11f026f1d04cf8b795f3950dc7036f8770c224fabf5527bd0ea61",
+  "new_sha256": "7e29a933f8b417b364dd5d5dd5f1105e3f6003d2eeb9b8cff02364e82e034cfa",
+  "change": "Pass existing SBX_DEBUG=1 explicitly through Bazel test environment. No target, assertion, timeout or retry configuration changes.",
+  "original_targets": [
+    "//codex-rs/cli:cli-sandbox_cloud_config-test",
+    "//codex-rs/exec-server:exec-server-file_system_windows-test",
+    "//codex-rs/core:core-all-test"
+  ],
+  "max_job_minutes": 60,
+  "child_completion_commit": "d8d41e95f3af9b81d5d239d69ac68a870c011890"
+}

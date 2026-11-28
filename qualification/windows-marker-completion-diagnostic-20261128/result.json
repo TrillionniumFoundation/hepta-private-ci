@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.windows.marker-completion-diagnostic.v1",
+  "setup": {
+    "head": "4c1930dbf29e30c1b737144810ea98ae8e22286d",
+    "run": 46084606012,
+    "job": 140791138194,
+    "status": "PASS",
+    "collected": 33,
+    "passed": 31,
+    "failed": 0,
+    "original_collection_ignored": 2,
+    "explicit_workers": [
+      {
+        "passed": 1,
+        "ignored": 0
+      },
+      {
+        "passed": 1,
+        "ignored": 0
+      }
+    ],
+    "held_directory_rename": "PASS"
+  },
+  "consumers": {
+    "head": "2c8c552c69a77ee02636413d1003c83494da0f87",
+    "run": 46083630337,
+    "job": 140788084206,
+    "status": "FAIL",
+    "cli": "PASS",
+    "exec_server": "PASS",
+    "core": "FAIL",
+    "failed_attempts": 7,
+    "attempts": 22,
+    "remaining_observed": [
+      "ephemeral system-thread git metadata assertion",
+      "subagent_stop exact child completion race",
+      "workspace out-of-root write case: orchestrator_helper_incomplete",
+      "managed deny-read case: orchestrator_helper_incomplete"
+    ],
+    "marker_setup_write_failed_observed": false,
+    "incomplete_cause": "OPEN: helper exit 0 followed by marker/users verification false; original log omits underlying read/parse failure."
+  },
+  "candidate_scope": "Normal child d8 completion fix plus diagnostic observation only. No claim that marker incompleteness is fixed.",
+  "new_run": "NOT_STARTED"
+}

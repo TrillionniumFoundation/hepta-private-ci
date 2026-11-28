@@ -1,0 +1,59 @@
+{
+  "returncode": 0,
+  "results": [
+    {
+      "name": "consumer2c8-job140788084206.log",
+      "returncode": 0,
+      "seconds": 5.723049290943891,
+      "bytes": 1740715,
+      "sha256": "15c095132ba105fe17603294a43b7bfb2bee73ed76eb6c56dc962c179fb6b5f9"
+    },
+    {
+      "name": "consumer2c8-artifact15238433417.zip",
+      "returncode": 0,
+      "seconds": 12.199884332949296,
+      "bytes": 4853223,
+      "sha256": "6753e2aa981a2355c80555f9c1f49e57f10d3a60ba5c2c2d3cb2f3b08bcf1084",
+      "members": [
+        {
+          "name": "bazel-execution-logs/execution-log-test-original-sandbox-runfiles-1840.zst",
+          "bytes": 4529608,
+          "sha256": "78c9ae98c731960955a14ea04fd0a05614e71ce65c6b5d2c618f8ed448334a9f",
+          "crc32": 1314767571
+        },
+        {
+          "name": "windows-sandbox-runfiles.log",
+          "bytes": 1492055,
+          "sha256": "a00f50e7d2ff35145a68cbf6ebcd01e4c3dcc4b5e34ade8844cacfc5c9ee581c",
+          "crc32": 164015222
+        }
+      ]
+    },
+    {
+      "name": "setup4c-artifact15238747073.zip",
+      "returncode": 0,
+      "seconds": 6.181246499996632,
+      "bytes": 2126585,
+      "sha256": "9500f7da71e1f71429a02c8f06e11202e625e856ca257efeb338caa610343d85",
+      "members": [
+        {
+          "name": "bazel-execution-logs/execution-log-test-original-setup-identity-1510.zst",
+          "bytes": 2120603,
+          "sha256": "f44fd0b4bf54cc9de5943d3f4157d9224e3c693701458cd3510d717852a4f300",
+          "crc32": 1859723830
+        },
+        {
+          "name": "windows-machine-identity.log",
+          "bytes": 51046,
+          "sha256": "685ffa7a31767ef724955cb06492454d909e81b47eae70e551334698a36a10c1",
+          "crc32": 3547873273
+        }
+      ]
+    },
+    {
+      "name": "setup4c-job140791138194.log",
+      "bytes": 229822,
+      "sha256": "1acb76f2fc59e3e2dea0b533922c136aa55aff9b5d4d4e20f9d6dd6f1966afc4"
+    }
+  ]
+}

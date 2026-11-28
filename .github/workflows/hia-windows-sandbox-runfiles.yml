@@ -50,6 +50,7 @@ jobs:
             --platforms=//:windows_x86_64_msvc \
             --nocache_test_results \
             --test_verbose_timeout_warnings \
+            --test_env=SBX_DEBUG=1 \
             --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
             -- \
             //codex-rs/cli:cli-sandbox_cloud_config-test \
