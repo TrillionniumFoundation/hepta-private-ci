@@ -1,0 +1,175 @@
+{
+  "schema": "hepta.codex.subagent-exact-request-completion.v2",
+  "original_failure_preserved": true,
+  "diagnostic_source_restored": true,
+  "root_cause": "ResponseMock records before its custom matcher, so requests[0] selected the already-completed parent. Select the actual child continuation request using the original body predicate, then consume that exact child/turn terminal event.",
+  "candidate_sha256": "1f017d35bd5b4c267989ab2237e8427169a19bb92b89c4744745945ea392408b",
+  "response_mock_source_sha256": "7616935a3f5244c3640b416133ca56d8fe2614c29500c850f04db7312807fc91",
+  "request_seconds": 2,
+  "event_seconds": 10,
+  "hook_seconds": 2,
+  "original_assertions_unchanged": true,
+  "original_case_passed": true,
+  "retry_count": 0,
+  "flaky_count": 0,
+  "platform": "macOS aarch64",
+  "current_graph_parent": "c903c5ea74e3241da2cb23d47ab35f633455041a",
+  "windows_full_consumers": "PENDING",
+  "files": [
+    {
+      "path": "actual-fixed-original-case/candidate-subagent_notifications.rs",
+      "bytes": 108248,
+      "sha256": "1f017d35bd5b4c267989ab2237e8427169a19bb92b89c4744745945ea392408b"
+    },
+    {
+      "path": "actual-fixed-original-case/intent.json",
+      "bytes": 1094,
+      "sha256": "a16574d373cd19495b58975be78b97b65ce68e04ac87a25d4cb622cbc1c440ac"
+    },
+    {
+      "path": "actual-fixed-original-case/original-subagent_notifications.rs",
+      "bytes": 107668,
+      "sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e"
+    },
+    {
+      "path": "actual-fixed-original-case/source.patch",
+      "bytes": 1967,
+      "sha256": "28bbaa943d3dfcff25526df59f0f33444cec51d3c5c63e96b66fa9f94f8aa3e7"
+    },
+    {
+      "path": "actual-fixed-original-case/started.json",
+      "bytes": 15,
+      "sha256": "0b14d7b210137b2314dc7e36460e62b1837737b50d76407c97e09b14dc3d5f36"
+    },
+    {
+      "path": "actual-fixed-original-case/terminal.json",
+      "bytes": 133,
+      "sha256": "e0cfe12b179da9fabd2c180e6522a5887fe0271abc962497df977e8e1fa13a62"
+    },
+    {
+      "path": "actual-fixed-original-case/tests.stderr",
+      "bytes": 28075,
+      "sha256": "3ab681204410f36eac088233d241a6764e2f58489e2756022d94473bd5f484aa"
+    },
+    {
+      "path": "actual-fixed-original-case/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after.rs",
+      "bytes": 108248,
+      "sha256": "1f017d35bd5b4c267989ab2237e8427169a19bb92b89c4744745945ea392408b"
+    },
+    {
+      "path": "before.rs",
+      "bytes": 107668,
+      "sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e"
+    },
+    {
+      "path": "event-diagnostic/diagnostic-subagent_notifications.rs",
+      "bytes": 107822,
+      "sha256": "e4b3e2d8ecd68066c6c48718ded91a9280c1a31c93ee38c2a802fce067c11f41"
+    },
+    {
+      "path": "event-diagnostic/diagnostic.diff",
+      "bytes": 788,
+      "sha256": "2cd1afae91c4a23420f1e9c2e719fa3c46a553372f708e6b641130cbb8a33981"
+    },
+    {
+      "path": "event-diagnostic/intent.json",
+      "bytes": 1002,
+      "sha256": "584608e71a3a93743bd433fdc7c5f162270b4fbce5f9ab3f053aa5e45fb1b091"
+    },
+    {
+      "path": "event-diagnostic/observed-events.txt",
+      "bytes": 1532,
+      "sha256": "44801608fb454eab62d5e32ea473ac67e4c63d500b3500909f8f0383d9bea488"
+    },
+    {
+      "path": "event-diagnostic/original-subagent_notifications.rs",
+      "bytes": 107668,
+      "sha256": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e"
+    },
+    {
+      "path": "event-diagnostic/started.json",
+      "bytes": 15,
+      "sha256": "4b5a22ee6f7cb8d67e401e667dbd2e566375b53d2b5799549d3a0b0329ef8bd7"
+    },
+    {
+      "path": "event-diagnostic/terminal.json",
+      "bytes": 129,
+      "sha256": "384d17a6454ac5f7de548e79b3836cec9004b289aefb5c15261a46252b98e581"
+    },
+    {
+      "path": "event-diagnostic/tests.stderr",
+      "bytes": 31378,
+      "sha256": "1d97525003abccef3db084c21595683d835fa9abaad961c79d5e2bc8af7e2847"
+    },
+    {
+      "path": "event-diagnostic/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "event-diagnostic-copied.json",
+      "bytes": 1290,
+      "sha256": "f36393f45a3e325cac337ea34b490668448134068504a2b5e8e8e72b6735ceb8"
+    },
+    {
+      "path": "fmt-terminal.json",
+      "bytes": 229,
+      "sha256": "6e0b54cc20196e53bbbdbbb2f3a37631d7d85e0e96655c8e2ffe7dd3f4b0938c"
+    },
+    {
+      "path": "fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-case/intent.json",
+      "bytes": 331,
+      "sha256": "6519a6bcdef598dede21df0c1eb66199bd6b4a0038fed389582025753d367fcf"
+    },
+    {
+      "path": "original-case/source-before.json",
+      "bytes": 852,
+      "sha256": "8439cb8fb88b250ff793dc879fe171bff15908525fb6f32e0a31a8955e00b6eb"
+    },
+    {
+      "path": "original-case/started.json",
+      "bytes": 15,
+      "sha256": "d4d6b35e70b58d1f9087e6d309ab9d95066598de7e2f02766630689cef14efaa"
+    },
+    {
+      "path": "original-case/terminal.json",
+      "bytes": 85,
+      "sha256": "face9e91d9549330a7e355f0eb90107ed3d66b14ae57cef4a8df8496e31465a0"
+    },
+    {
+      "path": "original-case/tests.stderr",
+      "bytes": 29729,
+      "sha256": "3fc9e888982c32cbce7c939ce45d677d9cce06b94bf21acab1f07c11d503723c"
+    },
+    {
+      "path": "original-case/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-case-copied.json",
+      "bytes": 823,
+      "sha256": "452cd23423dfcc587a6775d4981f8318f5ef3afe72e6513292523fc818277bdf"
+    },
+    {
+      "path": "source.patch",
+      "bytes": 1967,
+      "sha256": "28bbaa943d3dfcff25526df59f0f33444cec51d3c5c63e96b66fa9f94f8aa3e7"
+    }
+  ]
+}

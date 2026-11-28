@@ -1,0 +1,24 @@
+{
+  "head": "c903c5ea74e3241da2cb23d47ab35f633455041a",
+  "argv": [
+    "/opt/homebrew/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-core",
+    "--test",
+    "all",
+    "-E",
+    "test(suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents)"
+  ],
+  "source_old": "a1c1002a9a7770eb09ef0b2c2d07de09301ade3725820327eb7025f768aae33e",
+  "source_diagnostic": "e4b3e2d8ecd68066c6c48718ded91a9280c1a31c93ee38c2a802fce067c11f41",
+  "original_matcher_and_timeouts_unchanged": true,
+  "production_qualification": false,
+  "other_sources": {
+    "codex-rs/core/tests/common/lib.rs": "b4cee7c7bd8e850dd7375bc5f8c64c25039bfcd8945a1fbda34afab50ebf886e",
+    "codex-rs/core/src/agent/control/residency.rs": "e774ab1768df97e61408fed530bed676341e417e3918e4543a16dc2012a99d01",
+    "codex-rs/Cargo.toml": "6109af0d977179b098b6e8a248094609d9f2d9c1195adb2e9b934fd6231a70d5",
+    "codex-rs/Cargo.lock": "0396f882a9def6e4583b7251395022cfac48e529c48dad031b904b63f53d460b"
+  }
+}

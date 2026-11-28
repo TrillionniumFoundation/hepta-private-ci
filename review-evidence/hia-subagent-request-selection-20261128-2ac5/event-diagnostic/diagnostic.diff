@@ -1,0 +1,18 @@
+--- original
++++ diagnostic
+@@ -774,9 +774,12 @@
+         .expect("continued child turn id");
+     let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+     // Receiving the continuation request does not mean its stop hook has run.
+-    wait_for_event_match(child_thread.as_ref(), |event| match event {
+-        EventMsg::TurnComplete(event) if event.turn_id == child_turn_id => Some(()),
+-        _ => None,
++    wait_for_event_match(child_thread.as_ref(), |event| {
++        eprintln!("subagent completion observation: wanted thread={child_thread_id} turn={child_turn_id}; actual={event:?}");
++        match event {
++            EventMsg::TurnComplete(event) if event.turn_id == child_turn_id => Some(()),
++            _ => None,
++        }
+     })
+     .await;
+ 

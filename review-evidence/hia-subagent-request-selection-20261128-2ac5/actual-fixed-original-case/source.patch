@@ -1,0 +1,35 @@
+diff --git a/codex-rs/core/tests/suite/subagent_notifications.rs b/codex-rs/core/tests/suite/subagent_notifications.rs
+index 3b81e50..23e05d5 100644
+--- a/codex-rs/core/tests/suite/subagent_notifications.rs
++++ b/codex-rs/core/tests/suite/subagent_notifications.rs
+@@ -762,8 +762,20 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
+ 
+     test.submit_turn(TURN_1_PROMPT).await?;
+     let _ = wait_for_requests(&first_child_request).await?;
+-    let second_child_requests = wait_for_requests(&second_child_request).await?;
+-    let second_child_body = second_child_requests[0].body_json();
++    // ResponseMock records before its custom matcher, including parent requests.
++    let request_deadline = Instant::now() + Duration::from_secs(2);
++    let second_child_body = loop {
++        if let Some(request) = second_child_request.requests().into_iter().find(|request| {
++            request.body_contains_text(SUBAGENT_STOP_CONTINUATION)
++                && !request.body_contains_text(SPAWN_CALL_ID)
++        }) {
++            break request.body_json();
++        }
++        if Instant::now() >= request_deadline {
++            anyhow::bail!("expected the continued child's matching request");
++        }
++        sleep(Duration::from_millis(10)).await;
++    };
+     let child_thread_id = ThreadId::from_string(
+         second_child_body["client_metadata"]["thread_id"]
+             .as_str()
+@@ -772,6 +784,7 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
+     let child_turn_id = second_child_body["client_metadata"]["turn_id"]
+         .as_str()
+         .expect("continued child turn id");
++    assert_ne!(child_thread_id, test.session_configured.thread_id);
+     let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+     // Receiving the continuation request does not mean its stop hook has run.
+     wait_for_event_match(child_thread.as_ref(), |event| match event {
