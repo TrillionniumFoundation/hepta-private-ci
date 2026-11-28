@@ -121,6 +121,13 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # These tests create many short-lived repositories; Git's opportunistic
+        # background maintenance can race TemporaryDirectory.cleanup() after
+        # a successful synchronous command and leave files inside .git.
+        # Disable only that asynchronous housekeeping in each test fixture,
+        # never the test's assertions, cleanup, or exact-revision checks.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -151,6 +158,12 @@ renamed = { package = "leaf", path = "leaf" }
         self.git("add", ".")
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_git_fixture_disables_unowned_background_maintenance(self):
+        self.assertEqual(self.git("config", "--get", "maintenance.auto"), "false")
+        self.assertEqual(self.git("config", "--get", "gc.auto"), "0")
+        # The command itself is still real Git against a durable history.
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
 
     def test_workspace_alias_optional_target_and_build_dependencies(self):
         with (self.root / "codex-rs/owner/Cargo.toml").open("a") as stream:
@@ -217,6 +230,13 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # These tests create many short-lived repositories; Git's opportunistic
+        # background maintenance can race TemporaryDirectory.cleanup() after
+        # a successful synchronous command and leave files inside .git.
+        # Disable only that asynchronous housekeeping in each test fixture,
+        # never the test's assertions, cleanup, or exact-revision checks.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(
