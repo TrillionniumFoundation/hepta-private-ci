@@ -16,7 +16,6 @@ use app_test_support::rollout_path;
 use app_test_support::test_absolute_path;
 use app_test_support::to_response;
 use app_test_support::write_chatgpt_auth;
-use chrono::Utc;
 use codex_app_server_protocol::ActivePermissionProfile;
 use codex_app_server_protocol::ApprovalsReviewer;
 use codex_app_server_protocol::AskForApproval;
@@ -5462,8 +5461,11 @@ fn mock_responses_config(server_uri: &str) -> MockResponsesConfig {
 
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
-    let parsed = chrono::DateTime::parse_from_rfc3339(updated_at_rfc3339)?.with_timezone(&Utc);
-    let times = FileTimes::new().set_modified(parsed.into());
+    let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
+    let modified = parsed
+        .to_system_time()
+        .ok_or_else(|| std::io::Error::other("fixture timestamp is out of range"))?;
+    let times = FileTimes::new().set_modified(modified);
     std::fs::OpenOptions::new()
         .append(true)
         .open(path)?

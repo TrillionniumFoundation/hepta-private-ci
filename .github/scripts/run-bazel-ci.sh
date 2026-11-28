@@ -52,7 +52,9 @@ if [[ -n "${BAZEL_OUTPUT_USER_ROOT:-}" ]]; then
 fi
 
 run_bazel() (
-  if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  # CI tests can select a different platform's configuration on this host.
+  # Use the native transport for an MSYS shell regardless of that selection.
+  if [[ "${RUNNER_OS:-}" == "Windows" || "${OSTYPE:-}" == msys* ]]; then
     # Bash writes its full array without spawning a native process with that
     # array. A large target roster can exceed Windows' native argv limit before
     # Python or Bazel starts; only the transport path crosses this boundary.
@@ -316,6 +318,24 @@ if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 1 && -z "${BUI
   # execution. When credentials are unavailable, keep the local build shape
   # and its lower concurrency cap.
   post_config_bazel_args+=(--jobs=8)
+fi
+
+# Full macOS test runs share the GitHub runner with Bazel's remote client.
+# The default 800 remote jobs can exhaust its native threads before tests start.
+if [[ "${RUNNER_OS:-}" == "macOS" && "${bazel_args[0]}" == "test" &&
+      " ${bazel_targets[*]} " == *" //... "* && -n "${BUILDBUDDY_API_KEY:-}" ]]; then
+  has_jobs_override=0
+  for arg in "${bazel_args[@]}"; do
+    case "$arg" in
+      --jobs|--jobs=*|-j|-j[0-9]*)
+        has_jobs_override=1
+        break
+        ;;
+    esac
+  done
+  if [[ $has_jobs_override -eq 0 ]]; then
+    post_config_bazel_args+=(--jobs=128)
+  fi
 fi
 
 if [[ -n "${BAZEL_REPO_CONTENTS_CACHE:-}" ]]; then

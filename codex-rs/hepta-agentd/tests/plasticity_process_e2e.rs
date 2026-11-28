@@ -6,6 +6,7 @@ use std::fs::OpenOptions;
 use std::fs::{self};
 use std::path::Path;
 
+use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
@@ -54,25 +55,24 @@ use support::fleet::FleetHarness;
 
 const Q24: i64 = 1_i64 << 24;
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap_or_else(|error| panic!("stable id: {error:?}"))
+fn id(value: &str) -> Result<StableId> {
+    StableId::new(value).context("stable fixture id")
 }
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn generation(value: u64) -> Generation {
-    Generation::new(value).unwrap_or_else(|error| panic!("generation: {error:?}"))
+fn generation(value: u64) -> Result<Generation> {
+    Generation::new(value).context("fixture generation")
 }
 
-fn new_rw(path: &Path) -> std::fs::File {
+fn new_rw(path: &Path) -> std::io::Result<std::fs::File> {
     OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(path)
-        .unwrap_or_else(|error| panic!("create owner file: {error:?}"))
 }
 
 fn policy_manifest(
@@ -80,19 +80,19 @@ fn policy_manifest(
     producer: &str,
     content_digest: Digest32,
     objective_digest: Digest32,
-) -> ArtifactManifest {
-    ArtifactManifest {
-        artifact_id: id(artifact_id),
+) -> Result<ArtifactManifest> {
+    Ok(ArtifactManifest {
+        artifact_id: id(artifact_id)?,
         kind: ArtifactKind::Policy,
-        generation: generation(1),
+        generation: generation(1)?,
         predecessor_id: None,
         content_digest,
         objective_digest,
         support_digest: digest(&format!("{artifact_id}:support")),
-        producer_id: id(producer),
+        producer_id: id(producer)?,
         compatibility_digest: digest(&format!("{artifact_id}:compatibility")),
         encoded_size_bytes: 64,
-    }
+    })
 }
 
 fn principal_json(principal: &AuthenticatedPrincipalV1) -> serde_json::Value {
@@ -130,7 +130,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let root_key = SigningKey::from_bytes(&[8; 32]);
     let generator_scope = digest("plasticity-process-ledger-generator-scope");
     let generator = AuthenticatedPrincipalV1 {
-        principal_id: id("generator:plasticity-process"),
+        principal_id: id("generator:plasticity-process")?,
         credential_chain_digest: digest("plasticity-process-generator-credential"),
         signing_key_digest: Digest32::of_bytes(&generator_key.verifying_key().to_bytes()),
         scope_digest: generator_scope,
@@ -139,7 +139,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         expires_at: 100,
     };
     let trust_root = LearningTrustRootV1 {
-        root_id: id("root:plasticity-process-ledger"),
+        root_id: id("root:plasticity-process-ledger")?,
         scope_digest: generator_scope,
         verifying_key: root_key.verifying_key().to_bytes(),
         valid_from: 1,
@@ -148,7 +148,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     };
     let mut distribution = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
-            distribution_id: id("distribution:plasticity-process-ledger"),
+            distribution_id: id("distribution:plasticity-process-ledger")?,
             generation: 1,
             effective_at: 20,
             trust: LearningEvidenceTrustV1 {
@@ -157,7 +157,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 authority_epoch: 7,
                 signers: vec![TrustedLearningSignerV1 {
                     principal: generator.clone(),
-                    controller_id: id("controller:plasticity-process-generator"),
+                    controller_id: id("controller:plasticity-process-generator")?,
                     verifying_key: generator_key.verifying_key().to_bytes(),
                     roles: vec![LearningEvidenceRoleV1::Generator],
                     revoked_at: None,
@@ -171,9 +171,9 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     };
     distribution.signature = root_key.sign(&distribution.signing_bytes()?).to_bytes();
     let activated_trust = activate_learning_trust(&trust_root, distribution, None, 50)?;
-    let ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
+    let ledger = DurableLedger::create(new_rw(&ledger_path)?, ledger_binding, 32)?;
     let witness_path = root.join("learning-ledger.witness");
-    let witness = LedgerWitnessStore::create(new_rw(&witness_path), ledger_binding)?;
+    let witness = LedgerWitnessStore::create(new_rw(&witness_path)?, ledger_binding)?;
     let containing_directory = std::fs::File::open(&root)?;
     let mut writer = LedgerWriter::from_durable(
         ledger,
@@ -182,18 +182,18 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         &containing_directory,
         &containing_directory,
     )?;
-    let candidates = vec![id("candidate:update"), id("abstain")];
+    let candidates = vec![id("candidate:update")?, id("abstain")?];
     let decision = ProductionDecisionV2 {
-        record_id: id("decision:plasticity-process"),
-        episode_id: id("episode:plasticity-process"),
+        record_id: id("decision:plasticity-process")?,
+        episode_id: id("episode:plasticity-process")?,
         run_snapshot_digest: digest("plasticity-process-run-snapshot"),
         objective_digest,
         policy_digest: digest("plasticity-process-policy"),
         candidate_ids: candidates.clone(),
-        selected_candidate_id: id("candidate:update"),
+        selected_candidate_id: id("candidate:update")?,
         selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id("candidate-set:plasticity-process"),
+            set_id: id("candidate-set:plasticity-process")?,
             state_digest: digest("plasticity-process-state"),
             generator_id: generator.principal_id.clone(),
             generator_code_digest: digest("plasticity-process-generator-code"),
@@ -210,7 +210,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     };
     let payload = decision_signing_payload_v2(&decision)?;
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: id("evidence:plasticity-process-generator"),
+        evidence_id: id("evidence:plasticity-process-generator")?,
         principal_id: generator.principal_id,
         role: LearningEvidenceRoleV1::Generator,
         trust_digest: writer.verifier().trust_digest(),
@@ -249,7 +249,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         .event_digest;
 
     let dataset_principal = AuthenticatedPrincipalV1 {
-        principal_id: id("owner:dataset"),
+        principal_id: id("owner:dataset")?,
         credential_chain_digest: digest("dataset:credential"),
         signing_key_digest: digest("dataset:key"),
         scope_digest: digest("dataset:scope"),
@@ -259,7 +259,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     };
     let dataset = freeze_dataset_receipt_v3(
         DatasetFreezeRequestV1 {
-            snapshot_id: id("dataset:plasticity-process"),
+            snapshot_id: id("dataset:plasticity-process")?,
             producer: dataset_principal.clone(),
             ledger_head_digest: ledger_head,
             objective_digest,
@@ -276,8 +276,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     )?;
 
     let signal_binding = PlasticityDynamicSignalBindingV1 {
-        layer_id: id("layer:plasticity-process"),
-        parameter_id: id("parameter:plasticity-process"),
+        layer_id: id("layer:plasticity-process")?,
+        parameter_id: id("parameter:plasticity-process")?,
         eligibility_index: 0,
         modulator_weights: vec![FixedQ32::ONE],
     };
@@ -291,14 +291,14 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         (
             "event:baseline",
             ArtifactManifest {
-                artifact_id: id("artifact:baseline"),
+                artifact_id: id("artifact:baseline")?,
                 kind: ArtifactKind::Model,
-                generation: generation(1),
+                generation: generation(1)?,
                 predecessor_id: None,
                 content_digest: selected_artifact_digest,
                 objective_digest,
                 support_digest: digest("baseline:support"),
-                producer_id: id("owner:model"),
+                producer_id: id("owner:model")?,
                 compatibility_digest: digest("baseline:compatibility"),
                 encoded_size_bytes: 128,
             },
@@ -310,7 +310,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:update-rule",
                 update_rule_digest,
                 objective_digest,
-            ),
+            )?,
         ),
         (
             "event:mutation-policy",
@@ -319,7 +319,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:mutation-policy",
                 mutation_policy_digest,
                 objective_digest,
-            ),
+            )?,
         ),
         (
             "event:broadcast",
@@ -328,11 +328,11 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:broadcast",
                 broadcast_digest,
                 objective_digest,
-            ),
+            )?,
         ),
     ] {
         artifacts.append(ArtifactEvent::Register {
-            event_id: id(event_id),
+            event_id: id(event_id)?,
             manifest,
         })?;
     }
@@ -370,7 +370,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let neuron_config = SparseConfig {
         model_digest: selected_artifact_digest,
         normalization_digest: digest("plasticity-process-normalization"),
-        generation: generation(1),
+        generation: generation(1)?,
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q24 / 2,
@@ -384,7 +384,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         eligibility_decay_q24: Q24 / 2,
     };
     let mut neuron = SparseJournal::open(
-        new_rw(&neuron_path),
+        new_rw(&neuron_path)?,
         neuron_config.clone(),
         JournalScope {
             scope_digest: neuron_scope_digest,
@@ -406,9 +406,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             prediction_q24: vec![0; 5],
         },
     )?;
-    let neuron_anchor = neuron
-        .current_anchor()?
-        .unwrap_or_else(|| panic!("neuron anchor"));
+    let neuron_anchor = neuron.current_anchor()?.context("neuron anchor")?;
 
     let trust_scope = digest("plasticity-process-trust-scope");
     let keys = [
@@ -419,9 +417,9 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let trust_signers = keys
         .iter()
         .enumerate()
-        .map(|(index, key)| {
+        .map(|(index, key)| -> Result<serde_json::Value> {
             let principal = AuthenticatedPrincipalV1 {
-                principal_id: id(&format!("plasticity-process-signer-{index}")),
+                principal_id: id(&format!("plasticity-process-signer-{index}"))?,
                 credential_chain_digest: digest(&format!("plasticity-process-credential-{index}")),
                 signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
                 scope_digest: trust_scope,
@@ -434,15 +432,15 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 1 => "observer",
                 _ => "evaluator",
             };
-            json!({
+            Ok(json!({
                 "principal": principal_json(&principal),
                 "controller_id": format!("plasticity-process-controller-{index}"),
                 "verifying_key_hex": hex32(key.verifying_key().to_bytes()),
                 "roles": [role],
                 "revoked_at": null,
-            })
+            }))
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>>>()?;
 
     let parameter_registry = root.join("parameter-registry");
     let parameter_anchor = root.join("parameter-anchor");

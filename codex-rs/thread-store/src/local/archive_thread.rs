@@ -7,7 +7,6 @@ use super::helpers::validated_rollout_file_name;
 use crate::ArchiveThreadsParams;
 use crate::ThreadStoreError;
 use crate::ThreadStoreResult;
-use chrono::Utc;
 use codex_rollout::RolloutReferenceIndex;
 use tracing::warn;
 
@@ -128,7 +127,11 @@ async fn archive_thread_with_paths(
 
     if let Some(ctx) = state_db_ctx
         && let Err(err) = ctx
-            .mark_archived(thread_id, archived_path.as_path(), Utc::now())
+            .mark_archived(
+                thread_id,
+                archived_path.as_path(),
+                codex_utils_time::Timestamp::now(),
+            )
             .await
     {
         if let Err(restore_err) = restore_rollout_moves(&rollout_moves) {
@@ -149,7 +152,6 @@ async fn archive_thread_with_paths(
 mod tests {
     use std::time::Duration;
 
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
     use codex_protocol::protocol::ThreadHistoryMode;
@@ -335,7 +337,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             selected_rollout_path,
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some(config.default_model_provider_id.clone());

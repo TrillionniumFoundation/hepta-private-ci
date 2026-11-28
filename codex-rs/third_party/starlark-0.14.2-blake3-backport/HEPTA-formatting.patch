@@ -1,0 +1,67 @@
+--- a/src/eval/compiler/def.rs
++++ b/src/eval/compiler/def.rs
+@@ -544,9 +544,7 @@
+ 
+ /// Starlark function internal representation and implementation of
+ /// [`StarlarkValue`].
+-#[derive(
+-    NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable,
+-)]
++#[derive(NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable)]
+ pub(crate) struct DefGen<V> {
+     pub(crate) parameters: ParametersSpec<V>, // The parameters, **kwargs etc including defaults (which are evaluated afresh each time)
+     /// Indices of parameters, which are captured in nested defs.
+--- a/src/values/types/enumeration/value.rs
++++ b/src/values/types/enumeration/value.rs
+@@ -46,14 +46,12 @@
+ use crate::values::types::type_instance_id::TypeInstanceId;
+ 
+ /// A value from an enumeration.
+-#[derive(
+-    Clone, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
+-)]
++#[derive(Clone, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable)]
+ #[repr(C)]
+ pub struct EnumValueGen<V: ValueLifetimeless> {
+     // Must ignore value.typ or type.elements, since they are circular
+     pub(crate) typ: V, // Must be EnumType it points back to (so it can get the type)
+-    pub(crate) value: V,   // The value of this enumeration
++    pub(crate) value: V, // The value of this enumeration
+     pub(crate) index: i32, // The index in the enumeration
+     pub(crate) id: TypeInstanceId,
+ }
+--- a/src/values/types/function.rs
++++ b/src/values/types/function.rs
+@@ -106,9 +106,7 @@
+ /// Starlark representation of native (Rust) functions.
+ ///
+ /// Almost always created with [`#[starlark_module]`](macro@crate::starlark_module).
+-#[derive(
+-    ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable,
+-)]
++#[derive(ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable)]
+ #[display("{}", name)]
+ pub(crate) struct NativeFunction {
+     pub(crate) function: NativeFunc,
+@@ -272,9 +270,7 @@
+     }
+ }
+ 
+-#[derive(
+-    Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
+-)]
++#[derive(Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable)]
+ #[display("{}", name)]
+ pub(crate) struct NativeMethod {
+     pub(crate) function: NativeMeth,
+@@ -312,9 +308,7 @@
+ 
+ /// Used by the `#[starlark(attribute)]` tag of [`#[starlark_module]`](macro@starlark_module)
+ /// to define a function that pretends to be an attribute.
+-#[derive(
+-    Debug, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
+-)]
++#[derive(Debug, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable)]
+ #[display("Attribute")]
+ pub(crate) struct NativeAttribute {
+     /// Safe to evaluate speculatively.
