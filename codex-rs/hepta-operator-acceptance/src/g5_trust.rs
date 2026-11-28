@@ -870,7 +870,12 @@ fn verify_sshsig_bytes(
         }
         Ok(())
     }
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    {
+        let fingerprint = parse_allowed_signer(allowed_signers_bytes, principal)?;
+        crate::sshsig::verify_captured(statement, signature_bytes, namespace, &fingerprint)
+    }
+    #[cfg(not(any(unix, windows)))]
     {
         let _ = (
             statement,
