@@ -320,10 +320,11 @@ if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 1 && -z "${BUI
   post_config_bazel_args+=(--jobs=8)
 fi
 
-# Full macOS test runs share the GitHub runner with Bazel's remote client.
-# The default 800 remote jobs can exhaust its native threads before tests start.
-if [[ "${RUNNER_OS:-}" == "macOS" && "${bazel_args[0]}" == "test" &&
-      " ${bazel_targets[*]} " == *" //... "* && -n "${BUILDBUDDY_API_KEY:-}" ]]; then
+# Bazel's default 800 remote jobs can exhaust native threads on a hosted Mac
+# during release-build cache lookups as well as before a full test run.
+if [[ "${RUNNER_OS:-}" == "macOS" && -n "${BUILDBUDDY_API_KEY:-}" &&
+      ( "${bazel_args[0]}" == "build" ||
+        ( "${bazel_args[0]}" == "test" && " ${bazel_targets[*]} " == *" //... "* ) ) ]]; then
   has_jobs_override=0
   for arg in "${bazel_args[@]}"; do
     case "$arg" in

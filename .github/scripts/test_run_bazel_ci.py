@@ -184,6 +184,35 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
 
+    def test_macos_remote_release_build_limits_jobs_without_changing_targets(
+        self,
+    ) -> None:
+        self.env.update(RUNNER_OS="macOS", BUILDBUDDY_API_KEY="recording-probe-key")
+        targets = ["//codex-rs/fake:release", "//codex-rs/other:release"]
+        for override, expected in (([], "--jobs=128"), (["--jobs=16"], "--jobs=16")):
+            with self.subTest(override=override):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.run_wrapper(
+                    "--",
+                    "build",
+                    "--compilation_mode=fastbuild",
+                    *override,
+                    "--",
+                    *targets,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(len(calls), 1)
+                args = calls[0]
+                self.assertEqual(
+                    [arg for arg in args if arg.startswith("--jobs=")], [expected]
+                )
+                if not override:
+                    self.assertLess(
+                        args.index("--config=ci-macos"), args.index(expected)
+                    )
+                self.assertIn("--compilation_mode=fastbuild", args)
+                self.assertEqual(args[args.index("--") + 1 :], targets)
+
     def test_large_windows_build_preserves_all_targets_without_a_large_native_command(
         self,
     ) -> None:
