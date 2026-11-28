@@ -286,3 +286,93 @@ fn existing_admin_only_transaction_cannot_create_a_parallel_user_lock() -> Resul
     assert!(HomeSetupGuard::acquire_for_current_user(root.path()).is_err());
     Ok(())
 }
+
+#[test]
+#[ignore = "Explicit token-identity workers are launched and checked by the parent control."]
+fn setup_account_worker() -> Result<()> {
+    let home = PathBuf::from(std::env::var("HIA_ACCOUNT_HOME").context("owned account home")?);
+    let expected = std::env::var("HIA_ACCOUNT_SID").context("parent actual process SID")?;
+    assert_eq!(private_identity_security::current_user_sid()?, expected);
+    let account = super::current_setup_account()?;
+    let actual = crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&account)?)
+        .map_err(anyhow::Error::msg)?;
+    assert_eq!(actual, expected);
+    assert_ne!(account, "Administrators");
+    assert_ne!(account, "HiaMissingUnrelatedAccount");
+    let _writer = HomeSetupGuard::acquire_for_user(&home, &actual)?;
+    // The same authority crosses the production parent completion boundary.
+    setup::verify_setup_completed_for_user(&home, &actual)?;
+    setup::verify_setup_completed(&home)?;
+    signal(&std::env::var("HIA_ACCOUNT_DONE").context("owned completion event")?)?;
+    println!("HIA_SETUP_ACCOUNT_WORKER actual_token_authority: PASS");
+    Ok(())
+}
+
+#[test]
+fn setup_account_ignores_absent_and_unrelated_username_environment() -> Result<()> {
+    let root = TempDir::new()?;
+    let expected = private_identity_security::current_user_sid()?;
+    ensure!(
+        expected != private_identity_security::SYSTEM_SID
+            && expected != private_identity_security::ADMINISTRATORS_SID,
+        "control requires the actual CI user token"
+    );
+    for (index, username) in [
+        None,
+        Some("Administrators"),
+        Some("HiaMissingUnrelatedAccount"),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let home = root.path().join(format!("case-{index}"));
+        fs::create_dir_all(sandbox_dir(&home))?;
+        write_ready(&home)?;
+        let mut command = Command::new(std::env::current_exe()?);
+        command
+            .args([
+                "--ignored",
+                "--exact",
+                "setup_home::tests::setup_account_worker",
+                "--nocapture",
+            ])
+            .env("HIA_ACCOUNT_HOME", &home)
+            .env("HIA_ACCOUNT_SID", &expected)
+            .env_remove("USERNAME")
+            .stdin(Stdio::null());
+        if let Some(value) = username {
+            command.env("USERNAME", value);
+        }
+        let finished = Event::create("account-completed")?;
+        command
+            .env("HIA_ACCOUNT_DONE", &finished.name)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        let worker = Worker(Some(command.spawn()?));
+        assert_eq!(finished.wait(5000), WAIT_OBJECT_0);
+        worker.finish()?;
+    }
+    println!("HIA_HOME_READINESS_CONTROL token_account_ignores_environment: PASS; workers=3");
+    Ok(())
+}
+
+#[test]
+fn explicit_target_completion_retains_the_writer_authority() -> Result<()> {
+    let root = TempDir::new()?;
+    fs::create_dir_all(sandbox_dir(root.path()))?;
+    write_ready(root.path())?;
+    let actual = private_identity_security::current_user_sid()?;
+    ensure!(
+        actual != private_identity_security::SYSTEM_SID
+            && actual != private_identity_security::ADMINISTRATORS_SID,
+        "control requires an explicit target different from the actual caller"
+    );
+    // ProvisionOnly can target another account. Its completion must validate the
+    // exact writer authority, without accepting that ACL as the current user's.
+    let target = private_identity_security::SYSTEM_SID;
+    let _writer = HomeSetupGuard::acquire_for_user(root.path(), target)?;
+    setup::verify_setup_completed_for_user(root.path(), target)?;
+    assert!(setup::verify_setup_completed(root.path()).is_err());
+    println!("HIA_HOME_READINESS_CONTROL explicit_target_exact_authority: PASS");
+    Ok(())
+}

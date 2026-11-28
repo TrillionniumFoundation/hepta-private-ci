@@ -1,0 +1,318 @@
+diff --git a/.github/workflows/hia-windows-home-readiness.yml b/.github/workflows/hia-windows-home-readiness.yml
+index ae57aef4..5369a78c 100644
+--- a/.github/workflows/hia-windows-home-readiness.yml
++++ b/.github/workflows/hia-windows-home-readiness.yml
+@@ -64,7 +64,9 @@ jobs:
+           grep -F 'HIA_HOME_READINESS_CONTROL current_complete_after_writer: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+           grep -F 'HIA_HOME_READINESS_CONTROL failed_current_generation_rejected: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+           grep -F 'HIA_HOME_READINESS_CONTROL unrelated_home_independent: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+-          grep -F 'test result: ok. 6 passed; 0 failed; 1 ignored;' "$RUNNER_TEMP/home-readiness-current-controls.log"
++          grep -F 'HIA_HOME_READINESS_CONTROL token_account_ignores_environment: PASS; workers=3' "$RUNNER_TEMP/home-readiness-current-controls.log"
++          grep -F 'HIA_HOME_READINESS_CONTROL explicit_target_exact_authority: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
++          grep -F 'test result: ok. 8 passed; 0 failed; 2 ignored;' "$RUNNER_TEMP/home-readiness-current-controls.log"
+           grep -F 'test result: ok. 1 passed; 0 failed; 0 ignored;' "$RUNNER_TEMP/home-readiness-original-missing.log"
+       - name: Preserve all original execution evidence
+         if: always() && !cancelled()
+diff --git a/codex-rs/windows-sandbox-rs/src/setup.rs b/codex-rs/windows-sandbox-rs/src/setup.rs
+index 94c142a6..d068ecc9 100644
+--- a/codex-rs/windows-sandbox-rs/src/setup.rs
++++ b/codex-rs/windows-sandbox-rs/src/setup.rs
+@@ -345,7 +345,7 @@ fn run_setup_refresh_inner(
+         proxy_ports: offline_proxy_settings.proxy_ports,
+         allow_local_binding: offline_proxy_settings.allow_local_binding,
+         otel: None,
+-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
++        real_user: crate::setup_home::current_setup_account()?,
+         mode: SetupMode::Full,
+         refresh_only: true,
+     };
+@@ -1018,11 +1018,31 @@ fn trace_incomplete_setup(codex_home: &Path) {
+ }
+ 
+ pub(crate) fn verify_setup_completed(codex_home: &Path) -> Result<()> {
++    verify_setup_completed_with_guard(
++        codex_home,
++        crate::HomeSetupGuard::acquire_for_current_user(codex_home),
++    )
++}
++
++pub(crate) fn verify_setup_completed_for_user(
++    codex_home: &Path,
++    real_user_sid: &str,
++) -> Result<()> {
++    verify_setup_completed_with_guard(
++        codex_home,
++        crate::HomeSetupGuard::acquire_for_user(codex_home, real_user_sid),
++    )
++}
++
++fn verify_setup_completed_with_guard(
++    codex_home: &Path,
++    guard: Result<crate::HomeSetupGuard>,
++) -> Result<()> {
+     // The helper has exited before this call. Do not hold this lock while
+     // waiting for it: full setup takes the same physical-home transaction.
+     // A concurrent full setup must finish (or fail) before current readiness
+     // can be observed. A previous completion cannot authorize a preparing home.
+-    let _home_setup = crate::HomeSetupGuard::acquire_for_current_user(codex_home)
++    let _home_setup = guard
+         .map_err(|err| failure(
+             SetupErrorCode::OrchestratorHelperIncomplete,
+             format!("setup helper exited successfully before setup completed: cannot retain readiness transaction: {err:#}"),
+@@ -1043,6 +1063,11 @@ fn run_setup_exe(
+     needs_elevation: bool,
+     codex_home: &Path,
+ ) -> Result<()> {
++    // ProvisionOnly explicitly names a target account. Full setup names the
++    // actual process-token account. Retain that exact authority across launch.
++    let real_user_sid =
++        crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&payload.real_user)?)
++            .map_err(anyhow::Error::msg)?;
+     let payload_json = serde_json::to_string(payload).map_err(|err| {
+         failure(
+             SetupErrorCode::OrchestratorPayloadSerializeFailed,
+@@ -1051,7 +1076,7 @@ fn run_setup_exe(
+     })?;
+     let payload_b64 = BASE64_STANDARD.encode(payload_json.as_bytes());
+     run_setup_singleflight(payload_b64.clone(), || {
+-        run_setup_exe_payload(&payload_b64, needs_elevation, codex_home)
++        run_setup_exe_payload(&payload_b64, needs_elevation, codex_home, &real_user_sid)
+     })
+ }
+ 
+@@ -1059,6 +1084,7 @@ fn run_setup_exe_payload(
+     payload_b64: &str,
+     needs_elevation: bool,
+     codex_home: &Path,
++    real_user_sid: &str,
+ ) -> Result<()> {
+     use windows_sys::Win32::System::Threading::GetExitCodeProcess;
+     use windows_sys::Win32::System::Threading::INFINITE;
+@@ -1115,7 +1141,7 @@ fn run_setup_exe_payload(
+                 status.code(),
+             ));
+         }
+-        verify_setup_completed(codex_home)?;
++        verify_setup_completed_for_user(codex_home, real_user_sid)?;
+         if let Err(err) = clear_setup_error_report(codex_home) {
+             log_note(
+                 &format!(
+@@ -1177,7 +1203,7 @@ fn run_setup_exe_payload(
+             ));
+         }
+     }
+-    verify_setup_completed(codex_home)?;
++    verify_setup_completed_for_user(codex_home, real_user_sid)?;
+     if let Err(err) = clear_setup_error_report(codex_home) {
+         log_note(
+             &format!("setup orchestrator: failed to clear setup_error.json after success: {err}"),
+@@ -1237,7 +1263,7 @@ fn run_elevated_setup_inner(
+         deny_write_paths,
+         proxy_ports: offline_proxy_settings.proxy_ports,
+         allow_local_binding: offline_proxy_settings.allow_local_binding,
+-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
++        real_user: crate::setup_home::current_setup_account()?,
+         otel: codex_otel::global_statsig_metrics_settings(),
+         mode: SetupMode::Full,
+         refresh_only: false,
+diff --git a/codex-rs/windows-sandbox-rs/src/setup_home.rs b/codex-rs/windows-sandbox-rs/src/setup_home.rs
+index 6b5f4af2..1bc3a29e 100644
+--- a/codex-rs/windows-sandbox-rs/src/setup_home.rs
++++ b/codex-rs/windows-sandbox-rs/src/setup_home.rs
+@@ -94,3 +94,98 @@ impl HomeSetupGuard {
+ #[cfg(test)]
+ #[path = "setup_home_tests.rs"]
+ mod tests;
++
++/// Bind full setup to the real process token, including in an environment-cleared
++/// process host. USERNAME is caller-controlled text and cannot select an ACL owner.
++pub(crate) fn current_setup_account() -> Result<String> {
++    use std::ffi::c_void;
++    use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
++    use windows_sys::Win32::Foundation::GetLastError;
++    use windows_sys::Win32::Foundation::HLOCAL;
++    use windows_sys::Win32::Foundation::LocalFree;
++    use windows_sys::Win32::Security::Authorization::ConvertStringSidToSidW;
++    use windows_sys::Win32::Security::LookupAccountSidW;
++    use windows_sys::Win32::Security::SID_NAME_USE;
++
++    struct LocalSid(*mut c_void);
++    impl Drop for LocalSid {
++        fn drop(&mut self) {
++            unsafe {
++                LocalFree(self.0 as HLOCAL);
++            }
++        }
++    }
++
++    let expected = current_user_sid()?;
++    let mut raw = std::ptr::null_mut();
++    ensure!(
++        unsafe { ConvertStringSidToSidW(crate::to_wide(&expected).as_ptr(), &mut raw) } != 0,
++        "convert actual setup process identity: {}",
++        unsafe { GetLastError() }
++    );
++    let sid = LocalSid(raw);
++    let mut name_len = 0;
++    let mut domain_len = 0;
++    let mut kind: SID_NAME_USE = 0;
++    let first = unsafe {
++        LookupAccountSidW(
++            std::ptr::null(),
++            sid.0,
++            std::ptr::null_mut(),
++            &mut name_len,
++            std::ptr::null_mut(),
++            &mut domain_len,
++            &mut kind,
++        )
++    };
++    ensure!(
++        first == 0 && unsafe { GetLastError() } == ERROR_INSUFFICIENT_BUFFER,
++        "query actual setup account extent"
++    );
++    ensure!(
++        (1..=32768).contains(&name_len) && (1..=32768).contains(&domain_len),
++        "actual setup account name is unbounded"
++    );
++    let mut name = vec![0u16; name_len as usize];
++    let mut domain = vec![0u16; domain_len as usize];
++    ensure!(
++        unsafe {
++            LookupAccountSidW(
++                std::ptr::null(),
++                sid.0,
++                name.as_mut_ptr(),
++                &mut name_len,
++                domain.as_mut_ptr(),
++                &mut domain_len,
++                &mut kind,
++            )
++        } != 0,
++        "resolve actual setup process account: {}",
++        unsafe { GetLastError() }
++    );
++    ensure!(
++        name_len as usize <= name.len() && domain_len as usize <= domain.len(),
++        "actual setup account exceeds captured extent"
++    );
++    let name = String::from_utf16(&name[..name_len as usize])?;
++    let domain = String::from_utf16(&domain[..domain_len as usize])?;
++    let name = name.trim_end_matches('\0');
++    let domain = domain.trim_end_matches('\0');
++    ensure!(
++        !name.is_empty()
++            && !domain.is_empty()
++            && !name.contains('\0')
++            && !domain.contains('\0')
++            && !name.contains('\\')
++            && !domain.contains('\\'),
++        "actual setup account is not one complete qualified identity"
++    );
++    let account = format!("{domain}\\{name}");
++    let resolved = crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&account)?)
++        .map_err(anyhow::Error::msg)?;
++    ensure!(
++        resolved == expected,
++        "actual setup account changed during resolution"
++    );
++    Ok(account)
++}
+diff --git a/codex-rs/windows-sandbox-rs/src/setup_home_tests.rs b/codex-rs/windows-sandbox-rs/src/setup_home_tests.rs
+index 1409e289..b1299075 100644
+--- a/codex-rs/windows-sandbox-rs/src/setup_home_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/setup_home_tests.rs
+@@ -286,3 +286,93 @@ fn existing_admin_only_transaction_cannot_create_a_parallel_user_lock() -> Resul
+     assert!(HomeSetupGuard::acquire_for_current_user(root.path()).is_err());
+     Ok(())
+ }
++
++#[test]
++#[ignore = "Explicit token-identity workers are launched and checked by the parent control."]
++fn setup_account_worker() -> Result<()> {
++    let home = PathBuf::from(std::env::var("HIA_ACCOUNT_HOME").context("owned account home")?);
++    let expected = std::env::var("HIA_ACCOUNT_SID").context("parent actual process SID")?;
++    assert_eq!(private_identity_security::current_user_sid()?, expected);
++    let account = super::current_setup_account()?;
++    let actual = crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&account)?)
++        .map_err(anyhow::Error::msg)?;
++    assert_eq!(actual, expected);
++    assert_ne!(account, "Administrators");
++    assert_ne!(account, "HiaMissingUnrelatedAccount");
++    let _writer = HomeSetupGuard::acquire_for_user(&home, &actual)?;
++    // The same authority crosses the production parent completion boundary.
++    setup::verify_setup_completed_for_user(&home, &actual)?;
++    setup::verify_setup_completed(&home)?;
++    signal(&std::env::var("HIA_ACCOUNT_DONE").context("owned completion event")?)?;
++    println!("HIA_SETUP_ACCOUNT_WORKER actual_token_authority: PASS");
++    Ok(())
++}
++
++#[test]
++fn setup_account_ignores_absent_and_unrelated_username_environment() -> Result<()> {
++    let root = TempDir::new()?;
++    let expected = private_identity_security::current_user_sid()?;
++    ensure!(
++        expected != private_identity_security::SYSTEM_SID
++            && expected != private_identity_security::ADMINISTRATORS_SID,
++        "control requires the actual CI user token"
++    );
++    for (index, username) in [
++        None,
++        Some("Administrators"),
++        Some("HiaMissingUnrelatedAccount"),
++    ]
++    .into_iter()
++    .enumerate()
++    {
++        let home = root.path().join(format!("case-{index}"));
++        fs::create_dir_all(sandbox_dir(&home))?;
++        write_ready(&home)?;
++        let mut command = Command::new(std::env::current_exe()?);
++        command
++            .args([
++                "--ignored",
++                "--exact",
++                "setup_home::tests::setup_account_worker",
++                "--nocapture",
++            ])
++            .env("HIA_ACCOUNT_HOME", &home)
++            .env("HIA_ACCOUNT_SID", &expected)
++            .env_remove("USERNAME")
++            .stdin(Stdio::null());
++        if let Some(value) = username {
++            command.env("USERNAME", value);
++        }
++        let finished = Event::create("account-completed")?;
++        command
++            .env("HIA_ACCOUNT_DONE", &finished.name)
++            .stdout(Stdio::piped())
++            .stderr(Stdio::piped());
++        let worker = Worker(Some(command.spawn()?));
++        assert_eq!(finished.wait(5000), WAIT_OBJECT_0);
++        worker.finish()?;
++    }
++    println!("HIA_HOME_READINESS_CONTROL token_account_ignores_environment: PASS; workers=3");
++    Ok(())
++}
++
++#[test]
++fn explicit_target_completion_retains_the_writer_authority() -> Result<()> {
++    let root = TempDir::new()?;
++    fs::create_dir_all(sandbox_dir(root.path()))?;
++    write_ready(root.path())?;
++    let actual = private_identity_security::current_user_sid()?;
++    ensure!(
++        actual != private_identity_security::SYSTEM_SID
++            && actual != private_identity_security::ADMINISTRATORS_SID,
++        "control requires an explicit target different from the actual caller"
++    );
++    // ProvisionOnly can target another account. Its completion must validate the
++    // exact writer authority, without accepting that ACL as the current user's.
++    let target = private_identity_security::SYSTEM_SID;
++    let _writer = HomeSetupGuard::acquire_for_user(root.path(), target)?;
++    setup::verify_setup_completed_for_user(root.path(), target)?;
++    assert!(setup::verify_setup_completed(root.path()).is_err());
++    println!("HIA_HOME_READINESS_CONTROL explicit_target_exact_authority: PASS");
++    Ok(())
++}

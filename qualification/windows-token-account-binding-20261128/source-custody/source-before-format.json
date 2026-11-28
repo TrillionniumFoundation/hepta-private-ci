@@ -1,0 +1,24 @@
+{
+  "base": "791d1f28df466371ca293e62643ff0de512e02f1",
+  "scope": "actual process-token full/refresh account plus same explicit target SID across helper launch and current readiness; no ACL/key relaxation",
+  "paths": {
+    "codex-rs/windows-sandbox-rs/src/setup_home.rs": {
+      "before_sha256": "0e146291e6e3fdf6518bad6879944081930bfed2cbbaeb5b632e5bd4b04d60d5",
+      "after_sha256": "8856b63890bc72c6da66de7b470402a8c55cb8f49fdc055366b5366ccf3ce115"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_home_tests.rs": {
+      "before_sha256": "bc6b1d87295d980ccea8e2739372c3e798867dc961def7d9777d7c252c597955",
+      "after_sha256": "f9fd2fc2224e4800a2f16e108b5dbb4a8d57ec630cde831f8a2da6f8de99d29d"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup.rs": {
+      "before_sha256": "80595dcc9a46f49c01e8188548a2e36c588c81cea624e5ab626591d7bd65953d",
+      "after_sha256": "91eb1e27b6a49d570e4e2baf5cdf30e29cc388699370ae58eb3cc662a7b13196"
+    },
+    ".github/workflows/hia-windows-home-readiness.yml": {
+      "before_sha256": "90e1d543c0bbcf6c5cb4814b685d97e62ad8fd045ef506cd50070a29158659a9",
+      "after_sha256": "0b5724667a4fdc751df63faeda106c68ab67667813d213a975b3b0a912cc296c"
+    }
+  },
+  "original_six_test_source_prefix_unchanged": true,
+  "strict_security_and_mutex_sources_unchanged": true
+}

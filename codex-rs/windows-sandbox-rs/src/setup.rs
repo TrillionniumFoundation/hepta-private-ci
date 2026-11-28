@@ -345,7 +345,7 @@ fn run_setup_refresh_inner(
         proxy_ports: offline_proxy_settings.proxy_ports,
         allow_local_binding: offline_proxy_settings.allow_local_binding,
         otel: None,
-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
+        real_user: crate::setup_home::current_setup_account()?,
         mode: SetupMode::Full,
         refresh_only: true,
     };
@@ -1018,11 +1018,31 @@ fn trace_incomplete_setup(codex_home: &Path) {
 }
 
 pub(crate) fn verify_setup_completed(codex_home: &Path) -> Result<()> {
+    verify_setup_completed_with_guard(
+        codex_home,
+        crate::HomeSetupGuard::acquire_for_current_user(codex_home),
+    )
+}
+
+pub(crate) fn verify_setup_completed_for_user(
+    codex_home: &Path,
+    real_user_sid: &str,
+) -> Result<()> {
+    verify_setup_completed_with_guard(
+        codex_home,
+        crate::HomeSetupGuard::acquire_for_user(codex_home, real_user_sid),
+    )
+}
+
+fn verify_setup_completed_with_guard(
+    codex_home: &Path,
+    guard: Result<crate::HomeSetupGuard>,
+) -> Result<()> {
     // The helper has exited before this call. Do not hold this lock while
     // waiting for it: full setup takes the same physical-home transaction.
     // A concurrent full setup must finish (or fail) before current readiness
     // can be observed. A previous completion cannot authorize a preparing home.
-    let _home_setup = crate::HomeSetupGuard::acquire_for_current_user(codex_home)
+    let _home_setup = guard
         .map_err(|err| failure(
             SetupErrorCode::OrchestratorHelperIncomplete,
             format!("setup helper exited successfully before setup completed: cannot retain readiness transaction: {err:#}"),
@@ -1043,6 +1063,11 @@ fn run_setup_exe(
     needs_elevation: bool,
     codex_home: &Path,
 ) -> Result<()> {
+    // ProvisionOnly explicitly names a target account. Full setup names the
+    // actual process-token account. Retain that exact authority across launch.
+    let real_user_sid =
+        crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&payload.real_user)?)
+            .map_err(anyhow::Error::msg)?;
     let payload_json = serde_json::to_string(payload).map_err(|err| {
         failure(
             SetupErrorCode::OrchestratorPayloadSerializeFailed,
@@ -1051,7 +1076,7 @@ fn run_setup_exe(
     })?;
     let payload_b64 = BASE64_STANDARD.encode(payload_json.as_bytes());
     run_setup_singleflight(payload_b64.clone(), || {
-        run_setup_exe_payload(&payload_b64, needs_elevation, codex_home)
+        run_setup_exe_payload(&payload_b64, needs_elevation, codex_home, &real_user_sid)
     })
 }
 
@@ -1059,6 +1084,7 @@ fn run_setup_exe_payload(
     payload_b64: &str,
     needs_elevation: bool,
     codex_home: &Path,
+    real_user_sid: &str,
 ) -> Result<()> {
     use windows_sys::Win32::System::Threading::GetExitCodeProcess;
     use windows_sys::Win32::System::Threading::INFINITE;
@@ -1115,7 +1141,7 @@ fn run_setup_exe_payload(
                 status.code(),
             ));
         }
-        verify_setup_completed(codex_home)?;
+        verify_setup_completed_for_user(codex_home, real_user_sid)?;
         if let Err(err) = clear_setup_error_report(codex_home) {
             log_note(
                 &format!(
@@ -1177,7 +1203,7 @@ fn run_setup_exe_payload(
             ));
         }
     }
-    verify_setup_completed(codex_home)?;
+    verify_setup_completed_for_user(codex_home, real_user_sid)?;
     if let Err(err) = clear_setup_error_report(codex_home) {
         log_note(
             &format!("setup orchestrator: failed to clear setup_error.json after success: {err}"),
@@ -1237,7 +1263,7 @@ fn run_elevated_setup_inner(
         deny_write_paths,
         proxy_ports: offline_proxy_settings.proxy_ports,
         allow_local_binding: offline_proxy_settings.allow_local_binding,
-        real_user: std::env::var("USERNAME").unwrap_or_else(|_| "Administrators".to_string()),
+        real_user: crate::setup_home::current_setup_account()?,
         otel: codex_otel::global_statsig_metrics_settings(),
         mode: SetupMode::Full,
         refresh_only: false,

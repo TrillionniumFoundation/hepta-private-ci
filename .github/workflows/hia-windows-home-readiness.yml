@@ -64,7 +64,9 @@ jobs:
           grep -F 'HIA_HOME_READINESS_CONTROL current_complete_after_writer: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
           grep -F 'HIA_HOME_READINESS_CONTROL failed_current_generation_rejected: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
           grep -F 'HIA_HOME_READINESS_CONTROL unrelated_home_independent: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
-          grep -F 'test result: ok. 6 passed; 0 failed; 1 ignored;' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'HIA_HOME_READINESS_CONTROL token_account_ignores_environment: PASS; workers=3' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'HIA_HOME_READINESS_CONTROL explicit_target_exact_authority: PASS' "$RUNNER_TEMP/home-readiness-current-controls.log"
+          grep -F 'test result: ok. 8 passed; 0 failed; 2 ignored;' "$RUNNER_TEMP/home-readiness-current-controls.log"
           grep -F 'test result: ok. 1 passed; 0 failed; 0 ignored;' "$RUNNER_TEMP/home-readiness-original-missing.log"
       - name: Preserve all original execution evidence
         if: always() && !cancelled()

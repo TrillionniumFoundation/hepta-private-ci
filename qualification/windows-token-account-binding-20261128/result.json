@@ -1,0 +1,48 @@
+{
+  "schema": "hia.windows.actual-setup-account-binding.v1",
+  "base": "791d1f28df466371ca293e62643ff0de512e02f1",
+  "source": {
+    "codex-rs/windows-sandbox-rs/src/setup_home.rs": {
+      "bytes": 6974,
+      "sha256": "c59852d1beac7bff86be68ec823aa8cbc863bb4d1f44d0265cb95fc2a1a61620"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_home_tests.rs": {
+      "bytes": 14889,
+      "sha256": "a9705c6af31debfe9db1db02d6e705fdce27fa90488f0442c66f22d90b460840"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup.rs": {
+      "bytes": 91803,
+      "sha256": "024ca641cd568850bf128dc8c8046ea94885d32c533885fce459b0145771b035"
+    },
+    ".github/workflows/hia-windows-home-readiness.yml": {
+      "bytes": 4346,
+      "sha256": "0b5724667a4fdc751df63faeda106c68ab67667813d213a975b3b0a912cc296c"
+    }
+  },
+  "prior_8c_consumers": {
+    "run": 46107618351,
+    "job": 140863788524,
+    "result": "FAIL",
+    "cli": "PASS",
+    "exec_server": "PASS",
+    "core": "FAIL",
+    "observed_refusal": "identity object has unexpected ACL entries",
+    "scope": "does not prove the actual requested SID without additional trace"
+  },
+  "original_791d_readiness": {
+    "run": 46108849795,
+    "job": 140867626582,
+    "result": "PASS",
+    "setup_passed": 31,
+    "setup_existing_ignored": 2,
+    "readiness_passed": 6,
+    "readiness_explicit_worker": 1,
+    "original_missing_artifact_passed": 1,
+    "flaky": false
+  },
+  "source_mismatch": "Full/refresh payload takes ambient USERNAME with Administrators fallback, while completion reads actual TokenUser; current source now resolves the actual token account and binds explicit target SID across launch.",
+  "same_physical_FILE_ID_lock_key": true,
+  "strict_acl_and_original_six_test_bytes_unchanged": true,
+  "new_windows_controls_pending": true,
+  "existing_runtime_not_replaced": true
+}

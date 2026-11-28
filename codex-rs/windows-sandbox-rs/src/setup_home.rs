@@ -94,3 +94,98 @@ impl HomeSetupGuard {
 #[cfg(test)]
 #[path = "setup_home_tests.rs"]
 mod tests;
+
+/// Bind full setup to the real process token, including in an environment-cleared
+/// process host. USERNAME is caller-controlled text and cannot select an ACL owner.
+pub(crate) fn current_setup_account() -> Result<String> {
+    use std::ffi::c_void;
+    use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
+    use windows_sys::Win32::Foundation::GetLastError;
+    use windows_sys::Win32::Foundation::HLOCAL;
+    use windows_sys::Win32::Foundation::LocalFree;
+    use windows_sys::Win32::Security::Authorization::ConvertStringSidToSidW;
+    use windows_sys::Win32::Security::LookupAccountSidW;
+    use windows_sys::Win32::Security::SID_NAME_USE;
+
+    struct LocalSid(*mut c_void);
+    impl Drop for LocalSid {
+        fn drop(&mut self) {
+            unsafe {
+                LocalFree(self.0 as HLOCAL);
+            }
+        }
+    }
+
+    let expected = current_user_sid()?;
+    let mut raw = std::ptr::null_mut();
+    ensure!(
+        unsafe { ConvertStringSidToSidW(crate::to_wide(&expected).as_ptr(), &mut raw) } != 0,
+        "convert actual setup process identity: {}",
+        unsafe { GetLastError() }
+    );
+    let sid = LocalSid(raw);
+    let mut name_len = 0;
+    let mut domain_len = 0;
+    let mut kind: SID_NAME_USE = 0;
+    let first = unsafe {
+        LookupAccountSidW(
+            std::ptr::null(),
+            sid.0,
+            std::ptr::null_mut(),
+            &mut name_len,
+            std::ptr::null_mut(),
+            &mut domain_len,
+            &mut kind,
+        )
+    };
+    ensure!(
+        first == 0 && unsafe { GetLastError() } == ERROR_INSUFFICIENT_BUFFER,
+        "query actual setup account extent"
+    );
+    ensure!(
+        (1..=32768).contains(&name_len) && (1..=32768).contains(&domain_len),
+        "actual setup account name is unbounded"
+    );
+    let mut name = vec![0u16; name_len as usize];
+    let mut domain = vec![0u16; domain_len as usize];
+    ensure!(
+        unsafe {
+            LookupAccountSidW(
+                std::ptr::null(),
+                sid.0,
+                name.as_mut_ptr(),
+                &mut name_len,
+                domain.as_mut_ptr(),
+                &mut domain_len,
+                &mut kind,
+            )
+        } != 0,
+        "resolve actual setup process account: {}",
+        unsafe { GetLastError() }
+    );
+    ensure!(
+        name_len as usize <= name.len() && domain_len as usize <= domain.len(),
+        "actual setup account exceeds captured extent"
+    );
+    let name = String::from_utf16(&name[..name_len as usize])?;
+    let domain = String::from_utf16(&domain[..domain_len as usize])?;
+    let name = name.trim_end_matches('\0');
+    let domain = domain.trim_end_matches('\0');
+    ensure!(
+        !name.is_empty()
+            && !domain.is_empty()
+            && !name.contains('\0')
+            && !domain.contains('\0')
+            && !name.contains('\\')
+            && !domain.contains('\\'),
+        "actual setup account is not one complete qualified identity"
+    );
+    let account = format!("{domain}\\{name}");
+    let resolved = crate::string_from_sid_bytes(&crate::winutil::resolve_sid(&account)?)
+        .map_err(anyhow::Error::msg)?;
+    ensure!(
+        resolved == expected,
+        "actual setup account changed during resolution"
+    );
+    Ok(account)
+}
