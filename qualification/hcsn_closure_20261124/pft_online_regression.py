@@ -139,7 +139,9 @@ def main():
         )
         fixture = root / prefix / BASELINE_FIXTURE
         if sha(fixture) != BASELINE_SHA256:
-            raise ValueError("observed baseline fixture bytes differ from the pinned reference")
+            raise ValueError(
+                "observed baseline fixture bytes differ from the pinned reference"
+            )
         baseline = json.loads(fixture.read_bytes())
         for name, class_name, expected_count in SUITES:
             module = importlib.import_module(
