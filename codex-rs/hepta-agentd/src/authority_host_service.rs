@@ -57,6 +57,8 @@ mod logind;
 pub(crate) use logind::paired_human_tests::SyntheticOriginalHuman;
 #[path = "authority_host_notes_successor.rs"]
 mod notes_successor;
+#[path = "authority_host_paired_admission.rs"]
+mod paired_admission;
 #[path = "authority_host_paired_material.rs"]
 mod paired_material;
 

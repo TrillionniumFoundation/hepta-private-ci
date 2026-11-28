@@ -48,6 +48,10 @@ pub use material_client::PairedTrainingReadResult;
 pub(crate) mod training;
 pub use training::AgentdPairedTraining;
 
+#[path = "paired_training_plan.rs"]
+mod plan;
+pub use plan::PairedTrainingPlanV1;
+
 pub(crate) const DESTINATION: &str = "paired.learning.material.v1";
 const TOPIC: &str = "hepta.paired-learning.prepare.v1";
 const DEADLINE: Duration = Duration::from_secs(10);

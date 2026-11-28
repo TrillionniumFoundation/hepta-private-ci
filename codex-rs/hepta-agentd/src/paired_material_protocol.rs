@@ -60,6 +60,19 @@ impl PairedTrainingReadRequest {
         &self.ingress
     }
 
+    /// An untrusted reference only. The caller must reconstruct and compare
+    /// the complete registered payload and verify the original retained human.
+    pub(crate) fn proposed_original_turn(&self) -> std::io::Result<String> {
+        let payload: serde_json::Value = serde_json::from_str(&self.payload_json)?;
+        payload
+            .get("identity")
+            .and_then(|value| value.get("turn"))
+            .and_then(serde_json::Value::as_str)
+            .filter(|turn| !turn.is_empty() && turn.len() <= 128)
+            .map(str::to_owned)
+            .ok_or_else(|| std::io::Error::other("missing bounded original turn reference"))
+    }
+
     /// Exact correlation with the already registered Root metadata. The digest
     /// duplicates the original v2 outbox framing only for comparison with the
     /// real writer result; it never substitutes for the original authorization.
