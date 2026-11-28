@@ -46,3 +46,9 @@ He–Xiong 的内生破产边界、权益定价和信用损失可以组成可训
 [同核三模态比较](trimodal_decoder/paired/README.zh.md)的五种模型、三个种子和四种预算均已独立重放。固定 60 进程 CPU 秒时 HCSN 的视觉/听觉/文本 NLL 为 1.61895/1.87470/.40525，近等参数注意力为 .95241/1.82408/.38966。真实 Radeon 8060S 三模态流式解码的单样本递推状态为 256 字节，相同任务的近等参数注意力 KV 为 14,400 字节；批量大小改变实测吞吐排序。[设备实测](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0b612b9aafca6c7bdc0efea0e3dc3db8f379c9f5/qualification/hcsn_sustained_20261128/trimodal_device/meter/README.md)
 
 [正式 WikiText-2 训练、完整概率头和全参数写入](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7280)涵盖 33,278 个词和 245,568 个留出预测。32 维、114 万参数的边界模型三个种子两遍 BP 测试 PPL 为 392.40–401.28，直接写入全部 34 张量为 716.25–733.64。连续裕量上的非双线性价格在同词数下对最佳双线性替代有微小平均收益，等墙钟比较中较慢。12 遍独立种子 HCSN 为 327.28，注意力 317.31，平滑对照 312.02。
+
+[语料条件统计的直接谱写入](spectral_write/README.zh.md)在同一个语言模型的受限子族里取得了相反的早期速度结果。1.04–1.27 秒的预固定写入三次都达到测试 PPL 500，同架构 BP 的 8 秒端点三次均未过线，16 秒端点全部达到。PPL 400 时直接写入 0/3，BP 最迟 64 秒 3/3。关闭金融反馈后两种子略好；把这项速度收益归于快速的条件统计拟合有数据支持，归于金融层本身则缺少支持。
+
+![同预算的直接写入与三模态任务](figures/task_comparison.png)
+
+18 个独立新进程含载入、训练和完整测试评分，500 PPL 门槛的谱写入与开发选定 BP 中位用时分别为 3.962 和 19.952 秒。九对启动顺序交替，配对时长比中位 5.33；BP 达到更好的最终 PPL。本项与只改预训练读出的编辑分别计量。[冷端点和每个原始分数](spectral_write)

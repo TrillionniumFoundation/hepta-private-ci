@@ -1,0 +1,869 @@
+{
+  "137": {
+    "records": [
+      {
+        "tag": "spectral-137-16-25",
+        "seed": 137,
+        "alpha": 16,
+        "power": 0.25,
+        "wall_s": 1.2722079109989863,
+        "cpu_s": 1.188058031,
+        "validation_s": 0.6072395290029817,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.255686711078509,
+          "ppl": 520.9670057631836
+        },
+        "sha256": "a6ae122b48eb18e42e495336e41dc8e5a404073c34915615cc38465d87a4c439",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 13.909720267750052,
+        "extreme_singular_values": [
+          5.168461491259479,
+          0.3772158971171726
+        ],
+        "maximum_target_mean": 1.249000902703301e-16,
+        "maximum_target_norm_error": 2.6645352591003757e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.21540641784668e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-137-16-50",
+        "seed": 137,
+        "alpha": 16,
+        "power": 0.5,
+        "wall_s": 1.53843279099965,
+        "cpu_s": 1.522771467,
+        "validation_s": 0.726378327999555,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.228408297984397,
+          "ppl": 506.9479309312979
+        },
+        "sha256": "4d7e5184e29612020922b82e503ba23caa4292292ab0c67b41737c13b49733c4",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.539122483872806,
+        "extreme_singular_values": [
+          1.397456243086325,
+          0.08968435157430729
+        ],
+        "maximum_target_mean": 1.1102230246251565e-16,
+        "maximum_target_norm_error": 2.6645352591003757e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          4.470348358154297e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-137-64-25",
+        "seed": 137,
+        "alpha": 64,
+        "power": 0.25,
+        "wall_s": 1.0318312240015075,
+        "cpu_s": 1.0315869100000006,
+        "validation_s": 0.6247019740003452,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.264050802302346,
+          "ppl": 525.3426951470648
+        },
+        "sha256": "1dbf007419bf0da4d4df23e1c6c5730f6b01da0b6e717a84b75964905ec551f3",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 11.854094599594614,
+        "extreme_singular_values": [
+          4.323928025759527,
+          0.29547814332943895
+        ],
+        "maximum_target_mean": 1.1102230246251565e-16,
+        "maximum_target_norm_error": 2.6645352591003757e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.21540641784668e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-137-64-50",
+        "seed": 137,
+        "alpha": 64,
+        "power": 0.5,
+        "wall_s": 2.0059606220020214,
+        "cpu_s": 1.7784284810000006,
+        "validation_s": 1.078321810997295,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.225852604498856,
+          "ppl": 505.6539815799654
+        },
+        "sha256": "de5bab02736c7d871eadd8157e50f4fdbb032d8bcf350df6a122c3830a93d6a6",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.044522398366819,
+        "extreme_singular_values": [
+          1.1852339216108354,
+          0.06479022938633797
+        ],
+        "maximum_target_mean": 1.3877787807814457e-16,
+        "maximum_target_norm_error": 2.6645352591003757e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.029141902923584e-08,
+          5.21540641784668e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      }
+    ],
+    "chosen": "spectral-137-64-50"
+  },
+  "311": {
+    "records": [
+      {
+        "tag": "spectral-311-16-25",
+        "seed": 311,
+        "alpha": 16,
+        "power": 0.25,
+        "wall_s": 1.1704546500004653,
+        "cpu_s": 1.1667272769999997,
+        "validation_s": 0.8938164059982228,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.252149020081076,
+          "ppl": 519.1272416541582
+        },
+        "sha256": "b044fda27aa73ceca04b258733ed2026455555025048daf6800464e32c4b6e22",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 13.909046205633702,
+        "extreme_singular_values": [
+          5.168461491259947,
+          0.3795154803969623
+        ],
+        "maximum_target_mean": 2.220446049250313e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-311-16-50",
+        "seed": 311,
+        "alpha": 16,
+        "power": 0.5,
+        "wall_s": 1.5210533139979816,
+        "cpu_s": 1.520730544000001,
+        "validation_s": 0.8350765149989456,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.22146035638852,
+          "ppl": 503.4378942003893
+        },
+        "sha256": "f4ce143df82ae1126ddd86cd45f3501d67ca085cc58da64bcc015c3f59ee0b07",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.5387641705627084,
+        "extreme_singular_values": [
+          1.3974562430865336,
+          0.08795135277161971
+        ],
+        "maximum_target_mean": 2.3592239273284576e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.960464477539063e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-311-64-25",
+        "seed": 311,
+        "alpha": 64,
+        "power": 0.25,
+        "wall_s": 1.219543931001681,
+        "cpu_s": 1.1419098099999996,
+        "validation_s": 0.7244137179986865,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.260710136877924,
+          "ppl": 523.590629132021
+        },
+        "sha256": "2b514f186e2427d1468f6e13256fd2a6bea8729171f91417d55c5f4db6b1ac2d",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 11.853884526618133,
+        "extreme_singular_values": [
+          4.323928025759323,
+          0.28987964291908996
+        ],
+        "maximum_target_mean": 1.942890293094024e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          4.470348358154297e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-311-64-50",
+        "seed": 311,
+        "alpha": 64,
+        "power": 0.5,
+        "wall_s": 1.870111206000729,
+        "cpu_s": 1.7896127360000023,
+        "validation_s": 0.5930123220023233,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.223829493635146,
+          "ppl": 504.6320216342587
+        },
+        "sha256": "091b2b14e21ac2c976dea1c5e0149b0aef398ca2a9f4f7a0b1f5f1bf0e8823f9",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.0441959371849365,
+        "extreme_singular_values": [
+          1.1852339216108607,
+          0.0642562841371278
+        ],
+        "maximum_target_mean": 2.220446049250313e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      }
+    ],
+    "chosen": "spectral-311-16-50"
+  },
+  "557": {
+    "records": [
+      {
+        "tag": "spectral-557-16-25",
+        "seed": 557,
+        "alpha": 16,
+        "power": 0.25,
+        "wall_s": 1.0445564709989412,
+        "cpu_s": 1.035676175999999,
+        "validation_s": 0.7117339329997776,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.254647933269052,
+          "ppl": 520.4261177779932
+        },
+        "sha256": "ef2917dfb35f223016f53aa8ac26b2568e6e007f814e2105c44c403546908393",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 13.909046906107971,
+        "extreme_singular_values": [
+          5.168461491262551,
+          0.38575794306670425
+        ],
+        "maximum_target_mean": 2.0816681711721685e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.960464477539063e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-557-16-50",
+        "seed": 557,
+        "alpha": 16,
+        "power": 0.5,
+        "wall_s": 1.5883231719999458,
+        "cpu_s": 1.5776354139999995,
+        "validation_s": 0.5890320090002206,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.212017000037701,
+          "ppl": 498.70612780672826
+        },
+        "sha256": "86c3b9f9d1e3a45c71d3d8f9a535fd739d577f3eff716d569325282f62117f30",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.538951758582552,
+        "extreme_singular_values": [
+          1.3974562430863815,
+          0.08762795912176821
+        ],
+        "maximum_target_mean": 1.5265566588595902e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.029141902923584e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-557-64-25",
+        "seed": 557,
+        "alpha": 64,
+        "power": 0.25,
+        "wall_s": 0.9868707269997685,
+        "cpu_s": 0.9865182419999989,
+        "validation_s": 0.8238024140009657,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.268173311747734,
+          "ppl": 527.5128956323132
+        },
+        "sha256": "020dcf97cc26c8bb8f9897391e55cd4a80f7af50ad7b78708aed2d0ca344588d",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 11.853523349937847,
+        "extreme_singular_values": [
+          4.323928025760139,
+          0.29681909734067746
+        ],
+        "maximum_target_mean": 1.5265566588595902e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.21540641784668e-08,
+          5.960464477539063e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      },
+      {
+        "tag": "spectral-557-64-50",
+        "seed": 557,
+        "alpha": 64,
+        "power": 0.5,
+        "wall_s": 1.8997833079993143,
+        "cpu_s": 1.8586997669999974,
+        "validation_s": 0.6722889039992879,
+        "validation": {
+          "targets": 217645,
+          "nll": 6.219030910905086,
+          "ppl": 502.216303776643
+        },
+        "sha256": "26b407085d3e12dc3f80cf3235e230643f7a03727b54fbfcad1d83a7b2319001",
+        "observed_training_targets": 2088627,
+        "clipped_training_mass": 0.0,
+        "radius": 3.0444850668144556,
+        "extreme_singular_values": [
+          1.1852339216108598,
+          0.06568113191580159
+        ],
+        "maximum_target_mean": 1.249000902703301e-16,
+        "maximum_target_norm_error": 1.7763568394002505e-15,
+        "fitted_tensors": [
+          "emb.weight",
+          "head.root.weight",
+          "head.root.bias",
+          "head.rank.weight",
+          "head.rank.bias",
+          "head.prior.weight"
+        ],
+        "fitted_coefficients": 1115043,
+        "all_coefficients": 1144579,
+        "all_tensors": 34,
+        "inverse_residuals": [
+          5.960464477539063e-08,
+          5.21540641784668e-08
+        ],
+        "all_zero_tensors": [
+          "pos",
+          "blocks.0.pre.bias",
+          "blocks.0.qkv.bias",
+          "blocks.0.ff.0.bias",
+          "blocks.0.ff.1.weight",
+          "blocks.0.ff.1.bias",
+          "blocks.0.ff.3.weight",
+          "blocks.0.ff.3.bias",
+          "blocks.1.pre.bias",
+          "blocks.1.qkv.bias",
+          "blocks.1.ff.0.bias",
+          "blocks.1.ff.1.weight",
+          "blocks.1.ff.1.bias",
+          "blocks.1.ff.3.weight",
+          "blocks.1.ff.3.bias",
+          "norm.bias"
+        ],
+        "fixed_nonzero_tensors": [
+          "blocks.0.pre.weight",
+          "blocks.0.qkv.weight",
+          "blocks.0.out.weight",
+          "blocks.0.out.bias",
+          "blocks.0.ff.0.weight",
+          "blocks.1.pre.weight",
+          "blocks.1.qkv.weight",
+          "blocks.1.out.weight",
+          "blocks.1.out.bias",
+          "blocks.1.ff.0.weight",
+          "norm.weight",
+          "head.condition.weight"
+        ]
+      }
+    ],
+    "chosen": "spectral-557-16-50"
+  }
+}
