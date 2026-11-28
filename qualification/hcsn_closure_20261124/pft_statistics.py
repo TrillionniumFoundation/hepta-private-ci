@@ -134,17 +134,34 @@ def validate_packet(packet, contract):
     ):
         raise ValueError("sample identities and count disagree")
     d, m = contract["dimension"], contract["outputs"]
-    g, h, t = (np.asarray(body[k], dtype=np.float64) for k in ("gram", "rhs", "yty"))
-    if g.shape != (d, d) or h.shape != (d, m) or t.shape != (m, m):
-        raise ValueError("statistics dimensions disagree")
+    matrices = []
+    for key, rows, columns in (("gram", d, d), ("rhs", d, m), ("yty", m, m)):
+        value = body[key]
+        if (
+            type(value) is not list
+            or len(value) != rows
+            or any(type(row) is not list or len(row) != columns for row in value)
+        ):
+            raise ValueError("statistics dimensions disagree")
+        if any(
+            type(v) is not float or not math.isfinite(v) for row in value for v in row
+        ):
+            raise ValueError("plain finite float statistics required")
+        matrices.append(np.asarray(value, dtype=np.float64))
+    g, h, t = matrices
     augmented = np.block([[g, h], [h.T, t]])
-    if not np.isfinite(augmented).all() or not np.allclose(
-        augmented, augmented.T, rtol=1e-11, atol=1e-11
-    ):
+    scale = max(1.0, float(np.max(np.abs(augmented))))
+    normalized = augmented / scale
+    if not np.allclose(normalized, normalized.T, rtol=1e-11, atol=1e-11 / scale):
         raise ValueError("nonfinite or asymmetric statistics")
-    eigenvalues = np.linalg.eigvalsh((augmented + augmented.T) / 2)
-    if eigenvalues[0] < -1e-10 * max(1.0, float(np.max(np.abs(eigenvalues)))):
+    eigenvalues = np.linalg.eigvalsh((normalized + normalized.T) / 2)
+    tolerance = 1e-10 * max(1.0 / scale, float(np.max(np.abs(eigenvalues))))
+    if eigenvalues[0] < -tolerance:
         raise ValueError("statistics are not positive semidefinite")
+    # A raw [X Y].T @ [X Y] formed from n observations has rank at most n.
+    # Reuse the declared PSD tolerance; this is feasibility, not source authority.
+    if np.count_nonzero(eigenvalues > tolerance) > count:
+        raise ValueError("statistics rank exceeds declared sample count")
     return g, h, t
 
 
@@ -244,9 +261,15 @@ class StatisticsLedger:
             gi, hi, ti = validate_packet(
                 dict(body=body, payload_sha256=packet_hash), self.contract
             )
-            g += gi
-            h += hi
-            t += ti
+            try:
+                with np.errstate(over="raise", invalid="raise"):
+                    g += gi
+                    h += hi
+                    t += ti
+            except FloatingPointError as error:
+                raise ValueError(
+                    "accumulated statistics exceed float64 range"
+                ) from error
             count += body["count"]
         weight = solve_normal(g, h, self.contract["regularizer"])
         if not np.isfinite(weight).all():

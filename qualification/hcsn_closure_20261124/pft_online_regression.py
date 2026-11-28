@@ -22,7 +22,7 @@ import numpy as np
 
 
 SUITES = (
-    ("pft_statistics_tests", "LedgerTests", 4),
+    ("pft_statistics_tests", "LedgerTests", 8),
     ("pft_statistics_codec_tests", "CodecTests", 5),
     ("pft_online_peer_tests", "PeerTests", 4),
     ("pft_binary_peer_tests", "BinaryPeerTests", 4),

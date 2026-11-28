@@ -1,0 +1,126 @@
+{
+  "source_head": "4686c861e54179690c4a668a356a4b0ce57639d5",
+  "numpy": "2.3.5",
+  "rows": [
+    {
+      "case": "impossible_one_sample_rank",
+      "declared_count": 1,
+      "admission": "accepted",
+      "snapshot": {
+        "schema": "pft-online-candidate-v1",
+        "contract": {
+          "aggregation": "sum-f64-canonical-batch-id",
+          "dimension": 5,
+          "dtype": "float64",
+          "epoch": 0,
+          "feature_program_sha256": "78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1",
+          "model_family": "hcsn-pft-readout-research-v1",
+          "normalization_sha256": "fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3",
+          "objective_sha256": "9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6",
+          "outputs": 2,
+          "parent_model_sha256": "f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b",
+          "regularizer": 0.2,
+          "schema": "pft-online-statistics-v1",
+          "statistics_validation": "augmented-psd-rtol-1e-10-v1",
+          "time_semantics_sha256": "62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535"
+        },
+        "contract_sha256": "a8ec56e3cc7b8a91ff5f8955072ef2f2a2fddae91726c0fbc51b5c7e726954ae",
+        "contract_canonical_json": "{\"aggregation\":\"sum-f64-canonical-batch-id\",\"dimension\":5,\"dtype\":\"float64\",\"epoch\":0,\"feature_program_sha256\":\"78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1\",\"model_family\":\"hcsn-pft-readout-research-v1\",\"normalization_sha256\":\"fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3\",\"objective_sha256\":\"9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6\",\"outputs\":2,\"parent_model_sha256\":\"f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b\",\"regularizer\":0.2,\"schema\":\"pft-online-statistics-v1\",\"statistics_validation\":\"augmented-psd-rtol-1e-10-v1\",\"time_semantics_sha256\":\"62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535\"}",
+        "head": "0f314d36aaf07f2bdc0272ac3164113342ed3f7d2bf6f27e82b71c6521fb450a",
+        "revision": 1,
+        "head_material_canonical_json": "{\"batches\":[[\"batch-0\",\"04e7f9d4795eddf07ff7e563f06eab03fd352a57a1d72357a2872c2e746fdcba\"]],\"contract_sha256\":\"a8ec56e3cc7b8a91ff5f8955072ef2f2a2fddae91726c0fbc51b5c7e726954ae\"}",
+        "count": 1,
+        "weight_shape": [
+          5,
+          2
+        ],
+        "weight": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "weight_encoding": "float64-le-c-rowmajor",
+        "weight_sha256": "5b6fb58e61fa475939767d68a446f97f1bff02c0e5935a3ea8bb51e6515783d8"
+      },
+      "binary": "accepted"
+    },
+    {
+      "case": "string_statistics",
+      "declared_count": 3,
+      "admission": "accepted",
+      "snapshot": {
+        "schema": "pft-online-candidate-v1",
+        "contract": {
+          "aggregation": "sum-f64-canonical-batch-id",
+          "dimension": 5,
+          "dtype": "float64",
+          "epoch": 0,
+          "feature_program_sha256": "78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1",
+          "model_family": "hcsn-pft-readout-research-v1",
+          "normalization_sha256": "fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3",
+          "objective_sha256": "9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6",
+          "outputs": 2,
+          "parent_model_sha256": "f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b",
+          "regularizer": 0.2,
+          "schema": "pft-online-statistics-v1",
+          "statistics_validation": "augmented-psd-rtol-1e-10-v1",
+          "time_semantics_sha256": "62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535"
+        },
+        "contract_sha256": "a8ec56e3cc7b8a91ff5f8955072ef2f2a2fddae91726c0fbc51b5c7e726954ae",
+        "contract_canonical_json": "{\"aggregation\":\"sum-f64-canonical-batch-id\",\"dimension\":5,\"dtype\":\"float64\",\"epoch\":0,\"feature_program_sha256\":\"78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1\",\"model_family\":\"hcsn-pft-readout-research-v1\",\"normalization_sha256\":\"fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3\",\"objective_sha256\":\"9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6\",\"outputs\":2,\"parent_model_sha256\":\"f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b\",\"regularizer\":0.2,\"schema\":\"pft-online-statistics-v1\",\"statistics_validation\":\"augmented-psd-rtol-1e-10-v1\",\"time_semantics_sha256\":\"62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535\"}",
+        "head": "fa5057f69b64363bfbce0ce3cbba63c05d08c4f6ea9091de765127714facde02",
+        "revision": 1,
+        "head_material_canonical_json": "{\"batches\":[[\"batch-0\",\"cad9f85c3f7df8a6d75068d2be3617189a0c7dbf811f987cae6545dbd84f0d93\"]],\"contract_sha256\":\"a8ec56e3cc7b8a91ff5f8955072ef2f2a2fddae91726c0fbc51b5c7e726954ae\"}",
+        "count": 3,
+        "weight_shape": [
+          5,
+          2
+        ],
+        "weight": [
+          [
+            0.47213968495400377,
+            -1.3719959402675765
+          ],
+          [
+            0.24871869529852822,
+            -0.20445319017883765
+          ],
+          [
+            -0.1332272649201299,
+            0.3034441203883652
+          ],
+          [
+            0.23343454237636252,
+            -1.4680979032499852
+          ],
+          [
+            0.10972410163473864,
+            -0.04335920686062186
+          ]
+        ],
+        "weight_encoding": "float64-le-c-rowmajor",
+        "weight_sha256": "db71bde5c1aefeffc0ce0b89b3249a333edd693c2adf6f43fced4cdfbc21f8a0"
+      },
+      "binary": "rejected",
+      "binary_reason": "plain finite float entries required"
+    }
+  ],
+  "scope": "Synthetic mathematical/admission diagnostics only; no old science data or budget consumed."
+}

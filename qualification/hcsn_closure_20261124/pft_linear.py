@@ -260,7 +260,12 @@ def solve_normal(gram, rhs, regularizer=0.2):
         raise ValueError("compatible positive-regularized normal statistics required")
     if np.linalg.eigvalsh(gram).min() < -1e-10 * max(1.0, np.linalg.norm(gram, 2)):
         raise ValueError("Gram statistics must be positive semidefinite")
-    return np.linalg.solve(gram + regularizer * np.eye(len(gram)), rhs)
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            regularized = gram + regularizer * np.eye(len(gram))
+    except FloatingPointError as error:
+        raise ValueError("regularized Gram exceeds float64 range") from error
+    return np.linalg.solve(regularized, rhs)
 
 
 def recursive_ridge(batches, regularizer=0.2):
