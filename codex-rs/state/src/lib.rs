@@ -11,6 +11,9 @@ const _: () = assert!(
 
 mod audit;
 mod extract;
+#[cfg(feature = "hia-native")]
+#[path = "../../../hia/datetime_retention.rs"]
+mod hia_datetime_retention;
 pub mod log_db;
 mod migrations;
 mod model;

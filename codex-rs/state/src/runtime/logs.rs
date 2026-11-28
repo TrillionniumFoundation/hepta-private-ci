@@ -294,12 +294,29 @@ WHERE id IN (
     }
 
     pub(crate) async fn run_logs_startup_maintenance(&self) -> anyhow::Result<()> {
+        #[cfg(feature = "hia-native")]
+        let Some(cutoff) = ({
+            let now = Utc::now();
+            crate::hia_datetime_retention::subtract(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                crate::hia_datetime_retention::Unit::Days,
+                LOG_RETENTION_DAYS,
+            )
+        }) else {
+            return Ok(());
+        };
+        #[cfg(not(feature = "hia-native"))]
         let Some(cutoff) =
             Utc::now().checked_sub_signed(chrono::Duration::days(LOG_RETENTION_DAYS))
         else {
             return Ok(());
         };
-        self.delete_logs_before(cutoff.timestamp()).await?;
+        #[cfg(feature = "hia-native")]
+        let cutoff_ts = cutoff.seconds;
+        #[cfg(not(feature = "hia-native"))]
+        let cutoff_ts = cutoff.timestamp();
+        self.delete_logs_before(cutoff_ts).await?;
         // Startup cleanup should not wait behind or block foreground work.
         // PASSIVE checkpoints copy whatever is immediately available and skip
         // frames that would require waiting on active readers or writers.
