@@ -82,11 +82,32 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_STOP_REASON_BYTES: usize = 4096;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+
+fn truncate_utf8(value: &str, maximum_bytes: usize) -> &str {
+    let mut end = value.len().min(maximum_bytes);
+    while !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    &value[..end]
+}
+
+fn append_stop_reason(existing: Option<String>, note: String) -> String {
+    let Some(existing) = existing.filter(|reason| !reason.is_empty()) else {
+        return truncate_utf8(&note, MAX_STOP_REASON_BYTES).to_string();
+    };
+    let note = truncate_utf8(&note, MAX_STOP_REASON_BYTES.saturating_sub(2));
+    let existing = truncate_utf8(
+        &existing,
+        MAX_STOP_REASON_BYTES.saturating_sub(note.len() + 2),
+    );
+    format!("{existing}; {note}")
+}
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -964,10 +985,7 @@ impl AppServerModelDriver {
                     .await
             {
                 let note = format!("Agentd indeterminate reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
         }
         if output.terminal_observed {
@@ -995,10 +1013,7 @@ impl AppServerModelDriver {
                     commit_intelligence_terminal(&owner, binding, revision, &output).await
             {
                 let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
         }
         Ok(output)
@@ -1290,12 +1305,10 @@ async fn reconcile_intelligence_start_unknown(
             .await
     {
         let reason = output.stop_reason.take().unwrap_or_default();
-        output.stop_reason = Some(
-            format!("{reason}; Agentd reconciliation remains required: {error}")
-                .chars()
-                .take(1024)
-                .collect(),
-        );
+        output.stop_reason = Some(append_stop_reason(
+            Some(reason),
+            format!("Agentd reconciliation remains required: {error}"),
+        ));
     }
     output
 }
