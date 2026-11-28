@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "kind": "sdpa",
+    "seed": 311,
+    "threads": 1,
+    "device": "cpu",
+    "device_name": "x86_64",
+    "torch": "2.15.0+cpu",
+    "parameter_count": 1144579,
+    "float_dtype": "float32",
+    "vocab": 33278,
+    "context": 128,
+    "batch": 32,
+    "learning_rate": 0.003,
+    "weight_decay": 0.01
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "cumulative_targets": 2088627,
+      "train_nll": 6.6766907760556125,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.225943159338044,
+        "ppl": 505.6997730682413
+      },
+      "train_seconds": 78.1130754429978,
+      "cumulative_train_seconds": 78.1130754429978
+    },
+    {
+      "epoch": 2,
+      "cumulative_targets": 4177254,
+      "train_nll": 6.308531157789649,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.0669887928981305,
+        "ppl": 431.37975010332184
+      },
+      "train_seconds": 49.94200626802194,
+      "cumulative_train_seconds": 128.05508171101974
+    }
+  ],
+  "selected_epoch": 2,
+  "test": {
+    "targets": 245568,
+    "nll": 6.000057394223339,
+    "ppl": 403.45194863948984
+  },
+  "cut_test": {
+    "targets": 245568,
+    "nll": 7.987648907181867,
+    "ppl": 2944.366336859332
+  },
+  "timed": [
+    {
+      "clock": 15,
+      "actual_seconds": 15.04349579301197,
+      "tokens": 413619,
+      "step": 101,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.614463326597929,
+        "ppl": 745.8043695455232
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.555197245439192,
+        "ppl": 702.8877775590458
+      }
+    },
+    {
+      "clock": 45,
+      "actual_seconds": 45.02611308501582,
+      "tokens": 1200051,
+      "step": 293,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.368220612822795,
+        "ppl": 583.0194879590575
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.307329277068999,
+        "ppl": 548.5778910785448
+      }
+    },
+    {
+      "clock": 120,
+      "actual_seconds": 120.08653871101706,
+      "tokens": 3788467,
+      "step": 925,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.085334601737356,
+        "ppl": 439.3668009753857
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.018075806174002,
+        "ppl": 410.78740018476213
+      }
+    }
+  ],
+  "total_training_seconds": 128.05508171101974,
+  "total_process_training_seconds": 76.2894754379999,
+  "tok_per_training_second": 32620.759318452943,
+  "overall_seconds": 144.86781644821167,
+  "model_sha256": "f0209ce76bd5081c49ee21d42986c43b3f0fd68d7e03005ed68cf6d737320eb2"
+}

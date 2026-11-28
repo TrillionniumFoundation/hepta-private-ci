@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "kind": "smoothwall",
+    "seed": 311,
+    "threads": 1,
+    "device": "cpu",
+    "device_name": "x86_64",
+    "torch": "2.15.0+cpu",
+    "parameter_count": 1144579,
+    "float_dtype": "float32",
+    "vocab": 33278,
+    "context": 128,
+    "batch": 32,
+    "learning_rate": 0.003,
+    "weight_decay": 0.01
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "cumulative_targets": 2088627,
+      "train_nll": 6.634807485184323,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.200838574776647,
+        "ppl": 493.1624213112216
+      },
+      "train_seconds": 17.663644368007226,
+      "cumulative_train_seconds": 17.663644368007226
+    },
+    {
+      "epoch": 2,
+      "cumulative_targets": 4177254,
+      "train_nll": 6.2919535410682235,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.061789833114157,
+        "ppl": 429.14284396192556
+      },
+      "train_seconds": 17.156657645013183,
+      "cumulative_train_seconds": 34.82030201302041
+    }
+  ],
+  "selected_epoch": 2,
+  "test": {
+    "targets": 245568,
+    "nll": 5.995221724456583,
+    "ppl": 401.50569775493966
+  },
+  "cut_test": {
+    "targets": 245568,
+    "nll": 10.569399094865515,
+    "ppl": 38925.27629698768
+  },
+  "timed": [
+    {
+      "clock": 15,
+      "actual_seconds": 15.022837460026494,
+      "tokens": 1769395,
+      "step": 432,
+      "valid": {
+        "targets": 217645,
+        "nll": 6.234336598657651,
+        "ppl": 509.9621966001775
+      },
+      "test": {
+        "targets": 245568,
+        "nll": 6.167402981476203,
+        "ppl": 476.94585908321983
+      }
+    }
+  ],
+  "total_training_seconds": 34.82030201302041,
+  "total_process_training_seconds": 34.55988155899997,
+  "tok_per_training_second": 119966.04734898603,
+  "overall_seconds": 39.91398048400879,
+  "model_sha256": "ecc3a5a2d1420ef44cd9b5e5f312fd000523f9b558c07a16d38cc08e8d3ff793"
+}

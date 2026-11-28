@@ -1,0 +1,31 @@
+{
+  "discount": 0.75,
+  "unigram_and_continuation_pseudocount": 0.1,
+  "training_targets": 2088627,
+  "distinct_train_bigrams": 619592,
+  "train_seconds": 0.3244340220007871,
+  "splits": {
+    "valid": {
+      "targets": 217645,
+      "bigram": {
+        "nll": 5.66145830199863,
+        "ppl": 287.5676974754459
+      },
+      "unigram": {
+        "nll": 6.872421848557612,
+        "ppl": 965.2835077037352
+      }
+    },
+    "test": {
+      "targets": 245568,
+      "bigram": {
+        "nll": 5.584916263681281,
+        "ppl": 266.3779762944258
+      },
+      "unigram": {
+        "nll": 6.8155552663273244,
+        "ppl": 911.9227352158568
+      }
+    }
+  }
+}
