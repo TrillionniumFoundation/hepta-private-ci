@@ -123,14 +123,19 @@ impl AgentdTerminalLearningOwnerV1 {
         end: tokio::time::Instant,
     ) -> Result<TerminalLearningReceiptV1, TerminalLearningErrorV1> {
         request.job_digest(&self.agent_id, &self.producer_id)?;
-        let end = end.min(tokio::time::Instant::now()
-            + Duration::from_millis(request.budget.maximum_wall_milliseconds));
+        let end = end.min(
+            tokio::time::Instant::now()
+                + Duration::from_millis(request.budget.maximum_wall_milliseconds),
+        );
         if tokio::time::Instant::now() >= end {
             return Err(TerminalLearningErrorV1::DeadlineExceeded);
         }
         let result = tokio::time::timeout_at(
-            end, self.execute(request, now, TerminalLearningModeV1::Train, end.into_std()),
-        ).await.map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+            end,
+            self.execute(request, now, TerminalLearningModeV1::Train, end.into_std()),
+        )
+        .await
+        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
         if tokio::time::Instant::now() >= end {
             return Err(TerminalLearningErrorV1::CommitUncertain);
         }
@@ -272,7 +277,15 @@ impl AgentdTerminalLearningOwnerV1 {
                                 TerminalLearningErrorV1::CommitUncertain
                             }
                         })??;
-                fit_native(&ledger, &native_request, digest, source, now, admitted_at, end)
+                fit_native(
+                    &ledger,
+                    &native_request,
+                    digest,
+                    source,
+                    now,
+                    admitted_at,
+                    end,
+                )
             })();
             let mut jobs = jobs
                 .lock()
@@ -305,13 +318,10 @@ impl AgentdTerminalLearningOwnerV1 {
         authorize
             .try_send(authorization)
             .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
-        let result = tokio::time::timeout_at(
-            tokio::time::Instant::from_std(end),
-            job,
-        )
-        .await
-        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
-        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
+        let result = tokio::time::timeout_at(tokio::time::Instant::from_std(end), job)
+            .await
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?
+            .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
         // An atomic native fit cannot be preempted. Over-budget results are
         // rejected; the single permit prevents overlapping abandoned jobs.
         self.verify_readback(result, &request, projected_now(now, admitted_at))

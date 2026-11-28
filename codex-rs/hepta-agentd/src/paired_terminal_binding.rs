@@ -105,27 +105,36 @@ impl AgentdTerminalLearningOwnerV1 {
         now: u64,
         end: tokio::time::Instant,
     ) -> Result<PreparedPairedTerminalV1, TerminalLearningErrorV1> {
-        plan.training.job_digest(&self.agent_id, &self.producer_id)?;
+        plan.training
+            .job_digest(&self.agent_id, &self.producer_id)?;
         check_deadline(&plan.training, now)?;
-        let end = end.min(tokio::time::Instant::now()
-            + Duration::from_millis(plan.training.budget.maximum_wall_milliseconds));
+        let end = end.min(
+            tokio::time::Instant::now()
+                + Duration::from_millis(plan.training.budget.maximum_wall_milliseconds),
+        );
         if tokio::time::Instant::now() >= end {
             return Err(TerminalLearningErrorV1::DeadlineExceeded);
         }
-        let expected = plan.original.request_for_original(
-            delivery.request.original.turn_id.clone(),
-            delivery.request.original.delivery_id,
-        ).map_err(owner_error)?;
+        let expected = plan
+            .original
+            .request_for_original(
+                delivery.request.original.turn_id.clone(),
+                delivery.request.original.delivery_id,
+            )
+            .map_err(owner_error)?;
         if delivery.request != expected {
             return Err(TerminalLearningErrorV1::Conflict);
         }
         let records = identify_original_paired_records_v1(
-            delivery.result.map_err(owner_error)?, &delivery.request, plan.records,
-        ).map_err(owner_error)?;
+            delivery.result.map_err(owner_error)?,
+            &delivery.request,
+            plan.records,
+        )
+        .map_err(owner_error)?;
         let started = Instant::now();
-        let (source, dataset) = tokio::time::timeout_at(
-            end, self.paired_context(&plan, now),
-        ).await.map_err(|_| TerminalLearningErrorV1::DeadlineExceeded)??;
+        let (source, dataset) = tokio::time::timeout_at(end, self.paired_context(&plan, now))
+            .await
+            .map_err(|_| TerminalLearningErrorV1::DeadlineExceeded)??;
         let prepared_at = projected_now(now, started);
         check_deadline(&plan.training, prepared_at)?;
         let payload = binding_payload(self, &plan, &records, &source, &dataset)?;
@@ -133,9 +142,17 @@ impl AgentdTerminalLearningOwnerV1 {
             return Err(TerminalLearningErrorV1::DeadlineExceeded);
         }
         Ok(PreparedPairedTerminalV1 {
-            records, plan, source, dataset, payload, prepared_at, end,
-            ledger: Arc::clone(&self.ledger), replay: Arc::clone(&self.replay),
-            jobs: Arc::clone(&self.jobs), compute: Arc::clone(&self.compute),
+            records,
+            plan,
+            source,
+            dataset,
+            payload,
+            prepared_at,
+            end,
+            ledger: Arc::clone(&self.ledger),
+            replay: Arc::clone(&self.replay),
+            jobs: Arc::clone(&self.jobs),
+            compute: Arc::clone(&self.compute),
         })
     }
 
@@ -162,28 +179,36 @@ impl AgentdTerminalLearningOwnerV1 {
         let training = tokio::time::timeout_at(prepared.end, async {
             self.verify_pair_signature(&prepared, &evidence, now)?;
             self.revalidate_pair(&prepared, now).await?;
-            let training = self.train_until(
-                prepared.plan.training.clone(), projected_now(now, started), prepared.end,
-            ).await?;
+            let training = self
+                .train_until(
+                    prepared.plan.training.clone(),
+                    projected_now(now, started),
+                    prepared.end,
+                )
+                .await?;
             // A fit may have completed when current authority or the current
             // dataset changes. Retain the native job; never label this no-work.
-            self.revalidate_pair(&prepared, projected_now(now, started)).await
+            self.revalidate_pair(&prepared, projected_now(now, started))
+                .await
                 .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
             self.verify_pair_signature(&prepared, &evidence, projected_now(now, started))
                 .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
-            if training.candidate.dataset() != &prepared.dataset
-                || training.training_samples != 2
-            {
+            if training.candidate.dataset() != &prepared.dataset || training.training_samples != 2 {
                 return Err(TerminalLearningErrorV1::CommitUncertain);
             }
             Ok(training)
-        }).await.map_err(|_| TerminalLearningErrorV1::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| TerminalLearningErrorV1::CommitUncertain)??;
         if tokio::time::Instant::now() >= prepared.end {
             return Err(TerminalLearningErrorV1::CommitUncertain);
         }
         Ok(PairedTerminalLearningReceiptV1 {
-            records: prepared.records, plan: prepared.plan,
-            binding_payload: prepared.payload, binding_evidence: evidence, training,
+            records: prepared.records,
+            plan: prepared.plan,
+            binding_payload: prepared.payload,
+            binding_evidence: evidence,
+            training,
         })
     }
 
@@ -209,9 +234,15 @@ impl AgentdTerminalLearningOwnerV1 {
             TryLockError::WouldBlock => TerminalLearningErrorV1::Busy,
             TryLockError::Poisoned(_) => TerminalLearningErrorV1::Unavailable,
         })?;
-        let verified = ledger.verifier().verify(
-            LearningEvidenceRoleV1::Evaluator, evidence, &prepared.payload, now,
-        ).map_err(owner_error)?;
+        let verified = ledger
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                evidence,
+                &prepared.payload,
+                now,
+            )
+            .map_err(owner_error)?;
         if verified.principal() != &prepared.dataset.producer {
             return Err(TerminalLearningErrorV1::WrongScope);
         }
@@ -225,8 +256,11 @@ impl AgentdTerminalLearningOwnerV1 {
     ) -> Result<(SharedExperienceUseV1, DatasetSnapshotReceiptV3), TerminalLearningErrorV1> {
         let started = Instant::now();
         check_deadline(&plan.training, now)?;
-        let source = self.replay.training_source(&plan.training.source_policy_id)
-            .await.map_err(owner_error)?;
+        let source = self
+            .replay
+            .training_source(&plan.training.source_policy_id)
+            .await
+            .map_err(owner_error)?;
         if source.source_support_digest().as_str()
             != plan.training.expected_source_support_digest.to_string()
         {
@@ -239,24 +273,35 @@ impl AgentdTerminalLearningOwnerV1 {
         anchored_snapshot(&ledger, plan.training.budget.maximum_ledger_records)?;
         let now = projected_now(now, started);
         check_deadline(&plan.training, now)?;
-        let dataset = ledger.freeze_dataset(
-            plan.training.dataset_plan.clone(), &plan.training.dataset_evidence, now,
-        ).map_err(owner_error)?;
+        let dataset = ledger
+            .freeze_dataset(
+                plan.training.dataset_plan.clone(),
+                &plan.training.dataset_evidence,
+                now,
+            )
+            .map_err(owner_error)?;
         if dataset.snapshot.dataset_digest != plan.training.expected_dataset_digest
             || dataset.snapshot.source_record_digests.len()
                 > plan.training.budget.maximum_dataset_records as usize
         {
             return Err(TerminalLearningErrorV1::Conflict);
         }
-        let expected = [plan.failure.decision, plan.failure.outcome,
-            plan.correction.decision, plan.correction.outcome];
+        let expected = [
+            plan.failure.decision,
+            plan.failure.outcome,
+            plan.correction.decision,
+            plan.correction.outcome,
+        ];
         if expected.iter().any(|digest| digest.is_zero())
             || expected.into_iter().collect::<BTreeSet<_>>().len() != 4
         {
             return Err(TerminalLearningErrorV1::InvalidRequest);
         }
         let mut episodes = [None, None, None, None];
-        for record in ledger.read_dataset_records(&dataset, now).map_err(owner_error)? {
+        for record in ledger
+            .read_dataset_records(&dataset, now)
+            .map_err(owner_error)?
+        {
             let episode = match &record.event {
                 LedgerEvent::AuthenticatedDecisionV2(value) => {
                     if value.support_digest != plan.training.expected_source_support_digest {
@@ -267,22 +312,25 @@ impl AgentdTerminalLearningOwnerV1 {
                 LedgerEvent::AuthenticatedOutcomeV2(value) => (&value.episode_id, 1),
                 _ => continue,
             };
-            let index = expected.iter().position(|digest| *digest == record.event_digest)
+            let index = expected
+                .iter()
+                .position(|digest| *digest == record.event_digest)
                 .ok_or(TerminalLearningErrorV1::Conflict)?;
             if index % 2 != episode.1 || episodes[index].is_some() {
                 return Err(TerminalLearningErrorV1::Conflict);
             }
             episodes[index] = Some(episode.0.clone());
         }
-        if episodes.iter().any(Option::is_none) || episodes[0] != episodes[1]
-            || episodes[2] != episodes[3] || episodes[0] == episodes[2]
+        if episodes.iter().any(Option::is_none)
+            || episodes[0] != episodes[1]
+            || episodes[2] != episodes[3]
+            || episodes[0] == episodes[2]
         {
             return Err(TerminalLearningErrorV1::Conflict);
         }
         // Reuse the unchanged native profile validator; no values are inferred.
-        freeze_terminal_cell_from_owner_v1(
-            &ledger, &dataset, plan.training.profile.clone(), now,
-        ).map_err(owner_error)?;
+        freeze_terminal_cell_from_owner_v1(&ledger, &dataset, plan.training.profile.clone(), now)
+            .map_err(owner_error)?;
         Ok((source, dataset))
     }
 }
@@ -297,30 +345,54 @@ fn binding_payload(
     let request = records.original_request();
     let registration = &plan.original.preparation;
     let manifest = &plan.original.manifest;
-    let SharedExperiencePurposeV1::Replay { parameter_scope, artifact_consumer } = source.purpose()
-    else { return Err(TerminalLearningErrorV1::WrongScope); };
+    let SharedExperiencePurposeV1::Replay {
+        parameter_scope,
+        artifact_consumer,
+    } = source.purpose()
+    else {
+        return Err(TerminalLearningErrorV1::WrongScope);
+    };
     let mut bytes = b"hepta.agentd.paired-terminal-owner-binding.v1\0".to_vec();
-    for value in [owner.agent_id.as_str(), owner.producer_id.as_str(),
-        request.original.turn_id.as_str(), registration.principal_id.as_str(),
-        source.owner_id().as_str(), source.policy_id().as_str(),
-        parameter_scope.as_str(), artifact_consumer.as_str()]
-    {
+    for value in [
+        owner.agent_id.as_str(),
+        owner.producer_id.as_str(),
+        request.original.turn_id.as_str(),
+        registration.principal_id.as_str(),
+        source.owner_id().as_str(),
+        source.policy_id().as_str(),
+        parameter_scope.as_str(),
+        artifact_consumer.as_str(),
+    ] {
         bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
         bytes.extend_from_slice(value.as_bytes());
     }
-    for value in [registration.study, registration.enrollment,
-        registration.frozen_materials, request.operation, request.original.delivery_id,
-        manifest.failure_sha256, manifest.correction_sha256,
-        records.failure_record().record_digest, records.correction_record().record_digest,
-        plan.training.job_digest(&owner.agent_id, &owner.producer_id)?,
-        dataset.snapshot.dataset_digest, plan.training.expected_source_support_digest,
-        plan.failure.decision, plan.failure.outcome, plan.correction.decision, plan.correction.outcome]
-    {
+    for value in [
+        registration.study,
+        registration.enrollment,
+        registration.frozen_materials,
+        request.operation,
+        request.original.delivery_id,
+        manifest.failure_sha256,
+        manifest.correction_sha256,
+        records.failure_record().record_digest,
+        records.correction_record().record_digest,
+        plan.training
+            .job_digest(&owner.agent_id, &owner.producer_id)?,
+        dataset.snapshot.dataset_digest,
+        plan.training.expected_source_support_digest,
+        plan.failure.decision,
+        plan.failure.outcome,
+        plan.correction.decision,
+        plan.correction.outcome,
+    ] {
         bytes.extend_from_slice(value.as_array());
     }
-    for value in [registration.policy_generation.get(), manifest.failure_bytes,
-        manifest.correction_bytes, source.policy_revision()]
-    {
+    for value in [
+        registration.policy_generation.get(),
+        manifest.failure_bytes,
+        manifest.correction_bytes,
+        source.policy_revision(),
+    ] {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
     Ok(bytes)
