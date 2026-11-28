@@ -206,7 +206,7 @@ jobs:
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 15 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests) | test(notes_thread_tool::items::tests)'
       - name: Paired preparation on the original durable journal
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

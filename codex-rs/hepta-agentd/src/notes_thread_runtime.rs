@@ -10,12 +10,13 @@ use codex_app_server_protocol::DynamicToolCallParams;
 use codex_app_server_protocol::DynamicToolCallResponse;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerRequest;
-use codex_app_server_protocol::SortDirection;
 use codex_app_server_protocol::ThreadItemsListParams;
 use codex_app_server_protocol::ThreadItemsListResponse;
 use serde::de::DeserializeOwned;
 use tokio_util::sync::CancellationToken;
 
+use super::items::OriginalHumanInput;
+use super::items::OriginalItemSelection;
 use super::*;
 use crate::notes_literal_adapter::recorded::RecordedNotesLookup;
 use crate::notes_literal_adapter::recorded::RecordedNotesUnknownReason;
@@ -31,13 +32,6 @@ fn recorded_unknown(
         "callback":{"thread_id":route.thread_id,"app_server_session_id":route.app_server_session_id,
             "turn_id":params.turn_id,"call_id":params.call_id},
         "instruction":"No exact original result was verified. Do not repeat the effect or infer a new original identity."})
-}
-
-#[derive(Clone, Copy)]
-enum OriginalItemSelection<'a> {
-    Call(&'a str),
-    FirstReplace,
-    UserInput,
 }
 
 struct OriginalConnection {
@@ -166,9 +160,10 @@ impl OriginalConnection {
         state: &crate::AgentdState,
         adapter: &AgentdNotesLiteralAdapter,
         turn_id: &str,
+        selection: OriginalHumanInput,
     ) -> Result<VerifiedHumanTurn, AgentdError> {
         let user = self
-            .find_original_item(turn_id, OriginalItemSelection::UserInput)
+            .find_original_item(turn_id, OriginalItemSelection::UserInput(selection))
             .await?;
         let client_id = human::original_client_id(&user)?.to_owned();
         let delivery_id = client_id
@@ -230,7 +225,12 @@ impl OriginalConnection {
         request: crate::PairedTurnRequest,
     ) -> Result<crate::VerifiedPairedTurn, AgentdError> {
         let human = self
-            .verify_human_turn(state, adapter, &request.turn_id)
+            .verify_human_turn(
+                state,
+                adapter,
+                &request.turn_id,
+                OriginalHumanInput::ExactDelivery(request.delivery_id),
+            )
             .await?;
         request.match_original(
             human.delivery_id(),
@@ -253,70 +253,8 @@ impl OriginalConnection {
         original_turn_id: &str,
         selection: OriginalItemSelection<'_>,
     ) -> Result<codex_app_server_protocol::ThreadItem, AgentdError> {
-        let end = tokio::time::Instant::now() + Duration::from_secs(5);
-        let mut cursor = None;
-        for _ in 0..16 {
-            let thread_id = self.route.thread_id.clone();
-            let turn_id = original_turn_id.to_owned();
-            let page: ThreadItemsListResponse = tokio::time::timeout_at(
-                end,
-                self.call(|request_id| ClientRequest::ThreadItemsList {
-                    request_id,
-                    params: ThreadItemsListParams {
-                        thread_id,
-                        turn_id: Some(turn_id),
-                        cursor,
-                        limit: Some(128),
-                        sort_direction: Some(SortDirection::Asc),
-                    },
-                }),
-            )
-            .await
-            .map_err(|_| invalid("original callback preview deadline elapsed"))??;
-            if page.data.len() > 128
-                || page
-                    .data
-                    .iter()
-                    .any(|item| item.turn_id != original_turn_id)
-            {
-                return Err(invalid("original callback page escaped its turn"));
-            }
-            for item in page.data {
-                if matches!(selection, OriginalItemSelection::UserInput)
-                    && matches!(
-                        &item.item,
-                        codex_app_server_protocol::ThreadItem::UserMessage { .. }
-                    )
-                {
-                    return Ok(item.item);
-                }
-                if let codex_app_server_protocol::ThreadItem::DynamicToolCall {
-                    id,
-                    namespace,
-                    tool,
-                    ..
-                } = &item.item
-                {
-                    let selected = match selection {
-                        OriginalItemSelection::Call(call_id) => id == call_id,
-                        OriginalItemSelection::FirstReplace => {
-                            namespace.is_none() && tool == REPLACE_TOOL
-                        }
-                        OriginalItemSelection::UserInput => false,
-                    };
-                    if selected {
-                        return Ok(item.item);
-                    }
-                }
-            }
-            cursor = page.next_cursor;
-            if cursor.is_none() {
-                break;
-            }
-        }
-        Err(invalid(
-            "original Core item is absent; no Notes operation prepared",
-        ))
+        let thread_id = self.route.thread_id.clone();
+        items::find_original_item(&thread_id, original_turn_id, selection, self).await
     }
 }
 
@@ -463,7 +401,7 @@ impl AgentdNotesThreadToolRuntime {
             let mut human_observation = None;
             let result = async {
                 let call = connection.verify(&params).await?;
-                let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id()).await?;
+                let human = connection.verify_human_turn(&state, &self.adapter, call.turn_id(), OriginalHumanInput::First).await?;
                 human_observation = Some(json!({"authbus_client_id":human.delivery_id(), "principal_id":human.owner().principal_id,
                     "session_id":human.owner().session_id,"permission_revision":human.owner().permission_revision,
                     "expires_at_ms":human.owner().expires_at_ms}));
