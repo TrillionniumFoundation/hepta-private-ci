@@ -435,3 +435,73 @@ fn owner_service_readiness_requires_a_live_writer_lease() {
     assert!(!service.status(19).ready);
     assert!(!service.status(1_001).ready);
 }
+
+#[test]
+fn owner_service_fences_current_view_until_interrupted_publication_is_reconciled() {
+    let directory = TestDir::new();
+    let mut config = configuration(&directory);
+    let service = LearningArtifactOwnerService::open(config.clone()).fixture("service");
+    let request = publish_request(&service);
+    let withdrawals = service.withdrawal_registry();
+    let mut transaction = service
+        .host
+        .begin_publication(
+            request.operation_id.clone(),
+            request.admission.clone(),
+            withdrawals,
+            service.registry(),
+            request.expected_registry_predecessor_head,
+            request.now,
+        )
+        .fixture("prepare");
+    let mut staged = service.registry().clone();
+    service
+        .host
+        .stage_compatibility_registration(&transaction, &mut staged, request.now)
+        .fixture("stage registry");
+    service
+        .host
+        .ensure_payload_durable(&mut transaction, &staged, &request.payload, request.now)
+        .fixture("persist payload");
+    service
+        .host
+        .ensure_registry_durable(
+            &mut transaction,
+            &staged,
+            withdrawals,
+            config.storage_binding,
+            request.now,
+        )
+        .fixture("persist registry");
+    service
+        .host
+        .ensure_witness_durable(
+            &mut transaction,
+            &request.signed_current_head,
+            withdrawals,
+            request.now,
+        )
+        .fixture("persist signed head");
+    drop(service);
+
+    config.required_current_head = Some(request.signed_current_head.clone());
+    let mut reopened = LearningArtifactOwnerService::open(config).fixture("reopen");
+    assert_eq!(reopened.recovery_required(), Some(&request.operation_id));
+    assert!(matches!(
+        reopened.current_registry_view(request.now),
+        Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
+            if operation_id == request.operation_id
+    ));
+    let receipt = reopened
+        .publish(request.clone())
+        .fixture("reconcile exact request");
+    assert_eq!(
+        reopened
+            .current_registry_view(request.now)
+            .fixture("view after reconciliation")
+            .receipt()
+            .head_digest,
+        receipt.registry_head_digest
+    );
+    assert_eq!(reopened.publish(request).fixture("terminal retry"), receipt);
+}
