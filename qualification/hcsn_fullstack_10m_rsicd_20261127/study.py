@@ -28,11 +28,10 @@ def eval_rows(model,d,rows,images=None):
 def fit(arm,seed):
     tick=time.perf_counter();out=ROOT/'runs'/f'{arm}-{seed}';out.mkdir(exist_ok=True,parents=True)
     if (out/'done.json').exists():return
-    if (out/'history.json').exists():
-        raise RuntimeError(f'incomplete cell needs explicit recovery preserving failed attempt: {out}')
     d=Data();model=net(arm,seed,d);opt=torch.optim.AdamW(model.parameters(),lr=.0005,weight_decay=.01,foreach=False);rng=np.random.default_rng(seed)
     count=sum(p.numel() for p in model.parameters());assert count>=10_000_000
     w=time.perf_counter();c=time.process_time();hw=[];tokens=0;step=0;thresholds={k:[35,125,225] for k in ('wall','cpu')}
+    setup_seconds=w-tick
     def elapsed():return {'wall':time.perf_counter()-w,'cpu':time.process_time()-c}
     def observe(tags):
         losses,ns=eval_rows(model,d,d.index['development']);nll=float(losses.sum()/ns.sum());state=out/f's{step}.pt'
@@ -41,16 +40,35 @@ def fit(arm,seed):
         digest=sha(state) if save else None
         entry={'step':step,'train_tokens':tokens,'nll':nll,'validation_tokens':int(ns.sum()),'state':state.name if save else None,'sha':digest,'tags':tags,**elapsed()};hw.append(entry);write(out/'history.json',hw)
         print(arm,seed,step,round(entry['cpu'],1),round(nll,5),flush=True)
-    observe(['initial']);batches=[]
-    while min(elapsed().values())<300:
+    batches=[]
+    def update():
+        nonlocal step,tokens
         model.train();ix=rng.choice(d.index['train'],size=8,replace=False);pix,t,y=d.batch(ix);tok=int((y!=0).sum());batches.append(hashlib.sha256(ix.astype('<i8').tobytes()).hexdigest())
         opt.zero_grad(set_to_none=True);pred=model(pix,t);loss=F.cross_entropy(pred.flatten(0,1),y.flatten(),ignore_index=0);loss.backward();torch.nn.utils.clip_grad_norm_(model.parameters(),1);opt.step();step+=1;tokens+=tok
+    history_file=out/'history.json'
+    if history_file.exists():
+        old=json.loads(history_file.read_text());last=old[-1];stamp=time.time_ns()
+        (out/f'interrupted-{stamp}.json').write_text(json.dumps(old,indent=1))
+        refs={row['step']:row for row in old if row['state']};rebuild_w=time.perf_counter();rebuild_c=time.process_time()
+        while step<last['step']:
+            update()
+            if step in refs:
+                state=out/refs[step]['state'];assert sha(state)==refs[step]['sha']
+                saved=torch.load(state,weights_only=True,map_location='cpu')
+                if not all(torch.equal(v,saved[k]) for k,v in model.state_dict().items()):raise RuntimeError('state reconstruction mismatch')
+        loss_rows,count_rows=eval_rows(model,d,d.index['development']);assert abs(loss_rows.sum()/count_rows.sum()-last['nll'])<1e-9 and tokens==last['train_tokens']
+        write(out/f'recovery-{stamp}.json',{'from_step':step,'validated_states':list(refs),'restore_wall_s':time.perf_counter()-rebuild_w,'restore_cpu_s':time.process_time()-rebuild_c,'previous_valid_clock':{'cpu':last['cpu'],'wall':last['wall']},'unsaved_work_from_prior_attempt':'excluded from scientific retention; inspect failed-process receipts for gross resource use'})
+        hw=old;w=time.perf_counter()-last['wall'];c=time.process_time()-last['cpu']
+        for clock in thresholds:thresholds[clock]=[level for level in thresholds[clock] if not any(clock+str(level) in row['tags'] for row in hw)]
+    else:observe(['initial'])
+    while min(elapsed().values())<300:
+        update()
         tags=[];e=elapsed()
         for clock,levels in thresholds.items():
             while levels and e[clock]>=levels[0]:tags.append(clock+str(levels.pop(0)))
         if step in STEPS:tags.append(f'step{step}')
         if tags:observe(tags)
-    duration=elapsed();write(out/'done.json',{'arm':arm,'seed':seed,'parameters':count,'setup_s':w-tick,'elapsed':duration,'steps':step,'tokens':tokens,'affinity':list(os.sched_getaffinity(0)),'rss_kib':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,'batch_roster_sha':hashlib.sha256(''.join(batches).encode()).hexdigest()})
+    duration=elapsed();write(out/'done.json',{'arm':arm,'seed':seed,'parameters':count,'setup_s':setup_seconds,'elapsed':duration,'steps':step,'tokens':tokens,'affinity':list(os.sched_getaffinity(0)),'rss_kib':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,'batch_roster_sha':hashlib.sha256(''.join(batches).encode()).hexdigest()})
 def seal():
     rows={}
     for arm in ARMS:
