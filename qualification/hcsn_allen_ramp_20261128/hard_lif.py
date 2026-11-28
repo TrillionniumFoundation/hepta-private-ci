@@ -20,14 +20,21 @@ def fit(openloop,tr,tau,theta):
     for t in tr:
         hs.append(openloop.one(t,tau,theta)[1]);ys.append(t[3]>0);ws.append(np.full(len(t[3]),1./(len(ids)*sizes[t[0]])))
     h=np.concatenate(hs);y=np.concatenate(ys);w=np.concatenate(ws)
+    lower=-np.log1p(-EPS);upper=-np.log1p(-(1.-EPS))
     def fun(v):
-        b,g=np.exp(v);q=b+g*h;p=np.clip(-np.expm1(-q),EPS,1.-EPS)
-        raw=-np.where(y,np.log(p),np.log1p(-p));grad=np.where(y,-np.exp(-q)/p,1.)
-        grad=np.where((p>EPS)&(p<1-EPS),grad,0.);grad*=w
+        b,g=np.exp(v);q=b+g*h;bounded=np.clip(q,lower,upper);p=-np.expm1(-bounded)
+        # For a silent bin -log(1-p) is the cumulative hazard, including the clip.
+        raw=np.where(y,-np.log(p),bounded);grad=np.where(y,-np.exp(-bounded)/p,1.)
+        grad=np.where((q>lower)&(q<upper),grad,0.);grad*=w
         return np.dot(w,raw),np.array([b*grad.sum(),g*np.dot(h,grad)])
-    r=minimize(fun,[-6.,-2.],jac=True,method="L-BFGS-B",bounds=[(-23,2),(-23,3)],options=dict(maxiter=300,ftol=1e-13,gtol=1e-11))
-    if not r.success:raise ValueError(r.message)
-    return dict(tau=tau,threshold=theta,log_amplitudes=r.x.tolist())
+    bounds=[(-23,2),(-23,3)];solver="L-BFGS-B"
+    r=minimize(fun,[-6.,-2.],jac=True,method=solver,bounds=bounds,options=dict(maxiter=500,maxls=80,ftol=1e-13,gtol=1e-11))
+    if not r.success:
+        solver="Powell-recovery"
+        retry=minimize(lambda v:fun(v)[0],r.x,method="Powell",bounds=bounds,options=dict(maxiter=500,ftol=1e-13,xtol=1e-9))
+        if not retry.success or retry.fun>r.fun+1e-10:raise ValueError((tau,theta,r.message,retry.message))
+        r=retry
+    return dict(tau=tau,threshold=theta,log_amplitudes=r.x.tolist(),solver=solver,objective=float(r.fun),iterations=int(r.nit))
 def evaluate(model,tr,reg):
     rows={};signals={};b,g=np.exp(reg["log_amplitudes"])
     for item in tr:
