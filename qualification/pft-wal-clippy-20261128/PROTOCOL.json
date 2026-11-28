@@ -1,0 +1,35 @@
+{
+  "base_commit": "d779ed32bb2d235e5a12538b7748bd07b200854f",
+  "change": "Box only the largest private WAL event payload; construct/decode it explicitly and clone the borrowed inner intent when applying.",
+  "invariants": [
+    "Prepare event tag stays 0; typed intent serialization remains unchanged.",
+    "Header, frame chaining and replay loop source bytes are unchanged.",
+    "No schema version, migration, authority or fail-closed gate changes.",
+    "No lint suppression."
+  ],
+  "wire_source_identity": {
+    "event_encode": {
+      "sha256": "2ebd8ce07fbcdb428b5b1f5e93ad21856792d60c1291b62e53cfeba4d631a642",
+      "bytes": 1230,
+      "unchanged": true
+    },
+    "header_frame_replay": {
+      "sha256": "ce9030763d5f5878b7fc1c3b1dc2a0431b9a41c63314c596d407958823bbe850",
+      "bytes": 3296,
+      "unchanged": true
+    }
+  },
+  "tests": [
+    "just test -p codex-hepta-cell-roles --lib --locked"
+  ],
+  "strict_clippy": [
+    "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings",
+    "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator --all-targets --features compatibility-api -- -D warnings"
+  ],
+  "test_scope": "Existing crate tests cover prepare/forward/terminal/restart, idempotence, writer fencing, inverse rollback, path replacement, tail tampering and bounded reads. No new mirror test is introduced for the allocation representation.",
+  "format_policy": "Execute tests and strict Clippy before final just fmt; preserve pre-format source and verify format-only changes without rerunning tests.",
+  "known_limits": [
+    "These local Linux commands do not replace the separate original failing Windows jobs.",
+    "Original CI failure is preserved; no claim that all repository CI passed."
+  ]
+}

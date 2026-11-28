@@ -1,0 +1,15 @@
+{
+  "source_commit": "d779ed32bb2d235e5a12538b7748bd07b200854f",
+  "base_commit": "6e60365410d825778bb16b759af893985db97a6b",
+  "workflow_run": 46137271072,
+  "job": 140955829967,
+  "original_log": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46137271072/job/140955829967",
+  "original_log_bytes": 2438470,
+  "original_log_sha256": "bb858d1d41de485968086ad54d2c1f592e3a321629cba8e9de01413d8b8cf32f",
+  "strict_commands": [
+    "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings",
+    "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator --all-targets --features compatibility-api -- -D warnings"
+  ],
+  "failure": "ControlWalEventV1 large_enum_variant at control_wal.rs:33, maximum >=304 bytes versus second-largest >=64 bytes",
+  "compiler": "rust-1.96.0"
+}

@@ -434,7 +434,7 @@ mod tests {
                 .is_zero()
         );
         assert!(!step.result.execution_mode().execution_allowed());
-        assert!(!ACTION_PROPOSAL_EXECUTION_ALLOWED_V1);
+        const { assert!(!ACTION_PROPOSAL_EXECUTION_ALLOWED_V1) };
     }
 
     #[test]

@@ -407,11 +407,7 @@ mod tests {
                 .iter()
                 .map(|kind| RoleMetricThresholdV1 {
                     kind: *kind,
-                    direction: if kind.permits_negative() {
-                        RoleMetricDirectionV1::AtMost
-                    } else {
-                        RoleMetricDirectionV1::AtMost
-                    },
+                    direction: RoleMetricDirectionV1::AtMost,
                     threshold_value: 900_000,
                     tolerance: 0,
                     minimum_sample_count: 2,
