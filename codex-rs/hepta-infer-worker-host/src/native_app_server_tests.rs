@@ -406,15 +406,26 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let final_use_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("final-use permit entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
-    let durable_stop = source
+    let durable_stop = source[revalidation..]
         .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
+        .map(|position| revalidation + position)
+        .expect("durable stop after failed revalidation");
+    let (run, authorized_sender) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized turn start helper");
+    let physical_request = ".request_typed_observed(ClientRequest::TurnStart";
+    assert!(!run.contains(physical_request));
+    assert!(authorized_sender.contains(physical_request));
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+    assert!(revalidation < durable_stop);
+    assert!(durable_stop < final_use_entry);
+    assert!(final_use_entry < turn_start);
 }
 
 #[cfg(unix)]
