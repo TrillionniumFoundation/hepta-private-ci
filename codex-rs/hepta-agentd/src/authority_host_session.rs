@@ -17,6 +17,8 @@ mod material;
 
 #[path = "authority_host_learning_session.rs"]
 mod learning;
+#[path = "authority_host_paired_session.rs"]
+mod paired;
 
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
@@ -29,6 +31,7 @@ pub struct PreparedHostAuthoritySession {
     fresh_filesystem: bool,
     root_admin: Option<crate::authority_host_admin::RootAdminRuntime>,
     learning: Option<crate::authority_host_service::RegisteredHostLearningCheckpointV1>,
+    paired_training: Option<crate::authority_host_service::RegisteredPairedTrainingPlan>,
 }
 
 impl PreparedHostAuthoritySession {
@@ -80,6 +83,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: true,
             root_admin: None,
             learning: None,
+            paired_training: None,
         })
     }
 
@@ -105,6 +109,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: true,
             root_admin: None,
             learning: None,
+            paired_training: None,
         })
     }
 
@@ -126,6 +131,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: false,
             root_admin: None,
             learning: None,
+            paired_training: None,
         })
     }
 
@@ -318,12 +324,27 @@ impl PreparedHostAuthoritySession {
             service,
             root_admin,
             learning,
+            paired_training,
             ..
         } = self;
+        if paired_training.is_some() && text_ui.is_none() {
+            return Err(io::Error::other(
+                "paired training requires the original native text UI",
+            ));
+        }
         // Bind the dedicated optional lane before either five-lane ready
         // callback can release the child. Its accept loop runs independently.
         let learning = learning
             .map(|owner| learning::BoundLearning::bind(owner, &config))
+            .transpose()?;
+        let paired_training = paired_training
+            .map(|owner| {
+                paired::BoundPaired::bind(
+                    owner,
+                    &config,
+                    learning.as_ref().map(learning::BoundLearning::path),
+                )
+            })
             .transpose()?;
         if text_ui.is_some()
             && config.issuer_record_profile
@@ -354,6 +375,9 @@ impl PreparedHostAuthoritySession {
                 || learning
                     .as_ref()
                     .is_some_and(|lane| lane.path() == text.socket_path)
+                || paired_training
+                    .as_ref()
+                    .is_some_and(|lane| lane.path() == text.socket_path)
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
@@ -376,28 +400,37 @@ impl PreparedHostAuthoritySession {
                     &registration,
                     &owner_pidfd,
                     || {
-                        std::thread::scope(|scope| {
-                            let worker = scope.spawn(|| {
-                                service.serve_text_ui(
-                                    &text,
-                                    &ui_pidfd,
-                                    &owner_pidfd,
-                                    std::time::Duration::from_millis(config.timeout_ms),
-                                    std::time::Duration::from_millis(config.lifetime_ms),
-                                )
-                            });
-                            let original = listeners::serve_bound_lanes(
-                                &service,
-                                &config,
-                                &registration,
-                                &owner_pidfd,
-                                bound,
-                            );
-                            let ui = worker
-                                .join()
-                                .map_err(|_| io::Error::other("text UI lane panicked"))?;
-                            original.and(ui)
-                        })
+                        paired::serve_optional(
+                            paired_training,
+                            &service,
+                            &config,
+                            &registration,
+                            &owner_pidfd,
+                            || {
+                                std::thread::scope(|scope| {
+                                    let worker = scope.spawn(|| {
+                                        service.serve_text_ui(
+                                            &text,
+                                            &ui_pidfd,
+                                            &owner_pidfd,
+                                            std::time::Duration::from_millis(config.timeout_ms),
+                                            std::time::Duration::from_millis(config.lifetime_ms),
+                                        )
+                                    });
+                                    let original = listeners::serve_bound_lanes(
+                                        &service,
+                                        &config,
+                                        &registration,
+                                        &owner_pidfd,
+                                        bound,
+                                    );
+                                    let ui = worker
+                                        .join()
+                                        .map_err(|_| io::Error::other("text UI lane panicked"))?;
+                                    original.and(ui)
+                                })
+                            },
+                        )
                     },
                 )
             };
