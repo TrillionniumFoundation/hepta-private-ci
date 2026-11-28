@@ -249,5 +249,145 @@
     "early_development_checkpoint_replay": "../billion_recovery/original/INDEPENDENT_DEVELOPMENT_REPLAY.json",
     "fresh_recount": "cremad_independent_recount.json",
     "experiment_origin": "Earlier single-seed CPU native four-arm experiment on ai395; source Git branch 93196613f9b1893288b8460688d146596c17ddd3 records early observations only."
+  },
+  "current_tag_tree_inventory": {
+    "branches": 2231,
+    "tips": 386,
+    "roots": 373,
+    "reference_table_sha256": "99c333a49971c96040e3b5f563eb65b7f62202301f3fe62d7a8e9caf20a598c8",
+    "unique_trees": 5673,
+    "tree_path_pairs": 5695,
+    "unique_blobs": 20823,
+    "distinct_gitlinks": 0,
+    "primary_source_docs": 16055,
+    "data_like_including_primary": 19019,
+    "elapsed_s": 0.9833868842106313,
+    "named_tags": 2231,
+    "distinct_peeled_targets": 386,
+    "blob_oids_already_in_heads": 15617,
+    "tag_only_blob_oids": 5206,
+    "tag_only_project_text_oids": 5073,
+    "tag_only_path_sha256": "24d9254d1a12af02bf09773c6b9102954149093841a577248300c93b51359625",
+    "tag_only_text_sha256": "f19c3db9b530cf61301841860ca9b0555a2e43bb7fe3544eb8b1072fcc50f2b9",
+    "tag_refs_sha256": "49143b44a0b856746b5312bbd3e468d840d4fe3e90a4fe40169bdbd25ced9319",
+    "head_observation": [
+      "ref: refs/heads/main\tHEAD",
+      "732e934ba496d90fbe042b8d41d479ef901643e5\tHEAD"
+    ]
+  },
+  "post_cutoff_history": {
+    "frozen_branch_sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+    "cutoff_utc": "2026-11-28T01:56:00Z",
+    "rule": "Raw-commit parent traversal starting at every frozen tip dated on/after cutoff, following all parents until the first earlier-dated commit on each path. First-parent tree diff for each retained commit.",
+    "post_cutoff_tip_count": 70,
+    "post_cutoff_ref_names": 73,
+    "post_cutoff_commits": 237,
+    "distinct_examined_commit_objects": 271,
+    "pre_cutoff_frontier_commits": 34,
+    "first_parent_path_change_events": 1840,
+    "change_operations": {
+      "A": 1306,
+      "M": 528,
+      "D": 6
+    },
+    "distinct_after_oids_including_superseded": 1611,
+    "current_eligible_changed_oids": 1039,
+    "current_eligible_standard": 1007,
+    "current_eligible_additional": 32,
+    "changes_sha256": "593c2ff0788682bfd91bf81366909671127caba8cc962d9a099baf80565fc938",
+    "current_changed_text_sha256": "2ae9c64fbb5c85c5da1cfb01a785d9617b257cb584dbbbb54dd51a7d9b0ce2c5",
+    "limitation": "Commit timestamp and first-parent changes are distinct from the historical ref service push time. Exact old individual refs cannot be deduced solely from historical aggregate counts."
+  },
+  "post_cutoff_current_text_verified": {
+    "markers": {
+      "hcsn": "hcsn|hepta[ _-]*continuous[ _-]*spik|hepta[ _-]*\u8fde\u7eed\u8109\u51b2",
+      "paper": "he[ _\u2013\u2014-]*(?:(?:and|&)[ _-]*)?xiong|rollover risk and credit risk|rollover[ _-]*(?:loss|risk)",
+      "boundary": "free[ _-]*boundar|smooth[ _-]*past|\u81ea\u7531\u8fb9\u754c|\u5149\u6ed1\u7c98\u8d34|\u5149\u6ed1\u8d34\u5408",
+      "hit": "first[ _-]*(?:passage|hitt?ing)|brownian bridge|\u9996\u8fbe|\u9996\u6b21\u7a7f\u8d8a",
+      "neural": "spiking|neuron|\u795e\u7ecf\u5143|\u8109\u51b2\u7f51\u7edc",
+      "kinetic": "refractory|regenerati(?:ve|on)|renewal|\u4e0d\u5e94\u671f|\u590d\u4f4d",
+      "editing": "weight[ _-]*edit|model[ _-]*edit|knowledge[ _-]*edit|forward[ _-]*projection|\u6743\u91cd\u7f16\u8f91|\u524d\u5411\u6295\u5f71",
+      "multimodal": "multi[ _-]*modal|omni[ _-]*modal|\u5168\u6a21\u6001|\u591a\u6a21\u6001|image[ _-]*(?:text|caption)|audio[ _-]*visual",
+      "speed": "time[ _-]*to[ _-]*(?:quality|target)|wall[ _-]*(?:time|clock)|\u540c\u8d28\u91cf|\u7aef\u5230\u7aef\u65f6\u95f4"
+    },
+    "counts": {
+      "hcsn": 31,
+      "paper": 11,
+      "boundary": 6,
+      "hit": 8,
+      "neural": 67,
+      "kinetic": 46,
+      "editing": 1,
+      "multimodal": 7,
+      "speed": 36
+    },
+    "total": {
+      "objects": 1039,
+      "bytes": 45643258,
+      "binary": 8,
+      "primary": 713
+    }
+  },
+  "additional_text_full_verification": {
+    "markers": {
+      "hcsn": "hcsn|hepta[ _-]*continuous[ _-]*spik|hepta[ _-]*\u8fde\u7eed\u8109\u51b2",
+      "paper": "he[ _\u2013\u2014-]*(?:(?:and|&)[ _-]*)?xiong|rollover risk and credit risk|rollover[ _-]*(?:loss|risk)",
+      "boundary": "free[ _-]*boundar|smooth[ _-]*past|\u81ea\u7531\u8fb9\u754c|\u5149\u6ed1\u7c98\u8d34|\u5149\u6ed1\u8d34\u5408",
+      "hit": "first[ _-]*(?:passage|hitt?ing)|brownian bridge|\u9996\u8fbe|\u9996\u6b21\u7a7f\u8d8a",
+      "neural": "spiking|neuron|\u795e\u7ecf\u5143|\u8109\u51b2\u7f51\u7edc",
+      "kinetic": "refractory|regenerati(?:ve|on)|renewal|\u4e0d\u5e94\u671f|\u590d\u4f4d",
+      "editing": "weight[ _-]*edit|model[ _-]*edit|knowledge[ _-]*edit|forward[ _-]*projection|\u6743\u91cd\u7f16\u8f91|\u524d\u5411\u6295\u5f71",
+      "multimodal": "multi[ _-]*modal|omni[ _-]*modal|\u5168\u6a21\u6001|\u591a\u6a21\u6001|image[ _-]*(?:text|caption)|audio[ _-]*visual",
+      "speed": "time[ _-]*to[ _-]*(?:quality|target)|wall[ _-]*(?:time|clock)|\u540c\u8d28\u91cf|\u7aef\u5230\u7aef\u65f6\u95f4"
+    },
+    "counts": {
+      "hcsn": 1293,
+      "paper": 11,
+      "boundary": 50,
+      "hit": 75,
+      "neural": 1846,
+      "kinetic": 443,
+      "editing": 19,
+      "multimodal": 218,
+      "speed": 115
+    },
+    "total": {
+      "objects": 11709,
+      "bytes": 665285384,
+      "binary": 268,
+      "primary": 0
+    }
+  },
+  "remaining_branch_object_classes": {
+    "objects": 37284,
+    "labels": {
+      "A": "compiled-object",
+      "B": "compressed-or-archive",
+      "C": "document-container",
+      "D": "generic-binary-label",
+      "E": "model-checkpoint-or-serialized-state",
+      "F": "numerical-array-or-table",
+      "G": "other",
+      "H": "raw-media",
+      "I": "split-payload",
+      "J": "text-encoded-payload"
+    },
+    "by_representative_filename": {
+      "compressed-or-archive": 12576,
+      "split-payload": 9122,
+      "model-checkpoint-or-serialized-state": 523,
+      "generic-binary-label": 2566,
+      "text-encoded-payload": 5470,
+      "raw-media": 453,
+      "numerical-array-or-table": 5394,
+      "other": 1165,
+      "compiled-object": 7,
+      "document-container": 8
+    },
+    "uncompressed_sha256": "f7ffeff917e14c37d857e9992af35ae2c2b2b6668a6f59f015b25dcb38360a37",
+    "uncompressed_bytes": 1603212,
+    "packed_sha256": "8e9e583d49b5281e0f3746007e273751833f13d562beaf0d7c21f2dbd1d70a62",
+    "packed_bytes": 890053,
+    "rule": "Git blob IDs outside both source/text cohorts, exact subtraction from all frozen branch-head objects. Format label is provisional, drawn from one shortest representative path."
   }
 }
