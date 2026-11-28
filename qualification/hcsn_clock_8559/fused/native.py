@@ -57,6 +57,7 @@ class FusedStep(torch.autograd.Function):
         return gu,gw,gm,gr,None,None,None,ge,None,None
 
 class NativePopulation(Population):
+    step=FusedStep
     def forward(self,x):
         if x.device.type!='cpu' or x.dtype!=torch.float32:return super().forward(x)
         d=self.inp(x);z=torch.zeros_like(d[:,0])
@@ -65,7 +66,7 @@ class NativePopulation(Population):
         for frame in d.unbind(1):
             fb=(price.tanh()*self.feedback).sum(-1)
             u=frame+self.recurrent(signal)+(0.*fb if self.arm=='no_feedback' else fb)
-            out=FusedStep.apply(u,wall,mass,refr,self.table,self.coeff,self.probes,self.emitter,self.beta,self.arm=='fixed')
+            out=self.step.apply(u,wall,mass,refr,self.table,self.coeff,self.probes,self.emitter,self.beta,self.arm=='fixed')
             wall=out[...,0];mass=out[...,1:5];refr=out[...,5];price=out[...,6:8];signal=out[...,8]
             history.append(signal)
         return torch.stack(history,1)

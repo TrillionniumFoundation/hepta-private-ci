@@ -65,4 +65,7 @@ def main(root,out):
     out.write_text(json.dumps(report,indent=1)+'\n')
     print({k:v for k,v in report.items() if k not in ('timings','rows')},flush=True)
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('data',type=Path);ap.add_argument('out',type=Path);a=ap.parse_args();main(a.data,a.out)
+    ap=argparse.ArgumentParser();ap.add_argument('data',type=Path);ap.add_argument('out',type=Path);ap.add_argument('--v2',action='store_true');a=ap.parse_args()
+    if a.v2:
+        from native_v2 import enable,COST,library
+    main(a.data,a.out)

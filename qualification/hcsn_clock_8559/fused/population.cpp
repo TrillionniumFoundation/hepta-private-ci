@@ -15,9 +15,18 @@ static inline Axis axis(float x, float first, float step, int n) {
 static inline float lerp(float a,float b,float w) {
     return w<.5f ? std::fma(w,b-a,a) : std::fma(-(1.f-w),b-a,b);
 }
+#ifdef HCSN_REFERENCE_COORDINATES
+#define POSITION_ARGUMENT const float* position,
+#define POSITION(k) Point(position+9*(k))
+#else
+#define POSITION_ARGUMENT
+#define POSITION(k) Point(u[(k)],prev[(k)],beta,fixed)
+#endif
 struct Point {
     float bounded,relative,wall;
     Axis shift,drift;
+    explicit Point(const float* v) : bounded(v[0]),relative(v[1]),wall(v[2]),
+        shift{int(v[3]),v[4],v[5]},drift{int(v[6]),v[7],v[8]} {}
     Point(float u,float prev,float beta,bool fixed) {
         bounded=std::tanh(u);
         relative=fixed?0.f:.21f*bounded;
@@ -44,9 +53,9 @@ static inline void coords(const float* o,const float* probes,const Point& p,floa
         }
     }
 }
-extern "C" void population_forward(int n,int width,float beta,int fixed,const float* u,const float* prev,const float* mass,const float* refractory,const float* table,const float* prices,const float* probes,const float* emit,float* out) {
+extern "C" void population_forward(int n,int width,float beta,int fixed,POSITION_ARGUMENT const float* u,const float* prev,const float* mass,const float* refractory,const float* table,const float* prices,const float* probes,const float* emit,float* out) {
     for(int k=0;k<n;++k) {
-        const Point p(u[k],prev[k],beta,fixed);float* o=out+9*k;
+        const Point p=POSITION(k);float* o=out+9*k;
         o[0]=p.wall;
         for(int b=0;b<5;++b) {
             float arrival=0.f;
@@ -66,9 +75,9 @@ extern "C" void population_forward(int n,int width,float beta,int fixed,const fl
         o[8]=0.f;for(int j=0;j<7;++j)o[8]+=c[j]*w[j];
     }
 }
-extern "C" void population_backward(int n,int width,float beta,int fixed,const float* u,const float* prev,const float* mass,const float* table,const float* prices,const float* probes,const float* emit,const float* out,const float* grad,float* du,float* dprev,float* dmass,float* drefr,float* demit) {
+extern "C" void population_backward(int n,int width,float beta,int fixed,POSITION_ARGUMENT const float* u,const float* prev,const float* mass,const float* table,const float* prices,const float* probes,const float* emit,const float* out,const float* grad,float* du,float* dprev,float* dmass,float* drefr,float* demit) {
     for(int k=0;k<n;++k) {
-        const Point p(u[k],prev[k],beta,fixed);
+        const Point p=POSITION(k);
         const float *o=out+9*k,*g=grad+9*k,*w=emit+(k%width)*7;
         float c[7];coords(o,probes,p,c);
         for(int j=0;j<7;++j)demit[(k%width)*7+j]+=g[8]*c[j];

@@ -60,4 +60,7 @@ def run(out):
             rows.append(row)
     out.write_text(json.dumps(rows,indent=1)+'\n')
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('out',type=Path);a=p.parse_args();run(a.out)
+    p=argparse.ArgumentParser();p.add_argument('out',type=Path);p.add_argument('--v2',action='store_true');a=p.parse_args()
+    if a.v2:
+        from native_v2 import FusedStepV2 as FusedStep
+    run(a.out)

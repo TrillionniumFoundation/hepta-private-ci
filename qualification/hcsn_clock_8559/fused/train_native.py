@@ -8,5 +8,7 @@ def native_model(arm):
     return enable(Classifier(arm))
 if __name__=='__main__':
     ap=argparse.ArgumentParser();ap.add_argument('data',type=Path);ap.add_argument('runs',type=Path)
-    ap.add_argument('--rungs',type=int,nargs='+',default=train.RUNGS);a=ap.parse_args()
+    ap.add_argument('--rungs',type=int,nargs='+',default=train.RUNGS);ap.add_argument('--v2',action='store_true');a=ap.parse_args()
+    if a.v2:
+        from native_v2 import enable,library
     library();train.Classifier=native_model;train.panel(a.data,a.runs,a.rungs,train.SEEDS,('literal',))
