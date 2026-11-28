@@ -1,0 +1,38 @@
+{
+  "source_files": {
+    "data/pixels32.npy": "d79c414bb32c3ffb88f1714c20b6bdb531a68a7a95999370c86aea7367b768b1",
+    "data/rows.json": "80c9f4256fef2cf37031660858dd90f07d1bb554535a0545a46e744d00f508d2",
+    "raw/original.json": "5e342037d469d074711676bdb9c02b6942a624530b1959d24d2734e68af9cede",
+    "ucm/train.parquet": "bb9884ae4a0aadeaf3a244f7ef4d7f290544415b7b085d7e07020584d3242fca",
+    "ucm/validation.parquet": "331019cc6bdb1288c466da204bfeef80edabec0f7d120de48894056b736adc45",
+    "ucm/test.parquet": "2bfc7b1c1d38fdfc6b6c6b8b8435c570b6b3b39e678855e5281e32c7b1822da9"
+  },
+  "input_sha256": "84afef8036092d66da8318d5412077b0e10814f0eb47b7dd3b0d77413051ef4a",
+  "counts": [
+    6308,
+    742,
+    964,
+    2099
+  ],
+  "exclusions": {
+    "0/near": 2,
+    "0/missing_primary_caption": 1,
+    "0/empty_nonprimary_caption_fields": 1,
+    "1/empty_nonprimary_caption_fields": 1,
+    "3/near": 1
+  },
+  "oov_rate": {
+    "0": 0.0006207877681817528,
+    "1": 0.014612302616073533,
+    "2": 0.015224315715596825,
+    "3": 0.04763020152971595
+  },
+  "source_training_captions_reused_by_external_primary": 8,
+  "vocab": 2048,
+  "prep_wall_s": 23.942952692999825,
+  "sources": [
+    "https://github.com/201528014227051/RSICD_optimal/blob/fc33b4555e4baa4d2f05ff0449479c89da2eeac2/dataset_rsicd.json",
+    "https://huggingface.co/datasets/arampacha/rsicd",
+    "https://huggingface.co/datasets/caglarmert/UCM-Captions"
+  ]
+}
