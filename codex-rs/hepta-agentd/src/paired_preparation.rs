@@ -48,6 +48,8 @@ pub use material_client::PairedRecordPinsV1;
 pub use material_client::PairedTrainingMaterials;
 pub use material_client::PairedTrainingReadResult;
 pub use material_client::identify_original_paired_records_v1;
+#[cfg(test)]
+pub(crate) use material_client::record_fixture_materials;
 #[path = "paired_training.rs"]
 pub(crate) mod training;
 pub use training::AgentdPairedTraining;
