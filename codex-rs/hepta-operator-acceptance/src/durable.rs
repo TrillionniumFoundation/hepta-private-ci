@@ -155,9 +155,25 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
 }
 
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
-    let parent = path
-        .parent()
-        .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
+    #[cfg(windows)]
+    {
+        windows::write_new(path, bytes)
+    }
+    #[cfg(not(windows))]
+    {
+        write_new_file(path, bytes)?;
+        File::open(sidecar_parent(path)?)?.sync_all()?;
+        Ok(())
+    }
+}
+
+fn sidecar_parent(path: &Path) -> Result<&Path, AcceptanceError> {
+    path.parent()
+        .ok_or_else(|| invalid("sidecar artifact has no parent"))
+}
+
+fn write_new_file(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
+    let parent = sidecar_parent(path)?;
     verify_secure_directory(parent, "sidecar directory")?;
     let parent_before = std::fs::symlink_metadata(parent)?;
     let mut options = OpenOptions::new();
@@ -200,7 +216,6 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
     Ok(())
 }
 
@@ -209,27 +224,38 @@ pub(crate) fn write_private_atomic_replace(
     temporary_path: &Path,
     bytes: &[u8],
 ) -> Result<(), AcceptanceError> {
-    let parent = path
-        .parent()
-        .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
+    let parent = sidecar_parent(path)?;
     if temporary_path.parent() != Some(parent) || temporary_path == path {
         return Err(invalid(
             "atomic sidecar temporary path must be a distinct sibling",
         ));
     }
     verify_secure_directory(parent, "sidecar directory")?;
+    #[cfg(windows)]
+    let windows_parent = windows::directory_identity(parent)?;
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         verify_regular_metadata(&metadata, "replaced sidecar artifact")?;
         #[cfg(windows)]
         windows::verify_path(path, "replaced sidecar artifact")?;
     }
+    #[cfg(windows)]
+    {
+        write_new_file(temporary_path, bytes)?;
+        windows::verify_directory(parent, windows_parent)?;
+    }
+    #[cfg(not(windows))]
     write_private_new(temporary_path, bytes)?;
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(windows)]
+    let rename_result = windows::publish(temporary_path, path, /*replace*/ true);
+    #[cfg(not(windows))]
     let rename_result = std::fs::rename(temporary_path, path);
     if rename_result.is_err() {
         let _ = std::fs::remove_file(temporary_path);
     }
     rename_result?;
+    #[cfg(windows)]
+    windows::verify_directory(parent, windows_parent)?;
     let parent_after = std::fs::symlink_metadata(parent)?;
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during atomic replace"));
@@ -238,6 +264,7 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
