@@ -1,0 +1,74 @@
+{
+  "schema": "native-opaque-observation-results.v1",
+  "test_gate": "PASS_26_OF_26_SELECTED",
+  "lint_gate": "INCOMPLETE_SIGKILL",
+  "attempts": [
+    {
+      "record": "observations/attempt1-missing-cmake.json",
+      "status": "BUILD_BLOCKED",
+      "exit_code": 101,
+      "seconds": 133.10962677001953,
+      "duration_source": "recorded wall-clock timestamp difference",
+      "source_unchanged_during_attempt": true,
+      "explanation": "aws-lc-sys required CMake; installed pinned CMake 4.0.3 before retry."
+    },
+    {
+      "record": "observations/attempt2-missing-clang-headers.json",
+      "status": "BUILD_BLOCKED",
+      "exit_code": 101,
+      "seconds": 14.208340883255005,
+      "duration_source": "recorded wall-clock timestamp difference",
+      "source_unchanged_during_attempt": true,
+      "explanation": "bindgen could not find stddef.h; added the actual compiler's system include path before retry."
+    },
+    {
+      "record": "observations/attempt3-core-sigkill.json",
+      "status": "BUILD_INTERRUPTED",
+      "exit_code": 101,
+      "seconds": 907.0237383842468,
+      "duration_source": "recorded wall-clock timestamp difference",
+      "source_unchanged_during_attempt": true,
+      "explanation": "codex-core compiler terminated by external SIGKILL 9; cause not established."
+    },
+    {
+      "record": "observations/attempt4-single-job.json",
+      "status": "NEW_TEST_COMPILE_ERROR",
+      "exit_code": 101,
+      "seconds": 317.3029780850002,
+      "duration_source": "monotonic subprocess duration",
+      "source_unchanged_during_attempt": true,
+      "explanation": "Five E0659 assert_eq ambiguities in the new test module; repaired by one explicit pretty_assertions macro import."
+    },
+    {
+      "record": "observations/attempt5-macro-import.json",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 134.0156721809999,
+      "duration_source": "monotonic subprocess duration",
+      "source_unchanged_during_attempt": true,
+      "explanation": "26 tests passed, 960 not selected; nextest execution 6.027 seconds."
+    },
+    {
+      "record": "observations/scoped-fix.json",
+      "status": "LINT_INCOMPLETE",
+      "exit_code": 101,
+      "seconds": 741.3774984190004,
+      "duration_source": "monotonic subprocess duration",
+      "source_unchanged_during_attempt": true,
+      "explanation": "codex-hepta-agentd Clippy child terminated by SIGKILL 9; no automatic source edits; this is not a lint pass."
+    }
+  ],
+  "separate_pre_cargo_failure": {
+    "record": "observations/attempt5-pre-cargo-enospc.json",
+    "cargo_started": false,
+    "description": "ENOSPC while writing the initial recorder output; the zero-byte partial file is retained verbatim. This was not a test run."
+  },
+  "source_mapping": "Archive derived/source-byte-mapping.json binds all 11 final files to passing-test bytes, including exactly five subsequent inline parameter comments; no semantic change or extra test run is inferred.",
+  "final_format": {
+    "command": "just fmt",
+    "exit_code_observed_in_session": 0,
+    "separate_persistent_raw_log": false,
+    "other_observed_check": "git diff --check exited 0"
+  },
+  "post_test_base_merge": "Merged 59a90ce9 evidence-only parent after tests; the final Rust byte mapping is independently verified."
+}

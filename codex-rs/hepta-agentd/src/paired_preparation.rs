@@ -42,6 +42,8 @@ mod material_client;
 #[path = "paired_material_protocol.rs"]
 pub(crate) mod material_protocol;
 pub use material_client::AgentdPairedMaterialClient;
+pub use material_client::PairedOpaqueEvidenceV1;
+pub use material_client::PairedOpaqueFinalAnswerObservationV1;
 pub use material_client::PairedRecordIdentityV1;
 pub use material_client::PairedRecordMetadataV1;
 pub use material_client::PairedRecordPinsV1;

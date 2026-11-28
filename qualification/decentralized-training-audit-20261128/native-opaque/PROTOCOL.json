@@ -1,0 +1,43 @@
+{
+  "schema": "native-opaque-observation-protocol.v1",
+  "code_commit": "65d55b71ff61a1451710e3540edd5381def58988",
+  "tested_base_commit": "06b1889ae08978a905f1dc31373099013ef7647b",
+  "publication_base_commit": "59a90ce9d032e56bb52904f59ee8c8b23cc96c9b",
+  "scope": "Synthetic fresh-owner record-only opaque final-answer admission and existing terminal owner refusal; no source-capture authentication, native labels, SFT, adoption or FinalUse.",
+  "test_argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(record_identity) | test(paired_binding_tests)"
+  ],
+  "fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked"
+  ],
+  "fix_recipe": "cargo clippy --fix --tests --allow-dirty {args}",
+  "recorded_environment_for_passing_test_and_fix": {
+    "CARGO_HOME": "/workspace/scratch/5bdf905e9cad/chain-cargo",
+    "CARGO_TARGET_DIR": "/tmp/hepta-opaque-native-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+  },
+  "rust_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "nextest_version": "0.9.152 (26ebeda79 2026-11-13)",
+  "rust_manifest_sha256": "9af50610e1d82699f78a40b985c9277ae1a2c5a0bec86ae430cfe58832038285",
+  "nextest_archive_sha256": "d039b43c3e0958441b6ad0a39c8884d018b3d2e8fb9928f209074b1100b5e17a",
+  "nextest_binary_sha256": "eae075c1f810a15aa3ffa31d774d2a9e3dbbbab3d0a1b8c3abad4f2cdb64c2b3",
+  "cmake_version": "4.0.3",
+  "evidence_timing": "This protocol and summary were assembled after execution. Original per-attempt JSON/logs are authoritative; the latest recorder does not reconstruct earlier invocations.",
+  "resource_limits": "Original attempts did not record peak RSS or complete process resource limits. SIGKILL is observed; an OOM cause is not established.",
+  "environment_limit": "The original records contain selected non-secret environment values, not the complete inherited environment."
+}

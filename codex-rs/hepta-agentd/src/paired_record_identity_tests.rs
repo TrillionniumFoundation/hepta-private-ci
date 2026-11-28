@@ -9,6 +9,9 @@ const FAILURE: &[u8] = include_bytes!("../tests/fixtures/paired-record-failure-v
 const CORRECTION: &[u8] = include_bytes!("../tests/fixtures/paired-record-correction-v1.json");
 const VECTORS: &[u8] = include_bytes!("../tests/fixtures/paired-record-canonical-v1.json");
 
+#[path = "paired_opaque_record_tests.rs"]
+mod opaque_tests;
+
 fn pins() -> PairedRecordPinsV1 {
     PairedRecordPinsV1 {
         failure_record_digest: "a7e5d55b674d728752a302f1f40b2eb7af02f284f50ff641123cc049368b48c2"
