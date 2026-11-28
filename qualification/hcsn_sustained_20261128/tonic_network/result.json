@@ -1,0 +1,113 @@
+{
+  "legacy_exact": true,
+  "new_pairs": [
+    {
+      "atoms": 12,
+      "cache": false,
+      "state_error": 3.1086244689504383e-15,
+      "gradient_error": 5.773159728050814e-15,
+      "gain_grad": 3.896120808171765,
+      "fd": 3.896120808644099
+    },
+    {
+      "atoms": 12,
+      "cache": true,
+      "state_error": 2.6645352591003757e-15,
+      "gradient_error": 1.2434497875801753e-14,
+      "gain_grad": -0.7320910338841862,
+      "fd": -0.732091033572857
+    },
+    {
+      "atoms": 64,
+      "cache": false,
+      "state_error": 3.9968028886505635e-15,
+      "gradient_error": 1.7763568394002505e-14,
+      "gain_grad": -1.178442159990131,
+      "fd": -1.1784421602989426
+    },
+    {
+      "atoms": 64,
+      "cache": true,
+      "state_error": 3.9968028886505635e-15,
+      "gradient_error": 1.1546319456101628e-14,
+      "gain_grad": -0.5087690224639111,
+      "fd": -0.5087690233551712
+    }
+  ],
+  "clamped_drive": [
+    {
+      "gain": null,
+      "drive": -2.0,
+      "physical_mu": 0.033549999999999996,
+      "first_flux": 1.671806694559991e-07,
+      "steady_flux_per_tick": 0.008643354094371952,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.03457341637748781
+    },
+    {
+      "gain": null,
+      "drive": 0.0,
+      "physical_mu": 0.033549999999999996,
+      "first_flux": 0.015137199082660112,
+      "steady_flux_per_tick": 0.008643354094371952,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.03457341637748781
+    },
+    {
+      "gain": null,
+      "drive": 0.5,
+      "physical_mu": 0.033549999999999996,
+      "first_flux": 0.16517807202788626,
+      "steady_flux_per_tick": 0.008643354094371952,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.03457341637748781
+    },
+    {
+      "gain": null,
+      "drive": 2.0,
+      "physical_mu": 0.033549999999999996,
+      "first_flux": 0.687542728597561,
+      "steady_flux_per_tick": 0.008643354094371952,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.03457341637748781
+    },
+    {
+      "gain": 0.15,
+      "drive": -2.0,
+      "physical_mu": 0.17815413701137253,
+      "first_flux": 3.188170704068546e-08,
+      "steady_flux_per_tick": 6.459766277524328e-05,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.0002583906511009731
+    },
+    {
+      "gain": 0.15,
+      "drive": 0.0,
+      "physical_mu": 0.033549999999999996,
+      "first_flux": 0.015137199082660124,
+      "steady_flux_per_tick": 0.008643354094371952,
+      "continuum_rate": 0.0,
+      "finite_mesh_rate": 0.03457341637748781
+    },
+    {
+      "gain": 0.15,
+      "drive": 0.5,
+      "physical_mu": -0.035767573589001456,
+      "first_flux": 0.19642988466985192,
+      "steady_flux_per_tick": 0.03615879196300175,
+      "continuum_rate": 0.11577443640189652,
+      "finite_mesh_rate": 0.144635167852007
+    },
+    {
+      "gain": 0.15,
+      "drive": 2.0,
+      "physical_mu": -0.11105413701137254,
+      "first_flux": 0.732723193420176,
+      "steady_flux_per_tick": 0.08188464854665832,
+      "continuum_rate": 0.3388239550947215,
+      "finite_mesh_rate": 0.3275385941866333
+    }
+  ],
+  "device": "cpu",
+  "torch": "2.13.0+rocm10.0.0"
+}

@@ -1,0 +1,80 @@
+{
+  "source_sha256": "449c4a7c6eb97a6a7154060221f564e7c581dfd984cbcaafc4a104caeb5cc7f9",
+  "method": "host NumPy float64 logaddexp.reduce and argmax from all returned logits",
+  "total_logits": 1152,
+  "max_nll_difference": 4.783300280308822e-07,
+  "cells": [
+    {
+      "split": "development",
+      "arm": "keep",
+      "nll_fp64": 4.325082699431648,
+      "recorded_nll": 4.325082778930664,
+      "abs_difference": 7.949901625892153e-08,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "development",
+      "arm": "forward",
+      "nll_fp64": 9.35241937786616,
+      "recorded_nll": 9.352418899536133,
+      "abs_difference": 4.783300280308822e-07,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "development",
+      "arm": "shuffled",
+      "nll_fp64": 4.940631631753983,
+      "recorded_nll": 4.940631866455078,
+      "abs_difference": 2.3470109500323133e-07,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "development",
+      "arm": "bp",
+      "nll_fp64": 4.316773355346789,
+      "recorded_nll": 4.316773414611816,
+      "abs_difference": 5.926502755215779e-08,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "cold",
+      "arm": "keep",
+      "nll_fp64": 4.334864781799843,
+      "recorded_nll": 4.334864616394043,
+      "abs_difference": 1.654058001676617e-07,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "cold",
+      "arm": "forward",
+      "nll_fp64": 9.685316180104476,
+      "recorded_nll": 9.68531608581543,
+      "abs_difference": 9.428904590436105e-08,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "cold",
+      "arm": "shuffled",
+      "nll_fp64": 8.419890137006432,
+      "recorded_nll": 8.419890403747559,
+      "abs_difference": 2.6674112696412067e-07,
+      "correct": 0,
+      "scores": 144
+    },
+    {
+      "split": "cold",
+      "arm": "bp",
+      "nll_fp64": 4.329438116979206,
+      "recorded_nll": 4.329438209533691,
+      "abs_difference": 9.255448496503504e-08,
+      "correct": 0,
+      "scores": 144
+    }
+  ]
+}
