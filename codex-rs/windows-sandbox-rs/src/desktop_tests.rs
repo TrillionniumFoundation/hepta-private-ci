@@ -1,4 +1,5 @@
 use super::LaunchDesktop;
+use super::current_window_station_name;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_caps_from;
 use crate::token::create_workspace_write_token_with_caps_from;
@@ -93,6 +94,10 @@ fn workspace_private_desktop_checks_the_exact_capability() -> Result<()> {
         .as_ref()
         .expect("private desktop")
         .name;
+    assert_eq!(
+        desktop.startup_name,
+        to_wide(format!("{}\\{name}", current_window_station_name()?))
+    );
     assert_eq!(desktop_write_access(workspace.0, name)?, ERROR_SUCCESS);
     assert_eq!(
         desktop_write_access(other_workspace.0, name)?,
@@ -128,7 +133,10 @@ fn readonly_preserves_private_and_default_desktop_access() -> Result<()> {
     let default = LaunchDesktop::prepare(
         readonly.0, /*use_private_desktop*/ false, /*logs_base_dir*/ None,
     )?;
-    assert_eq!(default.startup_name, to_wide("Winsta0\\Default"));
+    assert_eq!(
+        default.startup_name,
+        to_wide(format!("{}\\Default", current_window_station_name()?))
+    );
     Ok(())
 }
 

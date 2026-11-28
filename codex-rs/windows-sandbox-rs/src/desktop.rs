@@ -46,6 +46,9 @@ use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_SWITCHDESKTOP;
 use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_WRITE_DAC;
 use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_WRITE_OWNER;
 use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_WRITEOBJECTS;
+use windows_sys::Win32::System::StationsAndDesktops::GetProcessWindowStation;
+use windows_sys::Win32::System::StationsAndDesktops::GetUserObjectInformationW;
+use windows_sys::Win32::System::StationsAndDesktops::UOI_NAME;
 
 const DESKTOP_ALL_ACCESS: u32 = DESKTOP_READOBJECTS
     | DESKTOP_CREATEWINDOW
@@ -73,9 +76,10 @@ impl LaunchDesktop {
         logs_base_dir: Option<&Path>,
     ) -> Result<Self> {
         let restricting_sids = unsafe { private_desktop_restricting_sids(h_token)? };
+        let station = current_window_station_name()?;
         if use_private_desktop {
             let private_desktop = PrivateDesktop::create(restricting_sids, logs_base_dir)?;
-            let startup_name = to_wide(format!("Winsta0\\{}", private_desktop.name));
+            let startup_name = to_wide(format!("{station}\\{}", private_desktop.name));
             Ok(Self {
                 _private_desktop: Some(private_desktop),
                 startup_name,
@@ -86,7 +90,7 @@ impl LaunchDesktop {
             }
             Ok(Self {
                 _private_desktop: None,
-                startup_name: to_wide("Winsta0\\Default"),
+                startup_name: to_wide(format!("{station}\\Default")),
             })
         }
     }
@@ -94,6 +98,40 @@ impl LaunchDesktop {
     pub fn startup_info_desktop(&self) -> *mut u16 {
         self.startup_name.as_ptr() as *mut u16
     }
+}
+
+fn current_window_station_name() -> Result<String> {
+    // CreateDesktopW creates the desktop in the process's actual window
+    // station, which need not be the interactive station on service hosts.
+    let station = unsafe { GetProcessWindowStation() };
+    if station == 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let mut name_bytes = 0;
+    unsafe {
+        GetUserObjectInformationW(station, UOI_NAME, ptr::null_mut(), 0, &mut name_bytes);
+    }
+    if name_bytes == 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let mut name = vec![0u16; (name_bytes as usize).div_ceil(size_of::<u16>())];
+    if unsafe {
+        GetUserObjectInformationW(
+            station,
+            UOI_NAME,
+            name.as_mut_ptr().cast(),
+            name_bytes,
+            &mut name_bytes,
+        )
+    } == 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let name_end = name
+        .iter()
+        .position(|unit| *unit == 0)
+        .unwrap_or(name.len());
+    Ok(String::from_utf16(&name[..name_end])?)
 }
 
 struct PrivateDesktop {
