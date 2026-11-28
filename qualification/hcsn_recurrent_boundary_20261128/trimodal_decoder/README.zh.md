@@ -29,3 +29,5 @@ mkdir -p /tmp/hcsn-trimodal-verify
 cat archive/results.tar.gz.part* | tar -xz -C /tmp/hcsn-trimodal-verify
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python verify.py /tmp/hcsn-trimodal-verify
 ```
+
+[同核轮转的完整结果](paired/README.zh.md)包含四种时间或样本预算的 60 个端点和 199 份原件。在相等的 60 个进程 CPU 秒下，近等参数注意力在三个模态的留出 NLL 都较低；固定五遍时，联合 95% 区间只在文本确定方向。

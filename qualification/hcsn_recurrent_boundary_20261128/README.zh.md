@@ -38,3 +38,11 @@ He–Xiong 的内生破产边界、权益定价和信用损失可以组成可训
 ## 审计范围
 
 [审计表与复算程序](audit)记录 Git 引用、目录、对象和逐对象核验。主分支固定于 732e934b，8,589 个不同 blob、97,287,164 字节经实际散列，选定的中英文研究关键词无匹配。研究分布在大量未合入分支与 PR；仅审 main 会漏掉实验。以早期 07:18:57 纽约时间快照计，heads、tags 与虚拟 PR refs 的并集已有 230,766 个不同 blob。09:13 的快照有 8,412 个分支、2,231 个标签、13,163 个 PR refs、231,450 个不同 blob；新增与退出分别为 696 与 12。Git 对象和存档字节完整、可提取原始分数、实验可重放、研究结论可推广是不同层次的证据。在使用结果时请将仓库路径与具体 Git 提交、训练端点和数据协议绑定。
+
+## 可接入的网络与后续独立验证
+
+[直接针对 main 的 PyTorch 实现](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7284)提供可堆叠神经层、跨分块的状态传递与端到端 BP。独立回归发现并修复了极小首达概率的浮点相消和复位初价的偏差。FP64 原子在最远端的参考首达概率约 1.25×10⁻²⁹，修改后前向、反向和有限差分相符。[双稳态在独立单粒子观测噪声下的判别精度](precision_and_recall/branch_readout/READOUT_NOISE.zh.md)给出读出设备的影响。
+
+[同核三模态比较](trimodal_decoder/paired/README.zh.md)的五种模型、三个种子和四种预算均已独立重放。固定 60 进程 CPU 秒时 HCSN 的视觉/听觉/文本 NLL 为 1.61895/1.87470/.40525，近等参数注意力为 .95241/1.82408/.38966。真实 Radeon 8060S 三模态流式解码的单样本递推状态为 256 字节，相同任务的近等参数注意力 KV 为 14,400 字节；批量大小改变实测吞吐排序。[设备实测](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0b612b9aafca6c7bdc0efea0e3dc3db8f379c9f5/qualification/hcsn_sustained_20261128/trimodal_device/meter/README.md)
+
+[正式 WikiText-2 训练、完整概率头和全参数写入](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7280)涵盖 33,278 个词和 245,568 个留出预测。32 维、114 万参数的边界模型三个种子两遍 BP 测试 PPL 为 392.40–401.28，直接写入全部 34 张量为 716.25–733.64。连续裕量上的非双线性价格在同词数下对最佳双线性替代有微小平均收益，等墙钟比较中较慢。12 遍独立种子 HCSN 为 327.28，注意力 317.31，平滑对照 312.02。
