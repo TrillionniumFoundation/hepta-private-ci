@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.late-quote-crash-qualification-plan.v1",
+  "created_utc": "2026-11-28T11:41:03.884440+00:00",
+  "status": "DESIGN_ONLY_NOT_EXECUTED",
+  "api_profile": "smallhcsn_late_quote_min_mark4_task_route_v1",
+  "operations": [
+    "late_quote_compile",
+    "late_quote_prepare",
+    "late_quote_roundtrip",
+    "late_quote_recover"
+  ],
+  "recovery_identity": "original journal_id plus expected_plan_sha256, never caller-chosen candidate",
+  "budget": {
+    "total_seconds": 60,
+    "phase_seconds": 20,
+    "phase_forward_caps": {
+      "parent": 3,
+      "candidate": 3,
+      "restored": 2
+    },
+    "maximum_full_forwards": 8,
+    "refunds": false,
+    "charged_phase_replay": false
+  },
+  "actual_zero_edit_fixture": {
+    "schema": "hepta.late-quote-qualification.v1",
+    "parent": {
+      "path": "/workspace/scratch/cd3dbf666179/neuron_experiments/late_results/137/parent137.safetensors",
+      "sha256": "fc414bf4387be537ab8f807707aba5430fbd528c89ac6a137cb858c4d8159443"
+    },
+    "late_profile": {
+      "path": "/workspace/scratch/cd3dbf666179/neuron_experiments/late_results/137/test_KEEP.profile.json",
+      "sha256": "9181f8ebbee4968a106e82eec14e29d873a0d642569c6a2bff7cddd4665942ea"
+    },
+    "late_input": {
+      "path": "/workspace/scratch/cd3dbf666179/neuron_experiments/late_results/137/test_KEEP.input.bin",
+      "sha256": "9b7626acf2359246833a88e7fca01f65be34674f7a8d3f3276e2f6475c81dd8e"
+    },
+    "retention_profile": {
+      "path": "/workspace/scratch/cd3dbf666179/neuron_experiments/late_results/137/retain_PARENT.profile.json",
+      "sha256": "4b56f617d09c9c575f395ad004d445256262d31b6bc2176e289d180511e7886d"
+    },
+    "retention_input": {
+      "path": "/workspace/scratch/cd3dbf666179/neuron_experiments/late_results/137/retain_PARENT.input.bin",
+      "sha256": "46dd3a525b4de1645becdf1bff720d80b08e8976109e68a3423458949c2f20e0"
+    },
+    "minimum_accuracy_percent": 95
+  },
+  "fixture_scope": "Previously evaluated public SmallHCSN research parent and fixed synthetic late/normal task inputs; engineering recovery qualification only, not new scientific holdout.",
+  "required_fault_transport": "At least candidate-publication and inverse-publication cases require an isolated child-process termination and fresh-process recovery. Tokio future cancellation alone is not a process-crash test.",
+  "owner_integration": "Use the existing retained transaction, effect owner, store lock and canonical cohort publisher; no new worker or graph registry.",
+  "required_observation_fields": [
+    "process_exit_status",
+    "original_request_id",
+    "plan_sha256",
+    "decision_sha256",
+    "source_path_opened",
+    "candidate_model_sha256",
+    "candidate_manifest_sha256",
+    "candidate_function_identity",
+    "restored_model_sha256",
+    "restored_manifest_sha256",
+    "restored_function_identity",
+    "immutable_intent_before_after_equal",
+    "charged_phase_records_before_after",
+    "completed_full_forward_counts_by_phase",
+    "unknown_reserved_cost",
+    "fresh_compiler_calls_during_recovery",
+    "artifact_directory_names_before_after",
+    "second_recovery_cached_result_equal"
+  ],
+  "cases": [
+    {
+      "id": "same_sha_candidate_crash",
+      "barrier": "after_candidate_atomic_publication_before_candidate_phase_result",
+      "fixture": "actual_seed137",
+      "assertions": [
+        "Parent and candidate model SHA256 are equal, but graph and function identity differ.",
+        "Recovery resolves the selected stored capsule, restores Original graph/route/fixed_reset_step0_six_tick_v1 and exact parent bytes.",
+        "Unknown charged parent/candidate phases are not replayed; only an uncharged restored phase may run within original time and authority gates.",
+        "The complete restored manifest is checked; model-SHA equality alone cannot satisfy restoration."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "same_sha_source_deleted",
+      "barrier": "same_as_above_then_delete_original_workspace_parent",
+      "fixture": "actual_seed137",
+      "assertions": [
+        "Recover uses the retained original intent and cohort artifact without opening or recreating the original source path.",
+        "Source path remains absent; graph, route, initial-state contract and full weight bytes are restored in the retained artifact.",
+        "No compilation or parent/candidate model replay occurs."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "decision_tamper",
+      "barrier": "after_durable_keep_decision_before_candidate_publication",
+      "fixture": "actual_seed137",
+      "assertions": [
+        "Flip KEEP to EDIT even when both model SHAs are equal; a weight-SHA comparison is insufficient.",
+        "Reject a decision that disagrees with the original plan, recorded measured parent phase, selected manifest or goal-stop rule.",
+        "Reject changed goal, radius, input hash, task contract, function identity or parent/output identity, even if an attacker recomputes a local JSON digest.",
+        "No new model call or replacement decision is admitted."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "inverse_published_receipt_missing",
+      "barrier": "after_inverse_atomic_publication_before_inverse_receipt",
+      "fixture": "actual_seed137",
+      "assertions": [
+        "Reconcile the single original inverse by full manifest identity.",
+        "No second candidate or inverse artifact and no recompilation; no replay of an already charged restored phase.",
+        "Repeated recovery returns the same durable result and artifact identity."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "phase_charge_without_output",
+      "barrier": "after_parent_phase_charge_before_complete_parent_output",
+      "fixture": "synthetic_or_actual",
+      "assertions": [
+        "Do not measure bridge KEEP again, choose a candidate, publish a new effect or restart the window.",
+        "Retain the original nonrefundable grouped reservation and state unknown sub-forward cost explicitly.",
+        "No missing sub-forward may be individually retried merely because its output record is absent."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "clock_or_evaluator_change",
+      "barrier": "after_candidate_publication_with_unknown_parent_candidate_charges",
+      "fixture": "synthetic_or_actual",
+      "assertions": [
+        "Test expired wall time, backward wall time, changed boot ID, exhausted boottime and changed evaluator identity separately.",
+        "Exact original semantic inverse remains possible under existing compensation ownership.",
+        "No new model forward or fresh evaluation window is admitted; do not report full endpoint verification."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "same_sha_capsule_tamper",
+      "barrier": "after_candidate_atomic_publication",
+      "fixture": "actual_seed137",
+      "assertions": [
+        "Independently change graph, request route, initial-state contract, task/input hash or one protected F32 word.",
+        "Reject mismatch before any new forward or effect; do not use the current compiler to recreate trust.",
+        "Original immutable intent is preserved so a legitimate separately validated inverse can still be assessed."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "caller_cancel_revoked_owner",
+      "barrier": "after_candidate_atomic_publication",
+      "fixture": "synthetic",
+      "assertions": [
+        "Abort the caller future and revoke session metadata, then release the existing retained-owner barrier.",
+        "The originally admitted task completes allowed compensation without a new permission token.",
+        "Report cancellation qualification separately from a killed-process crash qualification."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "wire_scope_negative_controls",
+      "barrier": "before_admission",
+      "fixture": "synthetic",
+      "assertions": [
+        "Old sender40 profile with late_quote operation and new profile with smallhcsn operation both reject.",
+        "Unknown path/owner/state_dir/authority/executable/readout fields reject.",
+        "Reject invalid hex, over-budget profiles/input, wrong tensor dtype/shape, goal 0 or 101, NaN/infinite/negative radius and mismatched original plan SHA.",
+        "Legacy F32 and sender40 JSON remain byte-compatible, without new authority."
+      ],
+      "status": "UNRUN"
+    },
+    {
+      "id": "normal_route_gate",
+      "barrier": "complete_bounded_roundtrip",
+      "fixture": "actual_seed83",
+      "assertions": [
+        "Use the same edited bytes on normal Original graph; do not substitute parent weights.",
+        "Record unconditional bridge retention as explicit negative-control route, not checked late-quote.",
+        "Reject unconditional retention loss, restore full original capsule, and preserve separate goal-pass/retention/compensation conclusions."
+      ],
+      "status": "UNRUN"
+    }
+  ]
+}

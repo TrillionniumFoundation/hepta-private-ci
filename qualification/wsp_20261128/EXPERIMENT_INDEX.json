@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.wsp-research-artifact-index.v1",
+  "scientific_scope": "actual public research SmallHCSN checkpoints plus newly generated synthetic task; no future trading-utility inference",
+  "stages": [
+    {
+      "id": "temporal_reachability",
+      "result_path": "neuron_experiments/temporal_results/RESULT.json",
+      "result_sha256": "1a4a4b16bde8eb364fbec5d0a37fc3aaede1ea9b4717043e07b8b32b400db1dc",
+      "status": "PASS",
+      "new_native_full_forwards": 21,
+      "new_python_full_forwards": 0,
+      "wall_seconds": 1.58877939399963
+    },
+    {
+      "id": "late_quote_ablation",
+      "result_path": "neuron_experiments/late_results/RESULT.json",
+      "result_sha256": "8b1f616ec320fab984a78f483226b06cb622ba5eec930e9734ddbb9536885c5a",
+      "status": "COMPLETED_WITH_PROTOCOL_DEVIATION",
+      "new_native_full_forwards": 36,
+      "new_python_full_forwards": 12,
+      "wall_seconds": 9.39971308200029
+    },
+    {
+      "id": "graph_and_weight_restore",
+      "result_path": "neuron_experiments/graph_rollback_results/RESULT.json",
+      "result_sha256": "829f16a321906ed1152d1b1c78596040fb72273e90a53f5d2e882e37d4f02c9a",
+      "status": "PASS",
+      "new_native_full_forwards": 6,
+      "new_python_full_forwards": 0,
+      "wall_seconds": 1.485762281999996
+    },
+    {
+      "id": "gpt_alias_transfer",
+      "result_path": "neuron_experiments/blind_alias/results/RESULT.json",
+      "result_sha256": "a6224fc276a43d17c98a97ad4e04eabcb17d544ffb1bab25b59504ef5958cc8a",
+      "status": "COMPLETED",
+      "new_native_full_forwards": 18,
+      "new_python_full_forwards": 0,
+      "wall_seconds": 5.221492923999904
+    }
+  ],
+  "native_full_forwards": 81,
+  "python_full_forwards": 12,
+  "recorded_stage_wall_seconds": 17.69574768199982,
+  "cost_scope": "excludes prior parent training, agent reasoning, prior investigations, source analysis, downloads and builds; no global speedup ratio",
+  "normal_retention": "historical32, not independent future holdout; unconditional graph rejected; explicit normal route exact",
+  "publication": {
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7263",
+    "head_at_index_creation": "cd5911a17aee1670b031fe2d465abfa6cd3a44b6",
+    "branch": "research/wsp-late-information-20261128-cd3d"
+  },
+  "reports": {
+    "main": "late_information/RESEARCH_RESULT.md",
+    "semantic_inventory": "late_information/semantic_inventory/INVENTORY.json",
+    "gpt_transfer": "late_information/blind_alias/RESEARCH_RESULT.md",
+    "weightcode_cpu": "weightcode/README.md"
+  },
+  "archive_sha256": {
+    "initial_science": "8408958e7e6340c51e47e695fb2c9add7eb20fbfeacdafa8b5d5b78eb91d778e",
+    "gpt_alias_followup": "2043ff6b47542b605b766e9183b165e831af6dd0a3b64c3ce4fa8efb1a8114bb"
+  },
+  "private_data_published": false,
+  "production_activation": false
+}
