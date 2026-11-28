@@ -159,6 +159,15 @@ jobs:
             --profile default --config-file "$RUNNER_TEMP/state-retention-owners/native.toml" \
             2>&1 | tee "$RUNNER_TEMP/state-retention-owners/native.log"
 
+      - name: Run the original state correctness lints without a fix lint cap
+        if: matrix.gate == 'owners'
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just clippy --locked --all-targets -p codex-state \
+            --features codex-state/hia-native \
+            2>&1 | tee "$RUNNER_TEMP/state-retention-owners/clippy.log"
+
       - name: Require both complete test inventories and actual scoped fix
         if: matrix.gate == 'owners'
         working-directory: codex/codex-rs

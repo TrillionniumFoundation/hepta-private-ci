@@ -66,11 +66,9 @@ fn transfer<const N: usize>(entry: Entry, words: [u64; 8], output: &mut [u8; N])
 fn words<const N: usize>(bytes: &[u8]) -> [u64; N] {
     assert_eq!(bytes.len(), N * 8, "native retention output length");
     std::array::from_fn(|index| {
-        u64::from_le_bytes(
-            bytes[index * 8..(index + 1) * 8]
-                .try_into()
-                .expect("complete native retention word"),
-        )
+        let mut word = [0_u8; 8];
+        word.copy_from_slice(&bytes[index * 8..(index + 1) * 8]);
+        u64::from_le_bytes(word)
     })
 }
 

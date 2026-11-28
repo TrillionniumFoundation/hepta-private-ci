@@ -177,7 +177,10 @@ WHERE kind = ? AND job_key = ?
                 crate::hia_datetime_retention::Unit::Days,
                 max_age_days.max(0),
             )
-            .expect("`DateTime - TimeDelta` overflowed")
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
             .milliseconds
         };
         #[cfg(not(feature = "hia-native"))]
@@ -191,7 +194,10 @@ WHERE kind = ? AND job_key = ?
                 crate::hia_datetime_retention::Unit::Hours,
                 min_rollout_idle_hours.max(0),
             )
-            .expect("`DateTime - TimeDelta` overflowed")
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
             .milliseconds
         };
         #[cfg(not(feature = "hia-native"))]
@@ -559,7 +565,10 @@ WHERE threads.id = ? AND threads.memory_mode = 'enabled'
                 crate::hia_datetime_retention::Unit::Days,
                 max_unused_days.max(0),
             )
-            .expect("`DateTime - TimeDelta` overflowed")
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
             .seconds
         };
         #[cfg(not(feature = "hia-native"))]
@@ -621,7 +630,10 @@ WHERE thread_id IN (
                 crate::hia_datetime_retention::Unit::Days,
                 max_unused_days.max(0),
             )
-            .expect("`DateTime - TimeDelta` overflowed")
+            .unwrap_or_else(|| {
+                let message = "`DateTime - TimeDelta` overflowed";
+                panic!("{message}");
+            })
             .seconds
         };
         #[cfg(not(feature = "hia-native"))]
