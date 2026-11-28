@@ -256,6 +256,7 @@ def from_capture(draft, raw, *, prompt_item_id, answer_item_id, student_policy_s
     data._require(
         source.get("schema") == SOURCE
         and source.get("claims") == SOURCE_CLAIMS
+        and all(type(value) is bool for value in source["claims"].values())
         and source.get("teacher_opaque_id", "missing") is None
         and source.get("teacher_model_sha256", "missing") is None,
         "unsigned SDK observation source required",
@@ -272,6 +273,7 @@ def from_capture(draft, raw, *, prompt_item_id, answer_item_id, student_policy_s
     data._require(
         isinstance(items, list)
         and isinstance(omitted, list)
+        and type(source.get("returned_item_count")) is int
         and len(items) + len(omitted) == source.get("returned_item_count")
         and 0 < len(items) + len(omitted) <= 256,
         "bounded captured inventory required",

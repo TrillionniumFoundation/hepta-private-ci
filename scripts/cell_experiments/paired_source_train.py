@@ -110,7 +110,7 @@ def check_spec(spec):
 
 def source_hash():
     # Pin the executable source of this training and authorization path.
-    from . import paired_intake
+    from . import opaque_teacher_data, paired_intake, paired_opaque_teacher
 
     modules = [
         adoption,
@@ -120,6 +120,8 @@ def source_hash():
         paired_cold,
         paired_freeze,
         paired_intake,
+        opaque_teacher_data,
+        paired_opaque_teacher,
         paired_source,
         paired_source_fit,
         prospective_exposure,
@@ -208,6 +210,12 @@ def _fit_after_verification(materials, spec, owner):
         paired_source.read_bound(root / (label + ".json"), spec[label])
         for label in ("failure", "correction")
     ]
+    from . import opaque_teacher_data
+
+    require(
+        records[1].get("schema") != opaque_teacher_data.SCHEMA,
+        "opaque observation requires the original native owner; engineering fixture scope is insufficient",
+    )
     derived = paired_source.derive(*records, root / "originals")
     exposures = executable_exposures(root, parent, records, derived, spec)
     for row in retention:
