@@ -29,8 +29,22 @@ A single gain per method, fixed across all three seeds and all six stages, could
 | RLSEdit, μ=32 | 4.44022 | 4.61990 | 3.25725 | 0, 3, 3, 0, 1, 2 |
 | Same-head downstream BP, μ=32 | 4.25717 | 4.30557 | 3.27812 | 3, 3, 3, 3, 3, 3 |
 
-After six stages, adjusted BetaEdit minus adjusted downstream BP NLL was +0.15923 [0.13870, 0.17842] on current edits, +0.29180 [0.26794, 0.31339] on previous edits and −0.00180 [−0.01864, 0.01535] on protected examples. The 95% intervals resample held actors jointly across the same three seeds. Under this deployment rule, BP passed all 18 seed/stage cells, BetaEdit passed 14 and RLSEdit passed nine. This actor cohort has been studied before. These are task-specific quality results. The archived BP control reuses its original 128-iteration cumulative optimizer while BetaEdit streams each new block. Fresh end-to-end wall-clock superiority has not been tested in this comparison.
+After six stages, adjusted BetaEdit minus adjusted downstream BP NLL was +0.15923 [0.13870, 0.17842] on current edits, +0.29180 [0.26794, 0.31339] on previous edits and −0.00180 [−0.01864, 0.01535] on protected examples. The 95% intervals resample held actors jointly across the same three seeds. Under this deployment rule, BP passed all 18 seed/stage cells, BetaEdit passed 14 and RLSEdit passed nine. This actor cohort has been studied before. These are task-specific quality results. The archived BP control reuses its original 128-iteration cumulative optimizer while BetaEdit streams each new block. A separate fixed-gain timing experiment below compares the two passing procedures at their common third-stage endpoint.
 
-An independent NumPy program recomputed the downstream scores, development and held gates, actor-cluster intervals and raw final logits across 44,597,952 scalar scores and 504 gate checks. Maximum metric difference was 1.15e−6, maximum interval difference 4.67e−7. Every decision reproduced. See [complete protocol](PROTOCOL.md), [development freeze](development_seal.json), [complete terminal](terminal.json), [independent verification](verified.json), and [the 42 original head and prediction file identities](index.json).
+An independent NumPy program recomputed the downstream scores, development and held gates, actor-cluster intervals and raw final logits across 44,597,952 scalar scores and 504 gate checks. Maximum metric difference was 1.15e−6, maximum interval difference 4.67e−7. Every decision reproduced. See [complete protocol](PROTOCOL.md), [development freeze](development_seal.json), [complete terminal](terminal.json), [independent verification](verified.json), and [the 42 original head and prediction identities](index.json).
 
-The full original collection is 18,851,840 bytes as a deterministic file roster packed on the native node (tar SHA-256 4e017937b50851922d9a752f2e3400f66d97fc803963eb0dbe30680c7ceb0191).
+
+## Fresh-process time at a matched three-edit quality gate
+
+After the main comparison, the third intervention and the already chosen 0.25 deployment gain were fixed for both BetaEdit and downstream BP. This is the last stage where both methods met the joint gate on all three seeds. We then reran the two complete procedures twice per seed in counterbalanced order. The quality data had already been studied. This experiment estimates the elapsed cost of the passing, fixed algorithms on reused parents. It does not determine the earliest possible time to the threshold.
+
+Every native single-CPU-thread process freshly imported Torch, verified the full input hashes, loaded the source data and the correct trained HCSN parent, generated all training and development keys, ran sequential editing through stage three, and extracted the held keys and scored all 1,311 held clips. The endpoint includes launch through process exit. OS file caches were not flushed, and other workloads shared the host. The second-stage selection of the deployment gain and the historical cost of training the parent remained outside these new clocks. The genuine downstream BP implementation reran 128 cumulative-task Adam iterations at each stage. Its outputs and the BetaEdit outputs reproduced the archived stage-three heads bit for bit in all 12 processes.
+
+| Fixed editing procedure | Matched development and held gate | Launch-to-exit median (6 processes) | Three-stage pure fitting median |
+|---|---:|---:|---:|
+| BetaEdit matrix update, gain 0.25 | 6/6 | 5.98776 s | 0.02122 s |
+| Same-head downstream BP, gain 0.25 | 6/6 | 8.37231 s | 2.07873 s |
+
+The ratio of launch-to-exit medians is 1.3982× in favor of BetaEdit. Six paired ratios range from 1.2643× to 1.6046×, with median 1.4399×. This positive result applies to three sequential changes of 24,576 parameters in an already trained 731,168-parameter audiovisual model. The final six-edit endpoint still has only two passing BetaEdit parents and three passing BP parents. End-to-end speed for the six-edit three-parent gate remains unresolved.
+
+[Complete timed runs and gate metrics](timing_complete.json) · [Fresh-process timing implementation](timing.py)
