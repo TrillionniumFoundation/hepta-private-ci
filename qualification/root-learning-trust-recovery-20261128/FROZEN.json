@@ -1,0 +1,46 @@
+{
+  "fits": 0,
+  "fresh_candidate_rust_files": 6274,
+  "full_manifest_pass_claim": false,
+  "native_pool_changed": false,
+  "native_tests_executed": 0,
+  "new_control_names": [
+    "trust_distribution::tests::signature_tests::signature_only_validation_keeps_full_content_and_validity_checks",
+    "trust_distribution::tests::signature_tests::independent_signatures_do_not_assert_current_generation"
+  ],
+  "proof_archive_sha256": "63809d73fdcfbdb2cb3c1fc9d8e2625d970173987584dbab2a1f3dfb779e66c6",
+  "prospective_protocol_commit": "6c0f63dd9a82474b3d18126857ea561c66defb17",
+  "real_provisioning_performed": false,
+  "retained_metadata_preflight_refusals": 2,
+  "schema": 1,
+  "scoped_boundary_count": 1,
+  "scoped_protected_count": 2,
+  "source_base": "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893",
+  "sources": {
+    "CALLERS.toml": {
+      "git_blob": "4976736ab973b64822e98dbf48306d86ea3a341f",
+      "sha256": "dae8ac87291cc0b638e1c7a431c0878b5aed96d0031a93aee187f166cbc17917"
+    },
+    "codex-rs/hepta-learning-ledger/src/lib.rs": {
+      "git_blob": "142a08c9a9022825a6287d61956ceb1b8f12e959",
+      "sha256": "17d901f4ffc60e9c19bafe860aea8f265377832f4e4954a6631ad64b4dca5207"
+    },
+    "codex-rs/hepta-learning-ledger/src/trust_distribution.rs": {
+      "git_blob": "59ccf949ef0d3f742d52009177e55dea91ba0490",
+      "sha256": "6c6f6022ffebd7276bcda373fe29324c5cbe269312a5387156b9cf1e65f9f4a0"
+    },
+    "codex-rs/hepta-learning-ledger/src/trust_distribution_signature.rs": {
+      "git_blob": "44db3f2e23e73dc180f86c97491949a3626af772",
+      "sha256": "c9dea910b9700e329e5d0ba1d58e7d13b714d30d4fa356d66d54eeb27dea252f"
+    },
+    "codex-rs/hepta-learning-ledger/src/trust_distribution_signature_tests.rs": {
+      "git_blob": "7bc3c553dd77061afe3592fe202bc52eb6255fb7",
+      "sha256": "834d3b8b5c5b727e0b029ef2d0b0d69a94c9dadf11d06988917757e872ec4523"
+    },
+    "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs": {
+      "git_blob": "b652037a566edb252d59b30e6e4348f5ce5de0e7",
+      "sha256": "cdbfc4288c05a261dab132eed4cbcdf2ad2f8a36afaf18d8f81ed0d8d73d4778"
+    }
+  },
+  "status": "SOURCE_SCOPED_PROOF_PASSED_NATIVE_UNEXECUTED"
+}
