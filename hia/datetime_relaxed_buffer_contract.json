@@ -1,0 +1,242 @@
+{
+  "schema": "codex.hia.datetime-relaxed-buffer-contract.v1",
+  "revision": 1,
+  "status": "Relaxed FixedOffset/Utc FromStr and Serde UTC String component; JSON lexical parsing, public error Display adapters, Local timezone conversion and production integration remain separate gates.",
+  "module": "datetime_relaxed",
+  "source_sha256": "c5870308f47301e111b730e1f9c0747f8f321d99666a354c27f1d59c1dbf90fc",
+  "core_sha256": "bc4b7586d6d6360b43081fa5f0082079739e44b18f452d982457b9a8b034e1bf",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "str::parse::<DateTime<FixedOffset>>",
+      "str::parse::<DateTime<Utc>>",
+      "serde_json::from_value::<DateTime<Utc>>(Value::String)",
+      "DateTime::timestamp",
+      "DateTime::timestamp_subsec_nanos",
+      "FixedOffset::local_minus_utc",
+      "ParseError::kind"
+    ],
+    "oracle_registry_packages": 43
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state.",
+    "For a valid frame, the payload is valid UTF-8, matching the original Rust &str API. Invalid UTF-8 is outside this component contract; no implicit lossy decoding is performed."
+  ],
+  "source": {
+    "header_bytes": 32,
+    "byte_order": "four little-endian u64 words followed by UTF-8 payload bytes",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "meaning": "0: FixedOffset FromStr; 1: Utc FromStr; 2: Serde UTC String value",
+        "allowed": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "offset": 16,
+        "name": "payload_length",
+        "required": "source length minus 32; byte count, not Unicode character count"
+      },
+      {
+        "offset": 24,
+        "name": "reserved",
+        "required": 0
+      },
+      {
+        "offset": 32,
+        "name": "payload",
+        "encoding": "valid UTF-8"
+      }
+    ],
+    "mutation": "Never modified.",
+    "length_validation": "Check that the source has at least 32 bytes, then subtract 32 from its actual size and compare with the declared payload length; never add an untrusted declared length."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 64,
+    "byte_order": "eight little-endian u64 words; signed values use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "valid",
+        "value": "1 when parsing succeeds; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "unix_seconds",
+        "value": "signed UTC non-leap Unix seconds on success; otherwise 0"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "value": "original timestamp_subsec_nanos, preserving leap fractions; otherwise 0"
+      },
+      {
+        "offset": 32,
+        "name": "offset_seconds",
+        "value": "signed FixedOffset local_minus_utc seconds on success for operation 0; zero for operations 1 and 2 or any parse error"
+      },
+      {
+        "offset": 40,
+        "name": "error_kind",
+        "value": "0 on success; otherwise the specified original ParseErrorKind code"
+      },
+      {
+        "offset": 48,
+        "name": "reserved0",
+        "value": 0
+      },
+      {
+        "offset": 56,
+        "name": "reserved1",
+        "value": 0
+      }
+    ],
+    "tail": "All bytes after offset 64 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "year": "Trim Unicode whitespace. Unsigned years consume one through four ASCII digits. ASCII plus/minus signed years consume all digits; positive magnitude must fit i64 before applying the sign, then the signed result must fit i32 immediately. Full Chrono year range -262143 through 262142 is checked only after lexical parsing and trailing input.",
+    "fields": "Month/day/hour/minute/second consume one or two ASCII digits after trimming Unicode whitespace. Their setters immediately enforce 1..12, 1..31, 0..23, 0..59 and 0..60. Actual Gregorian date validity is checked after trailing input.",
+    "whitespace_scalars": [
+      "0009..000D",
+      "0020",
+      "0085",
+      "00A0",
+      "1680",
+      "2000..200A",
+      "2028",
+      "2029",
+      "202F",
+      "205F",
+      "3000"
+    ],
+    "separators": "Whitespace may precede date hyphens and time colons. The date/time separator itself is exactly T, t or one ASCII space; whitespace is not trimmed before checking it.",
+    "fraction": "A dot immediately after seconds requires at least one ASCII decimal digit. Scale fewer than nine digits to nanoseconds and truncate extra digits while consuming every digit. A space before the dot is not accepted.",
+    "leap_second": "Second 60 is accepted on the final second of any minute and becomes second 59 with 1000000000 added to the fraction. No historical leap-second table or carry into the next minute is applied.",
+    "offset": "After trimming whitespace, accept case-insensitive UTC, Z/z, or ASCII plus/minus or Unicode U+2212 with exactly two hour digits and two minute digits. Any sequence of colons or Unicode whitespace, including empty, may separate the hour and minute. Minute range is checked immediately. Whole offset range -23:59 through +23:59 is checked after date validity.",
+    "utc_range": "Converting the valid local date/time using a valid fixed offset must yield Unix seconds in [-8334601228800,8210266876799]. Otherwise return Impossible, matching FixedOffset::from_local_datetime. Both UTC modes retain the same instant and nanoseconds, with output offset zero.",
+    "error_order": [
+      "numeric year scan and immediate i32 setter",
+      "month/day/hour/minute/second scan and immediate field setter, with literals in order",
+      "optional fraction scan",
+      "timezone lexical scan and minute range",
+      "trim trailing Unicode whitespace; remaining bytes yield TooLong",
+      "full Chrono year range and actual Gregorian date",
+      "whole timezone offset range",
+      "UTC representability"
+    ],
+    "error_kinds": {
+      "0": "success",
+      "1": "OutOfRange",
+      "2": "Impossible",
+      "3": "NotEnough",
+      "4": "Invalid",
+      "5": "TooShort",
+      "6": "TooLong",
+      "7": "BadFormat"
+    },
+    "scope": "The actual three original APIs are observed for every input. Serde qualification covers a valid UTF-8 String value, not JSON lexical decoding or non-string JSON types. Public error Display adapters, arbitrary format directives and Local timezone rules remain separate."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is less than 64, before source or workspace validation"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source has fewer than 32 bytes, workspace is nonempty, version is not 1, operation is outside 0..2, declared length differs from actual payload bytes, or the reserved word is nonzero"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 64 output bytes encode either the original parsed value or original error kind"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 1581986,
+    "normal_cases": 469922,
+    "unicode_cases": 1112064,
+    "strict_cases_preserved": 434414,
+    "calendar_cycle_cases": 146097,
+    "input_sha256": "fd6eba51d354e25248e2ad3ba3076ce59c2508b1748e038098c36bcc96b6ec7c",
+    "original_output_sha256": "2928154c7377d1ab9a8233e5a9c2ada843359911513398e603310947d5141a1f",
+    "original_error_kinds": [
+      {
+        "0": 259516,
+        "1": 93484,
+        "2": 798,
+        "4": 1207112,
+        "5": 1321,
+        "6": 19755
+      },
+      {
+        "0": 259516,
+        "1": 93484,
+        "2": 798,
+        "4": 1207112,
+        "5": 1321,
+        "6": 19755
+      },
+      {
+        "0": 259516,
+        "1": 93484,
+        "2": 798,
+        "4": 1207112,
+        "5": 1321,
+        "6": 19755
+      }
+    ],
+    "original_api_observations": 4745958,
+    "buffer_control_calls": 677,
+    "native_calls_required": 6751805,
+    "maximum_fraction_digits": 1000000,
+    "maximum_year_leading_zeros": 1000000,
+    "recording": "Inputs record two u64 words (coverage kind, payload byte length) then UTF-8 bytes. Original output records three actual 64-byte API observations per input. Full streams are compressed and their uncompressed bytes are SHA-256 bound.",
+    "coverage": "Every normal input uses three operations, two output capacities and two fills. Every valid Unicode scalar is prefixed to a fixed timestamp and observed through all three original APIs; native mode 0 uses excess capacity and fill 165 for that sweep.",
+    "controls": "Every short output capacity for each operation; truncated and oversized frames, invalid metadata and nonempty workspace; every input, output, tail and unaligned guard is compared.",
+    "native_trace": "Each call records seven u64 words: source length, workspace length, output capacity, fill, expected status, actual status, guarded output length; followed by source, workspace and guarded actual output bytes."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "json_lexical_parsing_qualified": false,
+    "public_error_display_qualified": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}
