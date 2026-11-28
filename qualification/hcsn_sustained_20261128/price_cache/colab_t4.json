@@ -1,0 +1,375 @@
+{
+  "request_id": "hcsn-price-native-1140569-20261128",
+  "requested_device": "T4",
+  "passed": true,
+  "start_unix": 1795864224.3930845,
+  "inputs": {
+    "population.py": "0c14c99009d6088e7ab87150ff125f44a0e5538047990c65f844cd29cbe101bb",
+    "he_xiong.py": "c57bd784765e1c7a49a5f3b4282b06c2d4f020cd71e2d69ee67da93a7c83ba35",
+    "fft_transport.py": "d9839937a5dc284164debcba6d453fb744885e94e1fdadb01d147b02416a6b19",
+    "digits01.npz": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+    "validate_prices.py": "d23e6373b9fe6445913161e83ccf26834d9096d5df4d3a11fde458623322902f"
+  },
+  "framework": "2.14.1+cu130",
+  "framework_cuda": "13.0",
+  "cuda_available": true,
+  "gpu": "Tesla T4",
+  "cuda_dot": 140.0,
+  "linear_control": {
+    "family": "linear flattened image",
+    "parameters": 130,
+    "seed": 314,
+    "updates": 16,
+    "batch": 8,
+    "quality": {
+      "dev": {
+        "balanced_accuracy": 0.9482758620689655,
+        "ce": 0.19104117466562504
+      },
+      "heldout": {
+        "balanced_accuracy": 0.9594594594594594,
+        "ce": 0.1903092002284375
+      }
+    },
+    "input_already_loaded_fit_and_final_evaluations_s": 6.71403624200002
+  },
+  "comparison": {
+    "equivalence": [
+      {
+        "dtype": "torch.float64",
+        "atoms": 12,
+        "fft": false,
+        "modified_mesh": false,
+        "max_output_and_state_error": 1.5543122344752192e-15,
+        "max_gradient_error": 3.552713678800501e-15
+      },
+      {
+        "dtype": "torch.float64",
+        "atoms": 12,
+        "fft": false,
+        "modified_mesh": true,
+        "max_output_and_state_error": 1.1102230246251565e-15,
+        "max_gradient_error": 2.4868995751603507e-14
+      },
+      {
+        "dtype": "torch.float64",
+        "atoms": 12,
+        "fft": true,
+        "modified_mesh": false,
+        "max_output_and_state_error": 8.881784197001252e-16,
+        "max_gradient_error": 3.552713678800501e-15
+      },
+      {
+        "dtype": "torch.float64",
+        "atoms": 64,
+        "fft": false,
+        "modified_mesh": false,
+        "max_output_and_state_error": 8.881784197001252e-16,
+        "max_gradient_error": 1.7763568394002505e-15
+      },
+      {
+        "dtype": "torch.float64",
+        "atoms": 64,
+        "fft": false,
+        "modified_mesh": true,
+        "max_output_and_state_error": 1.3322676295501878e-15,
+        "max_gradient_error": 5.329070518200751e-15
+      },
+      {
+        "dtype": "torch.float64",
+        "atoms": 64,
+        "fft": true,
+        "modified_mesh": false,
+        "max_output_and_state_error": 6.661338147750939e-16,
+        "max_gradient_error": 1.7763568394002505e-15
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 12,
+        "fft": false,
+        "modified_mesh": false,
+        "max_output_and_state_error": 7.152557373046875e-07,
+        "max_gradient_error": 2.384185791015625e-06
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 12,
+        "fft": false,
+        "modified_mesh": true,
+        "max_output_and_state_error": 5.960464477539062e-07,
+        "max_gradient_error": 2.288818359375e-05
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 12,
+        "fft": true,
+        "modified_mesh": false,
+        "max_output_and_state_error": 4.76837158203125e-07,
+        "max_gradient_error": 1.9073486328125e-06
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 64,
+        "fft": false,
+        "modified_mesh": false,
+        "max_output_and_state_error": 7.152557373046875e-07,
+        "max_gradient_error": 2.384185791015625e-06
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 64,
+        "fft": false,
+        "modified_mesh": true,
+        "max_output_and_state_error": 9.5367431640625e-07,
+        "max_gradient_error": 4.76837158203125e-06
+      },
+      {
+        "dtype": "torch.float32",
+        "atoms": 64,
+        "fft": true,
+        "modified_mesh": false,
+        "max_output_and_state_error": 1.0728836059570312e-06,
+        "max_gradient_error": 1.9073486328125e-06
+      }
+    ],
+    "runs": [
+      {
+        "mode": "original",
+        "atoms": 12,
+        "seed": 314,
+        "device": "cuda",
+        "torch": "2.14.1+cu130",
+        "device_name": "Tesla T4",
+        "data_sha256": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+        "split": [
+          229,
+          58,
+          73
+        ],
+        "updates": 16,
+        "batch": 8,
+        "dev": [
+          {
+            "step": 0,
+            "ce": 0.6949403531872029,
+            "balanced_accuracy": 0.5,
+            "seconds": 2.262477703000002
+          },
+          {
+            "step": 4,
+            "ce": 0.7220991090439629,
+            "balanced_accuracy": 0.5,
+            "seconds": 3.867076811000004
+          },
+          {
+            "step": 8,
+            "ce": 0.7190092194706602,
+            "balanced_accuracy": 0.5,
+            "seconds": 5.230344016000004
+          },
+          {
+            "step": 12,
+            "ce": 0.6859148253275722,
+            "balanced_accuracy": 0.5,
+            "seconds": 6.287861797000005
+          },
+          {
+            "step": 16,
+            "ce": 0.7377175388793065,
+            "balanced_accuracy": 0.5,
+            "seconds": 7.3500914530000045
+          }
+        ],
+        "heldout": {
+          "ce": 0.7419646824450312,
+          "balanced_accuracy": 0.5
+        },
+        "setup_train_eval_s": 8.039299413000037,
+        "cold_process_s": 11.581055165999999
+      },
+      {
+        "mode": "cached",
+        "atoms": 12,
+        "seed": 314,
+        "device": "cuda",
+        "torch": "2.14.1+cu130",
+        "device_name": "Tesla T4",
+        "data_sha256": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+        "split": [
+          229,
+          58,
+          73
+        ],
+        "updates": 16,
+        "batch": 8,
+        "dev": [
+          {
+            "step": 0,
+            "ce": 0.6949403531872029,
+            "balanced_accuracy": 0.5,
+            "seconds": 1.7491000269999972
+          },
+          {
+            "step": 4,
+            "ce": 0.7220991090439629,
+            "balanced_accuracy": 0.5,
+            "seconds": 2.5943351960000314
+          },
+          {
+            "step": 8,
+            "ce": 0.7190092194706602,
+            "balanced_accuracy": 0.5,
+            "seconds": 3.3295253090000188
+          },
+          {
+            "step": 12,
+            "ce": 0.6859148253275722,
+            "balanced_accuracy": 0.5,
+            "seconds": 4.334933460999991
+          },
+          {
+            "step": 16,
+            "ce": 0.7377175388793062,
+            "balanced_accuracy": 0.5,
+            "seconds": 5.2839140959999895
+          }
+        ],
+        "heldout": {
+          "ce": 0.7419646824450312,
+          "balanced_accuracy": 0.5
+        },
+        "setup_train_eval_s": 5.880247069000006,
+        "cold_process_s": 8.51846438900003
+      },
+      {
+        "mode": "cached",
+        "atoms": 64,
+        "seed": 314,
+        "device": "cuda",
+        "torch": "2.14.1+cu130",
+        "device_name": "Tesla T4",
+        "data_sha256": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+        "split": [
+          229,
+          58,
+          73
+        ],
+        "updates": 16,
+        "batch": 8,
+        "dev": [
+          {
+            "step": 0,
+            "ce": 0.6948314355545776,
+            "balanced_accuracy": 0.5,
+            "seconds": 1.7255735429999959
+          },
+          {
+            "step": 4,
+            "ce": 0.7213191211530454,
+            "balanced_accuracy": 0.5,
+            "seconds": 2.6174484759999928
+          },
+          {
+            "step": 8,
+            "ce": 0.7195678995582745,
+            "balanced_accuracy": 0.5,
+            "seconds": 3.367209872999979
+          },
+          {
+            "step": 12,
+            "ce": 0.6851392653200735,
+            "balanced_accuracy": 0.5,
+            "seconds": 4.129611016000013
+          },
+          {
+            "step": 16,
+            "ce": 0.7343875233673708,
+            "balanced_accuracy": 0.5,
+            "seconds": 4.887074283000004
+          }
+        ],
+        "heldout": {
+          "ce": 0.7384909512116133,
+          "balanced_accuracy": 0.5
+        },
+        "setup_train_eval_s": 5.323459469999989,
+        "cold_process_s": 8.014495654999962
+      },
+      {
+        "mode": "original",
+        "atoms": 64,
+        "seed": 314,
+        "device": "cuda",
+        "torch": "2.14.1+cu130",
+        "device_name": "Tesla T4",
+        "data_sha256": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+        "split": [
+          229,
+          58,
+          73
+        ],
+        "updates": 16,
+        "batch": 8,
+        "dev": [
+          {
+            "step": 0,
+            "ce": 0.6948314355545776,
+            "balanced_accuracy": 0.5,
+            "seconds": 2.4156760989999952
+          },
+          {
+            "step": 4,
+            "ce": 0.7213191211530454,
+            "balanced_accuracy": 0.5,
+            "seconds": 3.630913233000001
+          },
+          {
+            "step": 8,
+            "ce": 0.7195678995582745,
+            "balanced_accuracy": 0.5,
+            "seconds": 4.716098498000008
+          },
+          {
+            "step": 12,
+            "ce": 0.6851392653200735,
+            "balanced_accuracy": 0.5,
+            "seconds": 5.7848263789999805
+          },
+          {
+            "step": 16,
+            "ce": 0.7343875233673708,
+            "balanced_accuracy": 0.5,
+            "seconds": 6.858122992999995
+          }
+        ],
+        "heldout": {
+          "ce": 0.7384909512116133,
+          "balanced_accuracy": 0.5
+        },
+        "setup_train_eval_s": 7.534822474000009,
+        "cold_process_s": 10.44523578799999
+      }
+    ],
+    "pairs": [
+      {
+        "atoms": 12,
+        "seed": 314,
+        "max_dev_ce_difference": 2.220446049250313e-16,
+        "heldout_ce_difference": 0.0,
+        "heldout_balanced_accuracy": 0.5,
+        "cold_ratio": 1.3595238105303016,
+        "setup_train_eval_ratio": 1.3671703448282486
+      },
+      {
+        "atoms": 64,
+        "seed": 314,
+        "max_dev_ce_difference": 0.0,
+        "heldout_ce_difference": 0.0,
+        "heldout_balanced_accuracy": 0.5,
+        "cold_ratio": 1.3032929628558194,
+        "setup_train_eval_ratio": 1.415399613064026
+      }
+    ]
+  },
+  "end_unix": 1795864278.701725
+}

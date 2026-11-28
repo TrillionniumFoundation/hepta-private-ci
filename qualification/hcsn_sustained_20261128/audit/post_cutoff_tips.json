@@ -1,0 +1,799 @@
+{
+  "cutoff_utc": "2026-11-28T01:56:00Z",
+  "rule": "committer timestamp >= cutoff on frozen reachable tips; historical ref table not inferred",
+  "tips_n": 70,
+  "branch_names_n": 73,
+  "frozen_total_tips_sha1_verified": 8002,
+  "tips": [
+    {
+      "sha": "aa33b1815928e662704c64e019db50cd1639e317",
+      "refs": [
+        "refs/heads/codex/p0-late-paired-admission-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T02:09:58+00:00",
+      "parents": [
+        "5b4fa3a04aa6b92b3975329d5bc4c43896fcd71a"
+      ],
+      "title": "fix(hepta): explicitly import paired admission test assertion macro"
+    },
+    {
+      "sha": "abcb9b20385d0588d0342529906af658b3012711",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-consumer-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T02:11:21+00:00",
+      "parents": [
+        "447c38f2a142c20a28f9bf026a168384be58f787",
+        "aa33b1815928e662704c64e019db50cd1639e317"
+      ],
+      "title": "Merge Root admission test macro fix after exact native compile failure"
+    },
+    {
+      "sha": "1a5a264c4eda7bf29e3e35ca7127402932721223",
+      "refs": [
+        "refs/heads/research/pft-single-admission-validation-20261128"
+      ],
+      "time_utc": "2026-11-28T02:15:51+00:00",
+      "parents": [
+        "24bab56ad9ce7f1158a35b7e2668cb0a0ff68010"
+      ],
+      "title": "Qualify one receiver validation and retain shared-ledger capacity counterexample"
+    },
+    {
+      "sha": "4191cc51137c8ae096bfa5d940199f96b2c7645f",
+      "refs": [
+        "refs/heads/research/hcsn-wall-only-shd-8559"
+      ],
+      "time_utc": "2026-11-28T02:26:00+00:00",
+      "parents": [
+        "c20f9bcbe5478456b10aadb81ffa494fdfe65d29"
+      ],
+      "title": "Implement, numerically qualify and enable finite independent training of the boundary-only renewal encoder"
+    },
+    {
+      "sha": "6e60365410d825778bb16b759af893985db97a6b",
+      "refs": [
+        "refs/heads/research/pft-admission-regression-20261128"
+      ],
+      "time_utc": "2026-11-28T02:26:26+00:00",
+      "parents": [
+        "c1366672bdef9bcb534ea52996ecd186244c1f8b"
+      ],
+      "title": "ci: retain first 20-control rehearsal and post-run formatting evidence"
+    },
+    {
+      "sha": "1e70befb241edd67570e01c1a3f4fd3e817fce4d",
+      "refs": [
+        "refs/heads/codex/p0-original-ack-readiness-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T02:26:38+00:00",
+      "parents": [
+        "abcb9b20385d0588d0342529906af658b3012711"
+      ],
+      "title": "Wait for the original durable AuthBus Ack under the existing training owner deadline"
+    },
+    {
+      "sha": "fd85e43fd154c620d776cf51440f16fd50cad284",
+      "refs": [
+        "refs/heads/research/hcsn-shd-fused-cpu-results-8559"
+      ],
+      "time_utc": "2026-11-28T02:30:18+00:00",
+      "parents": [
+        "8a0f1026bb154e35c7b3741fa47dadffe7aa0853"
+      ],
+      "title": "Freeze three native selected states for 180"
+    },
+    {
+      "sha": "3c34e5a9c6ed434bc1508e52de6a9030101f44bb",
+      "refs": [
+        "refs/heads/codex/p0-paired-startup-profile-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T02:33:54+00:00",
+      "parents": [
+        "1e70befb241edd67570e01c1a3f4fd3e817fce4d"
+      ],
+      "title": "feat(hepta): define strictly bound paired training startup metadata"
+    },
+    {
+      "sha": "d08aeb11e9f1aa7220022be2b212a013734d4e96",
+      "refs": [
+        "refs/heads/research/hcsn-shd-cpu-results-8559"
+      ],
+      "time_utc": "2026-11-28T02:34:32+00:00",
+      "parents": [
+        "996ebaee42951428c55de61b4c9e8bc9ada0d654"
+      ],
+      "title": "Archive every cold SHD CPU prediction for cold-30"
+    },
+    {
+      "sha": "15bc4cc6889bad22aa037eec1c9232e0e58dd366",
+      "refs": [
+        "refs/heads/research/hcsn-shd-rtx4060-clock-8559"
+      ],
+      "time_utc": "2026-11-28T02:37:41+00:00",
+      "parents": [
+        "428d677a741256a382220930b98a1132753f4fe3"
+      ],
+      "title": "Seal all 21 RTX4060 selections before test at rung 30"
+    },
+    {
+      "sha": "49f839b0382fc806545ecab53bffc3002ba6fac7",
+      "refs": [
+        "refs/heads/research/hcsn-event-clock-8559",
+        "refs/heads/research/hcsn-full-audit-8559"
+      ],
+      "time_utc": "2026-11-28T02:39:53+00:00",
+      "parents": [
+        "fc57a61a20b13dc6645d60d705e1dddb968faee4"
+      ],
+      "title": "Expose deterministic dual-observable inverse and preregister same-site constrained local edit comparison"
+    },
+    {
+      "sha": "81d9753a4d9f28e24df1321da95f17fa746dbdb0",
+      "refs": [
+        "refs/heads/research/hcsn-finite-multilayer-edit-8559"
+      ],
+      "time_utc": "2026-11-28T02:41:59+00:00",
+      "parents": [
+        "3d6c6f4c2b03743cd797f4fe951c7897c4025a14"
+      ],
+      "title": "Register raw causal image-word all-site training, independently replay 24 historical weights and certify named editor target derivatives"
+    },
+    {
+      "sha": "2de549bd5fcb73353ecddde84a4b4ef3493c959c",
+      "refs": [
+        "refs/heads/research/hcsn-shd-v2-results-8559"
+      ],
+      "time_utc": "2026-11-28T02:43:05+00:00",
+      "parents": [
+        "6ab9520b95c79c945e4a98c9288aaccdf5cfc1f6"
+      ],
+      "title": "Freeze all three V2 SHD models at 180"
+    },
+    {
+      "sha": "4333c8cd0116a37078bfadeaab858a883c614ffc",
+      "refs": [
+        "refs/heads/research/hcsn-intervention-boundary-8559"
+      ],
+      "time_utc": "2026-11-28T02:43:27+00:00",
+      "parents": [
+        "02d82fc2ca4a2a6fbd889b350db0e44794d6026c"
+      ],
+      "title": "Fix visual source reconstruction and causal matched population features before any learner fits"
+    },
+    {
+      "sha": "93196613f9b1893288b8460688d146596c17ddd3",
+      "refs": [
+        "refs/heads/research/hcsn-raw-encoder-confirmation-8559"
+      ],
+      "time_utc": "2026-11-28T02:44:00+00:00",
+      "parents": [
+        "81c4689c00656896b7f4ee8bae9a6e8c85b92770"
+      ],
+      "title": "Document the true boundary port and independently replay the full-width development checkpoint"
+    },
+    {
+      "sha": "a66288b85b215841c21ea02ee7cca19d89193303",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-root-cli-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T02:57:44+00:00",
+      "parents": [
+        "f641dada2608f65f5d4a7724c733d18e94702169"
+      ],
+      "title": "feat(hepta): wire original paired purpose through Root CLI"
+    },
+    {
+      "sha": "685f4131dccfbdb182674a97f1ee8a7d3721f9e5",
+      "refs": [
+        "refs/heads/fix/hepta-execution-port-stream-witness-20261017"
+      ],
+      "time_utc": "2026-11-28T02:57:59+00:00",
+      "parents": [
+        "13ed76e3c66884c5c8800a9d4b6b809f2610d633",
+        "ac294a5d0b33794dd8bf85fc252faa5f4df41abd",
+        "12052fb4856cd2d2bfdae524ee68f0ac8d6bdde6",
+        "f421977bfc052286afb86ac32cf82a14a3f572f7",
+        "37a858020b56b30464f097fdf15c04638a2bee9e",
+        "d5eb0147c015dcc4ee5146a2d62208031a710d70",
+        "10455703af4712da24250736224c32bf70d3d371",
+        "f66f07c182df2848aa26963c400117b92708b388"
+      ],
+      "title": "Integrate audited ordinary Rust histories and dependency repairs"
+    },
+    {
+      "sha": "f1be4674ec9b732d4a53c708499cb3c0e4217193",
+      "refs": [
+        "refs/heads/research/paired-record-fixtures-20261128"
+      ],
+      "time_utc": "2026-11-28T03:03:32+00:00",
+      "parents": [
+        "abcb9b20385d0588d0342529906af658b3012711"
+      ],
+      "title": "test(agentd): preserve original paired-record capture and canonical fixtures"
+    },
+    {
+      "sha": "7a1171362294809fa34ad849d8e3b77f8ab00cc8",
+      "refs": [
+        "refs/heads/research/paired-record-identity-20261128"
+      ],
+      "time_utc": "2026-11-28T03:03:40+00:00",
+      "parents": [
+        "c841ffb8dde871620af7978d9d03ae0a688a1006",
+        "f1be4674ec9b732d4a53c708499cb3c0e4217193"
+      ],
+      "title": "feat(agentd): format strict owned paired-record identities and preserve fixture stage"
+    },
+    {
+      "sha": "e37b6cac42087fa148fdb4df4c1dc56857dbde6e",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-root-session-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T03:18:04+00:00",
+      "parents": [
+        "989ecac3a42a97a2db90d9a5e1d5c8a5cf98905e"
+      ],
+      "title": "Fix original paired session module custody and optional lane path type"
+    },
+    {
+      "sha": "1d8708183652da555ee9d8bacf5d61e49c230803",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-handoff-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T03:23:57+00:00",
+      "parents": [
+        "f641dada2608f65f5d4a7724c733d18e94702169"
+      ],
+      "title": "Fix original paired binding test digest string conversion"
+    },
+    {
+      "sha": "2a32ebb1df6bc6c6a70110d4bfdc14565f05e281",
+      "refs": [
+        "refs/heads/codex/p0-paired-combined-native-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T03:24:42+00:00",
+      "parents": [
+        "99a33ebcd2f0e835d0912f1991b2f4c92b6f92c9",
+        "1d8708183652da555ee9d8bacf5d61e49c230803"
+      ],
+      "title": "Merge paired binding test compile correction"
+    },
+    {
+      "sha": "25f407a04d20bb9fefb78031f409961a843227fa",
+      "refs": [
+        "refs/heads/research/paired-terminal-preparation-20261128"
+      ],
+      "time_utc": "2026-11-28T03:26:25+00:00",
+      "parents": [
+        "e441ddd196617f35b3da21fcb2aefd1699d29500"
+      ],
+      "title": "test(agentd): make paired preparation assertion macro explicit before first execution"
+    },
+    {
+      "sha": "446d1448c85c50e7ea501329413e2286e050f00b",
+      "refs": [
+        "refs/heads/codex/hia-windows-final-common-20261128-2ac5"
+      ],
+      "time_utc": "2026-11-28T03:31:57+00:00",
+      "parents": [
+        "1d4fd806c4cde3b094e8300bc7a1229946ceed0a"
+      ],
+      "title": "Observe exact setup marker identity across Windows helper completion"
+    },
+    {
+      "sha": "465a2b024c98dbb1302ecf85aacf3ede6a33ca73",
+      "refs": [
+        "refs/heads/codex/p0-paired-binding-integration-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T03:41:22+00:00",
+      "parents": [
+        "2a32ebb1df6bc6c6a70110d4bfdc14565f05e281",
+        "2310302132920d0871165396193557ec0bcbac34"
+      ],
+      "title": "Merge exact paired terminal binding onto the qualified Root delivery chain"
+    },
+    {
+      "sha": "028b51b80908ca003a54a1edc390126a898a0b50",
+      "refs": [
+        "refs/heads/research/paired-terminal-consumption-20261128"
+      ],
+      "time_utc": "2026-11-28T03:41:44+00:00",
+      "parents": [
+        "2310302132920d0871165396193557ec0bcbac34"
+      ],
+      "title": "docs(qualification): retain exact paired import formatter receipts"
+    },
+    {
+      "sha": "e2c135e8b5f4a75b5de89a7a6d67b2aa7268397d",
+      "refs": [
+        "refs/heads/fix/operations-renewal-current-intent-20261004"
+      ],
+      "time_utc": "2026-11-28T03:42:20+00:00",
+      "parents": [
+        "612d0b4b8adca3f7241e86bfc7a21d9b84c4cead"
+      ],
+      "title": "Qualify native test paths and preserve permission ownership across cold resume"
+    },
+    {
+      "sha": "b315592340f8b91a38e8952b04b2fcd0043ab822",
+      "refs": [
+        "refs/heads/research/pft-hosted-regression-evidence-20261128"
+      ],
+      "time_utc": "2026-11-28T03:44:32+00:00",
+      "parents": [
+        "6e60365410d825778bb16b759af893985db97a6b"
+      ],
+      "title": "docs(qualification): retain actual hosted PFT regression artifacts"
+    },
+    {
+      "sha": "51d75c02c0f78ce4380aaaa1a8bf06e2d6a1110d",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-agentd-launcher-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T03:48:12+00:00",
+      "parents": [
+        "bf06f319f0ee82638729bb14a6f958ea4c6b9da8"
+      ],
+      "title": "Attach original paired Root inputs to the real Agentd terminal consumer"
+    },
+    {
+      "sha": "1ad4a776d17476d9dd1c624adb170cce0ec0945b",
+      "refs": [
+        "refs/heads/fix/hepta-agentd-evidence-result-propagation-20261023-gpt6"
+      ],
+      "time_utc": "2026-11-28T03:50:38+00:00",
+      "parents": [
+        "5ba7266c3d9aac8d3b0e607f8901f3fe2b60d3ca"
+      ],
+      "title": "Sequence independent compaction fixture turns after terminalization"
+    },
+    {
+      "sha": "c6bf741479e9eab3e4b37b2cd5b31e16a26fac17",
+      "refs": [
+        "refs/heads/codex/p0-original-terminal-owner-factory-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T04:20:45+00:00",
+      "parents": [
+        "47e2df5247ffec8e43ef26ad9a319b2ebcb08293"
+      ],
+      "title": "fix(hepta-agentd): share terminal owner claim across production host clones"
+    },
+    {
+      "sha": "7fc08f759e7fb3103b9e18e666ebdee98a1115a8",
+      "refs": [
+        "refs/heads/codex/p0-original-paired-terminal-launch-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T04:20:56+00:00",
+      "parents": [
+        "4163ab5e400a38b34de502de5bee5d44f62d9679",
+        "c6bf741479e9eab3e4b37b2cd5b31e16a26fac17"
+      ],
+      "title": "merge: retain shared original terminal claim in paired launcher"
+    },
+    {
+      "sha": "f109fc923ffdc5a54a37fe071aef97dc5cfff2d6",
+      "refs": [
+        "refs/heads/codex/hia-native-ci-shards-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T04:23:17+00:00",
+      "parents": [
+        "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2"
+      ],
+      "title": "ci(hia): partition native qualification without dropping gates"
+    },
+    {
+      "sha": "40990b8cdebe89f15933a89050987a17c4b6581c",
+      "refs": [
+        "refs/heads/codex/hia-platform-integration-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T04:34:30+00:00",
+      "parents": [
+        "f109fc923ffdc5a54a37fe071aef97dc5cfff2d6"
+      ],
+      "title": "Restore verified Windows wrapper and bounded Matrix startup fixes"
+    },
+    {
+      "sha": "b4cb6edbbe13796be262f7d1ec85d2a0cd7cb128",
+      "refs": [
+        "refs/heads/research/terminal-native-worker-lifetime-20261128"
+      ],
+      "time_utc": "2026-11-28T04:40:38+00:00",
+      "parents": [
+        "eb23d39d93b34a923be261c48af7077c3197f03c"
+      ],
+      "title": "docs(hepta-agentd): register combined unexecuted native gate"
+    },
+    {
+      "sha": "2a28af5a19e3ff1c952c9d7ffb45ab4ba534c8ed",
+      "refs": [
+        "refs/heads/codex/p0-paired-terminal-runtime-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T04:41:58+00:00",
+      "parents": [
+        "7a315393d753a2e69559592341c75ff537c74cac"
+      ],
+      "title": "Fix owned Digest32 iterator after native compile refusal"
+    },
+    {
+      "sha": "e33367318734f782eb5e921856d68ce4410e4466",
+      "refs": [
+        "refs/heads/codex/p0-paired-lifetime-combined-native-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T04:43:16+00:00",
+      "parents": [
+        "b4cb6edbbe13796be262f7d1ec85d2a0cd7cb128",
+        "2a28af5a19e3ff1c952c9d7ffb45ab4ba534c8ed"
+      ],
+      "title": "merge: validate paired runtime and real native worker lifetime together"
+    },
+    {
+      "sha": "f8735dd416f3320a0ba9fa97d73614128dd58db9",
+      "refs": [
+        "refs/heads/codex/readonly-artifact-view-20261026"
+      ],
+      "time_utc": "2026-11-28T04:46:25+00:00",
+      "parents": [
+        "d5ed36b26a00a5c2833b751922347a034d45a5ca"
+      ],
+      "title": "Use canonical readiness discovery for the artifact view"
+    },
+    {
+      "sha": "2cf74e84b85178c9cd9027d771a2bff0a6010dc9",
+      "refs": [
+        "refs/heads/research/terminal-lifetime-fixture-repair-20261128"
+      ],
+      "time_utc": "2026-11-28T04:53:41+00:00",
+      "parents": [
+        "9dbabe677d455f7a3fbc3bfaa95cb2178c8fe07f"
+      ],
+      "title": "test(agentd): isolate durable states in failed terminal drain control"
+    },
+    {
+      "sha": "6eba6064ab0bed37ba5fe4654c7596bc18088b9b",
+      "refs": [
+        "refs/heads/codex/p0-terminal-remaining-controls-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T05:01:52+00:00",
+      "parents": [
+        "2cf74e84b85178c9cd9027d771a2bff0a6010dc9"
+      ],
+      "title": "test(agentd): respect original writer lock and bounded replay grant in remaining controls"
+    },
+    {
+      "sha": "1d8dcbd1f78699da253c2bf89ccc51df472f1755",
+      "refs": [
+        "refs/heads/codex/hia-windows-home-readiness-20261128-2ac5"
+      ],
+      "time_utc": "2026-11-28T05:03:23+00:00",
+      "parents": [
+        "791d1f28df466371ca293e62643ff0de512e02f1"
+      ],
+      "title": "fix(windows): bind current setup readiness to the actual account authority"
+    },
+    {
+      "sha": "9d3ddf6d704358a550a01b91631746570bc99430",
+      "refs": [
+        "refs/heads/codex/sngr-fbsde-shadow-20261017",
+        "refs/heads/integration/ordinary-sngr-fleet-20261128-9d3ddf6d"
+      ],
+      "time_utc": "2026-11-28T05:15:51+00:00",
+      "parents": [
+        "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "0e378dd351e0fca99d32f67613639b37c85605da"
+      ],
+      "title": "Converge audited SNG-R Rust shadows and Fleet fixtures on the protected base"
+    },
+    {
+      "sha": "3871fbb62d4c3f69d07ce8651d488309c5363be8",
+      "refs": [
+        "refs/heads/research/terminal-native-drain-owner-20261128"
+      ],
+      "time_utc": "2026-11-28T05:26:05+00:00",
+      "parents": [
+        "0195e00d2883db5208de6cab8119cb6304b231c9"
+      ],
+      "title": "docs(qualification): retain terminal drain compile timeout without qualification"
+    },
+    {
+      "sha": "24148e1c1c8161eea5497db61bd33f6bc0f6c522",
+      "refs": [
+        "refs/heads/integration/ordinary-kg-memory-20261128-24148e1c"
+      ],
+      "time_utc": "2026-11-28T05:28:23+00:00",
+      "parents": [
+        "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ac294a5d0b33794dd8bf85fc252faa5f4df41abd"
+      ],
+      "title": "Integrate reviewed bounded knowledge graph queries and Rust migration fixtures"
+    },
+    {
+      "sha": "1d3be13f539e627af59e423909f7f81aefe037f0",
+      "refs": [
+        "refs/heads/codex/p0-paired-ci-closeout-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T05:47:24+00:00",
+      "parents": [
+        "3871fbb62d4c3f69d07ce8651d488309c5363be8"
+      ],
+      "title": "fix: repair paired startup caller proof and strict Clippy errors"
+    },
+    {
+      "sha": "31f55cc9dea6e4ca771b216ae2a2c7b6bc49a3d9",
+      "refs": [
+        "refs/heads/fix/mcp-oauth-discovery-contracts-20261128"
+      ],
+      "time_utc": "2026-11-28T05:52:54+00:00",
+      "parents": [
+        "3871fbb62d4c3f69d07ce8651d488309c5363be8"
+      ],
+      "title": "fix(mcp): preserve safe OAuth discovery context and exact fixture contracts"
+    },
+    {
+      "sha": "c53efafff11f7aa90bdb6a683f598312f4adb4f6",
+      "refs": [
+        "refs/heads/research/root-paired-enrollment-intent-20261128"
+      ],
+      "time_utc": "2026-11-28T06:04:21+00:00",
+      "parents": [
+        "6051a6f9c69bceeaaf59e41b602bec90b73abe4b"
+      ],
+      "title": "Add explicit original Root paired enrollment registration and source qualification"
+    },
+    {
+      "sha": "599b433e33f55125998e858e81bd94ee913107e3",
+      "refs": [
+        "refs/heads/codex/hia-windows-private-state-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T06:06:30+00:00",
+      "parents": [
+        "8cbf54d8e116094f72feeb4a9d6f7dfc775cd920"
+      ],
+      "title": "chore: remove completed Windows rename diagnostic scaffolding"
+    },
+    {
+      "sha": "600958a8eb0c92c09bb17ca3a5d7c863eae2b9b9",
+      "refs": [
+        "refs/heads/codex/paired-ci-oauth-integration-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:10:18+00:00",
+      "parents": [
+        "1d3be13f539e627af59e423909f7f81aefe037f0",
+        "31f55cc9dea6e4ca771b216ae2a2c7b6bc49a3d9"
+      ],
+      "title": "Integrate held CI closeout and OAuth discovery source slices"
+    },
+    {
+      "sha": "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893",
+      "refs": [
+        "refs/heads/codex/paired-enrollment-integration-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:12:06+00:00",
+      "parents": [
+        "600958a8eb0c92c09bb17ca3a5d7c863eae2b9b9",
+        "c53efafff11f7aa90bdb6a683f598312f4adb4f6"
+      ],
+      "title": "Integrate original Root enrollment with held paired CI and OAuth source"
+    },
+    {
+      "sha": "5129405527f8e97214f4bfe58c5734c983ffafab",
+      "refs": [
+        "refs/heads/codex/continuous-evidence-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:25:01+00:00",
+      "parents": [
+        "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893"
+      ],
+      "title": "Retain complete caller, ancestor native, Clippy and dependency findings"
+    },
+    {
+      "sha": "14a041c59ec42f15f75d199b4df2040c46b9de65",
+      "refs": [
+        "refs/heads/codex/p0-enrollment-ci-exact-four-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:36:26+00:00",
+      "parents": [
+        "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893"
+      ],
+      "title": "ci(hepta): execute four original paired enrollment controls"
+    },
+    {
+      "sha": "fe65dd25d152d8ea3b5c581a8a6fd3412442ca00",
+      "refs": [
+        "refs/heads/codex/sdk-observed-turn-capture-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:39:04+00:00",
+      "parents": [
+        "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893"
+      ],
+      "title": "feat(cell): capture completed SDK turn observations"
+    },
+    {
+      "sha": "085dc57c20daf7b6475c50d73f239d1aeb7a5ac8",
+      "refs": [
+        "refs/heads/fix/oauth-rejection-contracts-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:43:52+00:00",
+      "parents": [
+        "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893"
+      ],
+      "title": "test(mcp): bind OAuth rejection controls to typed rmcp errors"
+    },
+    {
+      "sha": "1087ac684fff28c509e9831c5332db91b8b60d53",
+      "refs": [
+        "refs/heads/codex/hia-queue-listing-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T06:47:26+00:00",
+      "parents": [
+        "2eb59fafec7d1b1fea50c856a2f96adc7c839ba4"
+      ],
+      "title": "fix(queue): serialize durable listing with completion"
+    },
+    {
+      "sha": "4eb790a0746c98be31a8c0ae12dacaca4cbec8eb",
+      "refs": [
+        "refs/heads/research/original-learning-trust-signature-20261128"
+      ],
+      "time_utc": "2026-11-28T06:48:26+00:00",
+      "parents": [
+        "6c0f63dd9a82474b3d18126857ea561c66defb17"
+      ],
+      "title": "Extract full LearningTrust signature validation without current authority"
+    },
+    {
+      "sha": "3b68508d43b74f59f7d7f79ca72010111d987a0b",
+      "refs": [
+        "refs/heads/codex/hia-oauth2-epoch-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T06:49:50+00:00",
+      "parents": [
+        "40990b8cdebe89f15933a89050987a17c4b6581c"
+      ],
+      "title": "refactor(oauth2): qualify explicit chrono-free epoch source variant"
+    },
+    {
+      "sha": "701ecd1164859c8903f257036ba287eb6bd628fa",
+      "refs": [
+        "refs/heads/codex/hia-federation-workspace-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T06:54:28+00:00",
+      "parents": [
+        "7428cf249c3d594e3a7a74b4b2a50c4ff870d02b"
+      ],
+      "title": "fix(memory): restore canonical workspace identity at transport boundary"
+    },
+    {
+      "sha": "3ca3e2a1b28500796ba0c53a823c2d1d9de7939f",
+      "refs": [
+        "refs/heads/codex/p0-three-original-source-guards-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T06:57:18+00:00",
+      "parents": [
+        "85ccf3305e34c90d3d10bdb1a6294d4e6adcf893"
+      ],
+      "title": "fix: synchronize three original source guards with paired owners"
+    },
+    {
+      "sha": "4284e2d57b9975fea1a19fb82493183b070873bc",
+      "refs": [
+        "refs/heads/codex/p0-opaque-teacher-observation-profile-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T07:09:07+00:00",
+      "parents": [
+        "60584475e2854e1cea43cd7fa86d995ff3bc7cfc"
+      ],
+      "title": "feat: bind opaque teacher observations without weight or execution claims"
+    },
+    {
+      "sha": "8a39705ad59d188962d88ebd689884b27889d78a",
+      "refs": [
+        "refs/heads/research/root-learning-trust-input-codec-20261128"
+      ],
+      "time_utc": "2026-11-28T07:11:43+00:00",
+      "parents": [
+        "82f306c2d474d596ada4a84a3d950a2347690a2c"
+      ],
+      "title": "feat(hepta): preserve complete external learning-trust inputs"
+    },
+    {
+      "sha": "8266a984c5967a447caf11e267d0f60ff0e4eede",
+      "refs": [
+        "refs/heads/research/original-root-learning-current-20261128"
+      ],
+      "time_utc": "2026-11-28T07:13:01+00:00",
+      "parents": [
+        "8a39705ad59d188962d88ebd689884b27889d78a"
+      ],
+      "title": "docs(hepta): freeze original Root current selection protocol"
+    },
+    {
+      "sha": "8936bd8e98d8656d60ba2318aed1b494243b734a",
+      "refs": [
+        "refs/heads/research/wsp-ci-followup-20261127-87d09924"
+      ],
+      "time_utc": "2026-11-28T07:15:26+00:00",
+      "parents": [
+        "21f47df5bf0ada0f5e42d8d9a6d595ee0cbab9a1"
+      ],
+      "title": "test(rmcp): prepare oversized fixture payloads before request deadlines"
+    },
+    {
+      "sha": "ab63fa79e11ce295a5bfbbe3f56120b62d4fcbbe",
+      "refs": [
+        "refs/heads/codex/p0-opaque-teacher-paired-consumer-20261128-6523704f97df"
+      ],
+      "time_utc": "2026-11-28T07:20:59+00:00",
+      "parents": [
+        "feae9e59516ddeb469c6b9ed27d944ba2bb1f92d"
+      ],
+      "title": "feat: connect opaque corrections to paired derivation and masked encoding"
+    },
+    {
+      "sha": "74e179d157313f74cd730102417f05b82dcd6387",
+      "refs": [
+        "refs/heads/research/learning-proof-lossless-xz-20261128"
+      ],
+      "time_utc": "2026-11-28T07:22:53+00:00",
+      "parents": [
+        "8a39705ad59d188962d88ebd689884b27889d78a"
+      ],
+      "title": "chore(hepta): preserve signature proof in lossless XZ archive"
+    },
+    {
+      "sha": "5763cc1b0bc0f1dd2a2b2ab0192d5c0940c617ba",
+      "refs": [
+        "refs/heads/codex/hia-windows-consumers-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T07:51:45+00:00",
+      "parents": [
+        "9c6beb3319f936bafba56fedcaa66a39b1af5088"
+      ],
+      "title": "fix(windows): close durable consumer and captured SSHSIG qualification"
+    },
+    {
+      "sha": "86bdabb360c1130b63a82f3f1d251a431f0292f2",
+      "refs": [
+        "refs/heads/codex/hia-otel-source-20261128-03da85"
+      ],
+      "time_utc": "2026-11-28T08:01:23+00:00",
+      "parents": [
+        "3b68508d43b74f59f7d7f79ca72010111d987a0b"
+      ],
+      "title": "fix(otel): preserve qualified time migration with complete source custody"
+    },
+    {
+      "sha": "70c3bd099d26427fabcc0387dfb6e298e7e5567c",
+      "refs": [
+        "refs/heads/codex/hia-native-integration-20261127-2ac5",
+        "refs/heads/codex/hia-windows-token-notification-20261128-2ac5"
+      ],
+      "time_utc": "2026-11-28T09:04:12+00:00",
+      "parents": [
+        "4f005f93769847729446f9b45b31e84b13166f05"
+      ],
+      "title": "Preserve complete original Windows three-target and native six-job gates"
+    },
+    {
+      "sha": "6897f6eb96acb780c47ad20e8faacad237c49d5b",
+      "refs": [
+        "refs/heads/codex/hia-file-update-reviewed-4280-20261128"
+      ],
+      "time_utc": "2026-11-28T09:19:54+00:00",
+      "parents": [
+        "5c913d9e7476debfe9adcdeacd480cab7009775a"
+      ],
+      "title": "Normalize reviewed identity receipt pairs for JSON round trips"
+    },
+    {
+      "sha": "a8912e8ca93e9d3ff08b150eb5c9cfa106eafcff",
+      "refs": [
+        "refs/heads/codex/ordinary-rust-main-ci-baseline-8a2846d4"
+      ],
+      "time_utc": "2026-11-28T10:07:21+00:00",
+      "parents": [
+        "a4829bb956df6b283e138c7e639c39b12aa813a4"
+      ],
+      "title": "Keep the Cargo lockfile stable and fix the Windows stdin test setup"
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "scientific_scope": "Runtime provenance of the earlier Kaggle request and previously qualified candidate configurations. Historical runs span accounts and dates.",
+  "source": {
+    "public": "https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md",
+    "account_adapter": "batch-0.1.14-reservation-retirement-6462",
+    "kaggle_create_only_sha256": "0efeea9fcb10350720b41e197ae70ff7a3c8907f4e741efa689681c24073ea35",
+    "router_version": "0.1.4-integrity-retirement+adoption-v1"
+  },
+  "wire_replay": {
+    "enableGpu": true,
+    "enableTpu": false,
+    "machineShape": "NvidiaTeslaT4",
+    "dockerImagePinningType": "original",
+    "dockerImage": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01"
+  },
+  "observations": [
+    {
+      "account": "qiqian",
+      "request_id": "hc-711c3803bde5d3cb370b157670442ec38be94750",
+      "kernel_id": 144136947,
+      "version": 1,
+      "created_at": "2026-11-10T05:17:12.089640+00:00",
+      "completed_at": "2026-11-10T05:18:36.533901+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01",
+        "docker_image_pinning_type": "original",
+        "kernel_type": "script"
+      },
+      "artifact": "diagnostic.json",
+      "sha256": "f08d3cf055ec3332d302d12c8970eba6e2cfb4558236c3fec307a978d4ac2404",
+      "observed": {
+        "torch": "2.11.0+cu130",
+        "cuda_available": true,
+        "torch_cuda": "13.0",
+        "device_count": 2,
+        "device": "Tesla T4"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "hc-8dc1d11c606a4a54e69404b0fed4188b5f2e016f",
+      "kernel_id": 145937095,
+      "version": 1,
+      "created_at": "2026-11-19T07:21:09.282467+00:00",
+      "completed_at": "2026-11-19T07:28:27.158112+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01",
+        "docker_image_pinning_type": "original",
+        "kernel_type": "script"
+      },
+      "artifact": "preflight.json",
+      "sha256": "e008a7322b6cbffd47677eca50c90e1b0852615fe288a6613af9e0b8df40b354",
+      "observed": {
+        "cuda_available": true,
+        "device": "Tesla T4"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "hc-5b96d05f2eaa3ad9d07238f2bbdf29a23e6493c4",
+      "kernel_id": 146228404,
+      "version": 1,
+      "created_at": "2026-11-20T15:57:05.886439+00:00",
+      "completed_at": "2026-11-20T16:03:10.973838+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01",
+        "docker_image_pinning_type": "original",
+        "kernel_type": "script"
+      },
+      "artifact": "gpu_probe.json",
+      "sha256": "bfb7b3b5d53235e6ebb8ac04c2041cffc2248331ae33ff2c78143b3c315012a2",
+      "observed": {
+        "cuda_available": true,
+        "gpu_name": "Tesla T4"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "hc-a44ba157dad165bafc2029325f599ca418a42e38",
+      "kernel_id": 147060684,
+      "version": 1,
+      "created_at": "2026-11-24T07:02:57.630335+00:00",
+      "completed_at": "2026-11-24T07:06:26.426883+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01",
+        "docker_image_pinning_type": "original",
+        "kernel_type": "script"
+      },
+      "artifact": "result.json",
+      "sha256": "298fa6ac3bd9ad05810c3226153a1b255fed102fc092dd74892fdccb42c1a0a6",
+      "observed": {
+        "device": "Tesla T4"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "hc-8fe5abacecb0a9abd5bfec0ffcad37d76c0260a4",
+      "kernel_id": 145982069,
+      "version": 1,
+      "created_at": "2026-11-19T11:41:30.168912+00:00",
+      "completed_at": "2026-11-19T11:54:41.127849+00:00",
+      "intent": {
+        "accelerator": "cpu",
+        "docker_image": null,
+        "docker_image_pinning_type": null,
+        "kernel_type": "script"
+      },
+      "artifact": "result.json",
+      "sha256": "b698047dc09fb1db0b83606aab025f850d80ef7f5521f4ea9db27d0868861163",
+      "observed": {
+        "torch": "2.11.0+cpu",
+        "device": "cpu"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "createonly-smoke-gpu-4883",
+      "kernel_id": 144117409,
+      "version": 1,
+      "created_at": "2026-11-10T03:02:34.490412+00:00",
+      "completed_at": "2026-11-10T03:04:04.045326+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": null,
+        "docker_image_pinning_type": null,
+        "kernel_type": "script"
+      },
+      "artifact": "result.json",
+      "sha256": "1b90e24979abb47cc5a3aca846a7b9fb362606833b72422bfd64fe062f44b0f0",
+      "observed": {
+        "torch": "2.11.0+cu130",
+        "gpu": "Tesla T4"
+      }
+    },
+    {
+      "account": "qiqian",
+      "request_id": "qiqian-gpu-20261107-4612-v1",
+      "kernel_id": 143238441,
+      "version": 1,
+      "created_at": "2026-11-07T13:01:30.954579+00:00",
+      "completed_at": "2026-11-08T04:30:23.684948+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": null,
+        "docker_image_pinning_type": "latest",
+        "kernel_type": "script"
+      },
+      "artifact": "result.json",
+      "sha256": "9bbaa72369bee618d32c9084a41a02122e7292d2a0ff8034b60d18ef93786d33",
+      "observed": {
+        "cuda_available": true,
+        "device_count": 2
+      }
+    },
+    {
+      "account": "sunfo",
+      "request_id": "iclr56665-kaggle-gpu-hardware-diagnostic-20261108-v1",
+      "kernel_id": 143460164,
+      "version": 1,
+      "created_at": "2026-11-08T16:57:42.269886+00:00",
+      "completed_at": "2026-11-09T02:12:19.065976+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": null,
+        "docker_image_pinning_type": null,
+        "kernel_type": "script"
+      },
+      "artifact": "RUNTIME_DIAGNOSTIC.json",
+      "sha256": "245c15c0d7e2febed9054038ae64952f0498dc402d1dec0f31363af7deacb372",
+      "observed": {
+        "torch": "2.11.0+cpu",
+        "cuda_available": false,
+        "cuda_device_count": 0
+      }
+    },
+    {
+      "account": "tomas",
+      "request_id": "hc-3626bb5f09c5449227fbaa0d60d0323675b79f80",
+      "kernel_id": 148057359,
+      "version": 1,
+      "created_at": "2026-11-28T10:37:58.323912+00:00",
+      "completed_at": "2026-11-28T11:09:44.825753+00:00",
+      "intent": {
+        "accelerator": "NvidiaTeslaT4",
+        "docker_image": "gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01",
+        "docker_image_pinning_type": "original",
+        "kernel_type": "script"
+      },
+      "artifact": "cloud_result.json",
+      "sha256": "1e60d481e58356146cfec5d7acae439b9ccd7720814288e2f9e80a0e19a71610",
+      "observed": {
+        "framework": "2.11.0+cpu",
+        "cuda_available": false
+      }
+    }
+  ],
+  "positive_probes": [
+    "hc-711c3803bde5d3cb370b157670442ec38be94750 {'torch': '2.11.0+cu130', 'device_count': 2, 'device': 'Tesla T4', 'tensor_is_cuda': True, 'result': 358438400.0, 'tensor_sha256': '2b47af7b80f1f6411c26c52d1be1685f5b8cbb3a233557dd4d371d0a70178377'}",
+    "hc-5b96d05f2eaa3ad9d07238f2bbdf29a23e6493c4 {'backward_verified': True, 'cuda_runtime': '13.0', 'forward_verified': True, 'gpu_compute_milliseconds': 341.1046447753906, 'gpu_name': 'Tesla T4', 'optimizer_updates': 0}"
+  ],
+  "prior_tomas_diagnostics": [
+    {
+      "cuda_available": false,
+      "device_count": 0,
+      "device_type": null,
+      "elapsed_seconds": 4.77,
+      "failure_reasons": [
+        "CUDA_NOT_AVAILABLE"
+      ],
+      "matrix_device_checks": [],
+      "nvidia_smi": {
+        "error": "FileNotFoundError"
+      },
+      "observed_devices": [],
+      "passed": false,
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "python": "3.13.18",
+      "request_id": "gpu-acceptance-20261107-02",
+      "requested": "NvidiaTeslaT4",
+      "required_device_count": 2,
+      "schema": "hepta-accelerator-diagnostic-v1",
+      "torch_cuda_build": "None",
+      "torch_version": "2.11.0+cpu"
+    },
+    {
+      "python": "3.13.18",
+      "torch": "2.11.0+cpu",
+      "cuda_build": null,
+      "hip_build": null,
+      "cuda_available": false,
+      "cuda_count": 0,
+      "CUDA_VISIBLE_DEVICES": null,
+      "NVIDIA_VISIBLE_DEVICES": null,
+      "gpu_nodes_present": false
+    }
+  ],
+  "fresh_eligibility_utc": "2026-11-28T10:59:31.576233+00:00",
+  "original_tomas_quota_seconds_at_observation": 108000
+}

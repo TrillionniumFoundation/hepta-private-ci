@@ -1,0 +1,23 @@
+{
+  "frozen_branch_sha256": "d18ce8efca841f56ddfcdda90cb94ec58927169c6584da39723eb8d7e895d36b",
+  "cutoff_utc": "2026-11-28T01:56:00Z",
+  "rule": "Raw-commit parent traversal starting at every frozen tip dated on/after cutoff, following all parents until the first earlier-dated commit on each path. First-parent tree diff for each retained commit.",
+  "post_cutoff_tip_count": 70,
+  "post_cutoff_ref_names": 73,
+  "post_cutoff_commits": 237,
+  "distinct_examined_commit_objects": 271,
+  "pre_cutoff_frontier_commits": 34,
+  "first_parent_path_change_events": 1840,
+  "change_operations": {
+    "A": 1306,
+    "M": 528,
+    "D": 6
+  },
+  "distinct_after_oids_including_superseded": 1611,
+  "current_eligible_changed_oids": 1039,
+  "current_eligible_standard": 1007,
+  "current_eligible_additional": 32,
+  "changes_sha256": "593c2ff0788682bfd91bf81366909671127caba8cc962d9a099baf80565fc938",
+  "current_changed_text_sha256": "2ae9c64fbb5c85c5da1cfb01a785d9617b257cb584dbbbb54dd51a7d9b0ce2c5",
+  "limitation": "Commit timestamp and first-parent changes are distinct from the historical ref service push time. Exact old individual refs cannot be deduced solely from historical aggregate counts."
+}
