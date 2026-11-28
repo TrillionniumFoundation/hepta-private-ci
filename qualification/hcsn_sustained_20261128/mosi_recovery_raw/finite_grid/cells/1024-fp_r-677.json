@@ -1,0 +1,339 @@
+{
+ "active_precision": "highest",
+ "group": "1024-fp_r-677",
+ "records": [
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.001
+   },
+   "dev_pooled_mse": 2.4549880027770996,
+   "dev_video_mae": 1.254244327545166,
+   "object_tests": {
+    "1024-fp_r-677-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "original_sha256": "f250e50c071dac7209d28ea84fd358fddf90bf235f1394be4ede43785cb3c049",
+     "sha256": "8458d27875ef6c936b1698f90dcbb1cf7b4daa9317a4312bcd93d7d66b71307d",
+     "zip_member_names_crcs_and_lengths_sha256": "179bae6980bb729c4cdb9caf4edfb6beaf402a39fd1e89447329fcab38505fcb"
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "d70750c069d2fa45e07d02bfcccaccc00ac1b7705a52fa662ee977e68a68e29a",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "ccb225910b01ce6bb8f3dc4c75c263edd4af733ecfd0e328fceb9626431a06fc",
+     "dtype": "float32",
+     "shape": [
+      1,
+      2048
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "10026ba857d72254d9db263cde7b19ae640a94a9c6dc0b9ef2b62881402c9ff6",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "cb6f104f4e95e3a57945b422e24bb7cb4a92acb292be0af2b3aa72a059d06caa",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "7f4057d4ed7eda1c6a5035c9a806e39069c245a7cd9a84ddf9cf551558f7113f",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "dfbaae76fd5dff80c5c2ab33c08dd5ef9492c25161634cdb92b5b5eff30d6c83",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "4b988a16fe832d2060b56ea9a1609adb4cae5fcde7d85f58529a140211b03419",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "38459f57648e400cded87a46f469b5d9d1774a7c97e5dac9b00ed1c75d7653ca",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "ff0ec0118713968f624cfaef6e6f81c78b226626d2afd581af30bed18010afb6",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "4792b9e6a16e661a1e0d96cd1bca28231c9e4536108d99923c45d20b2c1a5e57",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "055ff7afa82aa236b8df8315cb2a51e157c35232c064d0ec352645b42303a009",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    }
+   }
+  },
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.03
+   },
+   "dev_pooled_mse": 1.9700961112976074,
+   "dev_video_mae": 1.158484697341919,
+   "object_tests": {
+    "1024-fp_r-677-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "original_sha256": "f250e50c071dac7209d28ea84fd358fddf90bf235f1394be4ede43785cb3c049",
+     "sha256": "57996bdc624c2cc135104e611843b999edeb35aa53ba50e2a26f6f9076ab4026",
+     "zip_member_names_crcs_and_lengths_sha256": "ef111afa35d6d3b9ecc22459b282a54939cc9286d2281c9d14e64a4412391dca"
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "858d54b66cefa91d00f89d64b3bfffe8fd1a52f9d8854f0b28c8b3ef08707162",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "2a471a583e3cbb42a038d3467484c9d2c7081cc96492c6360140b3dbade1bb86",
+     "dtype": "float32",
+     "shape": [
+      1,
+      2048
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "30d045516b700e6d51fa8ef6248cd56453fc47e02ea89ef3288e4ce706dd0ab8",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "aa352770e894813b11415e40fc77daf98af651d473f95f40cc7f76a486ea8fb0",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "b87b67aadf16d0c401c634d32a08b0a179533a0a530465d97a87eea7c6305566",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "937417dd1f44af65fe876b9298666eb1e537fac83f7ad886df7432958946fe8d",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "bf9ccbd5cd24beeab23acc5a56539d5a4913d33df1769c1e7002bcbdf607b3cb",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "3fb5b336c974c1a6558cf4b3d382f1d3e32ada16d5a229becfbd3a2d1bbd3e1a",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "b859b93357a588027d77d2296cd7b672c3abf902058e9f776bf20fb049237fd7",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "40583b99adfab4c850fce56dbbb7bdcdee4a47ba1bdd53a646eed6a7a2a9c022",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "77c5ca1a4e60e49f9a9be1fdc1b775d90cfa1cfd1b26e0cc0819709db592c2eb",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    }
+   }
+  },
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.3
+   },
+   "dev_pooled_mse": 1.5003405809402466,
+   "dev_video_mae": 1.0071325302124023,
+   "object_tests": {
+    "1024-fp_r-677-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "original_sha256": "f250e50c071dac7209d28ea84fd358fddf90bf235f1394be4ede43785cb3c049",
+     "sha256": "aae2ba6522c4dd339d2d8459d9528ee4702eca556a3d5943ff1cd4a6597f45fc",
+     "zip_member_names_crcs_and_lengths_sha256": "9214e3c274d9d73b692c85465e441bf33443dec125985cb863cd56c8eca964a4"
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "05a214ff2b16a84ac4f67b4df0e552efec92faff561e2d2d225d5e7bc73cbcbe",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "ba415f255a25d29165c4ca3e7a30946429fc67e8114a3e54bef472e0070a9113",
+     "dtype": "float32",
+     "shape": [
+      1,
+      2048
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "bb3e385eaee956ebed4d418060b786940b5e81f62f6676a2e27a85737bad42a7",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "49b626107ea02c6d661433b64d6e33339244b0e46e445c21e97c0be52d3b34fb",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "2715685a9488bdc454ef7c26f784469e69e378370f5a2a84757e980e29d2c28e",
+     "dtype": "float32",
+     "shape": [
+      1024,
+      1024
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "7cdc3ac89304392c35c24b32b2cb7d1b381b6b87f52c5011c4fe73307d7dc411",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "cab67752d37e7a5d3ac14f86abda1047d8aa57da2a8d7eb66fb835828a1cf8b2",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "f22e66b0b6c50a035779eb6be5f926ab7ae989ed0a99802bbff82ac60eebc437",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "761246a27391b7d253cf2dcaa3d9c604d033031ec955b18216d667782c261d92",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "2910add8e5cfca7ebfe74c3df749d3414331364d7ecf5e03313a993abb2891eb",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "2a626a8d002bec81725ad50b5969757123e0fb1a4ea42ff27eabf4b8b417c34d",
+     "dtype": "float32",
+     "shape": [
+      1024
+     ]
+    }
+   }
+  }
+ ],
+ "runtime_libraries": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX2\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n",
+ "seconds": 24.497961731161922,
+ "torch": "2.8.0+cpu"
+}

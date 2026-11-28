@@ -1,0 +1,343 @@
+{
+ "active_precision": "highest",
+ "group": "64-fp_h-941",
+ "records": [
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.001
+   },
+   "dev_pooled_mse": 1.9492911100387573,
+   "dev_video_mae": 1.1669772863388062,
+   "object_tests": {
+    "64-fp_h-941-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "matches_original_recipe_rerun": false,
+     "original_sha256": "b0cff023c3326d80ddabcc50ffc059a6ab59aef18e9ea20ad777f0efe3ea161f",
+     "sha256": "c850c9c3c03360c4a47b68dd48248a7edc6bdaad31588baa93c429ea6e6f8b19",
+     "zip_member_names_crcs_and_lengths_sha256": "7c8d8c5aefb78aa3af48ba6cc204bdd44dfe1f1e6d8d5aa9566a97b240034480"
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "dabbd1dfec3b52e9b181ef5212565875804208ec0a9b5b3e7a7870b7769f0575",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "923607e64a017fde295080477dbb00b308ccbab47a51e7a225e3b758d93e28f3",
+     "dtype": "float32",
+     "shape": [
+      1,
+      512
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "174a07d3fdfa8b50f104f336c0fe701fbb9f7e55c3f42766e68aca8642a8037a",
+     "dtype": "float32",
+     "shape": [
+      64,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "8d131277c873b075d1f7d22bf9488c547444b462c093501306499f546be5d334",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "b944fc23eabd30bb2f6b33a251c3a359b25276706bd2a5149d520999e7ed27a5",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "1406da2e594d8d201126c6087e997d4952c52d051f65394f57697a8172eabf94",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "96905b1ac02d19722e0a29d025f299f8166bdcdfb1cfdb32a429eb5b4ee8e3ae",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "7ad5522d6191016b01b547a9bee7ab89f8e5ab8eed75b760a597191281b89065",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "25fe3871e5f2daa4eab24bd85fb2dc9e8e32f078a6f15287913f3628db3f95dd",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "754166aa336890a0b22922fdd3a460f57e62381300faed091a7d725f7e69f1b9",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "9ca933f4591743557d0223d17ce4858d0e1d444953d45da6de9067b3bba1b7f6",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    }
+   }
+  },
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.03
+   },
+   "dev_pooled_mse": 1.599974513053894,
+   "dev_video_mae": 1.0507086515426636,
+   "object_tests": {
+    "64-fp_h-941-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "matches_original_recipe_rerun": false,
+     "original_sha256": "b0cff023c3326d80ddabcc50ffc059a6ab59aef18e9ea20ad777f0efe3ea161f",
+     "sha256": "39bd4058f55cdaf4ceb66c871ae149b1986d88f3709b0488ea6c07ccef1f6612",
+     "zip_member_names_crcs_and_lengths_sha256": "c1712b9159c748210fdcfe9e84148665407f2a333dd20529792fae49154b13d1"
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "6df37f614f83b98fa1dec9014d7c072d7f013e9b3d1c065b8bd885ba686e0f64",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "cb4e6a8689c479668a47128d5f9c87f0cd4cc2a0728180e0a9b213b94c056d37",
+     "dtype": "float32",
+     "shape": [
+      1,
+      512
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "a9f780bef8be373457ad368802f65ae5d94bbfb701ab078be471d9e9c05cc706",
+     "dtype": "float32",
+     "shape": [
+      64,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "3e0f1eb21e83dd7aa24985092710404c549b1289c3aa8891aa7c8cefa8255e3c",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "e73a9909a1196233402e5005d33a3008a8367fe500e357236ddeca7c6a711811",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "d48b414ccd3088c388ad04da19c4ab78a173c93483f199a8f54ee6f3c5184a43",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "12ab2571d75a07ca12388392f31fc8989d042f76d8216539f45d60edc5f1e766",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "5986a717d3301fe1ea68ea543d312c4cd7536794abae0a29f521bca1c9abc5b2",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "84370b1ccd4d89fb5a123d309db357f8800c22c043efe6c6809c4e23f6ac64cf",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "80c2035041608b0f071c3180d68de6957ed6bb3408af15253e2bfdfa785bfd64",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "f48d5f21aef6a99387763e37d591bb67b53a7f58077d9a36ff217698c8d8d38f",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    }
+   }
+  },
+  {
+   "details": {
+    "hidden_writes": 3,
+    "label_target": "seven-anchor barycentric + sign projection",
+    "penalty": 0.3
+   },
+   "dev_pooled_mse": 1.484480619430542,
+   "dev_video_mae": 1.0021631717681885,
+   "object_tests": {
+    "64-fp_h-941-r15.pt": {
+     "all_zip_date_time_values": [
+      [
+       1980,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "matches_historical": false,
+     "matches_original_recipe_rerun": true,
+     "original_sha256": "b0cff023c3326d80ddabcc50ffc059a6ab59aef18e9ea20ad777f0efe3ea161f",
+     "sha256": "18e86f6e4349df1c7d278e74a072a8d7d8a6b3619f2100d373b6200c88df9a8b",
+     "zip_member_names_crcs_and_lengths_sha256": "1e3cfc36c8f6687fc176308d26c9c728698c35e3755b07869f085e230f904daa",
+     "zip_read_write_same_bytes": true
+    }
+   },
+   "typed_tensor_sha256": {
+    "head.bias": {
+     "bytes_sha256": "1ab91c61b762fab82c0c3e48faeab594f00edcd3dec8941113ce2344686c9181",
+     "dtype": "float32",
+     "shape": [
+      1
+     ]
+    },
+    "head.weight": {
+     "bytes_sha256": "15efce26c8292c667154ce538ecc4d433148e8136181fafa2bb596344e0716ab",
+     "dtype": "float32",
+     "shape": [
+      1,
+      512
+     ]
+    },
+    "layers.0.weight": {
+     "bytes_sha256": "2306d0b40be64390e4eb82dc6303f60eb7fdc707bfcbae576a55beefe5418d51",
+     "dtype": "float32",
+     "shape": [
+      64,
+      793
+     ]
+    },
+    "layers.1.weight": {
+     "bytes_sha256": "ae7501bc62015f4a791ab006e945a4b469f8c25718a1428fe4a7424716603c2a",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "layers.2.weight": {
+     "bytes_sha256": "1dd54aa6c43c8a5d0f00a3249b9e047accdcb3fda0a6c873d8cb87451417b91d",
+     "dtype": "float32",
+     "shape": [
+      64,
+      64
+     ]
+    },
+    "mean0": {
+     "bytes_sha256": "64f3bcd57e62a33c2f0aae4e2a936341f0a9735d04ed6035aa1562cf4973ec80",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean1": {
+     "bytes_sha256": "9366f3fedafe69c72b7d95ca55300c3477220af655044f9047dad62d61c881f0",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "mean2": {
+     "bytes_sha256": "74600554d6252130845c353849396a5ead9d5d1946d90c2018f5d472840da8c3",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    },
+    "sd0": {
+     "bytes_sha256": "8bc5b0fdaf93174acee32653d12fe6f33de4ceac37e602f97fab70eac403ce6f",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd1": {
+     "bytes_sha256": "4cec08d061b83eda124abd077a70aaa89b828fd7798675578d180a6e77bd724e",
+     "dtype": "float32",
+     "shape": [
+      64
+     ]
+    },
+    "sd2": {
+     "bytes_sha256": "b4101bf8c9739c990efdace7b4882e12e81114c6b2a4c41d4efafdee3e1dbe0c",
+     "dtype": "float32",
+     "shape": [
+      256
+     ]
+    }
+   }
+  }
+ ],
+ "runtime_libraries": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX2\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n",
+ "seconds": 4.930284624919295,
+ "torch": "2.8.0+cpu"
+}
