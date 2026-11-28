@@ -109,3 +109,6 @@ async fn paired_training_caller_abort_drops_the_active_read_without_retry() {
         .unwrap()
         .unwrap();
 }
+
+#[path = "paired_training_readiness_tests.rs"]
+mod readiness;

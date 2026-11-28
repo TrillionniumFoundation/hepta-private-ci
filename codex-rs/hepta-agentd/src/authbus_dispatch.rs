@@ -240,11 +240,14 @@ async fn deliver<Q: TextQueueTransport>(
     }
     match response {
         Ok(Ok(response)) => match receipt(&response, &client_id, &expected, mode) {
-            Ok(digest) => host
-                .evidence
-                .ack_authbus_delivery(&issuer, &lease, digest)
-                .await
-                .map_err(|error| invalid(&error.to_string())),
+            Ok(digest) => {
+                host.evidence
+                    .ack_authbus_delivery(&issuer, &lease, digest)
+                    .await
+                    .map_err(|error| invalid(&error.to_string()))?;
+                host.original_ack_committed();
+                Ok(())
+            }
             Err(_) => host
                 .evidence
                 .quarantine_authbus_delivery(&issuer, &lease)

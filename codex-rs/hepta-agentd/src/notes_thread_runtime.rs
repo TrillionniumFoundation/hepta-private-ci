@@ -363,6 +363,11 @@ impl AgentdNotesThreadToolRuntime {
                                 original_delivery: request.original.delivery_id,
                             });
                         }
+                        // The Core completion hint may precede the relay's Ack.
+                        // Wait under this same pending owner's absolute deadline,
+                        // after the journal read has released its storage locks.
+                        crate::authbus_ingress::attached(&state)?
+                            .wait_for_original_ack(request.original.delivery_id).await?;
                         let verified = connection.verify_paired_turn(
                             &state, &self.adapter, request.original.clone(),
                         ).await?;
