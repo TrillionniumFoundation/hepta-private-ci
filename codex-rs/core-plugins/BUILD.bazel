@@ -2,6 +2,8 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "core-plugins",
+    build_script_compile_data = ["//hia:cargo_build.rs"],
+    build_script_data = ["//hia:build_inputs"],
     compile_data = glob(
         include = ["**"],
         allow_empty = True,
@@ -10,6 +12,6 @@ codex_rust_crate(
             "BUILD.bazel",
             "Cargo.toml",
         ],
-    ),
+    ) + ["//hia:datetime_cache.rs"],
     crate_name = "codex_core_plugins",
 )

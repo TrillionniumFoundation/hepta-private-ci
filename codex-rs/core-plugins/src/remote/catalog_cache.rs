@@ -175,15 +175,37 @@ fn cache_path(codex_home: &Path, cache_key: &RemotePluginCatalogCacheKey) -> Pat
         .join(format!("{cache_key_hash:016x}.json"))
 }
 
+#[cfg(feature = "hia-native")]
+#[path = "../../../../hia/datetime_cache.rs"]
+mod hia_datetime_cache;
+
 fn is_fresh(fetched_at: Option<DateTime<Utc>>, now: DateTime<Utc>) -> bool {
     let Some(fetched_at) = fetched_at else {
         return false;
     };
-    let Ok(ttl) = chrono::Duration::from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
-        return false;
-    };
-    let age = now.signed_duration_since(fetched_at);
-    age >= chrono::Duration::zero() && age <= ttl
+    #[cfg(feature = "hia-native")]
+    {
+        let result = hia_datetime_cache::evaluate([
+            1,
+            2,
+            fetched_at.timestamp() as u64,
+            u64::from(fetched_at.timestamp_subsec_nanos()),
+            now.timestamp() as u64,
+            u64::from(now.timestamp_subsec_nanos()),
+            REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL.as_secs(),
+            u64::from(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL.subsec_nanos()),
+        ]);
+        assert_eq!(result[1], 1, "native cache received valid UTC timestamps");
+        result[3] != 0
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        let Ok(ttl) = chrono::Duration::from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
+            return false;
+        };
+        let age = now.signed_duration_since(fetched_at);
+        age >= chrono::Duration::zero() && age <= ttl
+    }
 }
 
 #[cfg(test)]

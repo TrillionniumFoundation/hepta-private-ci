@@ -13,6 +13,10 @@ use std::time::Duration;
 use tokio::fs;
 use tracing::info;
 
+#[cfg(feature = "hia-native")]
+#[path = "../../../hia/datetime_cache.rs"]
+mod hia_datetime_cache;
+
 /// Asynchronous storage for model catalog snapshots used by the models manager.
 ///
 /// Implementations own cache freshness and lookup partitioning. [`ModelsCache::load`] must not
@@ -84,11 +88,37 @@ impl ModelsCacheEntry {
         if ttl.is_zero() {
             return false;
         }
-        let Ok(ttl_duration) = chrono::Duration::from_std(ttl) else {
-            return false;
-        };
-        let age = Utc::now().signed_duration_since(self.fetched_at);
-        age <= ttl_duration
+        #[cfg(feature = "hia-native")]
+        {
+            let ttl_seconds = ttl.as_secs();
+            let ttl_nanos = u64::from(ttl.subsec_nanos());
+            let duration = hia_datetime_cache::evaluate([1, 0, 0, 0, 0, 0, ttl_seconds, ttl_nanos]);
+            if duration[2] == 0 {
+                return false;
+            }
+            // Preserve the original order: invalid or zero TTLs never read the clock.
+            let now = Utc::now();
+            let result = hia_datetime_cache::evaluate([
+                1,
+                1,
+                self.fetched_at.timestamp() as u64,
+                u64::from(self.fetched_at.timestamp_subsec_nanos()),
+                now.timestamp() as u64,
+                u64::from(now.timestamp_subsec_nanos()),
+                ttl_seconds,
+                ttl_nanos,
+            ]);
+            assert_eq!(result[1], 1, "native cache received a valid UTC timestamp");
+            result[3] != 0
+        }
+        #[cfg(not(feature = "hia-native"))]
+        {
+            let Ok(ttl_duration) = chrono::Duration::from_std(ttl) else {
+                return false;
+            };
+            let age = Utc::now().signed_duration_since(self.fetched_at);
+            age <= ttl_duration
+        }
     }
 }
 

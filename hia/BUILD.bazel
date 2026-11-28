@@ -8,4 +8,7 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-exports_files(["cargo_build.rs"])
+exports_files([
+    "cargo_build.rs",
+    "datetime_cache.rs",
+])
