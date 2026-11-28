@@ -555,6 +555,12 @@ async fn summarize_context_three_requests_and_instructions() {
         .await
         .unwrap();
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+    tokio::time::timeout(
+        std::time::Duration::from_secs(10),
+        codex.wait_for_terminalization_for_test(),
+    )
+    .await
+    .expect("the completed thread must finish its terminalization before the next step");
 
     // 2) Summarize – second hit should include the summarization prompt.
     codex.submit(Op::Compact).await.unwrap();
@@ -564,6 +570,12 @@ async fn summarize_context_three_requests_and_instructions() {
     };
     assert_eq!(message, COMPACT_WARNING_MESSAGE);
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+    tokio::time::timeout(
+        std::time::Duration::from_secs(10),
+        codex.wait_for_terminalization_for_test(),
+    )
+    .await
+    .expect("the completed thread must finish its terminalization before the next step");
 
     // 3) Next user input – third hit; history should include only the summary.
     codex
