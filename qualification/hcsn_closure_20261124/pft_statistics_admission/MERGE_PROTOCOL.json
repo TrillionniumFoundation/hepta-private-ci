@@ -1,0 +1,39 @@
+{
+  "blas_threads": 1,
+  "checks": [
+    "Numerical rank and plain-float refusal before mutation",
+    "Real low-rank and zero rows remain valid",
+    "Overflow in accumulation or Gram regularization cannot export a candidate",
+    "Large finite solve that stays within float64 range remains accepted",
+    "One full validation and eigendecomposition per received offer",
+    "Two original-style independent capped SQLite owners cannot exceed capacity",
+    "Exact baseline fixture retained; no unsafe historical capacity schedule rerun"
+  ],
+  "expected_suites": {
+    "AdmissionTests": 3,
+    "BinaryPeerTests": 4,
+    "CodecTests": 5,
+    "LedgerTests": 8,
+    "PeerTests": 4
+  },
+  "numpy": "2.3.5",
+  "parents": [
+    "0a2e417c1f503c1ede469c1e3ef98caa11a97b57",
+    "6e60365410d825778bb16b759af893985db97a6b"
+  ],
+  "prior_evidence_policy": "All earlier baseline, test and formatting records remain unchanged; new observations have distinct files and source identities.",
+  "python": "3.12.14",
+  "reason_for_new_execution": "The exact latest receiver/capacity implementation must retain the rank and representation rejection while preserving single validation and atomic capacity. Independent finite-input overflow probes also require a new snapshot/solver boundary.",
+  "remaining_limits": [
+    "No raw feature clipping/min/max can be inferred from a normalization digest",
+    "Valid individual finite contributions can overflow together; their immutable ledger remains, and snapshot must explicitly refuse",
+    "No participant authenticity or poisoning guarantee"
+  ],
+  "schema": "pft-latest-admission-integration-v1",
+  "scope": "Synthetic engineering regression only; no learned model, historical cache, DEV/final, user trajectory, remote adoption or payment is used",
+  "timeout_seconds": 120,
+  "upstream_prs": [
+    7211,
+    7212
+  ]
+}

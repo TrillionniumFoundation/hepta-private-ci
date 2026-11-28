@@ -12,7 +12,14 @@ import unittest
 
 import numpy as np
 
-from .pft_statistics import DIGEST_FIELDS, StatisticsLedger, digest, make_packet
+from .pft_statistics import (
+    DIGEST_FIELDS,
+    StatisticsLedger,
+    digest,
+    make_packet,
+    validate_packet,
+)
+from .pft_statistics_codec import decode_packet, encode_packet
 
 
 RECORDS = []
@@ -115,6 +122,140 @@ def launch(root, contract, packets, expected, mode="append"):
 
 
 class LedgerTests(unittest.TestCase):
+    def test_finite_inputs_cannot_export_overflowed_candidates(self):
+        base, _, _, _ = fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = dict(base, dimension=1, outputs=1, regularizer=1e308)
+            ledger = StatisticsLedger(Path(tmp) / "regularizer.db", contract)
+            packet = make_packet(
+                contract, "one", digest("source"), [digest("row")], [[1e154]], [[1e154]]
+            )
+            ledger.append(packet, ledger.state()["head"])
+            state = ledger.state()
+            with self.assertRaisesRegex(ValueError, "regularized Gram"):
+                ledger.snapshot()
+            self.assertEqual(ledger.state(), state)
+            contract = dict(contract, regularizer=1e307)
+            finite = StatisticsLedger(Path(tmp) / "finite.db", contract)
+            packet = make_packet(
+                contract, "one", digest("source"), [digest("row")], [[1e154]], [[1e154]]
+            )
+            finite.append(packet, finite.state()["head"])
+            self.assertAlmostEqual(
+                finite.snapshot()["candidate"]["weight"][0][0], 10 / 11
+            )
+            for field, x, y in (("gram", 1e154, 0.0), ("yty", 0.0, 1e154)):
+                contract = dict(base, dimension=1, outputs=1)
+                ledger = StatisticsLedger(Path(tmp) / (field + ".db"), contract)
+                for i in range(2):
+                    packet = make_packet(
+                        contract,
+                        str(i),
+                        digest(["source", i]),
+                        [digest(["row", i])],
+                        [[x]],
+                        [[y]],
+                    )
+                    ledger.append(packet, ledger.state()["head"])
+                state = ledger.state()
+                with (
+                    self.subTest(field=field),
+                    self.assertRaisesRegex(ValueError, "accumulated statistics"),
+                ):
+                    ledger.snapshot()
+                self.assertEqual(ledger.state(), state)
+
+    def test_impossible_sample_rank_rejected_before_admission(self):
+        contract, packets, _, _ = fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = StatisticsLedger(Path(tmp) / "ledger.db", contract)
+            ledger.append(packets[0], ledger.state()["head"])
+            state = ledger.state()
+            for scale in (1.0, 1e150, 1e308):
+                packet = copy.deepcopy(packets[1])
+                body = packet["body"]
+                body.update(
+                    count=1,
+                    sample_ids=body["sample_ids"][:1],
+                    gram=(np.eye(5) * scale).tolist(),
+                    rhs=np.zeros((5, 2)).tolist(),
+                    yty=(np.eye(2) * scale).tolist(),
+                )
+                packet["payload_sha256"] = digest(body)
+                # Encoding preserves bytes; mathematical admission is downstream.
+                decoded = decode_packet(encode_packet(packet, contract), contract)
+                self.assertEqual(decoded, packet)
+                for representation in (packet, decoded):
+                    with (
+                        self.subTest(scale=scale),
+                        np.errstate(over="raise", invalid="raise"),
+                        self.assertRaisesRegex(ValueError, "rank exceeds"),
+                    ):
+                        ledger.append(representation, state["head"])
+                    self.assertEqual(ledger.state(), state)
+
+    def test_coercible_types_and_shapes_rejected_before_admission(self):
+        contract, _, _, _ = fixture()
+        packet = make_packet(
+            contract,
+            "zero",
+            digest("zero"),
+            [digest("zero-row")],
+            np.zeros((1, 5)),
+            np.zeros((1, 2)),
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = StatisticsLedger(Path(tmp) / "ledger.db", contract)
+            state = ledger.state()
+            for field in ("gram", "rhs", "yty"):
+                for value in ("0.0", 0, False, None):
+                    changed = copy.deepcopy(packet)
+                    changed["body"][field][0][0] = value
+                    changed["payload_sha256"] = digest(changed["body"])
+                    with (
+                        self.subTest(field=field, value=repr(value)),
+                        self.assertRaisesRegex(ValueError, "plain finite float"),
+                    ):
+                        ledger.append(changed, state["head"])
+                    self.assertEqual(ledger.state(), state)
+                for value in ([], (), tuple(packet["body"][field])):
+                    changed = copy.deepcopy(packet)
+                    changed["body"][field] = value
+                    changed["payload_sha256"] = digest(changed["body"])
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        ledger.append(changed, state["head"])
+                    self.assertEqual(ledger.state(), state)
+            self.assertEqual(ledger.append(packet, state["head"])["status"], "accepted")
+            np.testing.assert_array_equal(
+                ledger.snapshot()["candidate"]["weight"], np.zeros((5, 2))
+            )
+
+    def test_actual_low_rank_statistics_preserve_float_bytes(self):
+        contract, _, _, _ = fixture()
+        rng = np.random.default_rng(19073)
+        for count in (1, 2, 3, 7, 13):
+            x, y = rng.normal(size=(count, 5)), rng.normal(size=(count, 2))
+            for scale in (1e-100, 1.0, 1e150):
+                packet = make_packet(
+                    contract,
+                    f"real-{count}",
+                    digest(["real", count, scale]),
+                    [digest([count, row]) for row in range(count)],
+                    x * scale,
+                    y * scale,
+                )
+                with (
+                    self.subTest(count=count, scale=scale),
+                    np.errstate(over="raise", invalid="raise"),
+                ):
+                    g, h, t = validate_packet(packet, contract)
+                np.testing.assert_array_equal(g, (x * scale).T @ (x * scale))
+                np.testing.assert_array_equal(h, (x * scale).T @ (y * scale))
+                np.testing.assert_array_equal(t, (y * scale).T @ (y * scale))
+                self.assertEqual(
+                    decode_packet(encode_packet(packet, contract), contract), packet
+                )
+
     def test_concurrent_duplicate_and_competing_head(self):
         contract, packets, _, _ = fixture()
         with tempfile.TemporaryDirectory() as tmp:

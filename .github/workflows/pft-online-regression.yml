@@ -83,7 +83,7 @@ jobs:
             > "$PFT_EVIDENCE/INSTALL.log" 2>&1
           python -m pip check >> "$PFT_EVIDENCE/INSTALL.log" 2>&1
           python -m pip freeze > "$PFT_EVIDENCE/PIP_FREEZE.txt"
-      - name: Run only the 20 explicit synthetic controls
+      - name: Run only the 24 explicit synthetic controls
         run: |
           timeout --signal=TERM --kill-after=5s 120s \
             python -m qualification.hcsn_closure_20261124.pft_online_regression \

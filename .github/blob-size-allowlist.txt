@@ -855,3 +855,8 @@ sha256:31d9d080a53cd7cdfa2c8daed996b45df637a175c159adfdbdc55e719c0689f8 qualific
 # Exact original 480e8353 research figures; decoded and visually reviewed.
 sha256:a96422565784a401bc415cd19fad4c23838ffa96f6837e0df407bc58d43aad53 experiments/multimodal_output_portfolio/evidence/local_preflight_v1.png
 sha256:c5308e3adc06f88fac84e9c5d9a935649a832449b3089ba953aab27a5ae20259 experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1.png
+
+# Reviewed immutable WAL qualification evidence: original CI failures, frozen
+# sources, native test/strict-lint receipts and resource records; all 71 members
+# were read back and checked. Changed bytes must satisfy the size policy again.
+sha256:e749c9002a93aff3a9151737c97f7a8fecc7d05ab7fc10f305bd484942e9a49a qualification/pft-wal-clippy-20261128/evidence.tar.gz

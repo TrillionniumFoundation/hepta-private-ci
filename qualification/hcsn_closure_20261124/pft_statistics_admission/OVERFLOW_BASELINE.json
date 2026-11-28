@@ -1,0 +1,176 @@
+{
+  "executed_source": {
+    "qualification/hcsn_closure_20261124/pft_linear.py": "12a491e67956e5a0065698db4a1813c1961c7424ebff8655ba65acda984c2415",
+    "qualification/hcsn_closure_20261124/pft_statistics.py": "ecc5b5b08c37d76630adf5fba57b5329e75c9bb0dba822146aef7f4476481cb6"
+  },
+  "merged_parents": [
+    "0a2e417c1f503c1ede469c1e3ef98caa11a97b57",
+    "6e60365410d825778bb16b759af893985db97a6b"
+  ],
+  "records": [
+    {
+      "case": "finite_gram_plus_regularizer_overflow",
+      "expected_weight": "0.5",
+      "observed_candidate": {
+        "contract": {
+          "aggregation": "sum-f64-canonical-batch-id",
+          "dimension": 1,
+          "dtype": "float64",
+          "epoch": 0,
+          "feature_program_sha256": "78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1",
+          "model_family": "hcsn-pft-readout-research-v1",
+          "normalization_sha256": "fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3",
+          "objective_sha256": "9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6",
+          "outputs": 1,
+          "parent_model_sha256": "f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b",
+          "regularizer": 1e+308,
+          "schema": "pft-online-statistics-v1",
+          "statistics_validation": "augmented-psd-rtol-1e-10-v1",
+          "time_semantics_sha256": "62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535"
+        },
+        "contract_canonical_json": "{\"aggregation\":\"sum-f64-canonical-batch-id\",\"dimension\":1,\"dtype\":\"float64\",\"epoch\":0,\"feature_program_sha256\":\"78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1\",\"model_family\":\"hcsn-pft-readout-research-v1\",\"normalization_sha256\":\"fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3\",\"objective_sha256\":\"9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6\",\"outputs\":1,\"parent_model_sha256\":\"f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b\",\"regularizer\":1e+308,\"schema\":\"pft-online-statistics-v1\",\"statistics_validation\":\"augmented-psd-rtol-1e-10-v1\",\"time_semantics_sha256\":\"62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535\"}",
+        "contract_sha256": "7575b5e9766360dc88e81b516b655a591c0e1e5d7cf532cd423ea8a00db4a55a",
+        "count": 1,
+        "head": "77e09f11ff0825d6cb1eccc5bd53e428eabfbc30a1d9f70b232f01549d09b969",
+        "head_material_canonical_json": "{\"batches\":[[\"one\",\"0ffacf3f0792309124a26e87500e8ffa74041755977c929a940f559250b39ca0\"]],\"contract_sha256\":\"7575b5e9766360dc88e81b516b655a591c0e1e5d7cf532cd423ea8a00db4a55a\"}",
+        "revision": 1,
+        "schema": "pft-online-candidate-v1",
+        "weight": [
+          [
+            0.0
+          ]
+        ],
+        "weight_encoding": "float64-le-c-rowmajor",
+        "weight_sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "weight_shape": [
+          1,
+          1
+        ]
+      },
+      "packet": {
+        "body": {
+          "batch_id": "one",
+          "contract_sha256": "7575b5e9766360dc88e81b516b655a591c0e1e5d7cf532cd423ea8a00db4a55a",
+          "count": 1,
+          "gram": [
+            [
+              1e+308
+            ]
+          ],
+          "rhs": [
+            [
+              1e+308
+            ]
+          ],
+          "sample_ids": [
+            "32d78dbd6700ffcd6e9b0a3ee27eacb94a9d577f27cabb6e08b6447fab06785c"
+          ],
+          "source_sha256": "073171f7f5e1438ae632cb252bda87d19e1bfab1a0ba309e91bdd645886f24ea",
+          "yty": [
+            [
+              1e+308
+            ]
+          ]
+        },
+        "payload_sha256": "0ffacf3f0792309124a26e87500e8ffa74041755977c929a940f559250b39ca0"
+      },
+      "receipt": {
+        "head": "77e09f11ff0825d6cb1eccc5bd53e428eabfbc30a1d9f70b232f01549d09b969",
+        "material": {
+          "batches": [
+            [
+              "one",
+              "0ffacf3f0792309124a26e87500e8ffa74041755977c929a940f559250b39ca0"
+            ]
+          ],
+          "contract_sha256": "7575b5e9766360dc88e81b516b655a591c0e1e5d7cf532cd423ea8a00db4a55a"
+        },
+        "revision": 1,
+        "status": "accepted"
+      },
+      "warnings": [
+        "overflow encountered in add"
+      ]
+    },
+    {
+      "accumulated_yty_finite": false,
+      "accumulated_yty_repr": "[[inf]]",
+      "case": "finite_batches_overflow_accumulated_yty",
+      "observed_candidate": {
+        "contract": {
+          "aggregation": "sum-f64-canonical-batch-id",
+          "dimension": 1,
+          "dtype": "float64",
+          "epoch": 0,
+          "feature_program_sha256": "78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1",
+          "model_family": "hcsn-pft-readout-research-v1",
+          "normalization_sha256": "fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3",
+          "objective_sha256": "9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6",
+          "outputs": 1,
+          "parent_model_sha256": "f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b",
+          "regularizer": 0.2,
+          "schema": "pft-online-statistics-v1",
+          "statistics_validation": "augmented-psd-rtol-1e-10-v1",
+          "time_semantics_sha256": "62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535"
+        },
+        "contract_canonical_json": "{\"aggregation\":\"sum-f64-canonical-batch-id\",\"dimension\":1,\"dtype\":\"float64\",\"epoch\":0,\"feature_program_sha256\":\"78ee241fdcf5f588bdf22699968aeba204ea88a39014feb4a78c72c0df6a18e1\",\"model_family\":\"hcsn-pft-readout-research-v1\",\"normalization_sha256\":\"fed6f543e3e35c28bb0c61e65749b292e33274dc5c10fc1e022373a2f73debb3\",\"objective_sha256\":\"9f0c44afe7500e45f74c2e9f206aea20322fa036d47af46abc793ead95765dd6\",\"outputs\":1,\"parent_model_sha256\":\"f4b17e817fb2185bea282618c258833992e7b77c1a42582478e25795cc1e4a1b\",\"regularizer\":0.2,\"schema\":\"pft-online-statistics-v1\",\"statistics_validation\":\"augmented-psd-rtol-1e-10-v1\",\"time_semantics_sha256\":\"62fd184b59f48e477f075a6835a5553aa6c35b4e088fec1905e3e6a0f7f49535\"}",
+        "contract_sha256": "81b2c0d2a271ad9fcd8ee87fd590bbe63b9a3b3b0ef358cb770d9a20f2bd4e8c",
+        "count": 2,
+        "head": "d1d98a4d3068893dcd0fc3637514f5884b3d3d1012accd44e915e16c904605fe",
+        "head_material_canonical_json": "{\"batches\":[[\"0\",\"d917393482fb3506e414fd68ad43c2589c193d5282a6bbc22d60bf78d91d706e\"],[\"1\",\"17018b0cc80b6a8bfeb8ccc1e966efef6e4e5923d8176fe675ee47df86a27bcf\"]],\"contract_sha256\":\"81b2c0d2a271ad9fcd8ee87fd590bbe63b9a3b3b0ef358cb770d9a20f2bd4e8c\"}",
+        "revision": 2,
+        "schema": "pft-online-candidate-v1",
+        "weight": [
+          [
+            0.0
+          ]
+        ],
+        "weight_encoding": "float64-le-c-rowmajor",
+        "weight_sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "weight_shape": [
+          1,
+          1
+        ]
+      },
+      "receipts": [
+        {
+          "head": "1ca64507744c7a938eb6a77c9fc4e596802a0a70f187019f76d77a40efa23344",
+          "material": {
+            "batches": [
+              [
+                "0",
+                "d917393482fb3506e414fd68ad43c2589c193d5282a6bbc22d60bf78d91d706e"
+              ]
+            ],
+            "contract_sha256": "81b2c0d2a271ad9fcd8ee87fd590bbe63b9a3b3b0ef358cb770d9a20f2bd4e8c"
+          },
+          "revision": 1,
+          "status": "accepted"
+        },
+        {
+          "head": "d1d98a4d3068893dcd0fc3637514f5884b3d3d1012accd44e915e16c904605fe",
+          "material": {
+            "batches": [
+              [
+                "0",
+                "d917393482fb3506e414fd68ad43c2589c193d5282a6bbc22d60bf78d91d706e"
+              ],
+              [
+                "1",
+                "17018b0cc80b6a8bfeb8ccc1e966efef6e4e5923d8176fe675ee47df86a27bcf"
+              ]
+            ],
+            "contract_sha256": "81b2c0d2a271ad9fcd8ee87fd590bbe63b9a3b3b0ef358cb770d9a20f2bd4e8c"
+          },
+          "revision": 2,
+          "status": "accepted"
+        }
+      ],
+      "warnings": [
+        "overflow encountered in add"
+      ]
+    }
+  ],
+  "schema": "pft-finite-overflow-observation-v1",
+  "synthetic_only": true
+}

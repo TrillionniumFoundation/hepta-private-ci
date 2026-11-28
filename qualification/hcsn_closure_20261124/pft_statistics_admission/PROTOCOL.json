@@ -1,0 +1,23 @@
+{
+  "schema": "pft-admission-audit-plan-v1",
+  "base": "4686c861e54179690c4a668a356a4b0ce57639d5",
+  "scope": "Synthetic numerical admission regression only; no historical science campaign or held-out data will be re-executed",
+  "observed_defects": [
+    "One declared sample with a rank-seven augmented Gram is accepted",
+    "String matrix entries are admitted by JSON but refused by the lossless binary codec"
+  ],
+  "intended_changes": [
+    "Require exact bounded plain-float matrix representation before array coercion",
+    "Require numerical rank of the augmented Gram to be no larger than the declared sample count at the existing PSD tolerance",
+    "Normalize finite statistics for the spectral calculation to avoid overflow in symmetry averaging"
+  ],
+  "controls": [
+    "Baseline reproductions are retained unchanged",
+    "Impossible rank must reject before any ledger mutation",
+    "Malformed types and matrix shapes must reject before ledger mutation",
+    "Real rank-deficient, full-rank and zero sufficient statistics must remain accepted",
+    "JSON and binary admission must agree on producer representation and count consistency",
+    "Retain all 17 prior synthetic ledger/codec/peer controls and add the new explicit tests to the same regression gate"
+  ],
+  "limits": "Algebraic feasibility and byte representation do not authenticate sample provenance, resist valid-data poisoning, establish useful work, or prove training speedup"
+}

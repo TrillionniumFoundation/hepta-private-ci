@@ -1,0 +1,332 @@
+{
+  "base_commit": "d779ed32bb2d235e5a12538b7748bd07b200854f",
+  "final_tested_source_commit": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+  "final_tested_source_tree": "7ddf58f846da6c1d629abd0f87247de9a9f88b47",
+  "local_wal_and_crate_all_target_lint_closed": true,
+  "original_multi_package_ci_command_completed": false,
+  "all_repository_ci_passed": false,
+  "original_ci_jobs": [
+    140955829967,
+    140955830038
+  ],
+  "observations": [
+    {
+      "stage": 1,
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 112.45310833500025,
+      "log_bytes": 19258,
+      "log_sha256": "266e7083aa4ff2f5cf0fbeb917cae3881604438d2ff546975542096b33d2f0da",
+      "observation": "native-02",
+      "source_commit": "b9be1a277bf664eb4be5fbf39868e74509136edd",
+      "log": "native-02/01.log",
+      "resources": {
+        "ru_utime": 91.790846,
+        "ru_stime": 12.421222,
+        "ru_maxrss": 580316,
+        "ru_minflt": 2490560,
+        "ru_majflt": 401,
+        "ru_inblock": 1602320,
+        "ru_oublock": 751512,
+        "ru_nvcsw": 14607,
+        "ru_nivcsw": 4120
+      },
+      "host_oom_kill_before": [
+        "oom_kill 27"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 27"
+      ],
+      "outcome": "PASS"
+    },
+    {
+      "stage": 2,
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 153.50706272299976,
+      "log_bytes": 12143,
+      "log_sha256": "01816f3f7bfba0b69c5b292ef280c49f26ea5f01b80b1f82d44ef9eef08f0f23",
+      "observation": "native-02",
+      "source_commit": "b9be1a277bf664eb4be5fbf39868e74509136edd",
+      "log": "native-02/02.log",
+      "resources": {
+        "ru_utime": 114.580591,
+        "ru_stime": 33.111691,
+        "ru_maxrss": 779132,
+        "ru_minflt": 6293191,
+        "ru_majflt": 6435,
+        "ru_inblock": 29693520,
+        "ru_oublock": 370768,
+        "ru_nvcsw": 31536,
+        "ru_nivcsw": 39397
+      },
+      "host_oom_kill_before": [
+        "oom_kill 27"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 29"
+      ],
+      "outcome": "UNCOMPLETED: codex-protocol Clippy child SIGKILL 9; no WAL diagnostic reached"
+    },
+    {
+      "stage": 1,
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 43.627262021000206,
+      "log_bytes": 4155,
+      "log_sha256": "41c70f89712e70b4a22fce9249abb5f2959f2c64d2459ac51cfbe8be1b81cf1a",
+      "observation": "native-03",
+      "source_commit": "b9be1a277bf664eb4be5fbf39868e74509136edd",
+      "log": "native-03/01.log",
+      "resources": {
+        "ru_utime": 36.85635,
+        "ru_stime": 5.809077,
+        "ru_maxrss": 522136,
+        "ru_minflt": 1157494,
+        "ru_majflt": 227,
+        "ru_inblock": 1002464,
+        "ru_oublock": 93536,
+        "ru_nvcsw": 4422,
+        "ru_nivcsw": 2321
+      },
+      "host_oom_kill_before": [
+        "oom_kill 29"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 29"
+      ],
+      "outcome": "FAIL: pre-existing test assertions_on_constants and if_same_then_else"
+    },
+    {
+      "stage": 2,
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--all-targets",
+        "--features",
+        "compatibility-api",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 14.85179164999954,
+      "log_bytes": 1247,
+      "log_sha256": "0d712d8a2c8ecdfa9467a4d3201583746252c957b85884ff36b1894ae604b07c",
+      "observation": "native-03",
+      "source_commit": "b9be1a277bf664eb4be5fbf39868e74509136edd",
+      "log": "native-03/02.log",
+      "resources": {
+        "ru_utime": 11.67404,
+        "ru_stime": 2.572679,
+        "ru_maxrss": 286632,
+        "ru_minflt": 550614,
+        "ru_majflt": 82,
+        "ru_inblock": 484240,
+        "ru_oublock": 42280,
+        "ru_nvcsw": 3655,
+        "ru_nivcsw": 448
+      },
+      "host_oom_kill_before": [
+        "oom_kill 29"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 29"
+      ],
+      "outcome": "PASS"
+    },
+    {
+      "stage": 1,
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 6.141244657000243,
+      "log_bytes": 16716,
+      "log_sha256": "ab47ebd12bab0bc6329129e5bc574b0820b159569d34cc44fec8a1490fc99c91",
+      "observation": "native-04",
+      "source_commit": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+      "log": "native-04/01.log",
+      "resources": {
+        "ru_utime": 4.079665,
+        "ru_stime": 3.388142,
+        "ru_maxrss": 325080,
+        "ru_minflt": 504778,
+        "ru_majflt": 258,
+        "ru_inblock": 1182616,
+        "ru_oublock": 21096,
+        "ru_nvcsw": 5309,
+        "ru_nivcsw": 1462
+      },
+      "host_oom_kill_before": [
+        "oom_kill 29"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 29"
+      ],
+      "outcome": "PASS"
+    },
+    {
+      "stage": 2,
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--locked",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.114010424999833,
+      "log_bytes": 177,
+      "log_sha256": "0ec9bcda7d172a9d03b4b9e40385f1eede2c960afb604ba1b0b2ae8a67968a6f",
+      "observation": "native-04",
+      "source_commit": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+      "log": "native-04/02.log",
+      "resources": {
+        "ru_utime": 3.469438,
+        "ru_stime": 0.559754,
+        "ru_maxrss": 286128,
+        "ru_minflt": 135515,
+        "ru_majflt": 98,
+        "ru_inblock": 247312,
+        "ru_oublock": 2096,
+        "ru_nvcsw": 363,
+        "ru_nivcsw": 118
+      },
+      "host_oom_kill_before": [
+        "oom_kill 29"
+      ],
+      "host_oom_kill_after": [
+        "oom_kill 29"
+      ],
+      "outcome": "PASS"
+    }
+  ],
+  "final_junit": {
+    "path_in_archive": "native-04/01-junit.xml",
+    "sha256": "366b5be05e676f7a51658255917d340d9d3e27766701adf0a4aa2acb95a782d0",
+    "tests": 119,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "flaky_failures": 0,
+    "wal_tests": 11,
+    "test_wall_seconds_from_nextest_summary": 0.636
+  },
+  "compatibility_scope": "The original compatibility command passed at b9be1a277bf664eb4be5fbf39868e74509136edd. The subsequent 32706bf commit changes only two cell-roles test helpers, outside the bellman-operator compatibility dependency graph.",
+  "setup_failure_preserved": "native-01: /usr/bin/time absent; zero build/test commands executed; replaced only resource collection with os.wait4",
+  "format": {
+    "tested_source_commit": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "d779ed32bb2d235e5a12538b7748bd07b200854f"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.5633865769996191,
+    "files": {
+      "codex-rs/hepta-cell-roles/src/control_wal.rs": {
+        "before_sha256": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+        "after_sha256": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+        "bytes_changed": false
+      },
+      "codex-rs/hepta-cell-roles/src/action_proposal.rs": {
+        "before_sha256": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+        "after_sha256": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+        "bytes_changed": false
+      },
+      "codex-rs/hepta-cell-roles/src/metric_policy.rs": {
+        "before_sha256": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15",
+        "after_sha256": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15",
+        "bytes_changed": false
+      }
+    },
+    "tests_rerun_after_format": false
+  },
+  "source_sha256": {
+    "codex-rs/hepta-cell-roles/src/control_wal.rs": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+    "codex-rs/hepta-cell-roles/src/action_proposal.rs": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+    "codex-rs/hepta-cell-roles/src/metric_policy.rs": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15"
+  },
+  "peer_review": {
+    "reviewer": "/root/research_training",
+    "box_review": "evidence.tar.gz:PEER_REVIEW.json",
+    "additional_source_commit": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+    "additional_findings": [
+      "Constant false assertion is now checked at compile time; runtime execution-mode and DENY_ALL assertions remain.",
+      "permits_negative is a pure const match; both old branches returned AtMost, so every fixture field retains its value."
+    ],
+    "review_was_read_only": true
+  },
+  "limits": [
+    "Host oom_kill rose 27 to 29 during the exact multi-package failure; no per-PID kernel event was obtained, so the specific SIGKILL cause is not asserted.",
+    "Existing ordinary nextest watchdogs/retries and strict lint flags were not changed.",
+    "No tests were rerun after final formatting; all three Rust source files remained byte-identical.",
+    "Separate original Windows failures and the complete multi-package CI gate still need their own successful receipts.",
+    "Box adds a heap allocation for each Prepare event; runtime allocation overhead was not benchmarked.",
+    "No scientific model training or foundation-model qualification is claimed by these engineering checks."
+  ],
+  "evidence": {
+    "archive": "evidence.tar.gz",
+    "bytes": 1123667,
+    "sha256": "e749c9002a93aff3a9151737c97f7a8fecc7d05ab7fc10f305bd484942e9a49a",
+    "indexed_files": 70,
+    "members_including_index": 71,
+    "all_readback_bytes_and_hashes_match": true,
+    "index_sha256": "2daa9662d41829d584f4aa53c9d6aa07dcd423a34aa44c6c639b3534799b750e",
+    "source_commit_for_final_tests": "32706bf4e2c0e845617aad640084f4b6a38b0757",
+    "source_commit_for_first_tests": "b9be1a277bf664eb4be5fbf39868e74509136edd"
+  }
+}
