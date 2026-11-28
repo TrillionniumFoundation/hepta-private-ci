@@ -142,6 +142,7 @@ pub(crate) fn workspace_write_sandbox(
         PathUri::from_abs_path(&writable_root),
     );
     sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    sandbox.windows_sandbox_private_desktop = true;
     sandbox
 }
 
@@ -164,6 +165,7 @@ fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandbo
     );
     if cfg!(windows) {
         sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+        sandbox.windows_sandbox_private_desktop = true;
     }
     sandbox
 }
