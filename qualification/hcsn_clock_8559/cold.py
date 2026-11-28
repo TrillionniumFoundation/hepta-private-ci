@@ -10,7 +10,7 @@ from train import Data, apply, atomic_json, digest
 from model import Classifier
 
 
-def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=False,native=False):
+def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=False,native=False,native_v2=False):
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     manifest=results/f'seal-{budget}.json'; rows=json.loads(manifest.read_text())
     identities={(x['arm'],x['seed']) for x in rows}
@@ -19,9 +19,14 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=Fal
     else:
         from model import ARMS
         assert len(rows)==21 and identities=={(a,s) for a in ARMS for s in (137,311,557)}
-    if native:
-        assert literal_only and device=='cpu'
-        from fused.native import enable
+    if native or native_v2:
+        assert literal_only and device=='cpu' and not (native and native_v2)
+        if native_v2:
+            import sys
+            sys.path.insert(0,str(Path(__file__).resolve().parent/'fused'))
+            from native_v2 import enable
+        else:
+            from fused.native import enable
     common=time.perf_counter();d=Data(root)
     streams={}; row=speaker=y=None
     for name in ('natural','fast','slow'):
@@ -44,7 +49,7 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=Fal
             continue
         started=time.perf_counter()
         model=Classifier(info['arm'])
-        if native:model=enable(model)
+        if native or native_v2:model=enable(model)
         apply(model,torch.load(chosen,map_location='cpu',weights_only=True));model.to(device);model.eval()
         if device=='cuda':torch.cuda.synchronize()
         init_wall=time.perf_counter()-started
@@ -61,7 +66,7 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu",literal_only=Fal
         os.replace(tmp,probs)
         score_hash=digest(probs)
         write_and_hash_s=time.perf_counter()-forward_stop
-        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,native=native,
+        atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,native=native,native_v2=native_v2,
                     checkpoint_sha256=digest(chosen),score_sha256=score_hash,seal_sha256=digest(manifest),
                     input_setup_wall_s=common,model_restore_wall_s=init_wall,forward_wall_s=timings,
                     prediction_write_hash_wall_s=write_and_hash_s,cold_arm_wall_s=time.perf_counter()-started))
@@ -72,5 +77,5 @@ if __name__=='__main__':
     for k in ('data','runs','out'):p.add_argument(k,type=Path)
     p.add_argument('rung',type=int);p.add_argument('--matched-step',type=int,default=0)
     p.add_argument('--device',choices=['cpu','cuda'],default='cpu')
-    p.add_argument('--literal-only',action='store_true');p.add_argument('--native',action='store_true')
-    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step,a.device,a.literal_only,a.native)
+    p.add_argument('--literal-only',action='store_true');p.add_argument('--native',action='store_true');p.add_argument('--native-v2',action='store_true')
+    a=p.parse_args();confirm(a.data,a.runs,a.out,a.rung,a.matched_step,a.device,a.literal_only,a.native,a.native_v2)
