@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 10
       - name: Capture the exact Windows rename parameter comparisons
         shell: pwsh
         run: python .github/scripts/windows_private_fs_rename_probe.py --output "${{ runner.temp }}/windows-private-state-rename.json"

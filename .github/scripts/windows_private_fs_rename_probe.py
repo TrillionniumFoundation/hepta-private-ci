@@ -2,6 +2,7 @@
 
 import argparse
 import ctypes
+from contextlib import ExitStack
 from hashlib import sha256
 import json
 import os
@@ -133,6 +134,8 @@ def main():
         ctypes.c_void_p,
     ]
     kernel.WriteFile.restype = ctypes.c_int32
+    kernel.ReadFile.argtypes = kernel.WriteFile.argtypes
+    kernel.ReadFile.restype = ctypes.c_int32
     kernel.GetFileInformationByHandleEx.argtypes = [
         HANDLE,
         ctypes.c_int32,
@@ -230,9 +233,13 @@ def main():
     }
     initial_cwd = Path.cwd()
     try:
-        with tempfile.TemporaryDirectory(
-            prefix="hia-private-state-rename-"
-        ) as temporary:
+        with (
+            tempfile.TemporaryDirectory(
+                prefix="hia-private-state-rename-"
+            ) as temporary,
+            ExitStack() as scope,
+        ):
+            scope.callback(os.chdir, initial_cwd)
             temporary = Path(temporary)
             decoy = temporary / "cwd"
             decoy.mkdir()
@@ -359,6 +366,11 @@ def main():
                                             native.RtlNtStatusToDosError(result)
                                         ),
                                     )
+                                report["observations"].append(row)
+                                print(
+                                    "RETURNED " + json.dumps(row, sort_keys=True),
+                                    flush=True,
+                                )
                                 row["directory_flush"] = flush(handle)
                                 target = physical_parent / "state.json"
                                 row["expected_destination_exists"] = target.exists()
@@ -376,14 +388,29 @@ def main():
                                     row["same_identity"] = (
                                         row["destination_identity"] == original_id
                                     )
+                                    read_buffer = ctypes.create_string_buffer(
+                                        len(payload)
+                                    )
+                                    returned = DWORD()
+                                    if not kernel.ReadFile(
+                                        read,
+                                        read_buffer,
+                                        len(payload),
+                                        ctypes.byref(returned),
+                                        None,
+                                    ):
+                                        raise ctypes.WinError(ctypes.get_last_error())
                                     row["payload_exact"] = (
-                                        target.read_bytes() == payload
+                                        returned.value == len(payload)
+                                        and read_buffer.raw == payload
                                     )
                                     row["source_removed"] = not (
                                         physical_parent / "state.next"
                                     ).exists()
-                                report["observations"].append(row)
-                                print(json.dumps(row, sort_keys=True), flush=True)
+                                print(
+                                    "VERIFIED " + json.dumps(row, sort_keys=True),
+                                    flush=True,
+                                )
                             finally:
                                 for opened in reversed(handles):
                                     if not kernel.CloseHandle(opened):
@@ -398,6 +425,7 @@ def main():
         report["source_unchanged"] = after == current
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+        print("REPORT " + json.dumps(report, sort_keys=True), flush=True)
         if not report["source_unchanged"]:
             raise RuntimeError("baseline source changed during the diagnostic")
     if len(report["observations"]) != 16:
