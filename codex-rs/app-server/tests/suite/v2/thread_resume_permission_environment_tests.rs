@@ -17,12 +17,14 @@ use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::UserInput;
 use codex_exec_server::CreateDirectoryOptions;
+use codex_exec_server::LOCAL_ENVIRONMENT_ID;
 use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_rollout::RolloutRecorder;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use core_test_support::is_wine_exec_test_environment;
+use core_test_support::TestTargetOs;
 use core_test_support::test_codex::TestEnv;
+use core_test_support::test_target_os;
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use tempfile::TempDir;
@@ -101,6 +103,16 @@ async fn last_native_environments(path: &Path) -> Result<Vec<TurnContextEnvironm
         })
         .expect("persisted turn")
         .expect("complete native snapshot"))
+}
+
+fn deny_read_resume_error(environment_id: &str) -> JSONRPCErrorError {
+    JSONRPCErrorError {
+        code: -32603,
+        message: format!(
+            "error resuming thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `{environment_id}`: failed to prepare fs sandbox: failed to prepare windows sandbox wrapper: windows unelevated restricted-token sandbox cannot enforce deny-read restrictions directly; refusing to run unsandboxed"
+        ),
+        data: None,
+    }
 }
 
 #[tokio::test]
@@ -203,10 +215,10 @@ async fn cold_resume_preserves_native_paths_and_rebuilds_changed_policy_roots() 
                 ..Default::default()
             })
             .await?;
-        if changed_access == Some("deny") && is_wine_exec_test_environment() {
-            // Wine uses the unelevated Windows executor, which must reject deny-read
-            // restrictions. The read-only carveout above still exercises a successful
-            // same-base policy change and native root reconstruction on this executor.
+        if changed_access == Some("deny") && test_target_os() == TestTargetOs::Windows {
+            // Both native and Wine Windows executors reject this deny-read policy.
+            // The read-only carveout still exercises a successful same-base policy
+            // change and native root reconstruction on these executors.
             let error = timeout(
                 DEFAULT_READ_TIMEOUT,
                 resumed.read_stream_until_error_message(RequestId::Integer(request)),
@@ -214,14 +226,7 @@ async fn cold_resume_preserves_native_paths_and_rebuilds_changed_policy_roots() 
             .await??;
             assert_eq!(
                 error.error,
-                JSONRPCErrorError {
-                    code: -32603,
-                    message: format!(
-                        "error resuming thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `{}`: failed to prepare fs sandbox: failed to prepare windows sandbox wrapper: windows unelevated restricted-token sandbox cannot enforce deny-read restrictions directly; refusing to run unsandboxed",
-                        expected[0].environment_id,
-                    ),
-                    data: None,
-                },
+                deny_read_resume_error(&expected[0].environment_id),
             );
             assert_eq!(
                 last_native_environments(&path).await?,
@@ -344,7 +349,12 @@ async fn cold_resume_explicit_cwd_wins_without_reusing_previous_profile_roots() 
 #[tokio::test]
 async fn cold_resume_rebuilds_roots_when_named_policy_changes_with_the_same_base() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
-    for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+    for (history_mode, access) in [
+        (ThreadHistoryMode::Legacy, "deny"),
+        (ThreadHistoryMode::Paginated, "deny"),
+        (ThreadHistoryMode::Legacy, "read"),
+        (ThreadHistoryMode::Paginated, "read"),
+    ] {
         let codex_home = TempDir::new()?;
         let previous_root_dir = TempDir::new()?;
         let previous_root = AbsolutePathBuf::from_absolute_path(previous_root_dir.path())?;
@@ -355,9 +365,36 @@ async fn cold_resume_rebuilds_roots_when_named_policy_changes_with_the_same_base
         MockResponsesConfig::new(&server.uri())
             .with_root_config("default_permissions = \":danger-full-access\"")
             .with_extra_config(&format!(
-                "[permissions.dev]\nextends = \":workspace\"\n\n[permissions.dev.filesystem]\n{denied_path} = \"deny\""
+                "[permissions.dev]\nextends = \":workspace\"\n\n[permissions.dev.filesystem]\n{denied_path} = \"{access}\""
             ))
             .write(codex_home.path())?;
+        // This fixture deliberately uses the host-local executor, even in Wine runs.
+        if access == "deny" && cfg!(windows) {
+            let mut mcp = TestAppServer::builder()
+                .with_test_env(TestEnv::local_with_exec_server_url(/*exec_server_url*/ None).await?)
+                .with_codex_home(codex_home.path())
+                .without_managed_config()
+                .build_initialized()
+                .await?;
+            let request_id = mcp
+                .send_thread_resume_request(ThreadResumeParams {
+                    thread_id,
+                    ..Default::default()
+                })
+                .await?;
+            let error = timeout(
+                DEFAULT_READ_TIMEOUT,
+                mcp.read_stream_until_error_message(RequestId::Integer(request_id)),
+            )
+            .await??;
+            assert_eq!(error.error, deny_read_resume_error(LOCAL_ENVIRONMENT_ID));
+            assert!(
+                timeout(DEFAULT_READ_TIMEOUT, mcp.shutdown_gracefully())
+                    .await??
+                    .success()
+            );
+            continue;
+        }
         let restored = resume(
             codex_home.path(),
             ThreadResumeParams {
