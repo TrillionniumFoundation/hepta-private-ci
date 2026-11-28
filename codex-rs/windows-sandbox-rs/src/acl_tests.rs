@@ -205,19 +205,28 @@ fn complete_file_denies_need_effective_rights_but_no_inheritance() -> Result<()>
     Ok(())
 }
 #[test]
-fn complete_denies_skip_inherited_partial_denies_before_explicit_full_denies() -> Result<()> {
+fn complete_denies_require_explicit_full_denies_before_inherited_entries() -> Result<()> {
     let sid = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
     let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
     for (kind, partial_mask) in [
         (DenyAceKind::Read, FILE_READ_EA),
         (DenyAceKind::Write, DELETE),
     ] {
-        let mut acl = NativeAcl::new()?;
-        acl.deny(&sid, partial_mask, inheritance | u32::from(INHERITED_ACE))?;
-        acl.deny(&sid, kind.mask(), inheritance)?;
+        let inherited = inheritance | u32::from(INHERITED_ACE);
+        let mut canonical = NativeAcl::new()?;
+        canonical.deny(&sid, kind.mask(), inheritance)?;
+        canonical.deny(&sid, partial_mask, inherited)?;
         // SAFETY: the ACL and SID remain valid through the query.
         assert!(unsafe {
-            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+            kind.already_present(canonical.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+        });
+
+        let mut noncanonical = NativeAcl::new()?;
+        noncanonical.deny(&sid, partial_mask, inherited)?;
+        noncanonical.deny(&sid, kind.mask(), inheritance)?;
+        // SAFETY: the ACL and SID remain valid through the query.
+        assert!(!unsafe {
+            kind.already_present(noncanonical.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
         });
     }
     Ok(())
