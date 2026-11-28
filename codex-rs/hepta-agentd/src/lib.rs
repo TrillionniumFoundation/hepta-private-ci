@@ -429,6 +429,14 @@ mod objective_runtime;
 mod paired_original_turn;
 #[cfg(target_os = "linux")]
 mod paired_preparation;
+#[cfg(target_os = "linux")]
+mod paired_training_bootstrap;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HOST_AUTHORITY_PAIRED_TRAINING_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HostAuthorityPairedTrainingBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HostAuthorityPairedTrainingProfileV1;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;

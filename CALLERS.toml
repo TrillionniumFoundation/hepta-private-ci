@@ -3347,3 +3347,9 @@ required = []
 forbidden = []
 required_order = [["pending.complete_on_owner(&cancellation, async {", "lane.journal.retained(&request).await?", ".wait_for_original_ack(request.original.delivery_id)", "connection.verify_paired_turn(", "self.adapter.check_paired_preparation_lifetime(&verified)?", "lane.read_verified(&request, &verified, &preparing).await?"]]
 required_function_order = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/paired_training_bootstrap.rs"
+required = ["#[serde(deny_unknown_fields)]", "runtime.paired-training.bootstrap.v1", "parsed.is_zero() || parsed.to_string() != value"]
+forbidden = ["put_lease", "File::open", "read_to_end", "SignedFinalUseGrant"]
+required_function_order = [{ function = "fn decode_plan(", sequence = ["self.schema_version != 1", "Generation::new(self.policy_generation)", "plan.validate()?", "Ok(plan)"] }, { function = "fn require_binding(", sequence = ["self.decode_plan()?", "digest(&self.writer_proof_digest)?", "neuron_generation_process_identity_digest_v1(identity)", "Ok(plan)"] }]
