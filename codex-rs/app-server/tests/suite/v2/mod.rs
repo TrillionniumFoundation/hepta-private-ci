@@ -46,6 +46,7 @@ mod marketplace_add;
 mod marketplace_remove;
 mod marketplace_upgrade;
 mod mcp_event_stream;
+mod mcp_oauth_discovery_errors;
 mod mcp_resource;
 mod mcp_resource_origin;
 mod mcp_server_elicitation;
