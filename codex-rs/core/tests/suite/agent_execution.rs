@@ -488,3 +488,6 @@ async fn v2_residency_reload_preserves_inherited_environment_and_tools(
 
     Ok(())
 }
+
+#[path = "agent_execution_finish_fence.rs"]
+mod finish_fence;
