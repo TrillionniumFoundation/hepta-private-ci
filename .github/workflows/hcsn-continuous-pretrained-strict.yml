@@ -1,0 +1,37 @@
+name: HCSN continuous pretrained strict validation
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_continuous_20261127/paired_catalog/pretrained/**
+      - .github/workflows/hcsn-continuous-pretrained-strict.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify fail-closed validation normally
+        run: >-
+          python3 -m unittest discover
+          -s qualification/hcsn_continuous_20261127/paired_catalog/pretrained
+          -p test_strict_validation.py -v
+      - name: Verify fail-closed validation under optimization
+        run: >-
+          python3 -O -m unittest discover
+          -s qualification/hcsn_continuous_20261127/paired_catalog/pretrained
+          -p test_strict_validation.py -v
+      - name: Check the source stayed unchanged
+        if: always()
+        run: git diff --exit-code

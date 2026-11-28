@@ -6,6 +6,7 @@ from PIL import Image
 import pyarrow.parquet as pq
 import torch
 from assets import BASE,OUT,HS
+from strict_validation import require_integrity
 sys.path.insert(0,str(OUT))
 from model import build_model
 from simple_tokenizer import SimpleTokenizer
@@ -26,7 +27,10 @@ def text_ids(tokenizer,strings):
 def main():
     threads=int(os.environ.get('HCSN_CLIP_THREADS','1'));torch.set_num_threads(threads);torch.set_num_interop_threads(1)
     device=os.environ.get('HCSN_CLIP_DEVICE','cpu');start=time.monotonic()
-    assert hashlib.file_digest((OUT/'ViT-B-32.pt').open('rb'),'sha256').hexdigest()==HS
+    require_integrity(
+        hashlib.file_digest((OUT/'ViT-B-32.pt').open('rb'),'sha256').hexdigest() == HS,
+        'official model checksum mismatch before load',
+    )
     # Release the original archive as soon as upstream eager module has copied the parameters.
     jit=torch.jit.load(str(OUT/'ViT-B-32.pt'),map_location='cpu').eval();m=build_model(jit.state_dict());del jit;gc.collect()
     if device=='cpu':m.float()
@@ -41,9 +45,19 @@ def main():
             path=BASE/Path(f['path']).name
             for chunk in pq.ParquetFile(path).iter_batches(batch_size=256,columns=['id','image','productDisplayName']):
                 target=out/f'block{bi:04d}.npz'
-                rec=chunk.to_pylist();idx=np.array([r['id'] for r in rec]);assert np.array_equal(idx,ids[offset:offset+len(rec)])
+                rec=chunk.to_pylist();idx=np.array([r['id'] for r in rec])
+                require_integrity(
+                    np.array_equal(idx, ids[offset:offset+len(rec)]),
+                    f'catalog identity mismatch at block {bi}',
+                )
                 if target.exists():
-                    with np.load(target) as prev:assert np.array_equal(prev['id'],idx) and prev['image'].shape==(len(idx),512) and np.isfinite(prev['text']).all()
+                    with np.load(target) as prev:
+                        require_integrity(
+                            np.array_equal(prev['id'], idx)
+                            and prev['image'].shape == (len(idx), 512)
+                            and np.isfinite(prev['text']).all(),
+                            f'resumed feature block {bi} failed identity or shape checks',
+                        )
                     offset+=len(idx);bi+=1;continue
                 t=time.monotonic();X=[];Y=[]
                 for i in range(0,len(rec),12):
@@ -57,7 +71,7 @@ def main():
                 tmp=target.with_suffix('.tmp.npz');np.savez_compressed(tmp,image=np.concatenate(X),text=np.concatenate(Y),id=idx,seconds=elapsed);tmp.replace(target)
                 offset+=len(idx);bi+=1
                 if bi%4==0 or bi==1:print('blocks',bi,'images',offset,'active_items_s',images/max(secs,1e-8),'elapsed_s',time.monotonic()-start,flush=True)
-    assert offset==len(ids)
+    require_integrity(offset == len(ids), 'feature extraction did not cover the sealed catalog')
     receipts={p.name:hashlib.file_digest(p.open('rb'),'sha256').hexdigest() for p in sorted(out.glob('block*.npz'))}
     (out/'seal.json').write_text(json.dumps({'model_sha256':HS,'device':device,'parameters':nn,'threads':threads,'records':offset,'blocks':receipts,'torch':torch.__version__},indent=1))
 if __name__=='__main__':main()
