@@ -1,0 +1,237 @@
+{
+  "complete_tuning_units": 12,
+  "gallery_manifest_sha256": "55ce974ea66548f04fa2d12bd82f8e007b8081cdc3b3883ab90c5123e5c5828e",
+  "records": [
+    {
+      "arm": "lif",
+      "best_development_nll": 3.8048469442546566,
+      "finished_epoch": 1795821974.714494,
+      "history_sha256": "90aa8830ccf2cc123fca0d2a619757049f7c6d82d5f3f2b8a921a7c4caef7d07",
+      "last_stage": {
+        "dev_s": 1.2326040375046432,
+        "nll": 3.996059759056739,
+        "stage_s": 180,
+        "steps": 8079,
+        "tokens": 3320647,
+        "train_s": 178.89975171606056
+      },
+      "lr": 0.001,
+      "process_wall_s": 185.44144582748413,
+      "receipt_sha256": "48e2a258e85138a9f2fe5c055b71bd9841820d30800172093b2c0390607f927e",
+      "run": "lif-6259-0.001",
+      "seed": 6259
+    },
+    {
+      "arm": "grouped_smooth",
+      "best_development_nll": 3.833246635913803,
+      "finished_epoch": 1795822160.900278,
+      "history_sha256": "206c3f945ab0775dde3fc5d3a8d01544378c532fd27e2533709653f0caaffa2d",
+      "last_stage": {
+        "dev_s": 1.787512494949624,
+        "nll": 3.833246635913803,
+        "stage_s": 180,
+        "steps": 5966,
+        "tokens": 2452739,
+        "train_s": 178.38585935509764
+      },
+      "lr": 0.0002,
+      "process_wall_s": 186.122576713562,
+      "receipt_sha256": "0f60fda6f82da6551959eea486dec0ba37658565a49711af97c4ede953584efc",
+      "run": "grouped_smooth-6259-0.0002",
+      "seed": 6259
+    },
+    {
+      "arm": "grouped_hcsn",
+      "best_development_nll": 3.772411536648659,
+      "finished_epoch": 1795822346.962416,
+      "history_sha256": "074aee197a6f81f6494623e16ac96df98a993eb1d82e152b96b20ae7b21612de",
+      "last_stage": {
+        "dev_s": 1.6448738330509514,
+        "nll": 3.955865268941377,
+        "stage_s": 180,
+        "steps": 6325,
+        "tokens": 2600476,
+        "train_s": 178.51330072130077
+      },
+      "lr": 0.001,
+      "process_wall_s": 185.9995584487915,
+      "receipt_sha256": "82cecbb8511a24c47b11725641243a74617f143fd4d1299e3762dd54da70cfc7",
+      "run": "grouped_hcsn-6259-0.001",
+      "seed": 6259
+    },
+    {
+      "arm": "hcsn",
+      "best_development_nll": 3.786570198301587,
+      "finished_epoch": 1795822533.4851,
+      "history_sha256": "201a8c60815af592fa8cab326f40bee1470686d81c705292ad56fa0a16f4d65e",
+      "last_stage": {
+        "dev_s": 1.654548063641414,
+        "nll": 3.848996608152699,
+        "stage_s": 180,
+        "steps": 6116,
+        "tokens": 2514832,
+        "train_s": 178.53392140590586
+      },
+      "lr": 0.0005,
+      "process_wall_s": 186.45892572402954,
+      "receipt_sha256": "e4c1d7e642a9060c3f13206bae8394f1e1126d380c1cd321281b5217639dd3aa",
+      "run": "hcsn-6259-0.0005",
+      "seed": 6259
+    },
+    {
+      "arm": "mean",
+      "best_development_nll": 3.8062843468747602,
+      "finished_epoch": 1795822719.1147423,
+      "history_sha256": "f1d344ec1a34a07283dd036ebaba251baca1d7aea310bcec72f735a08e604ade",
+      "last_stage": {
+        "dev_s": 0.8389498393516988,
+        "nll": 4.1221260422883095,
+        "stage_s": 180,
+        "steps": 11691,
+        "tokens": 4803992,
+        "train_s": 179.24509056424722
+      },
+      "lr": 0.001,
+      "process_wall_s": 185.56781888008118,
+      "receipt_sha256": "342d68a16c561cb2e7ead5f2953104bec6f728bd0153bd2e6a50aa792ffa0490",
+      "run": "mean-6259-0.001",
+      "seed": 6259
+    },
+    {
+      "arm": "dense",
+      "best_development_nll": 3.8277685516796494,
+      "finished_epoch": 1795822904.9898357,
+      "history_sha256": "43402b1e765e76f6e63f6dfa9cdc28d96a17d3bccca2129076d658a96a6a4c8a",
+      "last_stage": {
+        "dev_s": 0.803421946009621,
+        "nll": 3.854171975985661,
+        "stage_s": 180,
+        "steps": 12092,
+        "tokens": 4969208,
+        "train_s": 179.26930693583563
+      },
+      "lr": 0.0002,
+      "process_wall_s": 185.81447458267212,
+      "receipt_sha256": "750681dfaa3a7705982acd7c1d67a67c064fad9224677aa9636f259535e2e707",
+      "run": "dense-6259-0.0002",
+      "seed": 6259
+    },
+    {
+      "arm": "hcsn",
+      "best_development_nll": 3.7853093465411294,
+      "finished_epoch": 1795823090.8350546,
+      "history_sha256": "b3139101c0866dc2fa472f71ee0e12cf78e018c6d6f9bc33c44f2b09a9427c99",
+      "last_stage": {
+        "dev_s": 1.563851723447442,
+        "nll": 3.9212739148729643,
+        "stage_s": 180,
+        "steps": 6148,
+        "tokens": 2528082,
+        "train_s": 178.58230111538433
+      },
+      "lr": 0.001,
+      "process_wall_s": 185.78424715995789,
+      "receipt_sha256": "b9cdab772472ad0aadfe273c240e130f11ab22d94261ec261f98221865c895e8",
+      "run": "hcsn-6259-0.001",
+      "seed": 6259
+    },
+    {
+      "arm": "lif",
+      "best_development_nll": 3.7844891953572386,
+      "finished_epoch": 1795823277.2964425,
+      "history_sha256": "b60ac658a1c1fce7229f046625ea5b8f8f2587d5a9839828acd32acf09ced535",
+      "last_stage": {
+        "dev_s": 1.2531533201690763,
+        "nll": 3.8790703924432126,
+        "stage_s": 180,
+        "steps": 7778,
+        "tokens": 3196677,
+        "train_s": 178.8741635037586
+      },
+      "lr": 0.0005,
+      "process_wall_s": 186.40001702308655,
+      "receipt_sha256": "30db85bbd17489fc60d592da2caf8d8709b8649a6258781e0d27e7a3307f35d3",
+      "run": "lif-6259-0.0005",
+      "seed": 6259
+    },
+    {
+      "arm": "dense",
+      "best_development_nll": 3.78931035123574,
+      "finished_epoch": 1795823462.790514,
+      "history_sha256": "7962b8b03c845e9bf75eda19d493733a7930ae6670e0430d003fae25e5aec502",
+      "last_stage": {
+        "dev_s": 0.8427643994800746,
+        "nll": 4.064641731135728,
+        "stage_s": 180,
+        "steps": 11559,
+        "tokens": 4749971,
+        "train_s": 179.22959718643688
+      },
+      "lr": 0.0005,
+      "process_wall_s": 185.4346203804016,
+      "receipt_sha256": "eae6135adccf915a33e49563c26724ff1b8dc8dd0d0c0d96f2049528090aeefd",
+      "run": "dense-6259-0.0005",
+      "seed": 6259
+    },
+    {
+      "arm": "grouped_smooth",
+      "best_development_nll": 3.7736561214812667,
+      "finished_epoch": 1795823648.317617,
+      "history_sha256": "d482d58351eaa038d88f2fb75eb5ad582739f145e3b4866b2aaf3d8380a0506b",
+      "last_stage": {
+        "dev_s": 1.6982792860362679,
+        "nll": 3.8397044775302547,
+        "stage_s": 180,
+        "steps": 5842,
+        "tokens": 2401930,
+        "train_s": 178.4667578341905
+      },
+      "lr": 0.0005,
+      "process_wall_s": 185.46321988105774,
+      "receipt_sha256": "a15c87b5535c3989d571edf04f6c0210da42f45d3f1d37bd46d7f41a6e6d0e37",
+      "run": "grouped_smooth-6259-0.0005",
+      "seed": 6259
+    },
+    {
+      "arm": "hcsn",
+      "best_development_nll": 3.8438205469406643,
+      "finished_epoch": 1795823834.1094718,
+      "history_sha256": "e7f8cebc36de9aa37343bfa60619e8cba23d9acd88bb7621796c7c27528c39c4",
+      "last_stage": {
+        "dev_s": 1.56937727634795,
+        "nll": 3.848627497915934,
+        "stage_s": 180,
+        "steps": 6312,
+        "tokens": 2595047,
+        "train_s": 178.5840573720634
+      },
+      "lr": 0.0002,
+      "process_wall_s": 185.73232650756836,
+      "receipt_sha256": "349cbacb6b99bc1c558af1d3bb7ffa7896aea38443d73949bf08816d6c573bbe",
+      "run": "hcsn-6259-0.0002",
+      "seed": 6259
+    },
+    {
+      "arm": "grouped_hcsn",
+      "best_development_nll": 3.781799285811143,
+      "finished_epoch": 1795824019.872397,
+      "history_sha256": "6fe26acfe320376ea4eea3f280d760427072ac1e8821fc4b458c9185aef11846",
+      "last_stage": {
+        "dev_s": 1.7122627540957183,
+        "nll": 3.8672357692110997,
+        "stage_s": 180,
+        "steps": 6327,
+        "tokens": 2601354,
+        "train_s": 178.4423353895545
+      },
+      "lr": 0.0005,
+      "process_wall_s": 185.70405840873718,
+      "receipt_sha256": "a82a214166b5fe690de14de879257a729a53fcf5249a44828f3e2cc9719b8c36",
+      "run": "grouped_hcsn-6259-0.0005",
+      "seed": 6259
+    }
+  ],
+  "registered_tuning_units": 36,
+  "source_seal_sha256": "ae72963ca015f128360f2553b15847c2be9c0ef415c17963ce0c92139bb0da94",
+  "stage": "Chronologically first twelve successful tuning receipts, both selection and external scoring still pending at this milestone."
+}
