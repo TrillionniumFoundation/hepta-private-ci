@@ -20,6 +20,11 @@ use crate::PairedPreparationRequest;
 use crate::PairedTrainingMaterialManifestV1;
 use crate::notes_literal_adapter::invalid;
 
+#[path = "paired_opaque_record.rs"]
+mod opaque;
+pub use opaque::PairedOpaqueEvidenceV1;
+pub use opaque::PairedOpaqueFinalAnswerObservationV1;
+
 /// Independent full Python record_digest pins, not raw-file hashes or grants.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PairedRecordPinsV1 {
@@ -49,6 +54,7 @@ pub struct PairedRecordIdentityV1 {
     request: PairedPreparationRequest,
     failure: PairedRecordMetadataV1,
     correction: PairedRecordMetadataV1,
+    opaque_correction: Option<PairedOpaqueFinalAnswerObservationV1>,
 }
 
 impl PairedRecordIdentityV1 {
@@ -63,6 +69,11 @@ impl PairedRecordIdentityV1 {
     }
     pub fn correction_record(&self) -> &PairedRecordMetadataV1 {
         &self.correction
+    }
+    /// The record was received from the original owner. Its referenced capture
+    /// was not received and is explicitly unverified; this is no training target.
+    pub fn opaque_correction_observation(&self) -> Option<&PairedOpaqueFinalAnswerObservationV1> {
+        self.opaque_correction.as_ref()
     }
 }
 
@@ -102,12 +113,12 @@ pub fn identify_original_paired_records_v1(
             "paired raw material differs from original purpose or commitment",
         ));
     }
-    let failure = project_record(
+    let (failure, _) = project_record(
         materials.failure(),
         pins.failure_record_digest,
         AttemptRole::Failure,
     )?;
-    let correction = project_record(
+    let (correction, opaque_correction) = project_record(
         materials.correction(),
         pins.correction_record_digest,
         AttemptRole::Correction,
@@ -124,11 +135,15 @@ pub fn identify_original_paired_records_v1(
             "paired records do not describe ordered attempts of the same task",
         ));
     }
+    if let Some(observation) = &opaque_correction {
+        opaque::require_failure_binding(materials.failure(), observation)?;
+    }
     Ok(PairedRecordIdentityV1 {
         materials,
         request: request.clone(),
         failure,
         correction,
+        opaque_correction,
     })
 }
 
@@ -158,6 +173,7 @@ fn digest_field(value: &Value, pointer: &str) -> Result<Digest32, AgentdError> {
     Ok(digest)
 }
 
+#[derive(Clone, Copy)]
 enum AttemptRole {
     Failure,
     Correction,
@@ -167,7 +183,13 @@ fn project_record(
     raw: &[u8],
     expected: Digest32,
     role: AttemptRole,
-) -> Result<PairedRecordMetadataV1, AgentdError> {
+) -> Result<
+    (
+        PairedRecordMetadataV1,
+        Option<PairedOpaqueFinalAnswerObservationV1>,
+    ),
+    AgentdError,
+> {
     let value = parse_integer_json(raw)?;
     let canonical = serde_json::to_vec(&value)?;
     let record_digest = Digest32::of_bytes(&canonical);
@@ -176,8 +198,16 @@ fn project_record(
             "full Python record digest differs from its frozen pin",
         ));
     }
-    if text(&value, "/schema", 128)? != "hepta.cell-experiments.record.v1"
-        || text(&value, "/split", 32)? != "train"
+    let opaque = match (role, text(&value, "/schema", 128)?) {
+        (_, "hepta.cell-experiments.record.v1") => None,
+        (AttemptRole::Correction, opaque::SCHEMA) => Some(opaque::project(&value)?),
+        _ => {
+            return Err(invalid(
+                "paired record schema differs from its attempt role",
+            ));
+        }
+    };
+    if text(&value, "/split", 32)? != "train"
         || text(&value, "/origin_kind", 64)? != "authorized_agent_run"
         || value.pointer("/authorization/training_allowed") != Some(&Value::Bool(true))
         || value.pointer("/authorization/evaluation_allowed") != Some(&Value::Bool(true))
@@ -221,19 +251,25 @@ fn project_record(
     if observed_at > available_at {
         return Err(invalid("record availability precedes observation"));
     }
-    Ok(PairedRecordMetadataV1 {
-        record_digest,
-        record_id: text(&value, "/record_id", 512)?.into(),
-        task_id: text(&value, "/task_id", 512)?.into(),
-        lineage_id: text(&value, "/lineage_id", 512)?.into(),
-        project_id: text(&value, "/project_id", 512)?.into(),
-        declared_source_repository: text(&value, "/source/repository", 4096)?.into(),
-        declared_source_sha256: digest_field(&value, "/source/sha256")?,
-        declared_outcome_receipt_sha256: digest_field(&value, "/verified_outcome/receipt_sha256")?,
-        task_digest: Digest32::of_bytes(&serde_json::to_vec(&value["task"])?),
-        observed_at,
-        available_at,
-    })
+    Ok((
+        PairedRecordMetadataV1 {
+            record_digest,
+            record_id: text(&value, "/record_id", 512)?.into(),
+            task_id: text(&value, "/task_id", 512)?.into(),
+            lineage_id: text(&value, "/lineage_id", 512)?.into(),
+            project_id: text(&value, "/project_id", 512)?.into(),
+            declared_source_repository: text(&value, "/source/repository", 4096)?.into(),
+            declared_source_sha256: digest_field(&value, "/source/sha256")?,
+            declared_outcome_receipt_sha256: digest_field(
+                &value,
+                "/verified_outcome/receipt_sha256",
+            )?,
+            task_digest: Digest32::of_bytes(&serde_json::to_vec(&value["task"])?),
+            observed_at,
+            available_at,
+        },
+        opaque,
+    ))
 }
 
 // Inspect numeric lexemes before Serde: arbitrary_precision represents decimals

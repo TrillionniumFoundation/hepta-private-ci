@@ -131,6 +131,12 @@ impl AgentdTerminalLearningOwnerV1 {
             plan.records,
         )
         .map_err(owner_error)?;
+        // This existing signed domain binds native terminal episodes. A record-
+        // only opaque observation has neither verified source bytes nor native
+        // labels; accepting it here would silently expand that signed meaning.
+        if records.opaque_correction_observation().is_some() {
+            return Err(TerminalLearningErrorV1::WrongScope);
+        }
         let started = Instant::now();
         let (source, dataset) = tokio::time::timeout_at(end, self.paired_context(&plan, now))
             .await

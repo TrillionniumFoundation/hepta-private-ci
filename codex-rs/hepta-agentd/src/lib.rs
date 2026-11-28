@@ -974,6 +974,10 @@ pub use paired_preparation::AgentdPairedPreparation;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::AgentdPairedTraining;
 #[cfg(target_os = "linux")]
+pub use paired_preparation::PairedOpaqueEvidenceV1;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedOpaqueFinalAnswerObservationV1;
+#[cfg(target_os = "linux")]
 pub use paired_preparation::PairedPreparationObservation;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::PairedPreparationRegistration;

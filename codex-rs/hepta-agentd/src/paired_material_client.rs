@@ -14,6 +14,8 @@ use super::material_protocol::PairedTrainingReadResponse;
 
 #[path = "paired_record_identity.rs"]
 mod record_identity;
+pub use record_identity::PairedOpaqueEvidenceV1;
+pub use record_identity::PairedOpaqueFinalAnswerObservationV1;
 pub use record_identity::PairedRecordIdentityV1;
 pub use record_identity::PairedRecordMetadataV1;
 pub use record_identity::PairedRecordPinsV1;

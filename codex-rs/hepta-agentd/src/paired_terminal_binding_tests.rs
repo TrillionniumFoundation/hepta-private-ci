@@ -20,6 +20,8 @@ use pretty_assertions::assert_eq;
 const FIXTURE_NOW: u64 = 50;
 const FAILURE: &[u8] = include_bytes!("../tests/fixtures/paired-record-failure-v1.json");
 const CORRECTION: &[u8] = include_bytes!("../tests/fixtures/paired-record-correction-v1.json");
+const OPAQUE_CORRECTION: &[u8] =
+    include_bytes!("../tests/fixtures/paired-record-opaque-correction-v1.json");
 
 fn inputs(
     fixture: &FixtureOwners,
@@ -86,6 +88,41 @@ fn inputs(
 
 fn end() -> tokio::time::Instant {
     tokio::time::Instant::now() + std::time::Duration::from_secs(/*secs*/ 30)
+}
+
+#[tokio::test]
+async fn record_only_opaque_observation_cannot_enter_the_existing_terminal_signature_domain() {
+    let fixture = FixtureOwners::new().await;
+    let owner = fixture.native_owner();
+    let before = fixture.ledger.lock().unwrap().snapshot().unwrap();
+    let (mut delivery, mut plan) = inputs(&fixture);
+    plan.original.manifest.correction_sha256 = Digest32::of_bytes(OPAQUE_CORRECTION);
+    plan.original.manifest.correction_bytes = OPAQUE_CORRECTION.len() as u64;
+    plan.original.preparation.frozen_materials = plan.original.manifest.commitment().unwrap();
+    plan.records.correction_record_digest =
+        "c53c21ab68bf7799c8e0f05056049b72a9cb5326cfd68bcca9b78ab31c6a98f7"
+            .parse()
+            .unwrap();
+    delivery.request = plan
+        .original
+        .request_for_original(
+            delivery.request.original.turn_id.clone(),
+            delivery.request.original.delivery_id,
+        )
+        .unwrap();
+    delivery.result = Ok(record_fixture_materials(FAILURE, OPAQUE_CORRECTION));
+    let result = owner
+        .prepare_paired_original_v1(delivery, plan, FIXTURE_NOW, end())
+        .await;
+    assert!(matches!(result, Err(TerminalLearningErrorV1::WrongScope)));
+    assert_eq!(fixture.ledger.lock().unwrap().snapshot().unwrap(), before);
+    assert_eq!(
+        owner
+            .readback(fixture.request.clone(), FIXTURE_NOW)
+            .await
+            .unwrap_err(),
+        TerminalLearningErrorV1::CommitUncertain
+    );
 }
 
 fn late_signature(
