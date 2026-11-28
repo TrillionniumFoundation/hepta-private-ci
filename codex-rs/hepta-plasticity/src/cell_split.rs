@@ -6,6 +6,7 @@
 //! release, migration, or rollback.  Those actions remain owned by separate
 //! independently authorized boundaries.
 
+#[path = "cell_split_codec.rs"]
 mod cell_split_codec;
 
 use std::collections::BTreeSet;
