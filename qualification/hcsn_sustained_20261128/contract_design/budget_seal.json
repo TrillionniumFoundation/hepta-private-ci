@@ -1,0 +1,144 @@
+{
+  "stage": "calibrate",
+  "sources": {
+    "BUDGET_PROTOCOL.md": "e9ec691c6b9c4ed3dc17f62ebef0a7efef0d9c57d615c610a6190b78bf8b8fe1",
+    "design.py": "6c0a4014b4e37a995ae99237b09a7ef6db3c05932a5e00319a967264518c67f2",
+    "budget.py": "5100803f4809e2e94ca0e5b79f8e822823e01357d96f7bd7c51149c6bd2cecfe"
+  },
+  "samples_per_contract": 12,
+  "n_contracts": 128,
+  "archive_sha256": "249aa266610e0ffc28e070a3acc8c4d8c660753893e32cd077fe1dd226b636ec",
+  "by_cost": {
+    "fixed_spread": [
+      {
+        "quote_count": 2,
+        "success": 0.5084635416666666,
+        "one_sided_lower95": 0.482421875,
+        "off_design_mean": 0.00428161653695884,
+        "retained_mean": 0.0021403914708543197,
+        "off_design_p95": 0.00796527275201819
+      },
+      {
+        "quote_count": 3,
+        "success": 0.7571614583333334,
+        "one_sided_lower95": 0.734375,
+        "off_design_mean": 0.003067824539360607,
+        "retained_mean": 0.001685136914986573,
+        "off_design_p95": 0.006368322915136081
+      },
+      {
+        "quote_count": 4,
+        "success": 0.94140625,
+        "one_sided_lower95": 0.9309895833333333,
+        "off_design_mean": 0.0021255646573739456,
+        "retained_mean": 0.001267390551683151,
+        "off_design_p95": 0.004192935616871467
+      },
+      {
+        "quote_count": 5,
+        "success": 0.9479166666666666,
+        "one_sided_lower95": 0.9375,
+        "off_design_mean": 0.0019919466627359634,
+        "retained_mean": 0.001196045551507741,
+        "off_design_p95": 0.0040355167028990665
+      },
+      {
+        "quote_count": 6,
+        "success": 0.9733072916666666,
+        "one_sided_lower95": 0.9654947916666666,
+        "off_design_mean": 0.0017369933098401395,
+        "retained_mean": 0.0010589802907817127,
+        "off_design_p95": 0.00343476802558381
+      }
+    ],
+    "preplanned_medium_pilots": [
+      {
+        "quote_count": 2,
+        "success": 0.5084635416666666,
+        "one_sided_lower95": 0.482421875,
+        "off_design_mean": 0.00428161653695884,
+        "retained_mean": 0.0021403914708543197,
+        "off_design_p95": 0.00796527275201819
+      },
+      {
+        "quote_count": 3,
+        "success": 0.7571614583333334,
+        "one_sided_lower95": 0.734375,
+        "off_design_mean": 0.003067824539360607,
+        "retained_mean": 0.001685136914986573,
+        "off_design_p95": 0.006368322915136081
+      },
+      {
+        "quote_count": 4,
+        "success": 0.94140625,
+        "one_sided_lower95": 0.9309895833333333,
+        "off_design_mean": 0.0021255646573739456,
+        "retained_mean": 0.001267390551683151,
+        "off_design_p95": 0.004192935616871467
+      },
+      {
+        "quote_count": 5,
+        "success": 0.9420572916666667,
+        "one_sided_lower95": 0.9322916666666666,
+        "off_design_mean": 0.002022079110204983,
+        "retained_mean": 0.0011981284338546422,
+        "off_design_p95": 0.00415013674798819
+      },
+      {
+        "quote_count": 6,
+        "success": 0.98046875,
+        "one_sided_lower95": 0.9739583333333333,
+        "off_design_mean": 0.001702439218199389,
+        "retained_mean": 0.0010216274938007308,
+        "off_design_p95": 0.0034142806601430205
+      }
+    ],
+    "preplanned_wide_pilots": [
+      {
+        "quote_count": 2,
+        "success": 0.744140625,
+        "one_sided_lower95": 0.724609375,
+        "off_design_mean": 0.003103870250823757,
+        "retained_mean": 0.0018764564823764856,
+        "off_design_p95": 0.006185398342881562
+      },
+      {
+        "quote_count": 3,
+        "success": 0.9108072916666666,
+        "one_sided_lower95": 0.896484375,
+        "off_design_mean": 0.002292362938417662,
+        "retained_mean": 0.0014354116502256805,
+        "off_design_p95": 0.004561456398559588
+      },
+      {
+        "quote_count": 4,
+        "success": 0.9322916666666667,
+        "one_sided_lower95": 0.919921875,
+        "off_design_mean": 0.002086699131898523,
+        "retained_mean": 0.0012926634351087668,
+        "off_design_p95": 0.0042657452874877684
+      },
+      {
+        "quote_count": 5,
+        "success": 0.9733072916666666,
+        "one_sided_lower95": 0.9661458333333333,
+        "off_design_mean": 0.001774943458371811,
+        "retained_mean": 0.001117741220110299,
+        "off_design_p95": 0.0035025549499886743
+      },
+      {
+        "quote_count": 6,
+        "success": 0.9772135416666666,
+        "one_sided_lower95": 0.9707031249999999,
+        "off_design_mean": 0.0016764118112356852,
+        "retained_mean": 0.0010409206094188774,
+        "off_design_p95": 0.0033744442760946214
+      }
+    ]
+  },
+  "selected": {
+    "fixed_spread": 6,
+    "preplanned_medium_pilots": 6,
+    "preplanned_wide_pilots": 5
+  }
+}

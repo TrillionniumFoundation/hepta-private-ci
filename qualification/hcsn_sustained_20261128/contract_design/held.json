@@ -1,0 +1,439 @@
+{
+  "seal": {
+    "probes": [
+      [
+        0.84,
+        0.12
+      ],
+      [
+        1.16,
+        0.12
+      ],
+      [
+        0.72,
+        0.02
+      ],
+      [
+        0.72,
+        0.1
+      ],
+      [
+        0.72,
+        0.24
+      ],
+      [
+        0.72,
+        0.42
+      ],
+      [
+        0.84,
+        0.02
+      ],
+      [
+        0.84,
+        0.1
+      ],
+      [
+        0.84,
+        0.24
+      ],
+      [
+        0.84,
+        0.42
+      ],
+      [
+        1.0,
+        0.02
+      ],
+      [
+        1.0,
+        0.1
+      ],
+      [
+        1.0,
+        0.24
+      ],
+      [
+        1.0,
+        0.42
+      ],
+      [
+        1.16,
+        0.02
+      ],
+      [
+        1.16,
+        0.1
+      ],
+      [
+        1.16,
+        0.24
+      ],
+      [
+        1.16,
+        0.42
+      ],
+      [
+        1.28,
+        0.02
+      ],
+      [
+        1.28,
+        0.1
+      ],
+      [
+        1.28,
+        0.24
+      ],
+      [
+        1.28,
+        0.42
+      ]
+    ],
+    "pooled_ids": [
+      0,
+      1,
+      2,
+      18,
+      2,
+      18
+    ],
+    "dev_contracts": 32,
+    "seed": 84732,
+    "code_sha256": "6c0a4014b4e37a995ae99237b09a7ef6db3c05932a5e00319a967264518c67f2",
+    "protocol_sha256": "2213d0cf344a8a8434c12cbee91d73868acf350e35a1fd0cf3aa852bcb83d182",
+    "pooled_development_cpu_wall_seconds": 0.019828899999993155
+  },
+  "contracts": 128,
+  "replicates": 12,
+  "methods": [
+    "fixed_spread",
+    "pooled_D",
+    "rate_preplanned_D",
+    "adaptive_D"
+  ],
+  "probe_order": [
+    [
+      0.84,
+      0.12
+    ],
+    [
+      1.16,
+      0.12
+    ],
+    [
+      0.72,
+      0.02
+    ],
+    [
+      0.72,
+      0.1
+    ],
+    [
+      0.72,
+      0.24
+    ],
+    [
+      0.72,
+      0.42
+    ],
+    [
+      0.84,
+      0.02
+    ],
+    [
+      0.84,
+      0.1
+    ],
+    [
+      0.84,
+      0.24
+    ],
+    [
+      0.84,
+      0.42
+    ],
+    [
+      1.0,
+      0.02
+    ],
+    [
+      1.0,
+      0.1
+    ],
+    [
+      1.0,
+      0.24
+    ],
+    [
+      1.0,
+      0.42
+    ],
+    [
+      1.16,
+      0.02
+    ],
+    [
+      1.16,
+      0.1
+    ],
+    [
+      1.16,
+      0.24
+    ],
+    [
+      1.16,
+      0.42
+    ],
+    [
+      1.28,
+      0.02
+    ],
+    [
+      1.28,
+      0.1
+    ],
+    [
+      1.28,
+      0.24
+    ],
+    [
+      1.28,
+      0.42
+    ]
+  ],
+  "metric_order": [
+    "off_design_max_dollar_error_over_P",
+    "nominal_max_dollar_error_over_P",
+    "parameter_max_relative"
+  ],
+  "metrics": {
+    "fixed_spread": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": 0.0017336417014906624,
+        "p95": 0.003383236921848725
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 0.0010437707148659807,
+        "p95": 0.0022302598172627645
+      },
+      "parameter_max_relative": {
+        "mean": 0.03570106477290532,
+        "p95": 0.08155381935278072
+      },
+      "full_decision_and_fit_wall_seconds": 0.33479956298106117,
+      "optional_probe_counts": {
+        "2": 1536,
+        "18": 1536,
+        "5": 1536,
+        "21": 1536
+      },
+      "fits_touching_bound": 0
+    },
+    "pooled_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": 0.0016809867121727726,
+        "p95": 0.0033463710650302085
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 0.001007358519550173,
+        "p95": 0.0021740590773958648
+      },
+      "parameter_max_relative": {
+        "mean": 0.034259705077877615,
+        "p95": 0.0831977329918468
+      },
+      "full_decision_and_fit_wall_seconds": 0.315346541992767,
+      "optional_probe_counts": {
+        "2": 3072,
+        "18": 3072
+      },
+      "fits_touching_bound": 0
+    },
+    "rate_preplanned_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": 0.0016758354702556728,
+        "p95": 0.0033131768337884026
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 0.0010068150182388164,
+        "p95": 0.0021580656273012654
+      },
+      "parameter_max_relative": {
+        "mean": 0.03389663793891871,
+        "p95": 0.08334587645742136
+      },
+      "full_decision_and_fit_wall_seconds": 0.3461190959751548,
+      "optional_probe_counts": {
+        "2": 3072,
+        "18": 2700,
+        "20": 372
+      },
+      "fits_touching_bound": 0
+    },
+    "adaptive_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": 0.001678872953984222,
+        "p95": 0.0033787670163127003
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 0.0010073808119118865,
+        "p95": 0.0021580656273012654
+      },
+      "parameter_max_relative": {
+        "mean": 0.03377493833679066,
+        "p95": 0.08255547788688
+      },
+      "full_decision_and_fit_wall_seconds": 1.4036050729991985,
+      "optional_probe_counts": {
+        "2": 3072,
+        "18": 2696,
+        "20": 349,
+        "19": 27
+      },
+      "fits_touching_bound": 0
+    }
+  },
+  "paired": {
+    "pooled_D minus fixed_spread": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": -5.265498931789017e-05,
+        "ci95": [
+          -8.025323899709469e-05,
+          -2.414031868559933e-05
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": -3.6412195315807835e-05,
+        "ci95": [
+          -4.8342453488412795e-05,
+          -2.541477724002159e-05
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.0014413596950277022,
+        "ci95": [
+          -0.0025177454735480715,
+          -0.00037848091797064123
+        ]
+      }
+    },
+    "rate_preplanned_D minus fixed_spread": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": -5.7806231234989674e-05,
+        "ci95": [
+          -8.118254289091184e-05,
+          -3.3431783682486024e-05
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": -3.695569662716437e-05,
+        "ci95": [
+          -4.8861660505841006e-05,
+          -2.6360458482764715e-05
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.0018044268339866127,
+        "ci95": [
+          -0.0028166960362068245,
+          -0.0008123277705518251
+        ]
+      }
+    },
+    "rate_preplanned_D minus pooled_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": -5.151241917099505e-06,
+        "ci95": [
+          -1.5832317802351855e-05,
+          4.694783596086026e-06
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": -5.435013113565309e-07,
+        "ci95": [
+          -3.2451950741189827e-06,
+          2.1363926321682482e-06
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.0003630671389589104,
+        "ci95": [
+          -0.0007066098696646228,
+          -5.4597154915066e-05
+        ]
+      }
+    },
+    "adaptive_D minus fixed_spread": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": -5.476874750644061e-05,
+        "ci95": [
+          -7.985387603516064e-05,
+          -2.7447668112052475e-05
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": -3.638990295409431e-05,
+        "ci95": [
+          -4.7953932259588896e-05,
+          -2.5457692758489486e-05
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.001926126436114656,
+        "ci95": [
+          -0.0029191049756110287,
+          -0.0009721852663694632
+        ]
+      }
+    },
+    "adaptive_D minus pooled_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": -2.1137581885504307e-06,
+        "ci95": [
+          -1.2813765960549233e-05,
+          7.41314250228887e-06
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 2.229236171353342e-08,
+        "ci95": [
+          -2.9786912729179707e-06,
+          2.7518075499353376e-06
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.00048476674108695366,
+        "ci95": [
+          -0.0009452498816952999,
+          -0.0001032867707382396
+        ]
+      }
+    },
+    "adaptive_D minus rate_preplanned_D": {
+      "off_design_max_dollar_error_over_P": {
+        "mean": 3.037483728549074e-06,
+        "ci95": [
+          -7.119327060220478e-06,
+          1.4260155318018078e-05
+        ]
+      },
+      "nominal_max_dollar_error_over_P": {
+        "mean": 5.657936730700647e-07,
+        "ci95": [
+          -2.2139305833922607e-06,
+          3.4879753739449925e-06
+        ]
+      },
+      "parameter_max_relative": {
+        "mean": -0.00012169960212804319,
+        "ci95": [
+          -0.0005632627982837678,
+          0.00029090589495312587
+        ]
+      }
+    }
+  },
+  "archive_sha256": "10c319b30d3604cd7acb5e7325fec3d97cd6a3746d59d98ed502ad3594dbbdaf",
+  "first_passage_reference_sha256": "86e015b08dd7727d45081ca82a8001a9d1a15d8bcc26334632ad50a6c6d07bc1"
+}
