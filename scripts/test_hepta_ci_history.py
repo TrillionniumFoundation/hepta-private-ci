@@ -17,6 +17,9 @@ class ExactHistoryTests(unittest.TestCase):
         self.source = self.root / "source"
         self.source.mkdir()
         self.git(self.source, "init", "-q", "-b", "main")
+        # Keep background Git writes from racing TemporaryDirectory cleanup.
+        self.git(self.source, "config", "maintenance.auto", "false")
+        self.git(self.source, "config", "gc.auto", "0")
         self.git(self.source, "config", "user.name", "History test")
         self.git(self.source, "config", "user.email", "history@example.invalid")
         (self.source / "common").write_text("common\n")
@@ -43,6 +46,8 @@ class ExactHistoryTests(unittest.TestCase):
             "-q",
             "--no-tags",
             "--depth=1",
+            "--config=maintenance.auto=false",
+            "--config=gc.auto=0",
             "--branch",
             "candidate",
             self.source.as_uri(),
@@ -145,7 +150,9 @@ class ExactHistoryTests(unittest.TestCase):
         prepare(self.checkout, [new_base, self.head], full_history=True)
         with self.assertRaises(subprocess.CalledProcessError):
             self.git(self.checkout, "show", f"{self.base}:base")
-        prepare(self.checkout, [new_base, self.head], full_history=True, with_blobs=True)
+        prepare(
+            self.checkout, [new_base, self.head], full_history=True, with_blobs=True
+        )
         self.assertEqual(
             self.git(self.checkout, "show", f"{self.base}:base"),
             "independent base change",
@@ -165,7 +172,9 @@ class ExactHistoryTests(unittest.TestCase):
         self.assertEqual(
             self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "true"
         )
-        prepare(self.checkout, [self.base, self.head], full_history=True, with_blobs=True)
+        prepare(
+            self.checkout, [self.base, self.head], full_history=True, with_blobs=True
+        )
         self.assertEqual(
             self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "false"
         )
