@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod cell_split;
+pub mod coverage_v1;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
