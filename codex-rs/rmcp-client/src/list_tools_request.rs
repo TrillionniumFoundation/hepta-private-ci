@@ -29,11 +29,10 @@ impl Drop for CancelAbandonedRequest {
             // the task's coop budget (as try_send does), then discard the ACK.
             // Full/closed queues remain best effort; no background task is created.
             let _ = tokio::task::unconstrained(self.peer.notify_cancelled(
-                CancelledNotificationParam {
-                    request_id: Some(request_id),
-                    reason: Some("request abandoned by the caller".to_string()),
-                    meta: None,
-                },
+                CancelledNotificationParam::new(
+                    Some(request_id),
+                    Some("request abandoned by the caller".to_string()),
+                ),
             ))
             .now_or_never();
         }
