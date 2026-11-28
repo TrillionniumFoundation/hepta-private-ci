@@ -88,5 +88,9 @@ jobs:
             ${{ runner.temp }}/calendar-build.log
             ${{ runner.temp }}/calendar-differential.log
             ${{ runner.temp }}/calendar-native/**
-            ${{ runner.temp }}/calendar-differential/**
-            !${{ runner.temp }}/calendar-differential/target/**
+            ${{ runner.temp }}/calendar-differential/*.json
+            ${{ runner.temp }}/calendar-differential/*.bin
+            ${{ runner.temp }}/calendar-differential/*.gz
+            ${{ runner.temp }}/calendar-differential/*.stdout
+            ${{ runner.temp }}/calendar-differential/*.stderr
+            ${{ runner.temp }}/calendar-differential/target/debug/codex-hia-datetime-calendar-oracle
