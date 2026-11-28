@@ -8,7 +8,13 @@ import struct
 import threading
 import time
 
-from .pft_statistics import StatisticsLedger, canonical, digest, valid_digest, validate_packet
+from .pft_statistics import (
+    StatisticsLedger,
+    canonical,
+    digest,
+    valid_digest,
+    validate_packet,
+)
 
 
 SCHEMA = "pft-peer-exchange-research-v1"
@@ -55,20 +61,26 @@ def _send(stream, value):
 
 
 def _loopback(address):
-    if (type(address) not in (tuple, list) or len(address) != 2
-            or address[0] != "127.0.0.1" or type(address[1]) is not int
-            or not 0 <= address[1] <= 65535):
+    if (
+        type(address) not in (tuple, list)
+        or len(address) != 2
+        or address[0] != "127.0.0.1"
+        or type(address[1]) is not int
+        or not 0 <= address[1] <= 65535
+    ):
         raise ValueError("research peers require an explicit IPv4 loopback address")
     return tuple(address)
 
 
 def _checked_reply(reply, request):
-    if (type(reply) is not dict
-            or set(reply) != {"schema", "contract_sha256", "request_sha256", "ok", "result"}
-            or reply["schema"] != SCHEMA
-            or reply["contract_sha256"] != request["contract_sha256"]
-            or reply["request_sha256"] != digest(request)
-            or type(reply["ok"]) is not bool):
+    if (
+        type(reply) is not dict
+        or set(reply) != {"schema", "contract_sha256", "request_sha256", "ok", "result"}
+        or reply["schema"] != SCHEMA
+        or reply["contract_sha256"] != request["contract_sha256"]
+        or reply["request_sha256"] != digest(request)
+        or type(reply["ok"]) is not bool
+    ):
         raise DeliveryUnknown("peer response is not bound to this request")
     if not reply["ok"]:
         raise ValueError("peer refused request: " + str(reply["result"])[:240])
@@ -76,8 +88,12 @@ def _checked_reply(reply, request):
 
 
 def rpc(address, contract_sha256, operation, arguments):
-    request = dict(schema=SCHEMA, contract_sha256=contract_sha256,
-                   operation=operation, arguments=arguments)
+    request = dict(
+        schema=SCHEMA,
+        contract_sha256=contract_sha256,
+        operation=operation,
+        arguments=arguments,
+    )
     address = _loopback(address)
     if len(canonical(request)) > MAX_FRAME:
         raise ValueError("peer frame exceeds the fixed bound")
@@ -93,20 +109,33 @@ def rpc(address, contract_sha256, operation, arguments):
 
 def _checked_state(value, contract_hash, receipt=False):
     fields = {"head", "revision", "material"} | ({"status"} if receipt else set())
-    if (type(value) is not dict or set(value) != fields
-            or type(value["material"]) is not dict
-            or set(value["material"]) != {"contract_sha256", "batches"}
-            or value["material"]["contract_sha256"] != contract_hash
-            or digest(value["material"]) != value["head"]
-            or (receipt and value["status"] not in ("accepted", "idempotent"))):
+    if (
+        type(value) is not dict
+        or set(value) != fields
+        or type(value["material"]) is not dict
+        or set(value["material"]) != {"contract_sha256", "batches"}
+        or value["material"]["contract_sha256"] != contract_hash
+        or digest(value["material"]) != value["head"]
+        or (receipt and value["status"] not in ("accepted", "idempotent"))
+    ):
         raise ValueError("invalid remote inventory or receipt")
     rows = value["material"]["batches"]
-    if (type(rows) is not list or len(rows) > MAX_BATCHES
-            or type(value["revision"]) is not int or value["revision"] != len(rows)
-            or any(type(row) is not list or len(row) != 2 or not isinstance(row[0], str)
-                   or re.fullmatch("[A-Za-z0-9_.-]{1,128}", row[0]) is None
-                   or not valid_digest(row[1]) for row in rows)
-            or rows != sorted(rows) or len(dict(rows)) != len(rows)):
+    if (
+        type(rows) is not list
+        or len(rows) > MAX_BATCHES
+        or type(value["revision"]) is not int
+        or value["revision"] != len(rows)
+        or any(
+            type(row) is not list
+            or len(row) != 2
+            or not isinstance(row[0], str)
+            or re.fullmatch("[A-Za-z0-9_.-]{1,128}", row[0]) is None
+            or not valid_digest(row[1])
+            for row in rows
+        )
+        or rows != sorted(rows)
+        or len(dict(rows)) != len(rows)
+    ):
         raise ValueError("invalid remote inventory entries")
     return dict(rows)
 
@@ -122,7 +151,9 @@ def _inventory(ledger):
 
 def _packet(ledger, batch_id):
     with ledger.connect() as db:
-        row = db.execute("SELECT body,digest FROM batches WHERE id=?", (batch_id,)).fetchone()
+        row = db.execute(
+            "SELECT body,digest FROM batches WHERE id=?", (batch_id,)
+        ).fetchone()
     if row is None:
         raise ValueError("local contribution disappeared")
     packet = dict(body=json.loads(row[0]), payload_sha256=row[1])
@@ -135,15 +166,25 @@ class _Handler(socketserver.BaseRequestHandler):
         self.request.settimeout(TIMEOUT)
         try:
             request = _receive(self.request)
-            if (type(request) is not dict
-                    or set(request) != {"schema", "contract_sha256", "operation", "arguments"}
-                    or request["schema"] != SCHEMA
-                    or request["contract_sha256"] != self.server.ledger.contract_hash):
+            if (
+                type(request) is not dict
+                or set(request)
+                != {"schema", "contract_sha256", "operation", "arguments"}
+                or request["schema"] != SCHEMA
+                or request["contract_sha256"] != self.server.ledger.contract_hash
+            ):
                 raise ValueError("incompatible peer request")
-            reply = dict(schema=SCHEMA, contract_sha256=request["contract_sha256"],
-                         request_sha256=digest(request), ok=True, result=None)
+            reply = dict(
+                schema=SCHEMA,
+                contract_sha256=request["contract_sha256"],
+                request_sha256=digest(request),
+                ok=True,
+                result=None,
+            )
             try:
-                reply["result"] = self.server.dispatch(request["operation"], request["arguments"])
+                reply["result"] = self.server.dispatch(
+                    request["operation"], request["arguments"]
+                )
             except (ValueError, TypeError) as error:
                 reply.update(ok=False, result=str(error)[:240])
             _send(self.request, reply)
@@ -167,7 +208,9 @@ class PeerService(socketserver.TCPServer):
     def start(self):
         if self._thread is not None:
             raise ValueError("peer service already started")
-        self._thread = threading.Thread(target=self.serve_forever, kwargs={"poll_interval": 0.02})
+        self._thread = threading.Thread(
+            target=self.serve_forever, kwargs={"poll_interval": 0.02}
+        )
         self._thread.start()
         return self.server_address
 
@@ -182,7 +225,11 @@ class PeerService(socketserver.TCPServer):
             return _inventory(self.ledger)
         if operation == "snapshot" and arguments == {}:
             return self.ledger.snapshot()["candidate"]
-        if operation != "offer" or type(arguments) is not dict or set(arguments) != {"packet", "expected_head"}:
+        if (
+            operation != "offer"
+            or type(arguments) is not dict
+            or set(arguments) != {"packet", "expected_head"}
+        ):
             raise ValueError("unsupported peer operation")
         packet = arguments["packet"]
         validate_packet(packet, self.ledger.contract)
@@ -202,11 +249,19 @@ class PeerService(socketserver.TCPServer):
                 if known[batch_id] != packet_hash:
                     raise ValueError("peers have conflicting contribution identities")
                 continue
-            receipt = rpc(address, self.ledger.contract_hash, "offer",
-                          dict(packet=_packet(self.ledger, batch_id), expected_head=remote["head"]))
+            receipt = rpc(
+                address,
+                self.ledger.contract_hash,
+                "offer",
+                dict(
+                    packet=_packet(self.ledger, batch_id), expected_head=remote["head"]
+                ),
+            )
             observed = _checked_state(receipt, self.ledger.contract_hash, receipt=True)
             if observed.get(batch_id) != packet_hash:
-                raise DeliveryUnknown("response does not retain the offered contribution")
+                raise DeliveryUnknown(
+                    "response does not retain the offered contribution"
+                )
             remote["head"] = receipt["head"]
             sent += 1
         return sent
