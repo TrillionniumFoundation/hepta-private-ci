@@ -6,6 +6,7 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use chrono::DateTime;
+#[cfg(any(not(feature = "hia-native"), test))]
 use chrono::Duration as ChronoDuration;
 use chrono::Utc;
 use codex_config::AbsolutePathBuf;
@@ -19,6 +20,10 @@ use std::path::Path;
 use std::time::Duration;
 use thiserror::Error;
 use tokio::fs;
+
+#[cfg(feature = "hia-native")]
+#[path = "../../../hia/datetime_deadline.rs"]
+mod hia_datetime_deadline;
 
 const CLOUD_CONFIG_BUNDLE_CACHE_VERSION: u32 = 1;
 pub(super) const CLOUD_CONFIG_BUNDLE_CACHE_FILENAME: &str = "cloud-config-bundle-cache.json";
@@ -132,6 +137,17 @@ impl CloudConfigBundleCache {
         bundle: CloudConfigBundle,
     ) -> Result<(), CloudConfigBundleCacheError> {
         let now = Utc::now();
+        #[cfg(feature = "hia-native")]
+        let expires_at = {
+            let (seconds, nanos) = hia_datetime_deadline::add_std(
+                now.timestamp(),
+                now.timestamp_subsec_nanos(),
+                CLOUD_CONFIG_BUNDLE_CACHE_TTL,
+            )
+            .ok_or(CloudConfigBundleCacheError)?;
+            DateTime::from_timestamp(seconds, nanos).ok_or(CloudConfigBundleCacheError)?
+        };
+        #[cfg(not(feature = "hia-native"))]
         let expires_at = now
             .checked_add_signed(
                 ChronoDuration::from_std(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
