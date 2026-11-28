@@ -3,6 +3,7 @@ use std::ffi::OsString;
 use std::sync::Arc;
 use std::time::Duration;
 
+use anyhow::Context;
 use codex_config::types::AuthKeyringBackendKind;
 use codex_config::types::OAuthCredentialsStoreMode;
 use codex_exec_server::Environment;
@@ -117,6 +118,24 @@ async fn http_client(server: &MockServer, mode: McpProtocolMode) -> anyhow::Resu
     .await
 }
 
+// Serialize the fixed large fields before the request deadline starts. The
+// response callback appends only the actual request ID, preserving correlation.
+fn prepare_response_prefix(mut response: Value) -> anyhow::Result<String> {
+    response
+        .as_object_mut()
+        .context("JSON-RPC fixture response must be an object")?
+        .remove("id");
+    let body = serde_json::to_string(&response)?;
+    Ok(body
+        .strip_suffix('}')
+        .context("serialized JSON-RPC fixture must end with an object delimiter")?
+        .to_owned())
+}
+
+fn response_with_request_id(prefix: &str, request: &Value) -> String {
+    format!("{prefix},\"id\":{}}}", request["id"])
+}
+
 #[tokio::test]
 async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Result<()> {
     for oversized in [
@@ -127,37 +146,49 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
     ] {
         let server = MockServer::start().await;
         let padding = Arc::new("x".repeat(MAX_MCP_MESSAGE_BYTES + 1));
+        let template_request = json!({"id": null});
+        let discovery_prefix = prepare_response_prefix(discovery_response(
+            &template_request,
+            (oversized == OversizedHttpResponse::DiscoveryJson).then_some(padding.as_str()),
+        ))?;
+        let tools_prefix =
+            prepare_response_prefix(if oversized == OversizedHttpResponse::ToolError {
+                json!({
+                    "jsonrpc": "2.0",
+                    "id": null,
+                    "error": {"code": -32603, "message": padding.as_str()},
+                })
+            } else {
+                tools_response(&template_request, &padding)
+            })?;
         Mock::given(method("POST"))
             .and(path("/mcp"))
             .respond_with(move |request: &Request| {
                 let body: Value = request.body_json().expect("JSON-RPC request");
                 match body["method"].as_str() {
-                    Some("server/discover") => {
-                        ResponseTemplate::new(200).set_body_json(discovery_response(
-                            &body,
-                            (oversized == OversizedHttpResponse::DiscoveryJson)
-                                .then_some(padding.as_str()),
-                        ))
-                    }
+                    Some("server/discover") => ResponseTemplate::new(200).set_body_raw(
+                        response_with_request_id(&discovery_prefix, &body),
+                        "application/json",
+                    ),
                     Some("tools/list") if oversized == OversizedHttpResponse::ToolError => {
-                        ResponseTemplate::new(500).set_body_json(json!({
-                            "jsonrpc": "2.0",
-                            "id": body["id"],
-                            "error": {"code": -32603, "message": padding.as_str()},
-                        }))
+                        ResponseTemplate::new(500).set_body_raw(
+                            response_with_request_id(&tools_prefix, &body),
+                            "application/json",
+                        )
                     }
                     Some("tools/list") if oversized == OversizedHttpResponse::ToolSseEvent => {
                         ResponseTemplate::new(200).set_body_raw(
                             format!(
                                 "event: message\ndata: {}\n\n",
-                                tools_response(&body, &padding),
+                                response_with_request_id(&tools_prefix, &body),
                             ),
                             "text/event-stream; charset=utf-8",
                         )
                     }
-                    Some("tools/list") => {
-                        ResponseTemplate::new(200).set_body_json(tools_response(&body, &padding))
-                    }
+                    Some("tools/list") => ResponseTemplate::new(200).set_body_raw(
+                        response_with_request_id(&tools_prefix, &body),
+                        "application/json",
+                    ),
                     other => panic!("unexpected MCP method {other:?}"),
                 }
             })
