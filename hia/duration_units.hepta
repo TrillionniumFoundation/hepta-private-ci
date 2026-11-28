@@ -1,0 +1,346 @@
+hia-asm.v1 hepta.hia.program.v9 codex_duration_units
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_size:usize = buffer.len(output)
+  required:usize = const() {"value":168}
+  enough:bool = compare.ge(output_size,required)
+  branch enough frame(source,output,workspace) short()
+block frame(frame_source:readbuf,frame_output:mutbuf,frame_workspace:mutbuf)
+  source_size:usize = buffer.len(frame_source)
+  workspace_size:usize = buffer.len(frame_workspace)
+  frame_required:usize = const() {"value":64}
+  empty:usize = const() {"value":0}
+  source_ok:bool = compare.eq(source_size,frame_required)
+  workspace_ok:bool = compare.eq(workspace_size,empty)
+  sizes_ok:bool = bool.and(source_ok,workspace_ok)
+  branch sizes_ok decode(frame_source,frame_output) invalid_frame()
+block decode(decode_source:readbuf,decode_output:mutbuf)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  version:u64 = buffer.load.u64.le(decode_source,p0)
+  operation:u64 = buffer.load.u64.le(decode_source,p8)
+  argument:u64 = buffer.load.u64.le(decode_source,p16)
+  nanos:u64 = buffer.load.u64.le(decode_source,p24)
+  reserved_a:u64 = buffer.load.u64.le(decode_source,p32)
+  reserved_b:u64 = buffer.load.u64.le(decode_source,p40)
+  reserved_c:u64 = buffer.load.u64.le(decode_source,p48)
+  reserved_d:u64 = buffer.load.u64.le(decode_source,p56)
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  nine:u64 = const() {"value":9}
+  ten:u64 = const() {"value":10}
+  version_ok:bool = compare.eq(version,one)
+  operation_ok:bool = compare.le(operation,ten)
+  reserved_ab:u64 = bit.or(reserved_a,reserved_b)
+  reserved_cd:u64 = bit.or(reserved_c,reserved_d)
+  reserved:u64 = bit.or(reserved_ab,reserved_cd)
+  reserved_ok:bool = compare.eq(reserved,zero)
+  is_new:bool = compare.eq(operation,zero)
+  is_std:bool = compare.eq(operation,nine)
+  uses_fraction:bool = bool.or(is_new,is_std)
+  fraction_empty:bool = compare.eq(nanos,zero)
+  fraction_ok:bool = bool.or(uses_fraction,fraction_empty)
+  not_zero_operation:bool = compare.ne(operation,ten)
+  argument_empty:bool = compare.eq(argument,zero)
+  zero_ok:bool = bool.or(not_zero_operation,argument_empty)
+  header_ok:bool = bool.and(version_ok,operation_ok)
+  metadata_ok:bool = bool.and(header_ok,reserved_ok)
+  arguments_ok:bool = bool.and(fraction_ok,zero_ok)
+  frame_ok:bool = bool.and(metadata_ok,arguments_ok)
+  branch frame_ok construct(decode_output,operation,argument,nanos) invalid_frame()
+block construct(construct_output:mutbuf,construct_operation:u64,construct_argument:u64,construct_nanos:u64)
+  valid:u64,seconds:i64,fraction:u64 = call(construct_operation,construct_argument,construct_nanos) {"function":"construct_duration"}
+  invalid_word:u64 = const() {"value":0}
+  present:bool = compare.ne(valid,invalid_word)
+  branch present publish(construct_output,seconds,fraction) clear_start(construct_output)
+block publish(publish_output:mutbuf,publish_seconds:i64,publish_nanos:u64)
+  result:u32 = call(publish_output,publish_seconds,publish_nanos) {"function":"publish_duration"}
+  ret(result)
+block clear_start(clear_start_output:mutbuf)
+  first:usize = const() {"value":0}
+  jump clear(clear_start_output,first)
+block clear(clear_output:mutbuf,index:usize)
+  end:usize = const() {"value":168}
+  more:bool = compare.lt(index,end)
+  branch more clear_word(clear_output,index) invalid_value_header(clear_output)
+block clear_word(word_output:mutbuf,word_index:usize)
+  clear_zero:u64 = const() {"value":0}
+  eight:usize = const() {"value":8}
+  _ = buffer.store.u64.le(word_output,word_index,clear_zero)
+  next:usize = int.add.checked(word_index,eight)
+  jump clear(word_output,next)
+block invalid_value_header(header_output:mutbuf)
+  start:usize = const() {"value":0}
+  header_version:u64 = const() {"value":1}
+  _ = buffer.store.u64.le(header_output,start,header_version)
+  success:u32 = const() {"value":0}
+  ret(success)
+block short()
+  short_code:u32 = const() {"value":4294967294}
+  ret(short_code)
+block invalid_frame()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+end
+fn construct_duration(operation:u64,argument:u64,nanos:u64) -> (u64,i64,u64) effects(trap) entry(entry)
+block entry(operation:u64,argument:u64,nanos:u64)
+  zero:u64 = const() {"value":0}
+  is_new:bool = compare.eq(operation,zero)
+  signed_argument:i64 = int.cast(argument) {"mode":"wrap"}
+  branch is_new validate(signed_argument,nanos) select_kind(operation,argument,signed_argument,nanos)
+block select_kind(kind_operation:u64,kind_argument:u64,kind_signed:i64,kind_nanos:u64)
+  nine:u64 = const() {"value":9}
+  ten:u64 = const() {"value":10}
+  is_zero:bool = compare.eq(kind_operation,ten)
+  is_std:bool = compare.eq(kind_operation,nine)
+  special:bool = bool.or(is_zero,is_std)
+  branch special unsigned_input(kind_argument,kind_nanos) scaled(kind_operation,kind_signed)
+block unsigned_input(unsigned_seconds:u64,unsigned_nanos:u64)
+  maximum:u64 = const() {"value":9223372036854775}
+  billion:u64 = const() {"value":1000000000}
+  seconds_ok:bool = compare.le(unsigned_seconds,maximum)
+  nanos_ok:bool = compare.lt(unsigned_nanos,billion)
+  unsigned_ok:bool = bool.and(seconds_ok,nanos_ok)
+  signed_seconds:i64 = int.cast(unsigned_seconds) {"mode":"wrap"}
+  branch unsigned_ok validate(signed_seconds,unsigned_nanos) invalid()
+block scaled(scaled_operation:u64,scaled_argument:i64)
+  six:u64 = const() {"value":6}
+  subsecond:bool = compare.ge(scaled_operation,six)
+  branch subsecond divide(scaled_operation,scaled_argument) multiply(scaled_operation,scaled_argument)
+block multiply(multiply_operation:u64,multiply_argument:i64)
+  op_week:u64 = const() {"value":1}
+  op_day:u64 = const() {"value":2}
+  op_hour:u64 = const() {"value":3}
+  op_minute:u64 = const() {"value":4}
+  is_week:bool = compare.eq(multiply_operation,op_week)
+  is_day:bool = compare.eq(multiply_operation,op_day)
+  is_hour:bool = compare.eq(multiply_operation,op_hour)
+  is_minute:bool = compare.eq(multiply_operation,op_minute)
+  week:i64 = const() {"value":604800}
+  day:i64 = const() {"value":86400}
+  hour:i64 = const() {"value":3600}
+  minute:i64 = const() {"value":60}
+  second:i64 = const() {"value":1}
+  minute_factor:i64 = select(is_minute,minute,second)
+  hour_factor:i64 = select(is_hour,hour,minute_factor)
+  day_factor:i64 = select(is_day,day,hour_factor)
+  factor:i64 = select(is_week,week,day_factor)
+  maximum_whole:i64 = const() {"value":9223372036854775}
+  signed_zero:i64 = const() {"value":0}
+  upper:i64 = int.div.checked(maximum_whole,factor)
+  lower:i64 = int.sub.checked(signed_zero,upper)
+  below:bool = compare.le(multiply_argument,upper)
+  above:bool = compare.ge(multiply_argument,lower)
+  in_range:bool = bool.and(below,above)
+  branch in_range product(multiply_argument,factor) invalid()
+block product(product_argument:i64,product_factor:i64)
+  product_seconds:i64 = int.mul.checked(product_argument,product_factor)
+  product_nanos:u64 = const() {"value":0}
+  product_valid:u64 = const() {"value":1}
+  ret(product_valid,product_seconds,product_nanos)
+block divide(divide_operation:u64,divide_argument:i64)
+  millis:u64 = const() {"value":6}
+  micros:u64 = const() {"value":7}
+  minimum:i64 = const() {"value":-9223372036854775808}
+  is_millis:bool = compare.eq(divide_operation,millis)
+  is_micros:bool = compare.eq(divide_operation,micros)
+  minimum_argument:bool = compare.eq(divide_argument,minimum)
+  millis_invalid:bool = bool.and(is_millis,minimum_argument)
+  thousand:i64 = const() {"value":1000}
+  million:i64 = const() {"value":1000000}
+  billion_signed:i64 = const() {"value":1000000000}
+  small_divisor:i64 = select(is_micros,million,billion_signed)
+  divisor:i64 = select(is_millis,thousand,small_divisor)
+  multiplier:i64 = int.div.checked(billion_signed,divisor)
+  branch millis_invalid invalid() quotient(divide_argument,divisor,multiplier)
+block quotient(quotient_argument:i64,quotient_divisor:i64,quotient_multiplier:i64)
+  quotient_zero:i64 = const() {"value":0}
+  quotient_one:i64 = const() {"value":1}
+  truncated:i64 = int.div.checked(quotient_argument,quotient_divisor)
+  remainder:i64 = int.rem.checked(quotient_argument,quotient_divisor)
+  negative:bool = compare.lt(remainder,quotient_zero)
+  quotient_adjustment:i64 = select(negative,quotient_one,quotient_zero)
+  remainder_adjustment:i64 = select(negative,quotient_divisor,quotient_zero)
+  quotient_seconds:i64 = int.sub.checked(truncated,quotient_adjustment)
+  positive_remainder:i64 = int.add.checked(remainder,remainder_adjustment)
+  nanoseconds:i64 = int.mul.checked(positive_remainder,quotient_multiplier)
+  quotient_nanos:u64 = int.cast(nanoseconds) {"mode":"checked"}
+  quotient_valid:u64 = const() {"value":1}
+  ret(quotient_valid,quotient_seconds,quotient_nanos)
+block validate(validate_seconds:i64,validate_nanos:u64)
+  valid:bool = call(validate_seconds,validate_nanos) {"function":"delta_valid"}
+  branch valid present(validate_seconds,validate_nanos) invalid()
+block present(present_seconds:i64,present_nanos:u64)
+  present_word:u64 = const() {"value":1}
+  ret(present_word,present_seconds,present_nanos)
+block invalid()
+  invalid_word:u64 = const() {"value":0}
+  invalid_seconds:i64 = const() {"value":0}
+  ret(invalid_word,invalid_seconds,invalid_word)
+end
+fn checked_scaled(whole:i64,fraction:i64,factor:i64,limit:i64) -> (u64,i64) effects(trap) entry(entry)
+block entry(whole:i64,fraction:i64,factor:i64,limit:i64)
+  zero:i64 = const() {"value":0}
+  lower:i64 = int.sub.checked(zero,limit)
+  below:bool = compare.le(whole,limit)
+  above:bool = compare.ge(whole,lower)
+  in_range:bool = bool.and(below,above)
+  branch in_range multiply(whole,fraction,factor) invalid()
+block multiply(multiply_whole:i64,multiply_fraction:i64,multiply_factor:i64)
+  product:i64 = int.mul.checked(multiply_whole,multiply_factor)
+  multiply_zero:i64 = const() {"value":0}
+  positive:bool = compare.ge(multiply_fraction,multiply_zero)
+  branch positive positive_add(product,multiply_fraction) negative_add(product,multiply_fraction)
+block positive_add(positive_product:i64,positive_fraction:i64)
+  maximum:i64 = const() {"value":9223372036854775807}
+  upper:i64 = int.sub.checked(maximum,positive_fraction)
+  positive_ok:bool = compare.le(positive_product,upper)
+  branch positive_ok add(positive_product,positive_fraction) invalid()
+block negative_add(negative_product:i64,negative_fraction:i64)
+  minimum:i64 = const() {"value":-9223372036854775808}
+  negative_lower:i64 = int.sub.checked(minimum,negative_fraction)
+  negative_ok:bool = compare.ge(negative_product,negative_lower)
+  branch negative_ok add(negative_product,negative_fraction) invalid()
+block add(add_product:i64,add_fraction:i64)
+  result:i64 = int.add.checked(add_product,add_fraction)
+  valid:u64 = const() {"value":1}
+  ret(valid,result)
+block invalid()
+  invalid_word:u64 = const() {"value":0}
+  invalid_result:i64 = const() {"value":0}
+  ret(invalid_word,invalid_result)
+end
+fn publish_duration(output:mutbuf,seconds:i64,nanos:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,seconds:i64,nanos:u64)
+  whole:i64,fraction:i64 = call(seconds,nanos) {"function":"delta_parts"}
+  seven:i64 = const() {"value":7}
+  day:i64 = const() {"value":86400}
+  hour:i64 = const() {"value":3600}
+  minute:i64 = const() {"value":60}
+  thousand:i64 = const() {"value":1000}
+  million:i64 = const() {"value":1000000}
+  billion:i64 = const() {"value":1000000000}
+  micro_limit:i64 = const() {"value":9223372036854}
+  nano_limit:i64 = const() {"value":9223372036}
+  num_days:i64 = int.div.checked(whole,day)
+  num_weeks:i64 = int.div.checked(num_days,seven)
+  num_hours:i64 = int.div.checked(whole,hour)
+  num_minutes:i64 = int.div.checked(whole,minute)
+  subsec_millis:i64 = int.div.checked(fraction,million)
+  subsec_micros:i64 = int.div.checked(fraction,thousand)
+  millis_seconds:i64 = int.mul.checked(whole,thousand)
+  num_millis:i64 = int.add.checked(millis_seconds,subsec_millis)
+  micros_valid:u64,num_micros:i64 = call(whole,subsec_micros,million,micro_limit) {"function":"checked_scaled"}
+  nanos_valid:u64,num_nanos:i64 = call(whole,fraction,billion,nano_limit) {"function":"checked_scaled"}
+  seconds_bits:u64 = int.cast(seconds) {"mode":"wrap"}
+  weeks_bits:u64 = int.cast(num_weeks) {"mode":"wrap"}
+  days_bits:u64 = int.cast(num_days) {"mode":"wrap"}
+  hours_bits:u64 = int.cast(num_hours) {"mode":"wrap"}
+  minutes_bits:u64 = int.cast(num_minutes) {"mode":"wrap"}
+  whole_bits:u64 = int.cast(whole) {"mode":"wrap"}
+  millis_bits:u64 = int.cast(num_millis) {"mode":"wrap"}
+  micros_bits:u64 = int.cast(num_micros) {"mode":"wrap"}
+  nano_bits:u64 = int.cast(num_nanos) {"mode":"wrap"}
+  sub_millis_bits:u64 = int.cast(subsec_millis) {"mode":"wrap"}
+  sub_micros_bits:u64 = int.cast(subsec_micros) {"mode":"wrap"}
+  fraction_bits:u64 = int.cast(fraction) {"mode":"wrap"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  signed_zero:i64 = const() {"value":0}
+  nonnegative:bool = compare.ge(seconds,signed_zero)
+  std_valid:u64 = select(nonnegative,one,zero)
+  std_seconds:u64 = select(nonnegative,seconds_bits,zero)
+  std_nanos:u64 = select(nonnegative,nanos,zero)
+  seconds_zero:bool = compare.eq(seconds,signed_zero)
+  nanos_zero:bool = compare.eq(nanos,zero)
+  is_zero:bool = bool.and(seconds_zero,nanos_zero)
+  zero_duration:u64 = select(is_zero,one,zero)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  p64:usize = const() {"value":64}
+  p72:usize = const() {"value":72}
+  p80:usize = const() {"value":80}
+  p88:usize = const() {"value":88}
+  p96:usize = const() {"value":96}
+  p104:usize = const() {"value":104}
+  p112:usize = const() {"value":112}
+  p120:usize = const() {"value":120}
+  p128:usize = const() {"value":128}
+  p136:usize = const() {"value":136}
+  p144:usize = const() {"value":144}
+  p152:usize = const() {"value":152}
+  p160:usize = const() {"value":160}
+  _ = buffer.store.u64.le(output,p0,one)
+  _ = buffer.store.u64.le(output,p8,one)
+  _ = buffer.store.u64.le(output,p16,seconds_bits)
+  _ = buffer.store.u64.le(output,p24,nanos)
+  _ = buffer.store.u64.le(output,p32,weeks_bits)
+  _ = buffer.store.u64.le(output,p40,days_bits)
+  _ = buffer.store.u64.le(output,p48,hours_bits)
+  _ = buffer.store.u64.le(output,p56,minutes_bits)
+  _ = buffer.store.u64.le(output,p64,whole_bits)
+  _ = buffer.store.u64.le(output,p72,millis_bits)
+  _ = buffer.store.u64.le(output,p80,micros_valid)
+  _ = buffer.store.u64.le(output,p88,micros_bits)
+  _ = buffer.store.u64.le(output,p96,nanos_valid)
+  _ = buffer.store.u64.le(output,p104,nano_bits)
+  _ = buffer.store.u64.le(output,p112,sub_millis_bits)
+  _ = buffer.store.u64.le(output,p120,sub_micros_bits)
+  _ = buffer.store.u64.le(output,p128,fraction_bits)
+  _ = buffer.store.u64.le(output,p136,std_valid)
+  _ = buffer.store.u64.le(output,p144,std_seconds)
+  _ = buffer.store.u64.le(output,p152,std_nanos)
+  _ = buffer.store.u64.le(output,p160,zero_duration)
+  success:u32 = const() {"value":0}
+  ret(success)
+end
+fn delta_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-9223372036854776}
+  maximum:i64 = const() {"value":9223372036854775}
+  minimum_fraction:u64 = const() {"value":193000000}
+  maximum_fraction:u64 = const() {"value":807000000}
+  billion:u64 = const() {"value":1000000000}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  seconds_ok:bool = bool.and(after_minimum,before_maximum)
+  fraction_ok:bool = compare.lt(nanos,billion)
+  not_minimum:bool = compare.ne(seconds,minimum)
+  not_maximum:bool = compare.ne(seconds,maximum)
+  after_fraction_minimum:bool = compare.ge(nanos,minimum_fraction)
+  before_fraction_maximum:bool = compare.le(nanos,maximum_fraction)
+  lower_ok:bool = bool.or(not_minimum,after_fraction_minimum)
+  upper_ok:bool = bool.or(not_maximum,before_fraction_maximum)
+  basic_ok:bool = bool.and(seconds_ok,fraction_ok)
+  endpoint_ok:bool = bool.and(lower_ok,upper_ok)
+  valid:bool = bool.and(basic_ok,endpoint_ok)
+  ret(valid)
+end
+fn delta_parts(seconds:i64,nanos:u64) -> (i64,i64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  zero:i64 = const() {"value":0}
+  zero_word:u64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  billion:i64 = const() {"value":1000000000}
+  negative:bool = compare.lt(seconds,zero)
+  fractional:bool = compare.gt(nanos,zero_word)
+  adjust:bool = bool.and(negative,fractional)
+  seconds_adjustment:i64 = select(adjust,one,zero)
+  fraction_adjustment:i64 = select(adjust,billion,zero)
+  fraction:i64 = int.cast(nanos) {"mode":"checked"}
+  whole:i64 = int.add.checked(seconds,seconds_adjustment)
+  remainder:i64 = int.sub.checked(fraction,fraction_adjustment)
+  ret(whole,remainder)
+end
