@@ -115,7 +115,7 @@ impl HostAuthorityService {
         )
     }
 
-    fn with_original_paired_profile<T>(
+    pub(super) fn with_original_paired_profile<T>(
         &self,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,

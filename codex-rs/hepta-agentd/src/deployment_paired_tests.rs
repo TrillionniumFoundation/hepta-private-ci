@@ -9,6 +9,8 @@ use pretty_assertions::assert_eq;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+#[path = "deployment_paired_enrollment_tests.rs"]
+mod enrollment;
 #[path = "deployment_paired_live_tests.rs"]
 mod live;
 #[path = "deployment_paired_material_tests.rs"]
@@ -30,8 +32,18 @@ struct Fixture {
     registration: HostAuthorityPairedRegistration,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum PairRecords {
+    Existing,
+    PendingEnrollment,
+}
+
 impl Fixture {
     fn new() -> Self {
+        Self::with_records(PairRecords::Existing)
+    }
+
+    fn with_records(records: PairRecords) -> Self {
         let directory = tempfile::tempdir().unwrap();
         let clock = Arc::new(Clock(AtomicU64::new(10_000)));
         let registry = Arc::new(
@@ -104,7 +116,7 @@ impl Fixture {
             effect_lifetime_ms: 5_000,
         };
         let (enrollment, effect, policy) = registration.bindings(&writer).unwrap();
-        for record in [
+        for (index, record) in [
             writer.authority_lease.clone(),
             AuthorityLease {
                 lease_id: "synthetic-paired-issuer".into(),
@@ -126,7 +138,13 @@ impl Fixture {
                 expires_at_unix_ms: 15_000,
                 ..writer.authority_lease.clone()
             },
-        ] {
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            if records == PairRecords::PendingEnrollment && index >= 2 {
+                continue;
+            }
             registry.put_lease(record, /*expected_revision*/ 0).unwrap();
         }
         let mut issuer = DeploymentFinalUseIssuer::create(
