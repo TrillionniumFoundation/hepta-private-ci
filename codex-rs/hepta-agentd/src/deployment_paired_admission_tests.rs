@@ -1,6 +1,8 @@
 //! Synthetic scope and content, real retained signatures, Registry CAS and
 //! pidfd-bound test sockets. Only the production-entry refusal tests Root UID;
 //! positive component controls do not claim a physical human or Core turn.
+use pretty_assertions::assert_eq;
+
 use super::*;
 use crate::RootPairedTrainingPlanV1;
 use crate::deployment_issuer::OriginalPairedTrainingAdmission;
