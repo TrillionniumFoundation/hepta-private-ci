@@ -176,6 +176,11 @@ jobs:
         shell: pwsh
         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
 
+      - name: Test the native Rust process wrapper with locked executable outputs
+        if: matrix.shard == 1
+        shell: pwsh
+        run: python .github/scripts/rust_process_wrapper_smoke.py --bazel-msvc
+
       - name: bazel test shard
         env:
           BAZEL_TEST_SHARD: ${{ matrix.shard }}

@@ -173,8 +173,8 @@ rules_rust.patch(
         # Prefer Rust's direct linker for Windows/MSVC and keep hermetic
         # LLVM's non-.lib runtime artifacts compatible with it.
         "//patches:rules_rust_windows_msvc_direct_link_args.patch",
-        # Skip transient native-Windows linker outputs while consolidating
-        # dependency search paths.
+        # Skip native-Windows executable outputs and require readable libraries
+        # before consolidating dependency paths or starting a child process.
         "//patches:rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
         # Spill the wrapper's build-script flags separately from rustc flags
         # so native Windows actions stay below CreateProcessW's argv limit.
@@ -356,6 +356,17 @@ crate.from_cargo(
 
 bazel_dep(name = "zstd", version = "1.5.7")
 
+crate.annotation(
+    # Bazel does not consume Cargo profiles. Optimize the StoreCipher owner of
+    # PBKDF2's generic loop without changing its round count or startup budget.
+    crate = "matrix-sdk-store-encryption",
+    # Retain development assertions and overflow checks at this optimization level.
+    rustc_flags = [
+        "-Copt-level=3",
+        "-Cdebug-assertions=on",
+        "-Coverflow-checks=on",
+    ],
+)
 crate.annotation(
     # rules_rust appends CFLAGS without replacing the toolchain flags.
     build_script_env = {

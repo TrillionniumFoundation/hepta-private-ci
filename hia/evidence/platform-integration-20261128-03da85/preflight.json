@@ -1,0 +1,239 @@
+{
+  "schema": "hia.cross-platform-integration-preflight.v1",
+  "parent": "f109fc923ffdc5a54a37fe071aef97dc5cfff2d6",
+  "base": "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2",
+  "changed_files": {
+    "MODULE.bazel": {
+      "bytes": 24047,
+      "sha256": "b089cfd0b6709ef7d9727d2bdd683f6972ae6764a9809b9f6d7e1a478fe80c6e"
+    },
+    ".github/workflows/bazel.yml": {
+      "bytes": 20780,
+      "sha256": "bbec711de27f6721d2f9d67c934142da7661efaefe1412eb154ac9b387be6655"
+    },
+    "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch": {
+      "bytes": 2118,
+      "sha256": "8a323bdd61c17d790b559d20c3580bc16c121ba666dc63c7e48f7eaa610a1eca"
+    },
+    ".github/scripts/rust_process_wrapper_smoke.py": {
+      "bytes": 10280,
+      "sha256": "729e79e934dce8085ddafad7fcf10bb493329799c645d2edd50ff45f31b78760"
+    }
+  },
+  "unchanged_source": {
+    "codex-rs/Cargo.toml": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "codex-rs/Cargo.lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007",
+    "MODULE.bazel.lock": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+  },
+  "upstream_sha256": "8407dac24553b1d82d5eae8d46e082aa53509e841d16aae02db2590f908fb246",
+  "patched_upstream_sha256": "c2f56f5067f0e0b8b91562f22de6c9e4110524f546c2c97b4a4d9c3718a5922f",
+  "wrapper_test_names": [
+    "test_locked_executable_in_response_path_preserves_all_libraries",
+    "test_direct_dependency_paths_preserve_first_directory_precedence",
+    "test_executable_products_are_excluded_without_requiring_a_lock",
+    "test_inaccessible_library_still_rejects_before_child_execution",
+    "test_child_failure_keeps_its_status_and_cleans_dependency_directory",
+    "test_arguments_without_dependency_paths_stay_unchanged"
+  ],
+  "records": [
+    {
+      "label": "init",
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "seconds": 0.002996155060827732,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "label": "remote",
+      "argv": [
+        "/usr/bin/git",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+      ],
+      "returncode": 0,
+      "seconds": 0.0023090392351150513,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "label": "fetch",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "http.lowSpeedLimit=1024",
+        "-c",
+        "http.lowSpeedTime=60",
+        "fetch",
+        "--depth=1",
+        "origin",
+        "f109fc923ffdc5a54a37fe071aef97dc5cfff2d6"
+      ],
+      "returncode": 0,
+      "seconds": 13.49633646570146,
+      "sha256": "3788cc273a88a056f5736f74538865c4414f709d222e8723a9a6843f0151823a",
+      "bytes": 140
+    },
+    {
+      "label": "checkout",
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "FETCH_HEAD"
+      ],
+      "returncode": 0,
+      "seconds": 0.5176774440333247,
+      "sha256": "be2631eec83589991e6d9e5a1da28c304de91d5f3d144293b84a50819a785eb5",
+      "bytes": 86
+    },
+    {
+      "label": "head",
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "seconds": 0.0016062930226325989,
+      "sha256": "d29b8af26ae85f512ce830cb0bab4c5c00083d0847e146e5f74e2b0984f10fb8",
+      "bytes": 41
+    },
+    {
+      "label": "patch-check",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/home/qq/hia-cross-platform-integration-20261128-03da85/source/patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.0020062699913978577,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "label": "patch-apply",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/home/qq/hia-cross-platform-integration-20261128-03da85/source/patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.0016355221159756184,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "label": "diffcheck",
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.33525787107646465,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "label": "changes",
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "returncode": 0,
+      "seconds": 0.28083862317726016,
+      "sha256": "7407b36d2759c5f857315287fcf3c56d5e4c487760e5f7037832ee8e224cb1ba",
+      "bytes": 166
+    }
+  ],
+  "native_windows_requalification": "pending",
+  "native_macos_requalification": "pending",
+  "cargo_profile_optimization": "not changed: original dependency identity retained",
+  "codegen_assertion_guard": {
+    "rustc": "/home/qq/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "version": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "flags": [
+      "-Copt-level=3",
+      "-Cdebug-assertions=on",
+      "-Coverflow-checks=on"
+    ],
+    "cfg_debug_assertions": true,
+    "negative_executions": [
+      {
+        "case": "debug_assertion",
+        "returncode": 101,
+        "expected_panic_observed": true,
+        "stderr_sha256": "07e2a1c5390d0cc717ca1d658bd3647ba4c39833db36291c441f36339f8032cc"
+      },
+      {
+        "case": "overflow",
+        "returncode": 101,
+        "expected_panic_observed": true,
+        "stderr_sha256": "f3e8003894816bdddf5095c6c091d6a6d23e7577d4c16e6e87caa3a619f68883"
+      }
+    ],
+    "scope": "compiler-flag semantics only; not a Matrix SDK result"
+  },
+  "buildifier": {
+    "version": "8.5.1",
+    "verified_descriptor": {
+      "git_blob_sha1": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+      "sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "bytes": 7757842
+    },
+    "fix_returncode": 0,
+    "check_returncode": 0,
+    "formatting_changed": true
+  },
+  "actual_platform_pass_claimed": false,
+  "prior_candidate_evidence": {
+    "windows_wrapper": {
+      "source": "1cf6f2c8a466ffda004c8411f70dccdc7b24b47e",
+      "run_id": 46035302767,
+      "job_id": 140629075054,
+      "original_native_cases": 6,
+      "result": "success",
+      "note": "patch and smoke source are exact prior postimages"
+    },
+    "matrix_cipher": {
+      "source": "3b9f69f612c18d04f00e63ea77d9a04f5aa08371",
+      "run_id": 46045325693,
+      "job_id": 140663027973,
+      "full_uncached_targets": 2,
+      "result": "success",
+      "note": "new candidate also explicitly enables debug assertions and overflow checks; prior success does not qualify new head"
+    }
+  },
+  "full_format_and_lock_gate": "pending original CI: host has no just/bazel/uv; exact pinned buildifier ran for changed MODULE.bazel",
+  "original_failures": {
+    "macos": {
+      "source": "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2",
+      "run_id": 46080284473,
+      "job_id": 140778189126,
+      "phase": "cipher_wait",
+      "workers": "all four started, none returned before the original five-second deadline"
+    },
+    "windows": {
+      "source": "5a22507bfd38ddfe55f00d7e1d4ad7af7d1538c2",
+      "run_id": 46080284473,
+      "job_id": 140778189035,
+      "error": "Process wrapper attempted to copy unrelated hepta-supervisor-paired_process_product-test.exe and failed with Access is denied (os error 5)"
+    }
+  },
+  "sources": {
+    "rust_codegen_options": "https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions",
+    "rust_rules": "https://github.com/hermeticbuild/rules_rust/blob/f19661ba71f77c993ce1eb082053692610fe4313/rust/private/rustc.bzl",
+    "original_wrapper": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1cf6f2c8a466ffda004c8411f70dccdc7b24b47e",
+    "original_matrix": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3b9f69f612c18d04f00e63ea77d9a04f5aa08371"
+  }
+}
