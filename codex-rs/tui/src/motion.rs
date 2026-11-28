@@ -3,6 +3,7 @@
 //! Callers choose an explicit reduced-motion fallback here instead of reaching
 //! directly for time-varying spinner or shimmer helpers.
 
+use std::time::Duration;
 use std::time::Instant;
 
 use ratatui::style::Stylize;
@@ -64,6 +65,10 @@ pub(crate) fn shimmer_text(text: &str, motion_mode: MotionMode) -> Vec<Span<'sta
 
 fn animated_activity_indicator(start_time: Option<Instant>) -> Span<'static> {
     let elapsed = start_time.map(|st| st.elapsed()).unwrap_or_default();
+    animated_activity_indicator_with_elapsed(elapsed)
+}
+
+fn animated_activity_indicator_with_elapsed(elapsed: Duration) -> Span<'static> {
     if supports_color::on_cached(supports_color::Stream::Stdout)
         .map(|level| level.has_16m)
         .unwrap_or(false)
@@ -75,6 +80,28 @@ fn animated_activity_indicator(start_time: Option<Instant>) -> Span<'static> {
     } else {
         let blink_on = (elapsed.as_millis() / 600).is_multiple_of(2);
         if blink_on { "•".into() } else { "◦".dim() }
+    }
+}
+
+/// Render a sampled animation frame without changing the production clock source.
+#[cfg(test)]
+pub(crate) fn activity_indicator_at(
+    start_time: Option<Instant>,
+    now: Instant,
+    motion_mode: MotionMode,
+    reduced_motion_indicator: ReducedMotionIndicator,
+) -> Option<Span<'static>> {
+    match motion_mode {
+        MotionMode::Animated => Some(animated_activity_indicator_with_elapsed(
+            start_time
+                .map(|start| now.saturating_duration_since(start))
+                .unwrap_or_default(),
+        )),
+        MotionMode::Reduced => activity_indicator(
+            /*start_time*/ None,
+            motion_mode,
+            reduced_motion_indicator,
+        ),
     }
 }
 

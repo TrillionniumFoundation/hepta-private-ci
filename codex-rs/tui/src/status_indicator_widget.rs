@@ -4,6 +4,8 @@
 //! context (for example, the unified-exec background-process summary). Keeping
 //! these pieces on one line avoids vertical layout churn in the bottom pane.
 
+#[cfg(test)]
+use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -58,6 +60,8 @@ pub(crate) struct StatusIndicatorWidget {
     app_event_tx: AppEventSender,
     frame_requester: FrameRequester,
     animations_enabled: bool,
+    #[cfg(test)]
+    next_snapshot_render_at: Mutex<Option<Instant>>,
 }
 
 // Format elapsed seconds into a compact human-friendly form used by the status line.
@@ -97,7 +101,21 @@ impl StatusIndicatorWidget {
             app_event_tx,
             frame_requester,
             animations_enabled,
+            #[cfg(test)]
+            next_snapshot_render_at: Mutex::default(),
         }
+    }
+
+    /// Sample the next nonempty render at this status row's current timer interval start.
+    /// The following render returns to the real clock; other instances are untouched.
+    #[cfg(test)]
+    pub(crate) fn freeze_next_render_at_start(&self) {
+        let mut next = self
+            .next_snapshot_render_at
+            .lock()
+            .unwrap_or_else(|error| panic!("snapshot render clock poisoned: {error}"));
+        assert!(next.is_none(), "snapshot render clock already armed");
+        *next = Some(self.last_resume_at);
     }
 
     pub(crate) fn interrupt(&self) {
@@ -246,16 +264,40 @@ impl Renderable for StatusIndicatorWidget {
                 .schedule_frame_in(Duration::from_millis(32));
         }
         let now = Instant::now();
+        #[cfg(test)]
+        let snapshot_now = self
+            .next_snapshot_render_at
+            .lock()
+            .unwrap_or_else(|error| panic!("snapshot render clock poisoned: {error}"))
+            .take();
+        #[cfg(test)]
+        let now = snapshot_now.unwrap_or(now);
         let elapsed_duration = self.elapsed_duration_at(now);
         let pretty_elapsed = fmt_elapsed_compact(elapsed_duration.as_secs());
         let motion_mode = MotionMode::from_animations_enabled(self.animations_enabled);
 
         let mut spans = Vec::with_capacity(5);
-        if let Some(indicator) = activity_indicator(
+        #[cfg(not(test))]
+        let indicator = activity_indicator(
             Some(self.last_resume_at),
             motion_mode,
             ReducedMotionIndicator::Hidden,
-        ) {
+        );
+        #[cfg(test)]
+        let indicator = match snapshot_now {
+            Some(now) => crate::motion::activity_indicator_at(
+                Some(self.last_resume_at),
+                now,
+                motion_mode,
+                ReducedMotionIndicator::Hidden,
+            ),
+            None => activity_indicator(
+                Some(self.last_resume_at),
+                motion_mode,
+                ReducedMotionIndicator::Hidden,
+            ),
+        };
+        if let Some(indicator) = indicator {
             spans.push(indicator);
             spans.push(" ".into());
         }
@@ -296,6 +338,10 @@ impl Renderable for StatusIndicatorWidget {
         Paragraph::new(Text::from(lines)).render(area, buf);
     }
 }
+
+#[cfg(test)]
+#[path = "status_indicator_widget_snapshot_tests.rs"]
+mod snapshot_tests;
 
 #[cfg(test)]
 mod tests {
