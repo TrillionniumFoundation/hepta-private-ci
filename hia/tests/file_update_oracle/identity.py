@@ -363,7 +363,7 @@ def _reviewed_4280_exec_projection(producer, relative, expected, actual):
             "dependency": relative, "actual_tree": actual,
             "original_tree": expected, "leaf_count": 144,
             "projected_wine_tree": wine_tree, "projected_original_tree": inverse,
-            "macos_leaves": _REVIEWED_4280_EXEC_LEAVES,
+            "macos_leaves": {path: list(pair) for path, pair in _REVIEWED_4280_EXEC_LEAVES.items()},
             "wine_projection": pin}
 
 
@@ -383,7 +383,7 @@ def producer_inputs(producer, original_root, original_manifest):
             raise RuntimeError("unreviewed original dependency/type declaration change")
         reviewed = {**_REVIEWED_4280,
                     "projected_tree": _reviewed_4280_root(producer, current),
-                    "reviewed_files": differences}
+                    "reviewed_files": {path: list(pair) for path, pair in differences.items()}}
     for path in paths:
         if path not in differences:
             matched[path] = sha(producer / path)
