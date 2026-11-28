@@ -1,0 +1,305 @@
+{
+ "source_sha256": "18423277257e2e487521d83a8c116bc7cf5599411f4ff769e569bd849beae6ad",
+ "source_bytes": 58831581,
+ "tiers": [
+  {
+   "n": 48,
+   "split": [
+    24,
+    8,
+    16
+   ],
+   "ids": "1905584b55bf50dbbbfa18967d8bc21137e47fb61051c54df1c97664c02dda7e",
+   "images": "281068d73d82969a5d37335db7429ffa8ff5ba637d9fb0a708e2411e7220bb04",
+   "audio": "2ec0964d68efc5dd5e53ad1658ba628a617359b0647100e306e2c1c291c6801d"
+  },
+  {
+   "n": 168,
+   "split": [
+    96,
+    24,
+    48
+   ],
+   "ids": "78f896adaf9c35bc0f9f67d9061ce06e18161d2c8317f73fc26b0f2fc58718fa",
+   "images": "2007af49e37c98ea789d751bcaa86a6e3dcf5b77d06f2f5e17808343295f51ec",
+   "audio": "8047d87762bcbe2c4fef6759edfca2b84bf7ca9ad30131f0c056713c3620d84f"
+  },
+  {
+   "n": 672,
+   "split": [
+    384,
+    96,
+    192
+   ],
+   "ids": "88afd4354ade3bd63963e9efd855efe592d00d41b33495aa08172e530d162c80",
+   "images": "547a0553168cd76f966f30a220fdd6eefa1c46da8804673c0243df162e18fd73",
+   "audio": "e8387e3e30af07bfe104cb3b1a91ce246621c472a1044586c321249531b6ee62"
+  },
+  {
+   "n": 1776,
+   "split": [
+    1152,
+    240,
+    384
+   ],
+   "ids": "131793fe88d75bd3fca7eaa06f42c6b65fae1362415902ba546f46717c3837ab",
+   "images": "ea5c7ab033b7faa7a48baeb2df9f56f4ca8193d7c6c187f95cd56bd74f70dc3a",
+   "audio": "5a87219651682117f86e09736f850299c5b28e6e319ed4cea24ef8fdc699203b"
+  },
+  {
+   "n": 7442,
+   "split": [
+    4984,
+    1147,
+    1311
+   ],
+   "ids": "b995b755108fc8bbc18f23134164bcbdb04a96b347b88a3cd80f5c9940d4e91b",
+   "images": "5b37c5982a80229eca3a1778f538722f131238b71329b270fbef34ce0589b835",
+   "audio": "53b3238e1192d0ee794c80397b1044acff1200119dbe0a80cf7b45f70bf16381"
+  }
+ ],
+ "arrays": {
+  "images": {
+   "sha256": "f74b3d45a34fab8e75299b7370321f443ac21264a428935af5fef1cd0f3ad7b2",
+   "shape": [
+    7442,
+    12,
+    28,
+    28
+   ],
+   "dtype": "uint8"
+  },
+  "audio": {
+   "sha256": "d40dcb953eabf8611deb14a50dd2309fa1f6e5517c6aba456008b20831e3685b",
+   "shape": [
+    7442,
+    12,
+    64
+   ],
+   "dtype": "float32"
+  },
+  "ids": {
+   "sha256": "35b2831a9a850ee82c8dba0393af95f8ddb39ab9cad282af4748eaabb98253f6",
+   "shape": [
+    7442
+   ],
+   "dtype": "<U15"
+  },
+  "split": {
+   "sha256": "3a27eb6fd7a35fa2749a7ddf83cfac47ec67f8f93cb6bef582e6954419510131",
+   "shape": [
+    7442
+   ],
+   "dtype": "int64"
+  },
+  "labels": {
+   "sha256": "96d2f14deacfe559f9c17509a65d7f0321a36521b33a77161d7420023338e39a",
+   "shape": [
+    7442
+   ],
+   "dtype": "int64"
+  },
+  "tokens": {
+   "sha256": "21571f8119c7b86f61a5d737a76da4fb18c6a9fc011dcb2be477fbf85cc5668e",
+   "shape": [
+    72,
+    12
+   ],
+   "dtype": "int64"
+  }
+ },
+ "first48": {
+  "1065_IEO_FEA_LO": {
+   "image_sha256": "eba3bc342f60caa7ff66d1295c816802ac498d03a3fff17b983f9f819fd28176",
+   "audio_sha256": "c7e25d34d3a5edf56b6efd00f7cecd80f82c154f74150b6fb38c3b631909ea33"
+  },
+  "1025_DFA_ANG_XX": {
+   "image_sha256": "017b2d122fb4e6816493679179fc4f8957cfb0757e160f4cf5775ac07dad1b7f",
+   "audio_sha256": "b716ec67462a623f873ea1ad8a7cd95557f05f823b464163c6a6744f9b9cf150"
+  },
+  "1073_ITH_HAP_XX": {
+   "image_sha256": "244e5cc4198be3c636753620df59edfa825c9473c912c21d0fc0010fc2b1bf30",
+   "audio_sha256": "23cf4ffd28bffacd4ca79a68ed97f23e9808f06384b227838e4fb70cdd35ae32"
+  },
+  "1085_DFA_FEA_XX": {
+   "image_sha256": "b394cc8efb121c7c4a117b823cfaaee109f70d281c1f59a8276750f7267e75e9",
+   "audio_sha256": "9c8263982416df26319f7dc58bbd6754eae33f2cd71ad996a4a8cff3b2bc1816"
+  },
+  "1009_IWL_HAP_XX": {
+   "image_sha256": "194d6275b6f97d0905b1eee8ffe3e877f0bbd2f5dbd4e9127e1b6c92a177b292",
+   "audio_sha256": "d859407c634ff47a42f6d3fd1ddb7876bfe6e51bedb29309e79015927937ef22"
+  },
+  "1072_TAI_DIS_XX": {
+   "image_sha256": "ccda132bf80a2cf5c67c82620f420aacccc47a0260d29a523b634998dd9ddca3",
+   "audio_sha256": "d4527be8dc80781bc1df4c722587f258b4eded7ce418261fb113f0197104d24f"
+  },
+  "1043_TSI_DIS_XX": {
+   "image_sha256": "06eb671bc0e51feac7876b526daf1b4dc4e72f3e1321456d09b035d3b1fb7320",
+   "audio_sha256": "d48eeb483b477681bb8d19192486d30416248bd2a2f471f57fbb118b35fefd33"
+  },
+  "1022_IEO_DIS_MD": {
+   "image_sha256": "d92e17ebde3fa792b52c4cd84a3fadccf9884b1ed7d83e5ee6ea03afe7747878",
+   "audio_sha256": "ec8ea334e432263faf6317a0d9a18c399300317f12c3e89f6b95f273343baf90"
+  },
+  "1014_IOM_ANG_XX": {
+   "image_sha256": "f331a60df5acb6eb8a15ca7db560d42408ec567036e66713641cdb3cc793c766",
+   "audio_sha256": "52e423c60926948a3eada3320e9e6a397cdb529cde28bcc133752ea48aa92c6f"
+  },
+  "1064_IEO_DIS_HI": {
+   "image_sha256": "d42705487bcc12b3f9e0e663c4cfa994eef1cab8b5ba1e7345798bd4f16a5233",
+   "audio_sha256": "72286ca54898dc3f30061d4967e24dbcb850d67ba11690e9ebdb7c958f788320"
+  },
+  "1020_IEO_NEU_XX": {
+   "image_sha256": "7b1a8183b23cb012cccbb1d35ba674f2219cb9c3e9acfcc7b683f0ff6c3b25f0",
+   "audio_sha256": "8f754e9e597f441d337e9ed73fd9abebf286cb03cfd6b3ecda11dd4a7a9bc08d"
+  },
+  "1027_DFA_DIS_XX": {
+   "image_sha256": "42864d6ec7b3d6c49c51a7f982b04879d0272a8d225e126c0952e9900b5275d4",
+   "audio_sha256": "56258c8dc0d075455808e082a619dbfb65deaee6e6af4f646701cb4cb60d1049"
+  },
+  "1052_ITH_SAD_XX": {
+   "image_sha256": "b33f37a885bd6966f01de2fa842987bfcbc722a02a2cc23739844c7835fbe854",
+   "audio_sha256": "81b1f660bbd694356739b1ff7e4f348cdb720e63c737cb4b6e08ebc75c563d8f"
+  },
+  "1013_TSI_HAP_XX": {
+   "image_sha256": "667c117784f87247c558d323d729ac39004596fd85d12f1c443a4f1469ce6b1c",
+   "audio_sha256": "d2e9330ea45f287a976b34f781a07114e3fbc8b78a56d15ca33b235d47709d28"
+  },
+  "1003_TIE_DIS_XX": {
+   "image_sha256": "72b82080ccbb1f811faaddb23d6b60cfcdbc03c8c60eaca9e4c86e4d415671c5",
+   "audio_sha256": "fd4cc64eddd6af499a87d1a21bd769e332286ce24a8694caebdf0c751b45e84e"
+  },
+  "1042_MTI_ANG_XX": {
+   "image_sha256": "03b42d177d991f95a5772d45d694d402eeb95835292174bff2dfbd42490fe786",
+   "audio_sha256": "c35b9dce76fc94c9bb2f0b903f766671d6b3306af2eb20d56b9f128d8c0a6e51"
+  },
+  "1062_IOM_HAP_XX": {
+   "image_sha256": "54fd69ae2ac2b01bb4055cea5e0e444589120a380c08d5e33ebc8608603ef2db",
+   "audio_sha256": "6d431f3e500c6f894ba631e6ec51c57d1244b2319a58785d9275201ae84e0486"
+  },
+  "1089_TAI_HAP_XX": {
+   "image_sha256": "9a87b7db0fbe79c9656a35e8e1289b490f00e76b916817697d0dc49f9b0b9917",
+   "audio_sha256": "7278c053d74b9d4fb3dfb873a4e4bc2998eea30453a2297140feeec7cb48f3e9"
+  },
+  "1064_MTI_DIS_XX": {
+   "image_sha256": "dd386848f29fbc1db7ae4998de2a3ce68079accaa6b5c581d926b8386b333e4e",
+   "audio_sha256": "ece262662ecacb09255290cd8978cc6427ab1aff0856f69596d82d04250f1070"
+  },
+  "1036_IEO_ANG_MD": {
+   "image_sha256": "05657cbb9a8c0329de9950572ed4d42271d535dac7214eb23ee289dacdfd5d6a",
+   "audio_sha256": "aec6f5bd994f15ccb8276f5e8e3829704bda1275370ee8f02813b0e5c071cb6f"
+  },
+  "1064_IEO_FEA_LO": {
+   "image_sha256": "9834b4734dc5e3b7e2f13624ca0034f75c7b3a2722603694921cc941b36bfe36",
+   "audio_sha256": "028f387cd1fefe62f92cf484bc9e3f1cd637abba0d5ed38bc8c8328222bafb76"
+  },
+  "1081_WSI_ANG_XX": {
+   "image_sha256": "63eed2875b2d2aa56870f4a5dd34a0266b3fda19dc661d47913ed75f36bbdf90",
+   "audio_sha256": "4b7f962dc58a8b45467871db6f6a687ba34e3f382a4d72ae2379065b064e1d12"
+  },
+  "1035_IWL_NEU_XX": {
+   "image_sha256": "01d82a20103e12a0f913d3a205c176b74d57e313c8218721c0bfbef0cbc567d0",
+   "audio_sha256": "89828a5431288e679d5a7935bad98fdce71983300064434caad699ca21938d9d"
+  },
+  "1022_TIE_FEA_XX": {
+   "image_sha256": "68d67e21fae83c0dccf2b30e55debadee368f48c4b1bec7fd1783697f3fe1aaf",
+   "audio_sha256": "141ccaf41326a5f40db38b443b73a7854cfaaa420329ad80c32b5c4eabd72dd5"
+  },
+  "1015_TSI_HAP_XX": {
+   "image_sha256": "5d9d33e9e1f07196fdbafa1d06b6c3be0318bfcf39f542951523021c79367851",
+   "audio_sha256": "df9e4c04fd142bf5433717357e5cfcb8dfb893ded0c7e0e31d7841291d1345a8"
+  },
+  "1023_IEO_DIS_MD": {
+   "image_sha256": "520aff8620eb951e5da8e9927b2c092fe31d3b36fc58c20a9e4b318ed4c3cb1a",
+   "audio_sha256": "e501d6a1db070912e19e98b34700ac1d283ece3e3f89356972b71ca4899f486f"
+  },
+  "1069_DFA_FEA_XX": {
+   "image_sha256": "74d6f2184ae139a2bd9ae1ff6eaf33aa667d9437b7b84935c9e17a94e77e54bd",
+   "audio_sha256": "240f6ab679a5fcc6215a999f0faac38f4924b6eaf3ec92a118b1d82bacb17707"
+  },
+  "1048_IEO_SAD_HI": {
+   "image_sha256": "656571c0403b5b7a9e473481fc3981ba46b89bd4615f584e8024f9c533a1be4c",
+   "audio_sha256": "bab8ebebd01bea6e77c71e986520262d98fe8641888e12add15afff38dcc7fe7"
+  },
+  "1015_IEO_SAD_HI": {
+   "image_sha256": "020d4c49dfd148f33a9135aed1bafec96866af50d53b7e1cb0020a2bf83ef1fa",
+   "audio_sha256": "207461b30a1ac45aa62cad0d5e7b906177103177c610be22a263e6af42d322ef"
+  },
+  "1076_IEO_DIS_HI": {
+   "image_sha256": "dc10ffbd4af54ffdf03fcf70c2d93795d645e3dd042a894072a193eb7385b194",
+   "audio_sha256": "3ff89882f6f7cfe2aa89883e841eb7f6d916e4f285768944a6bfa166c5fb6d73"
+  },
+  "1012_DFA_FEA_XX": {
+   "image_sha256": "54589fd79d9ebc7b57af935daca8d63d02d9e53df2d9227b731685f064bd96a2",
+   "audio_sha256": "4467d5f8f0ee3991bd3fed90ae5bdc4beca2d120d97e9ea86292edc570f633c9"
+  },
+  "1077_TIE_SAD_XX": {
+   "image_sha256": "ae9fc07c23c0a970185672a62936d352041b61ed1498bd28d704e94d82543ef9",
+   "audio_sha256": "a5f65a03d96330c634d5dcba650d1d005b7e4991c40dfe75a0aca8b85a3ee258"
+  },
+  "1038_DFA_NEU_XX": {
+   "image_sha256": "0b3c56dd9794fc0eeb8d152e7ad69bb3ac3d269e0488abc716a80a2d073ea6db",
+   "audio_sha256": "ec3ef485e3025a1cb26e56032680b265a03ac578177e6818b02021b0aa862dbd"
+  },
+  "1088_IWL_NEU_XX": {
+   "image_sha256": "8ee9513fea442bdc6f3940e2fbaa77eb896fd56bbe56ce8ad290426bca352490",
+   "audio_sha256": "1986614203c6f74436f99dc431d75e924498e095844f79d47bfb666261e90898"
+  },
+  "1006_MTI_DIS_XX": {
+   "image_sha256": "8caef66909460af1eccd50139e8404347dabad4111930f8659fd1535d948b0a0",
+   "audio_sha256": "3153a7680d88b8aa07e375541d0cfb6e8883b71ab356624f34dc824633c3fe26"
+  },
+  "1058_TAI_FEA_XX": {
+   "image_sha256": "624bb4a36819cc298db5325af0716dfca9919c433c1a8b31e9d841323a172014",
+   "audio_sha256": "f1e0d6f905e02633d65d95843dbc40efaf555e61ec828e5e2d7d11382294025e"
+  },
+  "1038_DFA_ANG_XX": {
+   "image_sha256": "6116a9a1be78dec5c8e9ce1c57a37d96810b318fd10821711c25f615a3632b76",
+   "audio_sha256": "6fde0147027a3327a6fd4621faa1ccdb170d038f9b62a828eaf1e2903f60a35c"
+  },
+  "1088_WSI_FEA_XX": {
+   "image_sha256": "a2d3631a9be39018802fe30ea51cdc97b31322d7c2e4c4f0b823a8a642e0c44c",
+   "audio_sha256": "fdbb85553175dd10409b4e9c8ebe511494ddfee9470ca96f2e55067540b76446"
+  },
+  "1038_IWL_NEU_XX": {
+   "image_sha256": "6cb816663a404501e1fdeef315573aca38d7757f56a116c67f4f12c30f3d7381",
+   "audio_sha256": "4bfbab0bc7a8ebd4e176817f245c77df34978081e988a75d147c50ec919361ce"
+  },
+  "1058_MTI_DIS_XX": {
+   "image_sha256": "409f6c2140dbd2dedb8b46a4f9d7de1dd1ebcd389ad91214d2739e2ded98453c",
+   "audio_sha256": "b4fc369d710d379e9be708dd1daa07ad715a0776fefc129a5dab00776c2c6dae"
+  },
+  "1053_ITH_ANG_XX": {
+   "image_sha256": "58180e2f80754627a486380a3a7a6dad238621e602707a83f060b94b8d9913be",
+   "audio_sha256": "7ab22cb3244b6b32e24ffd2e40721ee0add435fa25eef5421579d4c29ae34c59"
+  },
+  "1040_IEO_FEA_LO": {
+   "image_sha256": "d57afb051beb5cd44165d00de5ae0ee2b3486511ae80673e9f0504f920321d9d",
+   "audio_sha256": "18f63c4a95366575e618e2314fb7ed60fe28b1648ea93d3c51727a456f7ba89e"
+  },
+  "1084_TAI_NEU_XX": {
+   "image_sha256": "c06a77f312037fd21058ad054f5527e80deff4ee1b887620a9990c8798bdc3e1",
+   "audio_sha256": "48538b37f4560e61b5df598cea5a94690d19519d6a211e3ed709523c679cabca"
+  },
+  "1002_TSI_DIS_XX": {
+   "image_sha256": "f4e64bd194da211b7a0e59d49d90cc39e26bc1d06dd595f9d138323731ed8ff4",
+   "audio_sha256": "7c29f4b43309d19815944ced6e3b4e0801635a168854a38c3bdf29a26a14ddf6"
+  },
+  "1032_IOM_DIS_XX": {
+   "image_sha256": "00cc98bc37c5da1bf7009757454e8cbf7c2167aaa07a08a0bfb3e37e235f1f9d",
+   "audio_sha256": "83606c5a311f3f6e266e6c7ac3dfac31ebd265aa872a6011050ccaaf99e8c0be"
+  },
+  "1032_IEO_DIS_LO": {
+   "image_sha256": "8f460d074e8f4a58279b65f412f58733027664749f0bb219b0976c99a78f4ee6",
+   "audio_sha256": "b81adb22df538af86fdc3ea8cbf329b58a6aa5ec1f494a160eb9517e16c9c7f1"
+  },
+  "1088_DFA_HAP_XX": {
+   "image_sha256": "a4077c7a158f3eef8a01a82c4df21eeaab10a98664cef2bbae3ee6dc02eced2e",
+   "audio_sha256": "2c4271508f5af36320df892ba4627ccb908bacf8d800f1d3fbc958d39a500d2f"
+  },
+  "1053_TSI_SAD_XX": {
+   "image_sha256": "6c2ec998d237027fb0ae1f8f7a073df4ff83028f34fb4599d9887fc30e612dae",
+   "audio_sha256": "4c8663e58d11b4b06e2313f038661006146a9f154e145da5d516f1668768de4c"
+  }
+ }
+}
