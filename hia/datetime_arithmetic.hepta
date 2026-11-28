@@ -1,0 +1,432 @@
+hia-asm.v1 hepta.hia.program.v9 codex_datetime_arithmetic
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_size:usize = buffer.len(output)
+  required:usize = const() {"value":64}
+  enough:bool = compare.ge(output_size,required)
+  branch enough frame(source,output,workspace) short()
+block frame(frame_source:readbuf,frame_output:mutbuf,frame_workspace:mutbuf)
+  source_size:usize = buffer.len(frame_source)
+  workspace_size:usize = buffer.len(frame_workspace)
+  frame_required:usize = const() {"value":64}
+  empty:usize = const() {"value":0}
+  source_ok:bool = compare.eq(source_size,frame_required)
+  workspace_ok:bool = compare.eq(workspace_size,empty)
+  sizes_ok:bool = bool.and(source_ok,workspace_ok)
+  branch sizes_ok decode(frame_source,frame_output) invalid_frame()
+block decode(decode_source:readbuf,decode_output:mutbuf)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  version:u64 = buffer.load.u64.le(decode_source,p0)
+  operation:u64 = buffer.load.u64.le(decode_source,p8)
+  argument_a:u64 = buffer.load.u64.le(decode_source,p16)
+  argument_b:u64 = buffer.load.u64.le(decode_source,p24)
+  argument_c:u64 = buffer.load.u64.le(decode_source,p32)
+  argument_d:u64 = buffer.load.u64.le(decode_source,p40)
+  argument_e:u64 = buffer.load.u64.le(decode_source,p48)
+  argument_f:u64 = buffer.load.u64.le(decode_source,p56)
+  one:u64 = const() {"value":1}
+  three:u64 = const() {"value":3}
+  version_ok:bool = compare.eq(version,one)
+  operation_ok:bool = compare.le(operation,three)
+  header_ok:bool = bool.and(version_ok,operation_ok)
+  signed_a:i64 = int.cast(argument_a) {"mode":"wrap"}
+  branch header_ok dispatch(decode_output,operation,signed_a,argument_b,argument_c,argument_d,argument_e,argument_f) invalid_frame()
+block dispatch(dispatch_output:mutbuf,dispatch_operation:u64,a:i64,b:u64,c:u64,d:u64,e:u64,f:u64)
+  ymd_operation:u64 = const() {"value":3}
+  is_ymd:bool = compare.eq(dispatch_operation,ymd_operation)
+  branch is_ymd ymd(dispatch_output,a,b,c,d,e,f) reserved(dispatch_output,dispatch_operation,a,b,c,d,e,f)
+block reserved(reserved_output:mutbuf,reserved_operation:u64,left_seconds:i64,left_nanos:u64,right_bits:u64,right_nanos:u64,reserved_a:u64,reserved_b:u64)
+  zero:u64 = const() {"value":0}
+  reserved_bits:u64 = bit.or(reserved_a,reserved_b)
+  reserved_ok:bool = compare.eq(reserved_bits,zero)
+  right_seconds:i64 = int.cast(right_bits) {"mode":"wrap"}
+  branch reserved_ok validate_left(reserved_output,reserved_operation,left_seconds,left_nanos,right_seconds,right_nanos) invalid_frame()
+block validate_left(left_output:mutbuf,left_operation:u64,l_seconds:i64,l_nanos:u64,r_seconds:i64,r_nanos:u64)
+  left_valid:bool = call(l_seconds,l_nanos) {"function":"timestamp_valid"}
+  branch left_valid select_right(left_output,left_operation,l_seconds,l_nanos,r_seconds,r_nanos) invalid_value(left_output)
+block select_right(right_output:mutbuf,right_operation:u64,sl_seconds:i64,sl_nanos:u64,sr_seconds:i64,sr_nanos:u64)
+  difference_operation:u64 = const() {"value":2}
+  is_difference:bool = compare.eq(right_operation,difference_operation)
+  branch is_difference validate_difference(right_output,sl_seconds,sl_nanos,sr_seconds,sr_nanos) validate_delta(right_output,right_operation,sl_seconds,sl_nanos,sr_seconds,sr_nanos)
+block validate_difference(diff_output:mutbuf,dl_seconds:i64,dl_nanos:u64,dr_seconds:i64,dr_nanos:u64)
+  right_valid:bool = call(dr_seconds,dr_nanos) {"function":"timestamp_valid"}
+  branch right_valid subtract_dates(diff_output,dl_seconds,dl_nanos,dr_seconds,dr_nanos) invalid_value(diff_output)
+block subtract_dates(subtract_output:mutbuf,sub_l_seconds:i64,sub_l_nanos:u64,sub_r_seconds:i64,sub_r_nanos:u64)
+  duration_seconds:i64,duration_nanos:u64 = call(sub_l_seconds,sub_l_nanos,sub_r_seconds,sub_r_nanos) {"function":"difference"}
+  duration_whole:i64,duration_fraction:i64 = call(duration_seconds,duration_nanos) {"function":"delta_parts"}
+  difference_valid:u64 = const() {"value":1}
+  difference_result:u32 = call(subtract_output,difference_valid,difference_valid,duration_seconds,duration_nanos,duration_whole,duration_fraction) {"function":"publish"}
+  ret(difference_result)
+block validate_delta(delta_output:mutbuf,delta_operation:u64,date_seconds:i64,date_nanos:u64,delta_seconds:i64,delta_nanos:u64)
+  delta_ok:bool = call(delta_seconds,delta_nanos) {"function":"delta_valid"}
+  branch delta_ok apply_delta(delta_output,delta_operation,date_seconds,date_nanos,delta_seconds,delta_nanos) invalid_value(delta_output)
+block apply_delta(apply_output:mutbuf,apply_operation:u64,apply_seconds:i64,apply_nanos:u64,operand_seconds:i64,operand_nanos:u64)
+  whole:i64,fraction:i64 = call(operand_seconds,operand_nanos) {"function":"delta_parts"}
+  signed_zero:i64 = const() {"value":0}
+  subtract_operation:u64 = const() {"value":1}
+  subtract:bool = compare.eq(apply_operation,subtract_operation)
+  negative_whole:i64 = int.sub.checked(signed_zero,whole)
+  negative_fraction:i64 = int.sub.checked(signed_zero,fraction)
+  selected_whole:i64 = select(subtract,negative_whole,whole)
+  selected_fraction:i64 = select(subtract,negative_fraction,fraction)
+  result_valid:u64,result_seconds:i64,result_nanos:u64 = call(apply_seconds,apply_nanos,selected_whole,selected_fraction) {"function":"add_datetime"}
+  inputs_valid:u64 = const() {"value":1}
+  apply_result:u32 = call(apply_output,inputs_valid,result_valid,result_seconds,result_nanos,signed_zero,signed_zero) {"function":"publish"}
+  ret(apply_result)
+block ymd(ymd_output:mutbuf,year:i64,month:u64,day:u64,hour:u64,minute:u64,second:u64)
+  ymd_valid:u64,ymd_seconds:i64 = call(year,month,day,hour,minute,second) {"function":"from_ymd"}
+  ymd_zero:u64 = const() {"value":0}
+  ymd_signed_zero:i64 = const() {"value":0}
+  ymd_result:u32 = call(ymd_output,ymd_valid,ymd_valid,ymd_seconds,ymd_zero,ymd_signed_zero,ymd_signed_zero) {"function":"publish"}
+  ret(ymd_result)
+block invalid_value(invalid_output:mutbuf)
+  invalid_word:u64 = const() {"value":0}
+  invalid_signed:i64 = const() {"value":0}
+  invalid_result:u32 = call(invalid_output,invalid_word,invalid_word,invalid_signed,invalid_word,invalid_signed,invalid_signed) {"function":"publish"}
+  ret(invalid_result)
+block short()
+  code:u32 = const() {"value":4294967294}
+  ret(code)
+block invalid_frame()
+  invalid_frame_code:u32 = const() {"value":4294967295}
+  ret(invalid_frame_code)
+end
+fn floor_div(numerator:i64,denominator:i64) -> (i64) effects(trap) entry(entry)
+block entry(numerator:i64,denominator:i64)
+  quotient:i64 = int.div.checked(numerator,denominator)
+  remainder:i64 = int.rem.checked(numerator,denominator)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  negative:bool = compare.lt(remainder,zero)
+  adjustment:i64 = select(negative,one,zero)
+  result:i64 = int.sub.checked(quotient,adjustment)
+  ret(result)
+end
+fn publish(output:mutbuf,inputs_valid:u64,result_valid:u64,seconds:i64,nanos:u64,whole:i64,fraction:i64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,inputs_valid:u64,result_valid:u64,seconds:i64,nanos:u64,whole:i64,fraction:i64)
+  seconds_word:u64 = int.cast(seconds) {"mode":"wrap"}
+  whole_word:u64 = int.cast(whole) {"mode":"wrap"}
+  fraction_word:u64 = int.cast(fraction) {"mode":"wrap"}
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  version:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(output,p0,version)
+  _ = buffer.store.u64.le(output,p8,inputs_valid)
+  _ = buffer.store.u64.le(output,p16,result_valid)
+  _ = buffer.store.u64.le(output,p24,seconds_word)
+  _ = buffer.store.u64.le(output,p32,nanos)
+  _ = buffer.store.u64.le(output,p40,whole_word)
+  _ = buffer.store.u64.le(output,p48,fraction_word)
+  _ = buffer.store.u64.le(output,p56,zero)
+  success:u32 = const() {"value":0}
+  ret(success)
+end
+fn from_ymd(year:i64,month:u64,day:u64,hour:u64,minute:u64,second:u64) -> (u64,i64) effects(trap) entry(entry)
+block entry(year:i64,month:u64,day:u64,hour:u64,minute:u64,second:u64)
+  minimum:i64 = const() {"value":-262143}
+  maximum:i64 = const() {"value":262142}
+  hours:u64 = const() {"value":24}
+  minutes:u64 = const() {"value":60}
+  after_minimum:bool = compare.ge(year,minimum)
+  before_maximum:bool = compare.le(year,maximum)
+  year_ok:bool = bool.and(after_minimum,before_maximum)
+  hour_ok:bool = compare.lt(hour,hours)
+  minute_ok:bool = compare.lt(minute,minutes)
+  second_ok:bool = compare.lt(second,minutes)
+  clock_prefix_ok:bool = bool.and(hour_ok,minute_ok)
+  clock_ok:bool = bool.and(clock_prefix_ok,second_ok)
+  fields_ok:bool = bool.and(year_ok,clock_ok)
+  branch fields_ok date(year,month,day,hour,minute,second) invalid()
+block date(date_year:i64,date_month:u64,date_day:u64,date_hour:u64,date_minute:u64,date_second:u64)
+  days:i64,date_error:u64 = call(date_year,date_month,date_day) {"function":"civil_days"}
+  no_error:u64 = const() {"value":0}
+  date_ok:bool = compare.eq(date_error,no_error)
+  branch date_ok combine(days,date_hour,date_minute,date_second) invalid()
+block combine(combine_days:i64,combine_hour:u64,combine_minute:u64,combine_second:u64)
+  day_length:i64 = const() {"value":86400}
+  hour_length:i64 = const() {"value":3600}
+  minute_length:i64 = const() {"value":60}
+  hour_signed:i64 = int.cast(combine_hour) {"mode":"checked"}
+  minute_signed:i64 = int.cast(combine_minute) {"mode":"checked"}
+  second_signed:i64 = int.cast(combine_second) {"mode":"checked"}
+  date_seconds:i64 = int.mul.checked(combine_days,day_length)
+  hour_seconds:i64 = int.mul.checked(hour_signed,hour_length)
+  minute_seconds:i64 = int.mul.checked(minute_signed,minute_length)
+  with_hour:i64 = int.add.checked(date_seconds,hour_seconds)
+  with_minute:i64 = int.add.checked(with_hour,minute_seconds)
+  result_seconds:i64 = int.add.checked(with_minute,second_signed)
+  valid:u64 = const() {"value":1}
+  ret(valid,result_seconds)
+block invalid()
+  invalid_word:u64 = const() {"value":0}
+  invalid_seconds:i64 = const() {"value":0}
+  ret(invalid_word,invalid_seconds)
+end
+fn civil_days(year:i64,month:u64,day:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(year:i64,month:u64,day:u64)
+  one:u64 = const() {"value":1}
+  twelve:u64 = const() {"value":12}
+  thirty_one:u64 = const() {"value":31}
+  month_min:bool = compare.ge(month,one)
+  month_max:bool = compare.le(month,twelve)
+  day_min:bool = compare.ge(day,one)
+  day_max:bool = compare.le(day,thirty_one)
+  month_ok:bool = bool.and(month_min,month_max)
+  day_ok:bool = bool.and(day_min,day_max)
+  range_ok:bool = bool.and(month_ok,day_ok)
+  branch range_ok month_length(year,month,day) invalid()
+block month_length(length_year:i64,length_month:u64,length_day:u64)
+  four:i64 = const() {"value":4}
+  hundred:i64 = const() {"value":100}
+  four_hundred:i64 = const() {"value":400}
+  zero:i64 = const() {"value":0}
+  mod_four:i64 = int.rem.checked(length_year,four)
+  mod_hundred:i64 = int.rem.checked(length_year,hundred)
+  mod_four_hundred:i64 = int.rem.checked(length_year,four_hundred)
+  by_four:bool = compare.eq(mod_four,zero)
+  not_century:bool = compare.ne(mod_hundred,zero)
+  whole_era:bool = compare.eq(mod_four_hundred,zero)
+  century_ok:bool = bool.or(not_century,whole_era)
+  leap:bool = bool.and(by_four,century_ok)
+  february:u64 = const() {"value":2}
+  april:u64 = const() {"value":4}
+  june:u64 = const() {"value":6}
+  september:u64 = const() {"value":9}
+  november:u64 = const() {"value":11}
+  d28:u64 = const() {"value":28}
+  d29:u64 = const() {"value":29}
+  d30:u64 = const() {"value":30}
+  d31:u64 = const() {"value":31}
+  is_february:bool = compare.eq(length_month,february)
+  is_april:bool = compare.eq(length_month,april)
+  is_june:bool = compare.eq(length_month,june)
+  is_september:bool = compare.eq(length_month,september)
+  is_november:bool = compare.eq(length_month,november)
+  spring_short:bool = bool.or(is_april,is_june)
+  autumn_short:bool = bool.or(is_september,is_november)
+  short_month:bool = bool.or(spring_short,autumn_short)
+  ordinary_length:u64 = select(short_month,d30,d31)
+  february_length:u64 = select(leap,d29,d28)
+  maximum:u64 = select(is_february,february_length,ordinary_length)
+  valid:bool = compare.le(length_day,maximum)
+  branch valid calculate(length_year,length_month,length_day) invalid()
+block calculate(calc_year:i64,calc_month:u64,calc_day:u64)
+  month_word:i64 = int.cast(calc_month) {"mode":"checked"}
+  day_word:i64 = int.cast(calc_day) {"mode":"checked"}
+  calc_zero:i64 = const() {"value":0}
+  calc_one:i64 = const() {"value":1}
+  calc_two:i64 = const() {"value":2}
+  calc_four:i64 = const() {"value":4}
+  calc_five:i64 = const() {"value":5}
+  calc_hundred:i64 = const() {"value":100}
+  era_years:i64 = const() {"value":400}
+  year_days:i64 = const() {"value":365}
+  era_days:i64 = const() {"value":146097}
+  month_span:i64 = const() {"value":153}
+  epoch:i64 = const() {"value":719468}
+  negative_three:i64 = const() {"value":-3}
+  nine:i64 = const() {"value":9}
+  winter:bool = compare.le(month_word,calc_two)
+  year_adjustment:i64 = select(winter,calc_one,calc_zero)
+  adjusted_year:i64 = int.sub.checked(calc_year,year_adjustment)
+  era:i64 = call(adjusted_year,era_years) {"function":"floor_div"}
+  era_start_year:i64 = int.mul.checked(era,era_years)
+  year_of_era:i64 = int.sub.checked(adjusted_year,era_start_year)
+  month_adjustment:i64 = select(winter,nine,negative_three)
+  march_month:i64 = int.add.checked(month_word,month_adjustment)
+  scaled_month:i64 = int.mul.checked(march_month,month_span)
+  corrected_month:i64 = int.add.checked(scaled_month,calc_two)
+  month_start:i64 = int.div.checked(corrected_month,calc_five)
+  with_day:i64 = int.add.checked(month_start,day_word)
+  day_of_year:i64 = int.sub.checked(with_day,calc_one)
+  whole_years:i64 = int.mul.checked(year_of_era,year_days)
+  leap_days:i64 = int.div.checked(year_of_era,calc_four)
+  century_days:i64 = int.div.checked(year_of_era,calc_hundred)
+  with_leaps:i64 = int.add.checked(whole_years,leap_days)
+  without_centuries:i64 = int.sub.checked(with_leaps,century_days)
+  day_of_era:i64 = int.add.checked(without_centuries,day_of_year)
+  era_start_days:i64 = int.mul.checked(era,era_days)
+  absolute_days:i64 = int.add.checked(era_start_days,day_of_era)
+  result:i64 = int.sub.checked(absolute_days,epoch)
+  success:u64 = const() {"value":0}
+  ret(result,success)
+block invalid()
+  invalid_days:i64 = const() {"value":0}
+  error:u64 = const() {"value":1}
+  ret(invalid_days,error)
+end
+fn timestamp_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-8334601228800}
+  maximum:i64 = const() {"value":8210266876799}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  range_ok:bool = bool.and(after_minimum,before_maximum)
+  branch range_ok fraction(seconds,nanos) invalid()
+block fraction(fraction_seconds:i64,fraction_nanos:u64)
+  minute:i64 = const() {"value":60}
+  last:i64 = const() {"value":59}
+  billion:u64 = const() {"value":1000000000}
+  two_billion:u64 = const() {"value":2000000000}
+  minute_index:i64 = call(fraction_seconds,minute) {"function":"floor_div"}
+  minute_start:i64 = int.mul.checked(minute_index,minute)
+  within_minute:i64 = int.sub.checked(fraction_seconds,minute_start)
+  leap_position:bool = compare.eq(within_minute,last)
+  ordinary:bool = compare.lt(fraction_nanos,billion)
+  fraction_bound:bool = compare.lt(fraction_nanos,two_billion)
+  position_ok:bool = bool.or(ordinary,leap_position)
+  valid:bool = bool.and(fraction_bound,position_ok)
+  ret(valid)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn delta_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-9223372036854776}
+  maximum:i64 = const() {"value":9223372036854775}
+  minimum_fraction:u64 = const() {"value":193000000}
+  maximum_fraction:u64 = const() {"value":807000000}
+  billion:u64 = const() {"value":1000000000}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  seconds_ok:bool = bool.and(after_minimum,before_maximum)
+  fraction_ok:bool = compare.lt(nanos,billion)
+  not_minimum:bool = compare.ne(seconds,minimum)
+  not_maximum:bool = compare.ne(seconds,maximum)
+  after_fraction_minimum:bool = compare.ge(nanos,minimum_fraction)
+  before_fraction_maximum:bool = compare.le(nanos,maximum_fraction)
+  lower_ok:bool = bool.or(not_minimum,after_fraction_minimum)
+  upper_ok:bool = bool.or(not_maximum,before_fraction_maximum)
+  basic_ok:bool = bool.and(seconds_ok,fraction_ok)
+  endpoint_ok:bool = bool.and(lower_ok,upper_ok)
+  valid:bool = bool.and(basic_ok,endpoint_ok)
+  ret(valid)
+end
+fn delta_parts(seconds:i64,nanos:u64) -> (i64,i64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  zero:i64 = const() {"value":0}
+  zero_word:u64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  billion:i64 = const() {"value":1000000000}
+  negative:bool = compare.lt(seconds,zero)
+  fractional:bool = compare.gt(nanos,zero_word)
+  adjust:bool = bool.and(negative,fractional)
+  seconds_adjustment:i64 = select(adjust,one,zero)
+  fraction_adjustment:i64 = select(adjust,billion,zero)
+  fraction:i64 = int.cast(nanos) {"mode":"checked"}
+  whole:i64 = int.add.checked(seconds,seconds_adjustment)
+  remainder:i64 = int.sub.checked(fraction,fraction_adjustment)
+  ret(whole,remainder)
+end
+fn add_datetime(seconds:i64,nanos:u64,delta_seconds:i64,delta_nanos:i64) -> (u64,i64,u64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64,delta_seconds:i64,delta_nanos:i64)
+  billion:i64 = const() {"value":1000000000}
+  fraction:i64 = int.cast(nanos) {"mode":"checked"}
+  leap:bool = compare.ge(fraction,billion)
+  branch leap leap_check(seconds,fraction,delta_seconds,delta_nanos) normal(seconds,fraction,delta_seconds,delta_nanos)
+block leap_check(leap_seconds:i64,leap_fraction:i64,leap_delta_seconds:i64,leap_delta_nanos:i64)
+  leap_zero:i64 = const() {"value":0}
+  two_billion:i64 = const() {"value":2000000000}
+  positive_seconds:bool = compare.gt(leap_delta_seconds,leap_zero)
+  positive_fraction:bool = compare.gt(leap_delta_nanos,leap_zero)
+  leap_limit:i64 = int.sub.checked(two_billion,leap_delta_nanos)
+  fraction_escapes:bool = compare.ge(leap_fraction,leap_limit)
+  fractional_escape:bool = bool.and(positive_fraction,fraction_escapes)
+  forward_escape:bool = bool.or(positive_seconds,fractional_escape)
+  branch forward_escape forward(leap_seconds,leap_fraction,leap_delta_seconds,leap_delta_nanos) backward_check(leap_seconds,leap_fraction,leap_delta_seconds,leap_delta_nanos)
+block forward(forward_seconds:i64,forward_fraction:i64,forward_delta_seconds:i64,forward_delta_nanos:i64)
+  forward_billion:i64 = const() {"value":1000000000}
+  ordinary_fraction:i64 = int.sub.checked(forward_fraction,forward_billion)
+  jump normal(forward_seconds,ordinary_fraction,forward_delta_seconds,forward_delta_nanos)
+block backward_check(back_seconds:i64,back_fraction:i64,back_delta_seconds:i64,back_delta_nanos:i64)
+  back_zero:i64 = const() {"value":0}
+  negative_seconds:bool = compare.lt(back_delta_seconds,back_zero)
+  branch negative_seconds backward(back_seconds,back_fraction,back_delta_seconds,back_delta_nanos) stay(back_seconds,back_fraction,back_delta_nanos)
+block backward(backward_seconds:i64,backward_fraction:i64,backward_delta_seconds:i64,backward_delta_nanos:i64)
+  backward_billion:i64 = const() {"value":1000000000}
+  backward_one:i64 = const() {"value":1}
+  backward_ordinary_fraction:i64 = int.sub.checked(backward_fraction,backward_billion)
+  backward_ordinary_seconds:i64 = int.add.checked(backward_seconds,backward_one)
+  jump normal(backward_ordinary_seconds,backward_ordinary_fraction,backward_delta_seconds,backward_delta_nanos)
+block stay(stay_seconds:i64,stay_fraction:i64,stay_delta_nanos:i64)
+  stay_nanos:i64 = int.add.checked(stay_fraction,stay_delta_nanos)
+  stay_word:u64 = int.cast(stay_nanos) {"mode":"checked"}
+  stay_valid:u64 = const() {"value":1}
+  ret(stay_valid,stay_seconds,stay_word)
+block normal(normal_seconds:i64,normal_fraction:i64,normal_delta_seconds:i64,normal_delta_nanos:i64)
+  whole:i64 = int.add.checked(normal_seconds,normal_delta_seconds)
+  fractional:i64 = int.add.checked(normal_fraction,normal_delta_nanos)
+  normal_zero:i64 = const() {"value":0}
+  normal_one:i64 = const() {"value":1}
+  normal_minus_one:i64 = const() {"value":-1}
+  normal_billion:i64 = const() {"value":1000000000}
+  negative_billion:i64 = const() {"value":-1000000000}
+  borrow:bool = compare.lt(fractional,normal_zero)
+  carry:bool = compare.ge(fractional,normal_billion)
+  carry_seconds:i64 = select(carry,normal_one,normal_zero)
+  carry_fraction:i64 = select(carry,negative_billion,normal_zero)
+  seconds_adjustment:i64 = select(borrow,normal_minus_one,carry_seconds)
+  fraction_adjustment:i64 = select(borrow,normal_billion,carry_fraction)
+  result_seconds:i64 = int.add.checked(whole,seconds_adjustment)
+  result_fraction:i64 = int.add.checked(fractional,fraction_adjustment)
+  result_nanos:u64 = int.cast(result_fraction) {"mode":"checked"}
+  result_valid:bool = call(result_seconds,result_nanos) {"function":"timestamp_valid"}
+  branch result_valid present(result_seconds,result_nanos) absent()
+block present(present_seconds:i64,present_nanos:u64)
+  present_valid:u64 = const() {"value":1}
+  ret(present_valid,present_seconds,present_nanos)
+block absent()
+  absent_valid:u64 = const() {"value":0}
+  absent_seconds:i64 = const() {"value":0}
+  absent_nanos:u64 = const() {"value":0}
+  ret(absent_valid,absent_seconds,absent_nanos)
+end
+fn difference(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64)
+  day:i64 = const() {"value":86400}
+  billion:i64 = const() {"value":1000000000}
+  billion_word:u64 = const() {"value":1000000000}
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  minus_one:i64 = const() {"value":-1}
+  left_day:i64 = call(left_seconds,day) {"function":"floor_div"}
+  right_day:i64 = call(right_seconds,day) {"function":"floor_div"}
+  left_start:i64 = int.mul.checked(left_day,day)
+  right_start:i64 = int.mul.checked(right_day,day)
+  left_sod:i64 = int.sub.checked(left_seconds,left_start)
+  right_sod:i64 = int.sub.checked(right_seconds,right_start)
+  after:bool = compare.gt(left_sod,right_sod)
+  before:bool = compare.lt(left_sod,right_sod)
+  left_leap:bool = compare.ge(left_nanos,billion_word)
+  right_leap:bool = compare.ge(right_nanos,billion_word)
+  add_leap:bool = bool.and(after,right_leap)
+  subtract_leap:bool = bool.and(before,left_leap)
+  minus_adjustment:i64 = select(subtract_leap,minus_one,zero)
+  leap_adjustment:i64 = select(add_leap,one,minus_adjustment)
+  seconds:i64 = int.sub.checked(left_seconds,right_seconds)
+  with_leap:i64 = int.add.checked(seconds,leap_adjustment)
+  left_fraction:i64 = int.cast(left_nanos) {"mode":"checked"}
+  right_fraction:i64 = int.cast(right_nanos) {"mode":"checked"}
+  fraction:i64 = int.sub.checked(left_fraction,right_fraction)
+  fraction_seconds:i64 = call(fraction,billion) {"function":"floor_div"}
+  whole_fraction:i64 = int.mul.checked(fraction_seconds,billion)
+  positive_fraction:i64 = int.sub.checked(fraction,whole_fraction)
+  result_seconds:i64 = int.add.checked(with_leap,fraction_seconds)
+  result_nanos:u64 = int.cast(positive_fraction) {"mode":"checked"}
+  ret(result_seconds,result_nanos)
+end

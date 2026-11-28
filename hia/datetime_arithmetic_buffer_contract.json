@@ -1,0 +1,230 @@
+{
+  "schema": "codex.hia.datetime-arithmetic-buffer-contract.v1",
+  "revision": 1,
+  "status": "UTC checked DateTime arithmetic, signed differences and YMD constructor component; Local timezones, production integration and whole-product qualification remain separate gates.",
+  "module": "datetime_arithmetic",
+  "source_sha256": "b1d1a41087136d1c67fcf8174b08d7eb957483a9b96880ecf0a849dd0bb2a0b0",
+  "core_sha256": "89074c838c959bcdb6532b642b7781fd6b41a642db5ef7b2706b57a47b3b92e4",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "DateTime::from_timestamp",
+      "TimeDelta::new",
+      "DateTime::checked_add_signed",
+      "DateTime::checked_sub_signed",
+      "DateTime::signed_duration_since",
+      "TimeDelta::num_seconds",
+      "TimeDelta::subsec_nanos",
+      "Utc.with_ymd_and_hms(...).single()"
+    ],
+    "oracle_registry_packages": 43,
+    "source_files": {
+      "src/datetime/mod.rs": {
+        "sha256": "be16eba9febaa4df77960e8659f0a77e97b836721d39025cc61bef563c148758",
+        "bytes": 74034
+      },
+      "src/naive/datetime/mod.rs": {
+        "sha256": "2d996065d3e95eb794dcddc11141f3b3db87bd157a48f10ecf631111910fe437",
+        "bytes": 80161
+      },
+      "src/naive/time/mod.rs": {
+        "sha256": "dad88f7e02c3a552e135a2c7a843d71a86696d29e48808988b2df6c8210d2672",
+        "bytes": 62651
+      },
+      "src/time_delta.rs": {
+        "sha256": "31c15727ca89f4aa1a5e7a3ef8a9814c1bf5a30a7baf20f90b1a21b20cd00ed3",
+        "bytes": 57500
+      },
+      "src/offset/mod.rs": {
+        "sha256": "641a632cdec0c966d558231f1e94cdddb1a447f51410b7d56445e65bb6878c25",
+        "bytes": 29413
+      }
+    }
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed arguments use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "allowed": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "meaning": "0: checked DateTime add TimeDelta; 1: checked subtract; 2: signed_duration_since; 3: UTC YMD construction"
+      },
+      {
+        "offset": 16,
+        "name": "argument_a",
+        "meaning": "signed left timestamp seconds for operations 0..2; signed year for operation 3"
+      },
+      {
+        "offset": 24,
+        "name": "argument_b",
+        "meaning": "left timestamp nanoseconds for operations 0..2; month for operation 3"
+      },
+      {
+        "offset": 32,
+        "name": "argument_c",
+        "meaning": "signed canonical TimeDelta seconds for operations 0..1; signed right timestamp seconds for operation 2; day for operation 3"
+      },
+      {
+        "offset": 40,
+        "name": "argument_d",
+        "meaning": "canonical TimeDelta nanoseconds for operations 0..1; right timestamp nanoseconds for operation 2; hour for operation 3"
+      },
+      {
+        "offset": 48,
+        "name": "argument_e",
+        "meaning": "required zero for operations 0..2; minute for operation 3"
+      },
+      {
+        "offset": 56,
+        "name": "argument_f",
+        "meaning": "required zero for operations 0..2; second for operation 3"
+      }
+    ],
+    "mutation": "Never modified; all eight words are loaded before any output write."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 64,
+    "byte_order": "eight little-endian u64 words; signed results use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "inputs_valid",
+        "value": "1 when the original DateTime and TimeDelta operands, or YMD constructor arguments, are valid; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "result_valid",
+        "value": "1 when the actual result exists; valid operands whose checked operation overflows retain inputs_valid=1 with result_valid=0"
+      },
+      {
+        "offset": 24,
+        "name": "result_seconds",
+        "value": "signed timestamp seconds for operations 0,1,3; signed canonical TimeDelta seconds for operation 2; otherwise 0"
+      },
+      {
+        "offset": 32,
+        "name": "result_nanoseconds",
+        "value": "DateTime subsecond nanoseconds for operations 0,1,3; canonical nonnegative TimeDelta nanoseconds for operation 2; otherwise 0"
+      },
+      {
+        "offset": 40,
+        "name": "duration_num_seconds",
+        "value": "signed original num_seconds() for operation 2; otherwise 0"
+      },
+      {
+        "offset": 48,
+        "name": "duration_subsec_nanos",
+        "value": "signed original subsec_nanos() for operation 2; otherwise 0"
+      },
+      {
+        "offset": 56,
+        "name": "reserved",
+        "value": 0
+      }
+    ],
+    "tail": "Bytes after offset 64 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "timestamp_seconds_range": [
+      -8334601228800,
+      8210266876799
+    ],
+    "timestamp_fraction": "Nanoseconds must be below 2000000000; values at least 1000000000 require the Euclidean second within the minute to be 59. Guard the timestamp range before computing any minute index.",
+    "duration": "Match TimeDelta::new exactly: canonical seconds from -9223372036854776 through 9223372036854775, fraction below 1000000000; at the lower endpoint fraction must be at least 193000000, at the upper endpoint at most 807000000. Convert canonical negative fractions to the original truncated num_seconds and signed subsec_nanos before arithmetic.",
+    "addition": "Preserve the original NaiveTime leap escape order. On a leap input, a positive whole duration, or a positive fractional duration that reaches fraction 2000000000, first removes one billion from the input fraction. A negative whole duration removes one billion and advances the input second by one. Other fractional-only changes remain within the leap second or the second before. Normal addition then performs a single fraction borrow/carry and enforces the final full DateTime range.",
+    "subtraction": "Negate the validated duration's truncated seconds and signed fractional part before applying the same original leap rules. TimeDelta's symmetric total duration bounds ensure both negations are representable.",
+    "difference": "The original leap correction compares seconds within the day, including when dates differ: add one second if left time-of-day is later and right is a leap second; otherwise subtract one if left is earlier and left is a leap second. Add the date-aware seconds difference and Euclidean fraction quotient/remainder. Encode the original TimeDelta canonically and also return its actual num_seconds/subsec_nanos accessors. The original observer reconstructs TimeDelta::new and asserts equality with signed_duration_since.",
+    "ymd": "Match Utc.with_ymd_and_hms(...).single(): year -262143..262142, valid Gregorian month/day, hour<24, minute<60, second<60. The constructor rejects second 60. Guard year before calendar arithmetic. The reused civil_days helper retains the previously qualified Gregorian rules.",
+    "wide_arguments": "Nanoseconds and YMD fields use u64 in the borrowed ABI. The original observer first requires u32 representability for nanos/month/day/hour/minute/second and i32 representability for year; unsupported wider values produce inputs_valid=0. All valid semantic ranges are within these original parameter types.",
+    "scope": "UTC checked arithmetic, signed differences and one YMD constructor only. Local timezone operations, month arithmetic, generic TimeDelta public APIs, adapter integration and production callers remain separate."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is below 64, before reading source or validating workspace"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source size is not 64, workspace is nonempty, version is not 1, operation is outside 0..3, or either reserved argument for operations 0..2 is nonzero"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 64 output bytes encode the actual original operands and operation result; semantic failure preserves version 1 and clears unavailable value fields"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 857364,
+    "calendar_constructor_cases_preserved_per_operation": 166327,
+    "gregorian_cycle_valid_days": 146097,
+    "gregorian_cycle_date_slots": 148800,
+    "input_sha256": "993a81bf6b6c0ab82d841ee40ae94d1c3fee250b85b20e2a777ab3ea186f4196",
+    "original_output_sha256": "984966d312a9ab7905eb314d653242912dff3c6b539f6c7e986e33a3080b9322",
+    "original_result_counts": {
+      "0,0,0": 56699,
+      "0,1,0": 2982,
+      "0,1,1": 181062,
+      "1,0,0": 56697,
+      "1,1,0": 2886,
+      "1,1,1": 181160,
+      "2,0,0": 36581,
+      "2,1,1": 168178,
+      "3,0,0": 12145,
+      "3,1,1": 158974
+    },
+    "result_count_key": "operation,inputs-valid,result-valid",
+    "buffer_control_calls": 879,
+    "native_calls_required": 3430335,
+    "coverage": "Every original calendar constructor case as operand in add/sub/difference; all 400 years x 12 months x 31 date slots; dense leap-second duration carry/borrow/escape/stay cases at minute/day/date endpoints; canonical TimeDelta limits and invalid fractions; same-day and different-day leap pairs; wide YMD field guards; deterministic complete-range DateTime pairs and small/extreme durations.",
+    "controls": "Two fills and exact/excess output capacities for every semantic case. All 64 shorter output capacities for all four operations; truncated and oversized source, invalid metadata, reserved words for each relevant operation and nonempty workspace. All inputs, outputs, tails and unaligned guards compared.",
+    "recording": "Complete input, original output and native-call transcript retained as gzip streams, with SHA-256 hashes of every uncompressed byte."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}
