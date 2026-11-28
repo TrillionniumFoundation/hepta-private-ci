@@ -1,0 +1,68 @@
+{
+  "schema": "codex.hia.cloud-cache-deadline.v1",
+  "reference_commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+  "compiler_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+  "caller": {
+    "path": "codex-rs/cloud-config/src/cache.rs",
+    "original": {
+      "bytes": 8869,
+      "sha256": "7a63eea1affc82c19c670ea90259ccdae2cc9f2497fb66d1fcae8dc7e79a4eb9"
+    },
+    "current": {
+      "bytes": 9488,
+      "sha256": "539c7899aa87a62da25f86906191f5862acc13f518b65fe9a72f1e59732ab158"
+    }
+  },
+  "original_tests": {
+    "path": "codex-rs/cloud-config/src/cache_tests.rs",
+    "bytes": 6947,
+    "sha256": "eb7644e0d30bcaab02d60d28bee92c73d58fbff4c3d7be1039215bb82ddf567d"
+  },
+  "transport": {
+    "path": "hia/datetime_deadline.rs",
+    "bytes": 3393,
+    "sha256": "128c44dd0a024638ffd794a3583de3616120775db0dcfdc54a02152f887eef20"
+  },
+  "input_cases": 537103,
+  "input_sha256": "689eac0c0f7d314dd0aabdfd44a05f1b26af6ba3a3cc4e4343dcfa2ddc2cf76d",
+  "cloud_raw_cases": 166607,
+  "generic_raw_cases": 370496,
+  "input_words": [
+    "operation: 0 original cloud calculation, 1 generic std duration composition",
+    "timestamp seconds as i64 bits",
+    "timestamp nanoseconds as u64",
+    "standard duration seconds as u64",
+    "canonical standard duration nanoseconds as u64"
+  ],
+  "output_words": [
+    "typed domain",
+    "original result present",
+    "original timestamp seconds as i64 bits",
+    "original timestamp nanoseconds",
+    "native result present",
+    "native timestamp seconds as i64 bits",
+    "native timestamp nanoseconds",
+    "original clock read count",
+    "native clock read count"
+  ],
+  "outside_typed_domain": "Every original raw input is recorded. Unrepresentable original DateTime inputs and noncanonical std Duration fractions are explicitly accounted; the prior complete borrowed-buffer differentials cover those raw input semantics.",
+  "production_native_modules": 41,
+  "qualified_components_reused": {
+    "duration_units": {
+      "source_sha256": "1dab3ce8a1440d109e60d9f58c5a4c3d2e9905678eccf42f9baa272727ca1c6d",
+      "core_sha256": "24a0209fdab96d36b69501ebf88405a2dbee716aa4985fb297d495130acab0de",
+      "object_sha256": "91d6edb528ef762f7bfda49d9e7c73ca5116ca8701ae0bd458b5736efeb59a85"
+    },
+    "datetime_arithmetic": {
+      "source_sha256": "b1d1a41087136d1c67fcf8174b08d7eb957483a9b96880ecf0a849dd0bb2a0b0",
+      "core_sha256": "89074c838c959bcdb6532b642b7781fd6b41a642db5ef7b2706b57a47b3b92e4",
+      "object_sha256": "f2db029b8a6439acf4cc2833c2d0ff261d264c68726538b0e4fa049ee4aadf13"
+    }
+  },
+  "calculation_scope": "Duration admission and UTC checked date addition execute in HIA. Actual Chrono clock, DateTime fields/construction, JSON serialization and HMAC/storage remain separately implemented.",
+  "unit_error_replay_scope": "The exact date calculation fragments return the same unit error category; unchanged whole-crate tests cover its public Error/Display behavior and signed save/load path.",
+  "whole_product_qualified": false,
+  "chrono_removed": false,
+  "legacy_retirement": false
+}

@@ -24,6 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # the command-dispatch and network-host runners, including their shared modules.
 # Other standalone inputs keep their own fallback (the seek oracle uses 2021).
 STANDALONE_RUST_EDITIONS = {
+    "hia/tests/cloud_deadline_callers.rs": "2024",
     "hia/tests/command_dispatch_fixtures.rs": "2024",
     "hia/tests/datetime_cache_callers.rs": "2024",
     "hia/tests/native_command_dispatch.rs": "2024",
