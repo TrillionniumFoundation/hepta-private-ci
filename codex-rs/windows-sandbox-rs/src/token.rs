@@ -358,8 +358,10 @@ pub unsafe fn create_readonly_token_with_cap(
     res
 }
 
-/// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// Use only the read-only capability for the legacy restricted write check.
+/// Broad identity SIDs belong to the default DACL for child-created IPC,
+/// not to the set of capabilities authorizing access to existing files.
+///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
 pub unsafe fn create_readonly_token_with_cap_from(
@@ -370,7 +372,7 @@ pub unsafe fn create_readonly_token_with_cap_from(
         base_token,
         &[psid_capability],
         &[],
-        RestrictingIdentity::Include,
+        RestrictingIdentity::Exclude,
     )?;
     Ok((new_token, psid_capability))
 }
@@ -493,8 +495,8 @@ unsafe fn create_token_with_caps_from(
         })
         .collect();
     // A restricting SID is an alternative ACE match, not an additional requirement.
-    // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
-    // Readonly and dedicated elevated-account tokens retain their existing policy.
+    // Legacy capability-only tokens must not authorize writes through broad
+    // identity grants. The dedicated elevated-account policy remains separate.
     if matches!(restricting_identity, RestrictingIdentity::Include) {
         entries.push(SID_AND_ATTRIBUTES {
             Sid: psid_logon,
