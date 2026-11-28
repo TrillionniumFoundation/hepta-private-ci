@@ -35,13 +35,13 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 
 use crate::windows_security::OwnerSecurityDescriptor;
 
+const FILE_RENAME_INFORMATION: i32 = 10;
 const FILE_DIRECTORY_FILE: u32 = 0x0000_0001;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x0000_0020;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x0000_0040;
@@ -89,6 +89,13 @@ unsafe extern "system" {
         create_options: u32,
         ea_buffer: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+    fn NtSetInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        file_information: *const c_void,
+        length: u32,
+        file_information_class: i32,
     ) -> NTSTATUS;
 }
 
@@ -206,6 +213,7 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
         (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
     let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    let mut io_status = IO_STATUS_BLOCK::default();
     // SAFETY: the allocation is aligned for this pointer-containing struct,
     // includes the complete variable name, and outlives the synchronous call.
     unsafe {
@@ -220,14 +228,20 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
             (&raw mut (*info).FileName).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        // FILE_RENAME_INFO has the native FILE_RENAME_INFORMATION layout.
+        // Use the NT call directly: the Win32 wrapper can reject this retained
+        // root-directory form even when the same handles and buffer are valid.
+        let status = NtSetInformationFile(
             source.as_raw_handle(),
-            FileRenameInfo,
+            &mut io_status,
             storage.as_ptr().cast(),
             u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
-        ) == 0
-        {
-            return Err(io::Error::last_os_error());
+            FILE_RENAME_INFORMATION,
+        );
+        if status < 0 {
+            return Err(io::Error::from_raw_os_error(
+                RtlNtStatusToDosError(status) as i32
+            ));
         }
     }
     Ok(())

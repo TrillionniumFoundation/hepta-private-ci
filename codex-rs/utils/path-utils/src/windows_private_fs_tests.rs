@@ -197,3 +197,56 @@ fn create_junction(link: &Path, target: &Path) -> io::Result<()> {
     }
     Ok(())
 }
+
+#[test]
+fn replacement_preserves_unicode_names_and_file_identity() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let directory = PrivateDirectory::open_or_create(&temp.path().join("state"))?;
+    let source = "state-原始-🦀.next";
+    let destination = "state-更新-🦀.json";
+    let expected = b"unicode state\0\xff";
+    let mut file = directory.create_new(source)?;
+    file.write_all(expected)?;
+    file.sync_all()?;
+    let before = snapshot_private_file(&file)?;
+
+    directory.replace(source, destination)?;
+    directory.sync_all()?;
+
+    let mut published = directory.open_read(destination)?;
+    let after = snapshot_private_file(&published)?;
+    let mut actual = Vec::new();
+    published.read_to_end(&mut actual)?;
+    assert!(before.same_file(&after));
+    assert_eq!(actual, expected);
+    assert!(!directory.entry_exists(source)?);
+    Ok(())
+}
+
+#[test]
+fn replacement_rejection_preserves_both_files_and_reports_access_denied() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().join("state");
+    let directory = PrivateDirectory::open_or_create(&root)?;
+    for (name, contents) in [
+        ("state.next", b"new state".as_slice()),
+        ("state.json", b"old state".as_slice()),
+    ] {
+        let mut file = directory.create_new(name)?;
+        file.write_all(contents)?;
+        file.sync_all()?;
+    }
+    let destination = root.join("state.json");
+    let original_permissions = fs::metadata(&destination)?.permissions();
+    let mut read_only = original_permissions.clone();
+    read_only.set_readonly(true);
+    fs::set_permissions(&destination, read_only)?;
+
+    let result = directory.replace("state.next", "state.json");
+    fs::set_permissions(&destination, original_permissions)?;
+
+    assert_eq!(result.unwrap_err().kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(fs::read(root.join("state.next"))?, b"new state");
+    assert_eq!(fs::read(destination)?, b"old state");
+    Ok(())
+}

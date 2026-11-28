@@ -1,10 +1,11 @@
-name: Windows private state rename diagnostic
+name: Windows private state rename qualification
 
 on:
   push:
     branches:
       - codex/hia-windows-private-state-20261128-03da85
     paths:
+      - codex-rs/utils/path-utils/src/**
       - .github/scripts/windows_private_fs_rename_probe.py
       - .github/workflows/windows-private-state-diagnostic.yml
 
@@ -12,9 +13,12 @@ permissions:
   contents: read
 
 jobs:
-  diagnose:
+  qualify:
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
     steps:
       - name: Preserve exact repository source bytes
         shell: pwsh
@@ -22,14 +26,62 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          fetch-depth: 10
-      - name: Capture the exact Windows rename parameter comparisons
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the complete Windows path utilities target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --test_output=all \
+            --cache_test_results=no \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/utils/path-utils:path-utils-unit-tests
+      - name: Bind the source and require all original and added tests
         shell: pwsh
-        run: python .github/scripts/windows_private_fs_rename_probe.py --output "${{ runner.temp }}/windows-private-state-rename.json"
-      - name: Preserve the complete native diagnostic
+        run: |
+          @'
+          import hashlib, json, os, pathlib, subprocess, xml.etree.ElementTree as ET
+          source = pathlib.Path("codex-rs/utils/path-utils/src")
+          tests = pathlib.Path("bazel-testlogs/codex-rs/utils/path-utils/path-utils-unit-tests")
+          cases = list(ET.parse(tests / "test.xml").getroot().iter("testcase"))
+          assert len(cases) == 16, len(cases)
+          assert all(child.tag not in {"failure", "error", "skipped"} for case in cases for child in case), [case.attrib for case in cases]
+          files = {}
+          for name in ["windows_private_fs.rs", "windows_private_fs/nt.rs", "windows_private_fs/snapshot.rs", "windows_private_fs_tests.rs", "windows_security.rs"]:
+              path = source / name
+              data = path.read_bytes()
+              original = subprocess.check_output(["git", "show", os.environ["GITHUB_SHA"] + ":" + path.as_posix()])
+              assert data == original, name
+              files[path.as_posix()] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+          binaries = list(pathlib.Path("bazel-bin/codex-rs/utils/path-utils").glob("*unit-tests*.exe"))
+          assert len(binaries) == 1, binaries
+          binary = binaries[0]
+          binary_data = binary.read_bytes()
+          report = {"head": os.environ["GITHUB_SHA"], "source": files, "binary": {"path": binary.as_posix(), "bytes": len(binary_data), "sha256": hashlib.sha256(binary_data).hexdigest()}, "tests": [case.attrib for case in cases]}
+          (tests / "source-and-tests.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          '@ | python -
+      - name: Preserve complete native test evidence
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
-          name: windows-private-state-rename
-          path: ${{ runner.temp }}/windows-private-state-rename.json
+          name: windows-private-state-native-tests
+          path: bazel-testlogs/codex-rs/utils/path-utils/path-utils-unit-tests/
           if-no-files-found: error
