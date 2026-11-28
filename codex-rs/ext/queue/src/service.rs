@@ -546,7 +546,19 @@ impl QueuedItemService {
             .await
     }
 
+    /// Waits for an in-flight local dispatch to settle its durable queue row.
+    /// Core turn completion can precede the queue store's completion transaction.
     pub async fn list_page(
+        &self,
+        thread_id: ThreadId,
+        offset: usize,
+        limit: usize,
+    ) -> Result<Vec<QueuedItem>, QueueServiceError> {
+        let _dispatch_guard = self.dispatch_guard(thread_id).await;
+        self.list_page_locked(thread_id, offset, limit).await
+    }
+
+    async fn list_page_locked(
         &self,
         thread_id: ThreadId,
         offset: usize,
@@ -569,7 +581,7 @@ impl QueuedItemService {
         let _dispatch_guard = self.dispatch_guard(thread_id).await;
         if let TurnInput::UserInput { client_id, .. } = &mut input {
             *client_id = self
-                .list(thread_id)
+                .list_page_locked(thread_id, /*offset*/ 0, MAX_QUEUE_ITEMS)
                 .await?
                 .into_iter()
                 .find_map(|item| match item {
@@ -636,7 +648,7 @@ impl QueuedItemService {
         let thread_id = thread.session_configured().thread_id;
         let _dispatch_guard = self.dispatch_guard(thread_id).await;
         let item = self
-            .list(thread_id)
+            .list_page_locked(thread_id, /*offset*/ 0, MAX_QUEUE_ITEMS)
             .await?
             .into_iter()
             .find(|item| queued_item_id.as_ref().is_none_or(|id| item.id == *id))
