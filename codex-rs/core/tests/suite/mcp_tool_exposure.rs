@@ -2,6 +2,7 @@ use anyhow::Result;
 use codex_config::Constrained;
 use codex_core::EnvironmentConfig;
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
 use codex_core::config::Config;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistryBuilder;
@@ -1241,12 +1242,16 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
     tokio::fs::remove_dir_all(test.codex_home_path().join("cache/codex_apps_tools")).await?;
     startup_control.fail_next_initialize_attempts(/*attempts*/ 1);
     test.codex.submit(Op::RefreshMcpServers).await?;
-    test.codex
+    let recovery_turn = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "use Calendar after transient Apps startup failures".into(),
             text_elements: Vec::new(),
         }]))
         .await?;
+    let TurnInputSubmission::Started { turn_id } = recovery_turn else {
+        anyhow::bail!("expected a new recovery turn, got {recovery_turn:?}");
+    };
     tokio::time::timeout(Duration::from_secs(5), async {
         let mut turn_complete = false;
         let mut apps_ready = false;
@@ -1257,7 +1262,14 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
                 .await
                 .expect("event stream should stay open");
             match event.msg {
-                EventMsg::TurnComplete(_) => turn_complete = true,
+                EventMsg::TurnComplete(turn) if turn.turn_id == turn_id => {
+                    if let Some(finished) =
+                        test.codex.pending_normal_turn_finish_completion(&turn_id)
+                    {
+                        finished.await;
+                    }
+                    turn_complete = true;
+                }
                 EventMsg::McpStartupUpdate(update)
                     if update.server == CODEX_APPS_MCP_SERVER_NAME
                         && matches!(

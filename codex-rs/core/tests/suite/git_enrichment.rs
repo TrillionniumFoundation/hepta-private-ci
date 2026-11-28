@@ -97,9 +97,9 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     skip_if_no_network!(Ok(()));
 
     let (repo, head) = create_git_repo()?;
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![
             ev_response_created("resp-1"),
             ev_function_call(
                 "wait-for-git",
@@ -107,13 +107,13 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
                 r#"{"sleep_after_ms":5000}"#,
             ),
             ev_completed("resp-1"),
-        ],
-        vec![
+        ]],
+        vec![vec![
             ev_response_created("resp-2"),
             ev_assistant_message("msg-2", "done"),
             ev_completed("resp-2"),
-        ],
-    ]])
+        ]],
+    ])
     .await;
     let cwd = repo.path().to_path_buf();
     let mut builder = test_codex()
@@ -134,10 +134,12 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     std::fs::write(repo.path().join("untracked.txt"), "dirty\n")?;
     test.submit_turn("inspect the workspace").await?;
     let turn = server
-        .single_connection()
+        .connections()
         .get(2)
+        .and_then(|connection| connection.first())
         .context("turn follow-up request")?
         .body_json();
+    assert_eq!(server.handshakes().len(), 3);
     assert_eq!(
         turn_metadata(&turn)?["workspaces"],
         expected_workspace(repo.path(), &head, /*has_changes*/ true)
