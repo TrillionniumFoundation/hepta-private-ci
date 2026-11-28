@@ -14,15 +14,15 @@ from data import features
 
 REV='630d7dab4c040882834de6fa21baf9a60372accd'
 EXCLUDED={1,4,7,10,13,16,19,22}
-def construct(repo, known, out):
+def construct(repo, known, out, retention=False, additional=()):
     out.mkdir(parents=True,exist_ok=True)
     git=['git','--git-dir='+str(repo.resolve())]
     def run(args,**kwargs):return subprocess.run(git+args,check=True,**kwargs)
     members={}
     for i,s in enumerate(sorted(set(range(1,61))-EXCLUDED)):
-        panel='AB'[i%2]
+        panel='S' if retention else 'AB'[i%2]
         for y in range(10):
-            for n in range(12 if panel=='A' else 16,16 if panel=='A' else 20):
+            for n in (range(20,24) if retention else range(12 if panel=='A' else 16,16 if panel=='A' else 20)):
                 path=f'data/{s:02d}/{y}_{s:02d}_{n}.wav'
                 members[path]=(panel,y,s)
     source={}
@@ -40,9 +40,13 @@ def construct(repo, known, out):
     prior=set()
     with known.open() as fh:
         for r in csv.DictReader(fh,delimiter='\t'): prior.add(r['pcm_sha256'])
-    received={k:[] for k in 'AB'}; dup=[]; manifest=[];timers={}
+    for path in additional:
+        with path.open() as fh:
+            prior.update(row.split('\t')[-1].strip() for row in fh if row.strip())
+    roster='S' if retention else 'AB'
+    received={k:[] for k in roster}; dup=[]; manifest=[];timers={}
     with subprocess.Popen(git+['cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,env=env) as proc:
-        for panel in 'AB':
+        for panel in roster:
             wall=time.monotonic();cpu=time.process_time()
             for name in sorted(members):
                 group,digit,speaker=members[name]
@@ -63,4 +67,5 @@ def construct(repo, known, out):
 if __name__=='__main__':
     ap=argparse.ArgumentParser()
     for n in ('repo','known','out'):ap.add_argument(n,type=Path)
-    a=ap.parse_args();construct(a.repo,a.known,a.out)
+    ap.add_argument('--retention',action='store_true');ap.add_argument('--additional',type=Path,nargs='*',default=[])
+    a=ap.parse_args();construct(a.repo,a.known,a.out,a.retention,a.additional)
