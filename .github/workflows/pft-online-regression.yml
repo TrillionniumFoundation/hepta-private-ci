@@ -1,0 +1,112 @@
+name: PFT online synthetic regression
+
+"on":
+  pull_request:
+    paths:
+      - .github/workflows/pft-online-regression.yml
+      - qualification/__init__.py
+      - qualification/hcsn_closure_20261124/__init__.py
+      - qualification/hcsn_closure_20261124/pft_linear.py
+      - qualification/hcsn_closure_20261124/pft_statistics.py
+      - qualification/hcsn_closure_20261124/pft_statistics_tests.py
+      - qualification/hcsn_closure_20261124/pft_statistics_codec.py
+      - qualification/hcsn_closure_20261124/pft_statistics_codec_tests.py
+      - qualification/hcsn_closure_20261124/pft_online_peer.py
+      - qualification/hcsn_closure_20261124/pft_online_peer_tests.py
+      - qualification/hcsn_closure_20261124/pft_binary_peer.py
+      - qualification/hcsn_closure_20261124/pft_binary_peer_tests.py
+      - qualification/hcsn_closure_20261124/pft_online_regression.py
+      - qualification/hcsn_closure_20261124/pft_online_regression/**
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pft-online-regression.yml
+      - qualification/__init__.py
+      - qualification/hcsn_closure_20261124/__init__.py
+      - qualification/hcsn_closure_20261124/pft_linear.py
+      - qualification/hcsn_closure_20261124/pft_statistics.py
+      - qualification/hcsn_closure_20261124/pft_statistics_tests.py
+      - qualification/hcsn_closure_20261124/pft_statistics_codec.py
+      - qualification/hcsn_closure_20261124/pft_statistics_codec_tests.py
+      - qualification/hcsn_closure_20261124/pft_online_peer.py
+      - qualification/hcsn_closure_20261124/pft_online_peer_tests.py
+      - qualification/hcsn_closure_20261124/pft_binary_peer.py
+      - qualification/hcsn_closure_20261124/pft_binary_peer_tests.py
+      - qualification/hcsn_closure_20261124/pft_online_regression.py
+      - qualification/hcsn_closure_20261124/pft_online_regression/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pft-online-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-ledger-codec-peer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PFT_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      PFT_FORMAT_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+      PFT_EVIDENCE: ${{ runner.temp }}/pft-online-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare evidence directory
+        run: |
+          mkdir -p "$PFT_EVIDENCE"
+          git rev-parse HEAD > "$PFT_EVIDENCE/CHECKOUT_HEAD.txt"
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+      - name: Install pinned numerical and formatter dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            --index-url https://pypi.org/simple numpy==2.3.5 ruff==0.15.13 \
+            > "$PFT_EVIDENCE/INSTALL.log" 2>&1
+          python -m pip check >> "$PFT_EVIDENCE/INSTALL.log" 2>&1
+          python -m pip freeze > "$PFT_EVIDENCE/PIP_FREEZE.txt"
+      - name: Run only the 17 explicit synthetic controls
+        run: |
+          timeout --signal=TERM --kill-after=5s 120s \
+            python -m qualification.hcsn_closure_20261124.pft_online_regression \
+            --output "$PFT_EVIDENCE/tests" --expected-head "$PFT_EXPECTED_HEAD" \
+            --expected-python 3.12.3 > "$PFT_EVIDENCE/DRIVER.log" 2>&1
+      - name: Install canonical formatter entrypoint
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0
+      - name: Fetch exact event formatting baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/hepta_ci_history.py --commit "$PFT_FORMAT_BASE"
+      - name: Format after tests and require unchanged source
+        run: |
+          (cd codex-rs && just fmt --base "$PFT_FORMAT_BASE")
+          ruff format --check \
+            qualification/hcsn_closure_20261124/pft_{linear,statistics,statistics_tests}.py \
+            qualification/hcsn_closure_20261124/pft_statistics_codec{,_tests}.py \
+            qualification/hcsn_closure_20261124/pft_online_peer{,_tests}.py \
+            qualification/hcsn_closure_20261124/pft_binary_peer{,_tests}.py \
+            qualification/hcsn_closure_20261124/pft_online_regression.py
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: pft-online-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PFT_EVIDENCE }}
+          if-no-files-found: error
