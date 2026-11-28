@@ -11,6 +11,7 @@ use codex_core::IdleWorkPriority;
 use codex_core::StartIfIdleSubmission;
 use codex_core::TurnInputRequest;
 use codex_core::TurnInputSubmission;
+use codex_core::config::Config;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistry;
@@ -30,6 +31,7 @@ use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::ThreadGoalStatus;
 use codex_protocol::user_input::UserInput;
+use codex_state::SqliteConfig;
 use core_test_support::responses;
 use core_test_support::responses::start_mock_server;
 use core_test_support::test_codex::TestCodex;
@@ -148,6 +150,12 @@ impl LiveGoal {
     }
 }
 
+fn configure_goal_state(config: &mut Config) {
+    config.include_environment_context = false;
+    // A fresh SQLite home lets the real runtime create its own private directory.
+    config.sqlite = SqliteConfig::new_for_testing(config.codex_home.join("goal-state"));
+}
+
 fn user_request(text: &str) -> TurnInputRequest {
     TurnInputRequest::user_input(vec![UserInput::Text {
         text: text.to_string(),
@@ -185,7 +193,7 @@ async fn external_goal_set_defers_once_until_exact_cleanup_owner_finishes() -> a
     extensions.thread_lifecycle_contributor(gate.clone());
     let test = test_codex()
         .with_extensions(Arc::new(extensions.build()))
-        .with_config(|config| config.include_environment_context = false)
+        .with_config(configure_goal_state)
         .build_with_auto_env(&server)
         .await?;
 
@@ -274,7 +282,7 @@ async fn automatic_goal_rechecks_generation_after_queued_turn_finishes() -> anyh
     extensions.thread_lifecycle_contributor(gate.clone());
     let test = test_codex()
         .with_extensions(Arc::new(extensions.build()))
-        .with_config(|config| config.include_environment_context = false)
+        .with_config(configure_goal_state)
         .build_with_auto_env(&server)
         .await?;
 
@@ -360,7 +368,7 @@ async fn deferred_goal_does_not_submit_after_loaded_thread_replacement() -> anyh
     extensions.thread_lifecycle_contributor(gate.clone());
     let test = test_codex()
         .with_extensions(Arc::new(extensions.build()))
-        .with_config(|config| config.include_environment_context = false)
+        .with_config(configure_goal_state)
         .build_with_auto_env(&server)
         .await?;
 
