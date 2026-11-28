@@ -64,5 +64,16 @@
   "unit_error_replay_scope": "The exact date calculation fragments return the same unit error category; unchanged whole-crate tests cover its public Error/Display behavior and signed save/load path.",
   "whole_product_qualified": false,
   "chrono_removed": false,
-  "legacy_retirement": false
+  "legacy_retirement": false,
+  "observations": {
+    "input_cases": 537103,
+    "cloud_cases": 155566,
+    "generic_cases": 334544,
+    "outside_typed_domain": 46993,
+    "cloud_errors": 32,
+    "generic_errors": 334125,
+    "clock_reads_per_implementation": 155566
+  },
+  "trace_raw_bytes": 38671416,
+  "trace_raw_sha256": "caa18bba281a55d607d54ec7ed3a70608e68412621324b93e9c5f05e6ff8bc31"
 }

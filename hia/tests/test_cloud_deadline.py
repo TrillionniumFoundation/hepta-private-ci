@@ -130,6 +130,11 @@ def qualify(args, report):
     report.update(linked_chrono=binding(chrono), compile_argv=command,
                   transport=binding(ROOT / "hia/datetime_deadline.rs"),
                   replay_source=binding(Path(__file__).with_name("cloud_deadline_callers.rs")))
+    archived_chrono = args.output / "linked-original-chrono.rlib"
+    archived_chrono.write_bytes(chrono.read_bytes())
+    report["linked_chrono_archive"] = binding(archived_chrono)
+    require(report["linked_chrono_archive"]["sha256"] == report["linked_chrono"]["sha256"],
+            "archived original implementation differs from its linked bytes")
     compiled = subprocess.run(command, env=env, capture_output=True, timeout=60)
     for stream in ("stdout", "stderr"):
         (args.output / ("compile." + stream)).write_bytes(getattr(compiled, stream))
@@ -149,10 +154,14 @@ def qualify(args, report):
     require(counts["input_cases"] == len(cases)
             and counts["cloud_cases"] + counts["generic_cases"] + counts["outside_typed_domain"] == len(cases),
             "caller corpus observation accounting is incomplete")
+    require(counts == contract["observations"], "actual original/native observation coverage differs")
     report["observations"] = counts
     trace = args.output / "observations.bin"
     require(trace.stat().st_size == len(cases) * 72, "complete original/native trace is truncated")
     report["trace"] = preserve(args.output / "observations.bin.gz", trace.read_bytes())
+    require(report["trace"]["raw_bytes"] == contract["trace_raw_bytes"]
+            and report["trace"]["raw_sha256"] == contract["trace_raw_sha256"],
+            "complete original/native observations differ from the frozen trace")
     require(identity() == producer and binding(chrono) == report["linked_chrono"]
             and all(binding(Path(row["path"])) == row for row in archives), "source or linked implementation changed")
     report["passed"] = True
