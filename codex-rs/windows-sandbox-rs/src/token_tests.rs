@@ -299,3 +299,24 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     Ok(())
 }
+
+#[test]
+fn legacy_readonly_restrictions_use_the_capability_not_broad_identity_sids() -> Result<()> {
+    let capability = LocalSid::from_string("S-1-5-21-10-20-30-40")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    // SAFETY: the primary and restricted token handles are owned until the
+    // native queries complete; SID allocations outlive those calls.
+    unsafe {
+        let base = OwnedToken(get_current_token_for_restriction()?);
+        let mut logon_sid = get_logon_sid_bytes(base.0)?;
+        let (token, _) = create_readonly_token_with_cap_from(base.0, capability.as_ptr())?;
+        let token = OwnedToken(token);
+        assert!(token_has_restricting_sid(token.0, capability.as_ptr())?);
+        assert!(!token_has_restricting_sid(token.0, everyone.as_ptr())?);
+        assert!(!token_has_restricting_sid(
+            token.0,
+            logon_sid.as_mut_ptr().cast(),
+        )?);
+    }
+    Ok(())
+}
