@@ -67,6 +67,9 @@ use codex_thread_store::LocalThreadStoreConfig;
 use codex_thread_store::PersistContext;
 use codex_thread_store::ThreadStore;
 use codex_utils_path_uri::PathUri;
+use core_test_support::responses::mount_sse_once;
+use core_test_support::responses::sse_completed;
+use core_test_support::responses::start_mock_server;
 use core_test_support::responses::strip_response_item_ids;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -180,6 +183,15 @@ struct AgentControlHarness {
 impl AgentControlHarness {
     async fn new() -> Self {
         let (home, config) = test_config().await;
+        Self::new_with_config(home, config).await
+    }
+
+    async fn new_with_mock_model(server: &wiremock::MockServer) -> Self {
+        let (home, mut config) = test_config().await;
+        // Input recording is local; do not make it wait on a real provider's startup prewarm.
+        config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+        config.model_provider.supports_websockets = false;
+        let _ = mount_sse_once(server, sse_completed("test-message-recorded")).await;
         Self::new_with_config(home, config).await
     }
 
@@ -636,7 +648,8 @@ async fn subscribe_status_updates_on_shutdown() {
 
 #[tokio::test]
 async fn send_input_submits_user_message() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let (thread_id, thread) = harness.start_thread().await;
 
     let submission_id = harness
@@ -1096,7 +1109,8 @@ async fn resume_agent_from_rollout_does_not_reopen_v2_descendants() {
 
 #[tokio::test]
 async fn spawn_agent_creates_thread_and_sends_prompt() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let thread_id = harness
         .control
         .spawn_agent(
@@ -1455,7 +1469,8 @@ async fn spawn_agent_numeric_fork_from_compacted_paginated_parent_clamps_to_prov
 #[tokio::test]
 async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
     let managed_fragment = "<managed_developer_instructions>\nParent developer instructions.\n</managed_developer_instructions>";
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let mut parent_config = harness.config.clone();
     let _ = parent_config.features.enable(Feature::MultiAgentV2);
     parent_config.developer_instructions = Some("Parent developer instructions.".to_string());
