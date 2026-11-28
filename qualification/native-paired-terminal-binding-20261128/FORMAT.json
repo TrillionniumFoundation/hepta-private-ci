@@ -1,0 +1,84 @@
+{
+  "a": {
+    "archive_bytes": 8254,
+    "archive_sha256": "b9780136f6b1cc04bd52857960a70e1bc29f557903028c9531c6bb820966c385",
+    "path": "/tmp/hepta-intake-6523704f97df-paired-binding-fmt-a-v1/POSTIMAGES.json.gz",
+    "result": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "elapsed_seconds": 0.35833252710290253,
+      "exit": 0,
+      "hashes": {
+        "codex-rs/hepta-agentd/src/paired_terminal_binding.rs": {
+          "after": "00b94353f022300284dc28576d518187120a08543954c065b005a1b8a12841c8",
+          "before": "eeccda3e59cd417bf5fd6fe19d900789a1154674dff1351279d9f9b279749237"
+        },
+        "codex-rs/hepta-agentd/src/paired_terminal_binding_tests.rs": {
+          "after": "f8c93897c4902b218ad097d57234e04e3b7b74ee640c7ba7d0a765bb90fb47aa",
+          "before": "327689ec9a5744c6312bead4d37299c58bc5f91823b54eb4b2e1bd3ee53f1bd2"
+        },
+        "codex-rs/hepta-agentd/src/terminal_learning.rs": {
+          "after": "11d5cf99cac7f33012396b2da38e571a6d0423e2ecd73413fd0d78f79ed4cdbb",
+          "before": "061cf5a10df4b967224c97014f260f0c251a08a33fa346228894ce771c045e73"
+        }
+      },
+      "source_head": "c89cf314009b89435f9d95ae351e8de07410789c",
+      "stage": "a",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "b": {
+    "archive_bytes": 23721,
+    "archive_sha256": "a4634c6d2bbeb4c83b1953d796d64bd9d3c7a38131b7fbe95718a96f6de7174f",
+    "path": "/tmp/hepta-intake-6523704f97df-paired-binding-fmt-b-v1/POSTIMAGES.json.gz",
+    "result": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "elapsed_seconds": 0.7998436470516026,
+      "exit": 0,
+      "hashes": {
+        "codex-rs/hepta-agentd/src/paired_material_client.rs": {
+          "after": "51db77d70369a4545ed703642cbe42093c2fcd1bfa7e15279ede20836af8767d",
+          "before": "51db77d70369a4545ed703642cbe42093c2fcd1bfa7e15279ede20836af8767d"
+        },
+        "codex-rs/hepta-agentd/src/paired_preparation.rs": {
+          "after": "85f5d6c8b7452b993a298bec5004c7db6dda63edc43193ea1de33b9a05e15f9a",
+          "before": "85f5d6c8b7452b993a298bec5004c7db6dda63edc43193ea1de33b9a05e15f9a"
+        },
+        "codex-rs/hepta-agentd/src/paired_record_identity.rs": {
+          "after": "a003e5218c8e31cccb1cc7cfe26bff43077d80ce275ebd67389edc37352425c0",
+          "before": "a003e5218c8e31cccb1cc7cfe26bff43077d80ce275ebd67389edc37352425c0"
+        },
+        "codex-rs/hepta-agentd/src/paired_record_identity_tests.rs": {
+          "after": "e0bab52649979d5045e5121694b7e3193f01b955a13fc47eec3e6a3f8842d33f",
+          "before": "e0bab52649979d5045e5121694b7e3193f01b955a13fc47eec3e6a3f8842d33f"
+        },
+        "codex-rs/hepta-agentd/src/paired_terminal_binding.rs": {
+          "after": "ee82821feb90a218f009e7cc76c14213cc5fc64fc68bbcb72a30fbb6451c3e63",
+          "before": "0a76088792c2a590c9bf4943ebe507f6575f4b253228e8828085f153669a49e7"
+        },
+        "codex-rs/hepta-agentd/src/paired_terminal_binding_tests.rs": {
+          "after": "776371f18f2e44692c9de15458087fd26346cabf604f5729c72ff9f33fa4af61",
+          "before": "15cc03d82d58acb3e62fa9e9b6f954f5c58fe5b0dbad863150b907717c4dfe9d"
+        },
+        "codex-rs/hepta-agentd/src/terminal_learning.rs": {
+          "after": "7d7dcd04f9ba579819a1a9a1c83e17640a71d7a2f0d409228c15d4925dede32e",
+          "before": "82fe27d3c1fcb3b530f12bc7b352c7336fd22cc1cf59cd3995ec65fb1f8f2649"
+        },
+        "codex-rs/hepta-agentd/src/terminal_learning_tests.rs": {
+          "after": "66b339cbe1b56a67ccd855bc78f16e8a39a82c76323a44fc853d0234a3e96481",
+          "before": "66b339cbe1b56a67ccd855bc78f16e8a39a82c76323a44fc853d0234a3e96481"
+        }
+      },
+      "source_head": "c0a6a791abe5f37d05c1c0636a6c0ac8ee7d778d",
+      "stage": "b",
+      "stderr": "",
+      "stdout": ""
+    }
+  }
+}
