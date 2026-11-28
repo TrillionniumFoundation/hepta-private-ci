@@ -13,6 +13,7 @@ sys.path.insert(0, str(HERE.parent))
 from common import CCA, ROOT, basis, gallery, load_model, store_model, unit
 from construct import deeper, projected_prefix
 from lawtable import propagate
+from strict_validation import require_integrity
 
 OUT = ROOT / "clip_adapt"
 FEATURES = ROOT / "clip_features"
@@ -39,7 +40,7 @@ def dump(path, obj):
 
 def assemble(data):
     seal = json.loads((FEATURES / "seal.json").read_bytes())
-    assert seal["records"] == len(data["id"])
+    require_integrity(seal["records"] == len(data["id"]), "feature seal record count differs from catalog")
     OUT.mkdir(exist_ok=True)
     dest = [OUT / (k + ".npy") for k in ("image", "text")]
     note = OUT / "features.json"
@@ -49,16 +50,22 @@ def assemble(data):
         start = 0
         for name, expected in sorted(seal["blocks"].items()):
             path = FEATURES / name
-            assert digest(path) == expected
+            require_integrity(digest(path) == expected, f"feature block checksum mismatch: {name}")
             with np.load(path) as block:
                 end = start + len(block["id"])
-                assert np.array_equal(block["id"], data["id"][start:end])
+                require_integrity(
+                    np.array_equal(block["id"], data["id"][start:end]),
+                    f"feature block identity mismatch: {name}",
+                )
                 for target, field in zip(arrays, ("image", "text")):
                     values = np.asarray(block[field], dtype="float32")
-                    assert np.isfinite(values).all() and np.all(np.linalg.norm(values, axis=1) > 0.99)
+                    require_integrity(
+                        np.isfinite(values).all() and np.all(np.linalg.norm(values, axis=1) > 0.99),
+                        f"feature block contains invalid or unnormalized {field}: {name}",
+                    )
                     target[start:end] = unit(values)[:, PERM]
             start = end
-        assert start == seal["records"]
+        require_integrity(start == seal["records"], "assembled features do not cover the sealed record count")
         for array in arrays:
             array.flush()
         del arrays
@@ -66,8 +73,14 @@ def assemble(data):
             p.replace(q)
         dump(note, {"input": digest(FEATURES / "seal.json"), "features": [digest(p) for p in dest]})
     validated = json.loads(note.read_bytes())
-    assert validated["input"] == digest(FEATURES / "seal.json")
-    assert validated["features"] == [digest(p) for p in dest]
+    require_integrity(
+        validated["input"] == digest(FEATURES / "seal.json"),
+        "assembled feature input seal changed",
+    )
+    require_integrity(
+        validated["features"] == [digest(p) for p in dest],
+        "assembled feature checksum changed",
+    )
     return [np.load(p, mmap_mode="r") for p in dest]
 
 
@@ -159,7 +172,7 @@ def development(data, inputs, table):
     validation = gallery(data, 1)
     raw = [a[validation] for a in inputs]
     ids = data["id"][validation]
-    assert len(np.unique(ids)) == len(ids)
+    require_integrity(len(np.unique(ids)) == len(ids), "development product identities are not unique")
     winners = {}
     for kind in ("linear", "literal", "smooth"):
         results = []
@@ -178,7 +191,7 @@ def development(data, inputs, table):
                 dump(record, {"name": name, "fit_s": fit_seconds, "complete_s": time.monotonic()-start,
                               "width": width, "ridge": ridge, "weights": digest(state), "scores": scores})
             rec = json.loads(record.read_bytes())
-            assert rec["weights"] == digest(state)
+            require_integrity(rec["weights"] == digest(state), f"adapter weights changed: {name}")
             results.append(rec)
             print("candidate", name, rec["fit_s"], flush=True)
         def criterion(pair):
@@ -196,7 +209,10 @@ def development(data, inputs, table):
 def confirm(data, inputs, table):
     from confirm import clustered
     seal = json.loads((OUT / "selection.json").read_bytes())
-    assert seal["features"] == digest(OUT/"features.json") and seal["law"] == digest(ROOT/"law.npz")
+    require_integrity(
+        seal["features"] == digest(OUT/"features.json") and seal["law"] == digest(ROOT/"law.npz"),
+        "selection inputs changed before held-out confirmation",
+    )
     held = gallery(data, 2)
     gray = np.load(ROOT/"gray_hash.npy")
     observed = set(gray[data["split"] != 2])
@@ -205,14 +221,17 @@ def confirm(data, inputs, table):
     raw_models = {"clip": (raw, 0)}
     for kind, rec in seal["models"].items():
         state = OUT / (rec["name"] + ".npz")
-        assert digest(state) == rec["weights"]
+        require_integrity(digest(state) == rec["weights"], f"selected adapter weights changed: {kind}")
         models, _ = load_model(state)
         raw_models[kind] = (encode(inputs, held, models, kind, table), rec["mix"])
     result = {}
     for name, ix in {"standard": np.arange(len(held)), "gray_disjoint": sub}.items():
         raw_subset = [a[ix] for a in raw]
         labels = [data[k][held[ix]] for k in ("id", "title", "group")]
-        assert len(np.unique(labels[0])) == len(ix)
+        require_integrity(
+            len(np.unique(labels[0])) == len(ix),
+            f"held-out product identities are not unique in {name}",
+        )
         ranks = {}
         for kind, (features, mix) in raw_models.items():
             base_mix = (mix,) if mix == 1 else (mix, 1.)
@@ -239,15 +258,24 @@ def selftest():
     labs = [np.arange(57), np.arange(57)//3, np.arange(57)//7]
     ref = ranks(*rows, *labs)
     a = rank_panel(rows, rows, labs, (0., 1.))
-    assert np.array_equal(a[0.], a[1.]) and np.array_equal(a[1.][0], ref["image_to_text"])
-    assert np.array_equal(a[1.][1], ref["text_to_image"])
+    require_integrity(
+        np.array_equal(a[0.], a[1.]) and np.array_equal(a[1.][0], ref["image_to_text"]),
+        "stable image-to-text tie ranking self-test failed",
+    )
+    require_integrity(
+        np.array_equal(a[1.][1], ref["text_to_image"]),
+        "stable text-to-image tie ranking self-test failed",
+    )
     with np.load(ROOT/"law.npz") as z:
         table = dict(z)
     inputs = [rng.normal(size=(190, 128)).astype("float32") for _ in range(2)]
     for kind in ("literal", "smooth", "linear"):
         models = fit_adapter(inputs, np.arange(150), kind, 8, .03, table)
         fe = encode(inputs, np.arange(150, 190), models, kind, table)
-        assert all(a.shape == (40, 8) and np.isfinite(a).all() for a in fe)
+        require_integrity(
+            all(a.shape == (40, 8) and np.isfinite(a).all() for a in fe),
+            f"{kind} adapter self-test produced invalid features",
+        )
     print("stable tie ranks and all three disjoint fit/encode families verified")
 
 

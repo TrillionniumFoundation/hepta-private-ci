@@ -1,5 +1,6 @@
 from pathlib import Path
 import urllib.request,hashlib,json,os,time
+from strict_validation import require_integrity
 BASE=Path(os.environ.get('HCSN_CATALOG_DATA',Path(__file__).resolve().parents[1]/'paired_catalog'))
 OUT=BASE/'clip_assets';OUT.mkdir(exist_ok=True)
 PIN='d05afc436d78f1c48dc0dbf8e5980a9d471f35f6';HS='40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af'
@@ -15,7 +16,8 @@ def get(name,url,cap,expected=None):
         if expected and expected!=digest:raise ValueError('published model checksum mismatch')
         part.replace(dest)
     digest=hashlib.file_digest(dest.open('rb'),'sha256').hexdigest()
-    if expected:assert digest==expected
+    if expected:
+        require_integrity(digest == expected, f'cached checksum mismatch for {name}')
     print(name,dest.stat().st_size,digest,flush=True)
     return {'url':url,'bytes':dest.stat().st_size,'sha256':digest}
 def main():
