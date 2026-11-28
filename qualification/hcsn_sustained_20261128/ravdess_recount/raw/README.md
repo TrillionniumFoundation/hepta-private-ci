@@ -1,0 +1,3 @@
+# Original RAVDESS gallery scores
+
+This archive contains the 39 per-parent scored gallery arrays and two group aggregates and seals for the completed full-data-editing and analytical-operator panels. They accompany the independent source-weight and population-level verification one directory above. From this directory, concatenate the parts in numerical order (`cat raw.tar.part-* > raw.tar`). Verify the 12,738,560 bytes and SHA-256 `106dac39364330e7a0ce8233bc53ed0e775430ef5541fcf39bcfd49c93177d9a` before extraction. The manifest also pins each part's SHA-256 and Git blob identifier. The sustained panel follows the original parents' training terminal and is independent of these two sealed groups.
