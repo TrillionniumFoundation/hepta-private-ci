@@ -1,0 +1,23 @@
+{
+  "host": "desktop",
+  "physical_directory": "/home/qian-qi/.local/share/hepta-research/hcsn-mosi-recovery-1140569",
+  "input_recovery_pty": "dpty-7151188813d04b3c19015ade13c4eca993e35b853574b1e652011572acf80294",
+  "historical_weight_reconstruction_pty": "dpty-d5cd69d7d0bb0de75f9721b43294b37ba4790af1d1f77fb688849bbd792a660f",
+  "new_independent_replication_pty": "dpty-c28f1f837fd8b90fe4d4dea94601a3abcd11eb3d95ac3269af67387b70c5ebbe",
+  "published_protocol_commit": "9fe9b4f6d0014245df9fbf4a34da968fa34395b1",
+  "historical_freeze": "4f80d069218e5416be0f51323a9db46b461d07dd",
+  "archive_sha256": "75ec41f336ab20aded67a94ac8c435861fe7fc1e2fc4276e8a5ceb5d4b31d256",
+  "training_interpreter": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+  "training_device": "cpu, one PyTorch/MKL/OpenBLAS thread, low system priority",
+  "terminal_paths": {
+    "input": "input_recovery.json",
+    "historical": "candidate_replay/reconstruction_result.json",
+    "new": "fresh/terminal_manifest.json"
+  },
+  "recovery": {
+    "input": "range_recovery.py",
+    "historical": "recover_weights.py",
+    "new": "fresh_study.py"
+  },
+  "selection": "Historical scoring requires exact frozen weight bytes and exact prepared test bytes. The new panel recalculates and seals 36 new development selections and retains its own timelines before fresh cold scoring."
+}
