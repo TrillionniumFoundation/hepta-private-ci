@@ -1,5 +1,5 @@
 """Source-only 18-fit screening matrix for the exclusive boundary-port model."""
-import argparse,hashlib,json,os
+import argparse,fcntl,hashlib,json,os
 from pathlib import Path
 import subprocess,sys,time
 
@@ -50,7 +50,11 @@ def fit(work,out,law,arm,bits,seed):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('work',type=Path);p.add_argument('out',type=Path);p.add_argument('law',type=Path);p.add_argument('--one',nargs=3);a=p.parse_args()
-    if a.one:fit(a.work,a.out,a.law,a.one[0],int(a.one[1]),int(a.one[2]))
+    if a.one:
+        target=a.out/'fits'/f'{a.one[0]}-{a.one[1]}-{a.one[2]}';target.mkdir(exist_ok=True,parents=True)
+        with (target/'fit.lock').open('a') as lock:
+            fcntl.flock(lock,fcntl.LOCK_EX)
+            fit(a.work,a.out,a.law,a.one[0],int(a.one[1]),int(a.one[2]))
     else:
         for j in range(6):
             for i,sd in enumerate(SEEDS):

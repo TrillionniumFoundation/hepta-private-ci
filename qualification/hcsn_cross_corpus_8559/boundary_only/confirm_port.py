@@ -14,7 +14,7 @@ from report import contrast
 from score import metrics
 from train_port import sha,write
 
-GALLERIES=('rsicd','ucm','rsitmd_r4','rsitmd_r8')
+GALLERIES=('rsicd','ucm','rsitmd_r4','rsitmd_r8','nocaps')
 MODES=('pair','visual_derange','image_clamp','text_clamp','both_clamp','hard')
 
 
@@ -34,8 +34,9 @@ def seal(source,out,law):
                 assert rec['selected']==max(rec['history'],key=lambda x:x['dev_concordance']);runs.append(rec)
     external=read(out/'RSITMD_ROSTER.json')
     assert sha(out/'rsitmd.npz')==external['array_sha256']
+    natural=read(out/'NOCAPS_ROSTER.json');assert sha(out/'nocaps.npz')==natural['derived_sha256']
     with (out/'seal.json').open('x') as f:
-        json.dump(dict(sealed_utc=time.time(),runs=runs,law=sha(law),source=sha(source/'input.npz'),target=external['array_sha256'],roster=sha(out/'RSITMD_ROSTER.json'),
+        json.dump(dict(sealed_utc=time.time(),runs=runs,law=sha(law),source=sha(source/'input.npz'),target=external['array_sha256'],natural=natural['derived_sha256'],natural_roster=sha(out/'NOCAPS_ROSTER.json'),roster=sha(out/'RSITMD_ROSTER.json'),
                        sources={p.name:sha(p) for p in HERE.glob('*.py')}),f,indent=2)
 
 
@@ -44,6 +45,8 @@ def galleries(source,out):
     for g,sc in [('rsicd',2),('ucm',3)]:
         ix=src['split']==sc
         yield g,src['images'][ix],src['tokens'][ix,0].astype(np.int64),src['names'][ix],src['groups'][ix,0]
+    nat=np.load(out/'nocaps.npz')
+    yield 'nocaps',nat['pixels'],nat['tokens'].astype(np.int64),nat['ids'],nat['groups']
     for r in (4,8):
         ix=ext[f'radius{r}']
         yield 'rsitmd_r'+str(r),ext['pixels'][ix],ext['tokens'][ix].astype(np.int64),ext['ids'][ix],ext['groups'][ix]
@@ -106,6 +109,7 @@ def one_gallery(model,pix,tok,groups,ids,peers):
 
 def confirm(source,out,law):
     s=read(out/'seal.json');assert s['source']==sha(source/'input.npz') and s['target']==sha(out/'rsitmd.npz') and sha(law)==s['law']
+    assert s['natural']==sha(out/'nocaps.npz') and s['natural_roster']==sha(out/'NOCAPS_ROSTER.json')
     torch.set_num_threads(1);folder=out/'cold';folder.mkdir(exist_ok=True)
     gs=list(galleries(source,out));peers={g:neighbors(tok,grp,ids) if len(ids)>=27 else None for g,_,tok,ids,grp in gs}
     with np.load(source/'input.npz') as d:vocab=int(d['vocab'])
