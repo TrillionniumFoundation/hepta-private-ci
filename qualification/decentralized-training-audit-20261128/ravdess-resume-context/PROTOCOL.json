@@ -1,0 +1,94 @@
+{
+  "schema": "ravdess-resume-context-control-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+  "source_profile": "Content-bound scientific scoring resume; not a source-owner or useful-work authorization proof",
+  "production_paths": [
+    "qualification/hcsn_sustained_20261128/ravdess/score.py",
+    "qualification/hcsn_sustained_20261128/ravdess/complete.py"
+  ],
+  "test_path": "qualification/hcsn_sustained_20261128/ravdess/test_ravdess_resume.py",
+  "tested_final_sha256": {
+    "score": "b8ae3e07ccdf3cdb16336e8d9e9201c4b63352201b849da1d1b69caadacb046e",
+    "complete": "0a7ffe5a9d9037fc9441a870d0d7c4fd29e89307abd3e596e1662f493674ded6",
+    "tests": "d136604022c06cfa737ddb8d578945d31368c2a23093113e28ea867cc340870a"
+  },
+  "source_manifest": {
+    "base": "04968cc615f6a8c86e3ce501bb37bf53e34e0823",
+    "sources": [
+      {
+        "path": "qualification/hcsn_sustained_20261128/ravdess/score.py",
+        "git_blob_oid": "a48c6f89e63379505699299fecf8782d1d71eafb",
+        "bytes": 8593,
+        "sha256": "144bf218c43fe394ffd0133920b254e2f1bcff202b5ad35023a7251602732ab5"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/ravdess/complete.py",
+        "git_blob_oid": "38e179ae2a75541d9d115c64cafa6b24b26fd331",
+        "bytes": 1258,
+        "sha256": "592a0394efa786f1e345ccf2296dd2604b672dbd76e5af45bff8da842ff8e2d4"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/billion_recovery/original/scripts/encoder.py",
+        "git_blob_oid": "d1738f5233eecaca9b15181091d7d33407fb6c80",
+        "bytes": 2080,
+        "sha256": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/analytic_encoder/exact_law.py",
+        "git_blob_oid": "4583827336c95e5e80eb5ddd2034dc0f56805d3e",
+        "bytes": 4546,
+        "sha256": "c059fa9c16726aed1377c78523b0de3c293745f328eeb9f48237ba635273f00a"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/crema/study.py",
+        "git_blob_oid": "bd044668c683dbf5369b8518833df1cdfee9d35b",
+        "bytes": 12201,
+        "sha256": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/analytic_encoder/encoder_adapter.py",
+        "git_blob_oid": "17974a4ef6b8179d2c32bf6584f93c7947b80ef5",
+        "bytes": 1449,
+        "sha256": "ed8b758198531cb556c0fe9605205ce9e6c4dafb37f3da970bb21be3d8ce2f70"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/differentiable_law/torch_prices.py",
+        "git_blob_oid": "c983b96683eece73c4605bfb6b677fad4e806380",
+        "bytes": 4491,
+        "sha256": "eaa55bf08b52da1cc9607b4f7b8e470cb4471a7ca6e2d3a0171a707d1b32c584"
+      },
+      {
+        "path": "qualification/hcsn_sustained_20261128/generation/model.py",
+        "git_blob_oid": "c6976977202eb48ce06a91c23d49cd5467b10fbe",
+        "bytes": 5923,
+        "sha256": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec"
+      }
+    ]
+  },
+  "first_candidate": {
+    "tests": 9,
+    "status": "PASS on the original controls; missing JSON FIFO controls found in independent review",
+    "candidate_score_sha256": "4af62d9bfe1ad75d39829271adbaca1b59eccb79d10e8944fa7d2055afd20d24",
+    "counterexamples": "Both terminal and source_models FIFO paths entered actual load and blocked until owned child deadlines."
+  },
+  "final_controls": 10,
+  "required_original_guards": [
+    "Source input hash pins",
+    "Prepared external SHA-256",
+    "Source seal versus source terminal SHA-256",
+    "Per-profile model count",
+    "Strict model state loading",
+    "External cohort and finite 1056 x 72 output checks"
+  ],
+  "synthetic_scope": "Synthetic filesystem/context/receipt controls. Actual controller subprocess, checked scalar tensor loading, and original module definitions. Numerical score_panel is explicitly replaced; no scientific model construction, inference or training.",
+  "scientific_model_forward_calls": 0,
+  "training_calls": 0,
+  "remaining_boundaries": [
+    "No independent source signature or authenticity proof",
+    "No continuous lease over uncooperative writers",
+    "No mathematical replay of resumed score summaries",
+    "No scientific model parity or speedup test",
+    "Unrelated generation training/selection resume remains open"
+  ]
+}
