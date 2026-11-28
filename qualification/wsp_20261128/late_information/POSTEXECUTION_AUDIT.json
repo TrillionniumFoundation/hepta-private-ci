@@ -1,0 +1,139 @@
+{
+  "status": "PASS",
+  "new_model_calls": 0,
+  "new_fits": 0,
+  "test_contexts": 40,
+  "test_queries": 80,
+  "seed_pairing_unit": 3,
+  "parent_shared_test_contexts": true,
+  "comparison_rows": [
+    {
+      "seed": 47,
+      "arm": "KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 47,
+      "arm": "DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 47,
+      "arm": "REVERSE_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 47,
+      "arm": "RANDOM64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 47,
+      "arm": "BP64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 47,
+      "arm": "ORIGINAL_GRAPH_KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    },
+    {
+      "seed": 47,
+      "arm": "ORIGINAL_GRAPH_DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    },
+    {
+      "seed": 83,
+      "arm": "KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 83,
+      "arm": "DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 83,
+      "arm": "REVERSE_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 83,
+      "arm": "RANDOM64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 83,
+      "arm": "BP64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 83,
+      "arm": "ORIGINAL_GRAPH_KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    },
+    {
+      "seed": 83,
+      "arm": "ORIGINAL_GRAPH_DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    },
+    {
+      "seed": 137,
+      "arm": "KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 137,
+      "arm": "DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 137,
+      "arm": "REVERSE_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 137,
+      "arm": "RANDOM64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 137,
+      "arm": "BP64",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": false
+    },
+    {
+      "seed": 137,
+      "arm": "ORIGINAL_GRAPH_KEEP",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    },
+    {
+      "seed": 137,
+      "arm": "ORIGINAL_GRAPH_DIRECT_SIGN",
+      "metric_agreement": true,
+      "oldgraph_choice_identity": true
+    }
+  ],
+  "scope": "independent array metric, candidate digest and input-pairing audit; no model replay",
+  "result_sha256": "8b1f616ec320fab984a78f483226b06cb622ba5eec930e9734ddbb9536885c5a"
+}
