@@ -87,7 +87,7 @@ fn codex_intent_requires_turn_binding() {
     let mut value = intent();
     value.cell.kind = ExecutionIntentKindV1::CodexTurn;
     assert_eq!(
-        value.validate(),
+        value.cell.validate(),
         Err(ExecutionContractError::MissingCodexBinding)
     );
     value.cell.codex_binding = Some(CodexTurnBindingV1 {
@@ -101,7 +101,7 @@ fn codex_intent_requires_turn_binding() {
         codex_home_digest: digest("codex-home"),
         connection_id: 1,
     });
-    assert_eq!(value.validate(), Ok(()));
+    assert_eq!(value.cell.validate(), Ok(()));
 }
 
 #[test]
