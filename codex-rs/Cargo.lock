@@ -3411,6 +3411,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-template",
  "codex-utils-time",
+ "core_test_support",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4128,7 +4129,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
- "winapi-util",
 ]
 
 [[package]]
@@ -4198,6 +4198,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek 2.2.0",
  "jsonschema",
@@ -5763,8 +5764,8 @@ dependencies = [
  "base64 0.22.1",
  "codex-otel",
  "codex-protocol",
- "codex-utils-cargo-bin",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-pty",
  "codex-utils-string",
  "dirs-next",
