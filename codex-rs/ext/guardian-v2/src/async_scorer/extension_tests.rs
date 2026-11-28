@@ -338,9 +338,19 @@ async fn sandboxed_shell_classification_respects_review_scope() -> Result<()> {
     let score_progress = thread_store
         .get::<GuardianV2ScoreProgress>()
         .expect("Guardian v2 should track score progress per thread");
-    let latest_scored_tool_call = score_progress
-        .latest_scored_tool_call
-        .load(Ordering::Acquire);
+    let previous_tool_call = score_progress.latest_tool_call.load(Ordering::Acquire);
+    // The fixture can observe the risk score before the asynchronous scorer
+    // publishes its completion counter. Settle that call before adding another.
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while score_progress
+            .latest_scored_tool_call
+            .load(Ordering::Acquire)
+            < previous_tool_call
+        {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await?;
     let turn_store = ExtensionData::new("turn-1");
     let tool_name = ToolName::plain("exec_command");
     let payload = ToolPayload::Function {
@@ -363,13 +373,13 @@ async fn sandboxed_shell_classification_respects_review_scope() -> Result<()> {
 
     assert_eq!(
         score_progress.latest_tool_call.load(Ordering::Acquire),
-        latest_scored_tool_call + 1
+        previous_tool_call + 1
     );
     assert_eq!(
         score_progress
             .latest_scored_tool_call
             .load(Ordering::Acquire),
-        latest_scored_tool_call
+        previous_tool_call
     );
     Ok(())
 }

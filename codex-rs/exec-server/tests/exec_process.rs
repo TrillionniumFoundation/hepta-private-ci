@@ -1178,6 +1178,8 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
         cwd.clone(),
     )?;
     sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    // Capability-only tokens must opt into the isolated desktop.
+    sandbox.windows_sandbox_private_desktop = true;
 
     let session = match context
         .backend

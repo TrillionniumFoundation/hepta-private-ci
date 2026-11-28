@@ -3566,6 +3566,14 @@ async fn streamable_http_with_oauth_round_trip_impl() -> anyhow::Result<()> {
         contended_turn.last_agent_message.as_deref(),
         Some("OAuth sign-in is still pending."),
     );
+    if let Some(completion) = fixture
+        .codex
+        .pending_normal_turn_finish_completion(&contended_turn.turn_id)
+    {
+        tokio::time::timeout(Duration::from_secs(5), completion)
+            .await
+            .context("the first contended turn did not release admission")?;
+    }
 
     let mut refreshed_config = fixture.config.clone();
     let mut refreshed_servers = refreshed_config.mcp_servers.get().clone();

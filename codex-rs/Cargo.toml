@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "utils/yaml",
     "aws-auth",
     "analytics",
     "agent-graph-store",
@@ -176,6 +177,7 @@ members = [
     "utils/fuzzy-match",
     "utils/stream-parser",
     "utils/template",
+    "utils/time",
     "codex-client",
     "codex-api",
     "state",
@@ -200,6 +202,10 @@ edition = "2024"
 license = "Apache-2.0"
 
 [workspace.dependencies]
+codex-utils-time = { path = "utils/time" }
+ryu = "1.0.20"
+codex-utils-yaml = { path = "utils/yaml" }
+jiff = { version = "0.2.38", features = ["js"] }
 # Internal
 app_test_support = { path = "app-server/tests/common" }
 codex-analytics = { path = "analytics" }
@@ -377,7 +383,6 @@ bitflags = "2.13.1"
 bm25 = "2.3.2"
 bytes = "1.10.1"
 chardetng = "0.1.17"
-chrono = "0.4.43"
 clap = "4"
 clap_complete = "4"
 clatter = { version = "2.2.0", default-features = false, features = [
@@ -427,17 +432,18 @@ inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
 jsonwebtoken = "9.3.1"
-keyring = { version = "3.6", default-features = false }
+keyring = { version = "4.2", default-features = false, features = ["v1"] }
+keyring-core = "1.0.0"
 landlock = "0.4.4"
 lazy_static = "1"
 libc = "0.2.182"
 # Keep SQLx's bundled SQLite on a version containing the WAL-reset corruption fix:
 # https://www.sqlite.org/wal.html#the_wal_reset_bug
-libsqlite3-sys = { version = "0.37", default-features = false }
+libsqlite3-sys = { version = "=0.39.1", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
-matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }
+matrix-sdk = { version = "=0.19.1", default-features = false, features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }
 memchr = "2.7.6"
 mime_guess = "2.0.5"
 multimap = "0.10.0"
@@ -472,10 +478,10 @@ rcgen = { version = "0.14.7", default-features = false, features = [
 regex = "1.12.3"
 regex-lite = "0.1.8"
 reqwest = { version = "0.12", features = ["cookies"] }
-rmcp = { version = "=3.1.3", default-features = false }
+rmcp = { version = "=3.9.0", default-features = false }
 runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
 rustix = { version = "1.1.4", features = ["net"] }
-rustls = { version = "0.23", default-features = false, features = [
+rustls = { version = "0.23.46", default-features = false, features = [
     "aws_lc_rs",
     "std",
 ] }
@@ -489,8 +495,8 @@ serde = { version = "1", features = ["rc"] }
 serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
-serde_with = "3.17"
-serde_yaml = "0.9"
+serde_with = { version = "3.17", default-features = false, features = ["std", "macros"] }
+serde-saphyr = "2.0.0"
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
@@ -507,7 +513,6 @@ symphonia = { version = "0.6.0", default-features = false, features = [
 socket2 = "0.6.1"
 # When bumping sqlx, audit the SQLite constructor deny list in clippy.toml.
 sqlx = { version = "0.9.0", default-features = false, features = [
-    "chrono",
     "json",
     "macros",
     "migrate",
@@ -556,7 +561,8 @@ ts-rs = "11"
 tungstenite = { version = "0.27.0", features = ["deflate", "proxy"] }
 uds_windows = "1.1.0"
 unicode-segmentation = "1.12.0"
-unicode-width = "0.2"
+# Ratatui 0.30.2 adds the halfwidth kana sound-mark cells that unicode-width 0.2.3 already counts.
+unicode-width = "=0.2.2"
 url = "2"
 urlencoding = "2.1"
 uuid = "1"
@@ -568,8 +574,8 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
-zstd = "0.13"
+zip = { version = "=9.1.3", default-features = false, features = ["aes-crypto", "bzip2-rs", "deflate64", "deflate", "lzma", "ppmd", "time", "zstd", "xz"] }
+zstd = "0.14.3"
 
 wiremock = "0.6"
 zeroize = "1.8.2"
@@ -657,19 +663,36 @@ strip = false
 [profile.ci-test]
 # Reduce binary size to reduce disk pressure.
 debug = "limited"
+strip = "debuginfo"
 inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+serde-saphyr = { path = "third_party/serde-saphyr-2.0.0" }
+aws-config = { path = "third_party/aws-config-1.12.0" }
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+secret-service = { path = "third_party/secret-service-6.0.0" }
+zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-keyring-store-1.0.1" }
+age = { path = "third_party/age-0.11.5-i18n" }
+rama-crypto = { path = "third_party/rama-crypto-0.3.0-time-backport" }
+pagable = { path = "third_party/pagable-0.4.2-postcard-std" }
+# Preserve Starlark API while resolving Matrix-compatible BLAKE3.
+starlark = { path = "third_party/starlark-0.14.2-blake3-backport" }
+oauth2 = { path = "third_party/oauth2-5.0.0-time" }
+rmcp = { path = "third_party/rmcp-3.9.0-time" }
+zip = { path = "third_party/zip-9.1.3" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
-# Cargo permits only one native SQLite `links` crate in a graph. The vendored
-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
-matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
+# Matrix SDK exposes anymap2 in its event handler API. Keep that
+# API stable while replacing the unmaintained implementation with anymap3.
+anymap2 = { path = "third_party/anymap2-compat" }
+# Align Matrix's rusqlite and SQLx on libsqlite3-sys 0.39.1 with manifest
+# compatibility patches. Matrix source bytes are unchanged. The SQLx vendor
+# also carries formatting and import-order changes; its Rust syntax and
+# comments were compared separately with the published 0.9.0 crate.
+matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
+sqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }

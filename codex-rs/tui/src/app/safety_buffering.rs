@@ -49,7 +49,7 @@ impl App {
         }
 
         let retry_config = self.chat_widget.config_ref().clone();
-        let input_state = self.chat_widget.capture_thread_input_state();
+        let mut input_state = self.chat_widget.capture_thread_input_state();
 
         let AppCommand::UserTurn {
             items,
@@ -151,11 +151,15 @@ impl App {
             self.fail_safety_buffered_branch(input_state, prompt, err);
             return;
         }
+        let interrupted_turn = thread.turns.iter().find(|turn| turn.id == turn_id);
+        if let (Some(input_state), Some(interrupted_turn)) =
+            (input_state.as_mut(), interrupted_turn)
+        {
+            self.chat_widget
+                .reconcile_safety_retry_steers(input_state, interrupted_turn);
+        }
         items.extend(
-            thread
-                .turns
-                .iter()
-                .find(|turn| turn.id == turn_id)
+            interrupted_turn
                 .into_iter()
                 .flat_map(|turn| &turn.items)
                 .filter_map(|item| match item {

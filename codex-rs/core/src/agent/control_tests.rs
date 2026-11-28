@@ -67,6 +67,9 @@ use codex_thread_store::LocalThreadStoreConfig;
 use codex_thread_store::PersistContext;
 use codex_thread_store::ThreadStore;
 use codex_utils_path_uri::PathUri;
+use core_test_support::responses::mount_sse_once;
+use core_test_support::responses::sse_completed;
+use core_test_support::responses::start_mock_server;
 use core_test_support::responses::strip_response_item_ids;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -79,12 +82,15 @@ async fn test_config_with_cli_overrides(
     mut cli_overrides: Vec<(String, TomlValue)>,
 ) -> (TempDir, Config) {
     let home = TempDir::new().expect("create temp dir");
+    let workspace = home.path().join("workspace");
+    std::fs::create_dir(&workspace).expect("create isolated agent test workspace");
     cli_overrides.push((
         "model".to_string(),
         TomlValue::String("gpt-5.5".to_string()),
     ));
     let config = ConfigBuilder::without_managed_config_for_tests()
         .codex_home(home.path().to_path_buf())
+        .fallback_cwd(Some(workspace))
         .cli_overrides(cli_overrides)
         .build()
         .await
@@ -180,6 +186,15 @@ struct AgentControlHarness {
 impl AgentControlHarness {
     async fn new() -> Self {
         let (home, config) = test_config().await;
+        Self::new_with_config(home, config).await
+    }
+
+    async fn new_with_mock_model(server: &wiremock::MockServer) -> Self {
+        let (home, mut config) = test_config().await;
+        // Input recording is local; do not make it wait on a real provider's startup prewarm.
+        config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+        config.model_provider.supports_websockets = false;
+        let _ = mount_sse_once(server, sse_completed("test-message-recorded")).await;
         Self::new_with_config(home, config).await
     }
 
@@ -387,6 +402,13 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing finish/abort owner intentionally outlives ordinary abort callers.
+    // Observe its completion before writing this durable, idle-only fixture.
+    if let Some(completion) = thread.pending_admission_fence_completion() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .expect("terminal cleanup should finish before persisting resume context");
+    }
     thread
         .inject_response_items(vec![user_message(message)])
         .await
@@ -629,7 +651,8 @@ async fn subscribe_status_updates_on_shutdown() {
 
 #[tokio::test]
 async fn send_input_submits_user_message() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let (thread_id, thread) = harness.start_thread().await;
 
     let submission_id = harness
@@ -1089,7 +1112,8 @@ async fn resume_agent_from_rollout_does_not_reopen_v2_descendants() {
 
 #[tokio::test]
 async fn spawn_agent_creates_thread_and_sends_prompt() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let thread_id = harness
         .control
         .spawn_agent(
@@ -1448,7 +1472,8 @@ async fn spawn_agent_numeric_fork_from_compacted_paginated_parent_clamps_to_prov
 #[tokio::test]
 async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
     let managed_fragment = "<managed_developer_instructions>\nParent developer instructions.\n</managed_developer_instructions>";
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let mut parent_config = harness.config.clone();
     let _ = parent_config.features.enable(Feature::MultiAgentV2);
     parent_config.developer_instructions = Some("Parent developer instructions.".to_string());
@@ -3644,7 +3669,8 @@ async fn resume_agent_from_rollout_reads_archived_rollout_path() {
 
 #[tokio::test]
 async fn resume_agent_from_paginated_rollout_loads_model_context() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let (parent_thread_id, parent_thread) = harness.start_paginated_thread().await;
     let child_thread_id = harness
         .spawn_anonymous_child(
@@ -4348,7 +4374,9 @@ async fn resume_agent_from_rollout_reopens_open_descendants_after_manager_shutdo
 
 #[tokio::test]
 async fn resume_agent_from_rollout_uses_edge_data_when_descendant_metadata_source_is_stale() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
+    let _ = mount_sse_once(&server, sse_completed("grandchild-turn-recorded")).await;
     let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness

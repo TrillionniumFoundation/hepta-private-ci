@@ -1,8 +1,3 @@
-use std::path::PathBuf;
-use std::sync::Arc;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
@@ -10,6 +5,8 @@ use codex_protocol::protocol::SessionSource;
 use codex_state::ThreadMetadataBuilder;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::path::PathBuf;
+use std::sync::Arc;
 use tempfile::TempDir;
 
 use super::DeleteConfirmation;
@@ -128,9 +125,8 @@ fn thread_metadata(
     name: &str,
     archived: bool,
 ) -> codex_state::ThreadMetadata {
-    let created_at = DateTime::parse_from_rfc3339("2025-02-01T10:00:00Z")
-        .expect("timestamp should parse")
-        .with_timezone(&Utc);
+    let created_at = codex_utils_time::Timestamp::parse_from_rfc3339("2025-02-01T10:00:00Z")
+        .expect("timestamp should parse");
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
@@ -460,8 +456,9 @@ async fn queues_non_interactive_and_custom_sessions_without_scanning_rollouts()
         /*archived*/ false,
     );
     custom_metadata.source = serde_json::to_string(&custom_source)?;
-    custom_metadata.recency_at += chrono::Duration::hours(/*hours*/ 1);
-    custom_metadata.updated_at += chrono::Duration::hours(/*hours*/ 1);
+    let recency_offset = time::Duration::hours(/*hours*/ 1);
+    custom_metadata.recency_at = custom_metadata.recency_at + recency_offset;
+    custom_metadata.updated_at = custom_metadata.updated_at + recency_offset;
     runtime
         .upsert_thread(&custom_metadata)
         .await

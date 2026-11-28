@@ -70,9 +70,8 @@ fn thread_metadata(
     rollout_path: PathBuf,
     title: &str,
 ) -> codex_state::ThreadMetadata {
-    let created_at = chrono::DateTime::parse_from_rfc3339("2025-02-01T10:00:00Z")
-        .expect("timestamp should parse")
-        .with_timezone(&chrono::Utc);
+    let created_at = codex_utils_time::Timestamp::parse_from_rfc3339("2025-02-01T10:00:00Z")
+        .expect("timestamp should parse");
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
@@ -401,7 +400,9 @@ async fn skips_stale_legacy_index_candidate() -> color_eyre::Result<()> {
         (&stale_path, "2025-02-04T10:00:00Z"),
         (&fallback_path, "2025-02-03T10:00:00Z"),
     ] {
-        let modified = chrono::DateTime::parse_from_rfc3339(timestamp)?.into();
+        let modified = codex_utils_time::Timestamp::parse_from_rfc3339(timestamp)?
+            .to_system_time()
+            .ok_or_else(|| std::io::Error::other("fixture timestamp is out of range"))?;
         std::fs::OpenOptions::new()
             .append(true)
             .open(path)?
@@ -496,7 +497,9 @@ async fn prefers_most_recent_duplicate_legacy_name() -> color_eyre::Result<()> {
         (&recent_path, "2025-02-04T10:00:00Z"),
         (&older_path, "2025-02-03T10:00:00Z"),
     ] {
-        let modified = chrono::DateTime::parse_from_rfc3339(timestamp)?.into();
+        let modified = codex_utils_time::Timestamp::parse_from_rfc3339(timestamp)?
+            .to_system_time()
+            .ok_or_else(|| std::io::Error::other("fixture timestamp is out of range"))?;
         std::fs::OpenOptions::new()
             .append(true)
             .open(path)?

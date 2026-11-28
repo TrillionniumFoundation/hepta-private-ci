@@ -66,6 +66,19 @@ fn output() -> NativeRunOutput {
     }
 }
 
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+}
+
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
     ServerNotification::TurnCompleted(TurnCompletedNotification {
         thread_id: thread.to_string(),
@@ -406,23 +419,32 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let final_use_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("final-use permit entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
-    let durable_stop = source
+    let durable_stop = source[revalidation..]
         .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
+        .map(|position| revalidation + position)
+        .expect("durable stop after failed revalidation");
+    let (run, authorized_sender) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized turn start helper");
+    let physical_request = ".request_typed_observed(ClientRequest::TurnStart";
+    assert!(!run.contains(physical_request));
+    assert!(authorized_sender.contains(physical_request));
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+    assert!(revalidation < durable_stop);
+    assert!(durable_stop < final_use_entry);
+    assert!(final_use_entry < turn_start);
 }
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -442,16 +464,40 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Keep the real Unix socket within Darwin's address limit while retaining
+    // independent sibling paths for the agent state and the worker journal.
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("h");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // This is a physical Agentd/App Server integration test: a real
+    // source-built Codex CLI is required for hidden exec-server helpers.
+    // Never substitute the Rust test harness for the Codex executable.
+    let codex_executable = if let Some(path) = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE") {
+        std::path::PathBuf::from(path)
+    } else if codex_utils_cargo_bin::runfiles_available() {
+        let binary_name = format!("codex{}", std::env::consts::EXE_SUFFIX);
+        codex_utils_cargo_bin::resolve_bazel_runfile(
+            Some("codex-rs/cli"),
+            std::path::Path::new(&binary_name),
+        )?
+    } else {
+        return Err("real source-built Codex executable path is not configured".into());
+    };
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        &codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -470,7 +516,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = temporary.path().join("journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver

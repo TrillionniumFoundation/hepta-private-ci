@@ -8,6 +8,8 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split;
+pub mod coverage_v1;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -15,11 +17,31 @@ mod parameter_mutation_policy_v1;
 mod parameter_v2;
 mod registry;
 mod topology_canary;
+mod topology_fault;
 mod topology_governance;
 mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use cell_split::CellSplitBudgetV1;
+pub use cell_split::CellSplitCanaryV1;
+pub use cell_split::CellSplitCandidateKindV1;
+pub use cell_split::CellSplitCandidateV1;
+pub use cell_split::CellSplitGuardrailsV1;
+pub use cell_split::CellSplitHoldoutV1;
+pub use cell_split::CellSplitOperationV1;
+pub use cell_split::CellSplitPlanStatusV1;
+pub use cell_split::CellSplitPlannerErrorV1;
+pub use cell_split::CellSplitPlannerRequestV1;
+pub use cell_split::CellSplitProposalSignalV1;
+pub use cell_split::CellSplitQuarantineV1;
+pub use cell_split::CellSplitRiskV1;
+pub use cell_split::CellSplitRollbackV1;
+pub use cell_split::CellSplitV1;
+pub use cell_split::build_cell_split_plan_v1;
+pub use cell_split::cell_split_generator_signing_payload_v1;
+pub use cell_split::plan_cell_split_v1;
+pub use cell_split::verify_cell_split_v1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
@@ -49,6 +71,11 @@ pub use topology_canary::StructuralCanaryPlanV1;
 pub use topology_canary::StructuralCanaryReceiptV1;
 pub use topology_canary::StructuralCanaryStateV1;
 pub use topology_canary::build_structural_canary_plan_v1;
+pub use topology_fault::TopologyFaultDispositionV1;
+pub use topology_fault::TopologyFaultPointV1;
+pub use topology_fault::TopologyFaultScenarioV1;
+pub use topology_fault::topology_fault_points_v1;
+pub use topology_fault::topology_fault_scenarios_v1;
 pub use topology_governance::GovernedTopologyProposalV1;
 pub use topology_governance::TopologyGovernanceErrorV1;
 pub use topology_governance::WriterHandoffPlanV1;

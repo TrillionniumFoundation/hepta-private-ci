@@ -12,13 +12,14 @@ use codex_extension_api::ModelProviderRequestKind;
 use codex_extension_api::ModelProviderTerminal;
 use codex_extension_api::ModelProviderTransport;
 use codex_features::Feature;
+use core_test_support::responses::WebSocketConnectionConfig;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::sse;
 use core_test_support::responses::start_mock_server;
-use core_test_support::responses::start_websocket_server;
+use core_test_support::responses::start_websocket_server_with_headers;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use std::sync::Arc;
@@ -360,14 +361,26 @@ async fn active_provider_policy_claims_every_http_transport_invocation() -> Resu
 async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![
-            ev_response_created("resp-1"),
-            ev_assistant_message("msg-1", "done"),
-            ev_completed("resp-1"),
-        ],
-    ]])
+    // The prewarm and sampled turn use different compatibility contexts.
+    // Complete the prewarm socket so the fixture can accept the turn socket.
+    let server = start_websocket_server_with_headers(vec![
+        WebSocketConnectionConfig {
+            requests: vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+            response_headers: Vec::new(),
+            accept_delay: None,
+            close_after_requests: true,
+        },
+        WebSocketConnectionConfig {
+            requests: vec![vec![
+                ev_response_created("resp-1"),
+                ev_assistant_message("msg-1", "done"),
+                ev_completed("resp-1"),
+            ]],
+            response_headers: Vec::new(),
+            accept_delay: None,
+            close_after_requests: true,
+        },
+    ])
     .await;
     let state = ProviderPolicyState::new(true, TestDecision::Allow);
     let mut builder = test_codex()
@@ -419,13 +432,11 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
     assert_eq!(state.terminal_count.load(Ordering::SeqCst), 2);
     assert_eq!(state.completed_count.load(Ordering::SeqCst), 2);
     let connections = server.connections();
-    assert_eq!(connections.len(), 1);
-    assert_eq!(connections[0].len(), 2);
-    let turn_request = connections[0][1].body_json();
-    assert_eq!(
-        turn_request["previous_response_id"].as_str(),
-        Some("warm-1")
-    );
+    assert_eq!(connections.len(), 2);
+    assert_eq!(connections[0].len(), 1);
+    assert_eq!(connections[1].len(), 1);
+    let turn_request = connections[1][0].body_json();
+    assert_eq!(turn_request["previous_response_id"].as_str(), None);
     assert!(
         turn_request
             .get("input")
@@ -447,7 +458,7 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
             ProviderAttemptObservation {
                 request_kind: ModelProviderRequestKind::Turn,
                 transport: ModelProviderTransport::WebSocket,
-                has_previous_response: true,
+                has_previous_response: false,
                 generate: true,
             }
         ]

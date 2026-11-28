@@ -46,7 +46,18 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                     call.tool
                 )
             })?;
-            let prepared_call = binding.prepare_call(&call.server, &call.tool).ok_or_else(|| {
+            let prepared_call = binding.prepare_call(&call.server, &call.tool).or_else(|| {
+                if call.server == "notes"
+                    && call.tool == "thread_hint"
+                    && call.environment_id.is_none()
+                    && call.input.is_empty()
+                {
+                    binding.prepare_local_notes_thread_hint()
+                } else {
+                    None
+                }
+            })
+            .ok_or_else(|| {
                 anyhow::anyhow!(
                     "MCP server `{}` or tool `{}` is not connected and available",
                     call.server,
@@ -54,10 +65,21 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                 )
             })?;
 
+            if let Some(environment_id) = &call.environment_id
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!("MCP hook tool is not available in its configured executor environment");
+            }
+
+            let mut metadata = call.metadata.unwrap_or_default();
+            metadata.insert(
+                "threadId".to_string(),
+                Value::String(self.thread_id.to_string()),
+            );
             let result = prepared_call
                 .call(
                     Some(Value::Object(call.input)),
-                    Some(serde_json::json!({ "threadId": self.thread_id.to_string() })),
+                    Some(Value::Object(metadata)),
                     Some(call.timeout),
                 )
                 .await?;

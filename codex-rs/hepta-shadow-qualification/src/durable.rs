@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -118,7 +119,30 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    #[cfg(not(windows))]
+    let directory = File::open(path)?;
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::MetadataExt;
+        use std::os::windows::fs::OpenOptionsExt;
+
+        const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+
+        // Flush the real directory without following a junction or symlink.
+        let directory = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(path)?;
+        let metadata = directory.metadata()?;
+        if !metadata.is_dir() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+            return Err(invalid("artifact parent must be a real directory"));
+        }
+        directory
+    };
+    directory.sync_all()?;
     Ok(())
 }
 

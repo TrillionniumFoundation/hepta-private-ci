@@ -633,7 +633,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 10;
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -747,7 +747,11 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(binding);
     drop(executor);
     drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    // Let the real fixture lease expire only after all its H7 records are written.
+    let remaining = (UNIX_EPOCH + Duration::from_secs(expires_at))
+        .duration_since(SystemTime::now())
+        .unwrap_or_default();
+    tokio::time::sleep(remaining).await;
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -774,16 +778,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
 
 #[cfg(not(feature = "production-cognitive-write"))]
 #[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn read_only_profile_fails_closed_when_critical_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
+    ));
     assert!(matches!(
         result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
+        Err(crate::AgentdError::Protocol(reason)) if reason == "critical cognitive owner unavailable"
     ));
 }
 

@@ -736,13 +736,25 @@ async fn same_process_ephemeral_interrupted_turn_recovers_from_listener_state() 
     Ok(())
 }
 
-async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
-    let codex_home = TempDir::new()?;
+fn write_recovery_fixture_config(server: &MockServer, codex_home: &Path) -> Result<()> {
     MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
+        .with_approval_policy("on-request")
         .enable_feature(Feature::HeptaTurnRecovery)
         .with_root_config(r#"approvals_reviewer = "user""#)
-        .write(codex_home.path())?;
+        .write(codex_home)?;
+    // Keep the synthetic blocked command pending approval without the retired public policy.
+    let rules = codex_home.join("rules");
+    fs::create_dir_all(&rules)?;
+    fs::write(
+        rules.join("default.rules"),
+        r#"prefix_rule(pattern=["python3", "-c", "import time; time.sleep(10)"], decision="prompt")"#,
+    )?;
+    Ok(())
+}
+
+async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
+    let codex_home = TempDir::new()?;
+    write_recovery_fixture_config(server, codex_home.path())?;
     let app = TestAppServer::builder()
         .with_codex_home(codex_home.path())
         .without_managed_config()
@@ -753,11 +765,7 @@ async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)>
 
 async fn configured_app_with_resume_hook(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
     let codex_home = TempDir::new()?;
-    MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
-        .enable_feature(Feature::HeptaTurnRecovery)
-        .with_root_config(r#"approvals_reviewer = "user""#)
-        .write(codex_home.path())?;
+    write_recovery_fixture_config(server, codex_home.path())?;
     write_resume_session_start_hook(codex_home.path())?;
     let app = TestAppServer::builder()
         .with_codex_home(codex_home.path())

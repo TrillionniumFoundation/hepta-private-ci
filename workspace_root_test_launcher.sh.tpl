@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# macOS can expose its native temporary directory through /var, an alias
+# for /private/var. Keep the same test isolation and use its physical name
+# for fixtures whose owner validation correctly rejects symlinked paths.
+if [[ "${OSTYPE}" == darwin* ]]; then
+  if [[ -n "${CODEX_BAZEL_MAC_TEST_TMPDIR:-}" ]]; then
+    # The sandbox may set its own TMPDIR before invoking this launcher.
+    TMPDIR="${CODEX_BAZEL_MAC_TEST_TMPDIR}"
+  elif [[ -z "${TMPDIR:-}" ]]; then
+    TMPDIR="$(getconf DARWIN_USER_TEMP_DIR)"
+  fi
+  TMPDIR="$(CDPATH= cd -- "${TMPDIR}" && pwd -P)"
+  export TMPDIR
+fi
+
 resolve_runfile() {
   local logical_path="$1"
   local workspace_logical_path="${logical_path}"

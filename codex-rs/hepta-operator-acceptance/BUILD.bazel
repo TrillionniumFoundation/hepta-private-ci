@@ -17,7 +17,10 @@ rust_library(
         "@crates//:sha2",
         "@crates//:thiserror",
     ] + select({
-        "@platforms//os:windows": ["@crates//:winapi-util"],
+        "@platforms//os:windows": [
+            "@crates//:winapi-util",
+            "@crates//:windows-sys-0.52.0",
+        ],
         "//conditions:default": [],
     }),
 )
@@ -32,6 +35,7 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    tags = ["no-remote-cache"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

@@ -108,8 +108,6 @@ mod thread_processor_behavior_tests {
     use crate::outgoing_message::OutgoingEnvelope;
     use crate::outgoing_message::OutgoingMessage;
     use anyhow::Result;
-    use chrono::DateTime;
-    use chrono::Utc;
     use codex_app_server_protocol::ServerRequestPayload;
     use codex_app_server_protocol::ThreadItem;
     use codex_app_server_protocol::ToolRequestUserInputParams;
@@ -593,9 +591,11 @@ mod thread_processor_behavior_tests {
     #[test]
     fn summary_from_stored_thread_preserves_millisecond_precision() {
         let created_at =
-            DateTime::parse_from_rfc3339("2025-01-02T03:04:05.678Z").expect("valid timestamp");
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:05.678Z")
+                .expect("valid timestamp");
         let updated_at =
-            DateTime::parse_from_rfc3339("2025-01-02T03:04:06.789Z").expect("valid timestamp");
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:06.789Z")
+                .expect("valid timestamp");
         let thread_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000123").expect("valid thread");
         let stored_thread = StoredThread {
@@ -609,9 +609,9 @@ mod thread_processor_behavior_tests {
             model_provider: "openai".to_string(),
             model: None,
             reasoning_effort: None,
-            created_at: created_at.with_timezone(&Utc),
-            updated_at: updated_at.with_timezone(&Utc),
-            recency_at: updated_at.with_timezone(&Utc),
+            created_at: created_at,
+            updated_at: updated_at,
+            recency_at: updated_at,
             archived_at: None,
             section: None,
             section_position: None,
@@ -748,6 +748,7 @@ mod thread_processor_behavior_tests {
             requires_openai_auth: false,
             supports_websockets: true,
             supports_standalone_web_search: false,
+            mock_internal_chat_metadata: None,
         };
         let config_manager = ConfigManager::new(
             temp_dir.path().to_path_buf(),
@@ -861,7 +862,7 @@ mod thread_processor_behavior_tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             PathBuf::from("/tmp/rollout.jsonl"),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             codex_protocol::protocol::SessionSource::default(),
         );
         builder.model_provider = Some("mock_provider".to_string());
@@ -876,9 +877,9 @@ mod thread_processor_behavior_tests {
         let mut metadata =
             test_thread_metadata(/*model*/ None, /*reasoning_effort*/ None)?;
         metadata.created_at =
-            DateTime::parse_from_rfc3339("2025-09-05T16:53:11.123Z")?.with_timezone(&Utc);
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-09-05T16:53:11.123Z")?;
         metadata.updated_at =
-            DateTime::parse_from_rfc3339("2025-09-05T16:53:12.456Z")?.with_timezone(&Utc);
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-09-05T16:53:12.456Z")?;
 
         let summary = summary_from_thread_metadata(&metadata);
 
@@ -1085,8 +1086,11 @@ mod thread_processor_behavior_tests {
         };
 
         fs::write(&path, format!("{}\n", serde_json::to_string(&line)?))?;
-        let parsed = chrono::DateTime::parse_from_rfc3339(&timestamp)?.with_timezone(&Utc);
-        let times = FileTimes::new().set_modified(parsed.into());
+        let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(&timestamp)?;
+        let modified = parsed
+            .to_system_time()
+            .ok_or_else(|| std::io::Error::other("fixture timestamp is out of range"))?;
+        let times = FileTimes::new().set_modified(modified);
         std::fs::OpenOptions::new()
             .append(true)
             .open(&path)?

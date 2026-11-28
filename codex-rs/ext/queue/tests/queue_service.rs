@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
@@ -12,12 +13,16 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use anyhow::Context;
+use codex_core::IdleWorkPriority;
 use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_core::TurnInputSubmission;
+use codex_core::context::ContextualUserFragment;
+use codex_core::context::InternalContextSource;
+use codex_core::context::InternalModelContextFragment;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
@@ -153,9 +158,61 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_absolute() && candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        // cmd.exe's runner supplies the outer /C quoting.
+        format!("\"{}\" \"{}\"", python.display(), script_path.display())
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+fn powershell_path(path: &Path) -> String {
+    format!("'{}'", path.to_string_lossy().replace('\'', "''"))
+}
+
+fn write_queue_hook(home: &Path, command: String) {
+    let hooks = serde_json::json!({
+        "hooks": {
+            "UserPromptSubmit": [{
+                "hooks": [{"type": "command", "command": command}]
+            }]
+        }
+    });
+    std::fs::write(home.join("hooks.json"), hooks.to_string())
+        .unwrap_or_else(|error| panic!("write queue hook configuration: {error}"));
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let log = powershell_path(&log_path);
+        // Exercise the actual command hook even when the child PATH differs.
+        // Do not introduce a second interpreter beneath the Windows shell.
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText({log}, [string]$payload.prompt + [char]10)
+if ($payload.prompt -ceq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -171,24 +228,38 @@ if payload["prompt"] == "blocked":
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let entered = powershell_path(&entered_path);
+        let release = powershell_path(&release_path);
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if (@('delay exact persistence', 'delay exact rejection') -ccontains $payload.prompt) {{
+    [IO.File]::WriteAllText({entered}, 'entered')
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while (![IO.File]::Exists({release})) {{
+        if ($clock.Elapsed.TotalSeconds -ge 20) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        [Threading.Thread]::Sleep(10)
+    }}
+    if ($payload.prompt -ceq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_blocking_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -211,18 +282,68 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
+    write_queue_hook(home, queue_python_hook_command(&script_path));
+}
+
+#[test]
+fn rejecting_queue_hook_runs_through_its_configured_shell() -> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let home = root.path().join("queue hook's spaces");
+    std::fs::create_dir(&home)?;
+    write_rejecting_prompt_hook(&home);
+    let hooks: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(home.join("hooks.json"))?)?;
+    let hook = hooks
+        .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
+        .and_then(serde_json::Value::as_str)
+        .context("generated UserPromptSubmit command should exist")?;
+
+    let shell = codex_core::shell::default_user_shell();
+    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+    let program = argv.remove(0);
+    let _ = argv.pop();
+    let mut command = std::process::Command::new(program);
+    command.args(&argv).current_dir(&home);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.env("PATH", "");
+        if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+            command.raw_arg(format!(r#""{hook}""#));
+        } else {
+            command.arg(hook);
         }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+    }
+    #[cfg(not(windows))]
+    command.arg(hook);
+    let mut child = command
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("configured shell must start the generated queue hook")?;
+    {
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("queue hook stdin must be piped")?;
+        stdin.write_all(br#"{"prompt":"blocked"}"#)?;
+    }
+    let output = child.wait_with_output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "queue hook exited unsuccessfully: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(reply["decision"].as_str(), Some("block"));
+    let hook_log = std::fs::read_to_string(home.join("queue_prompt_hook.log"))?;
+    anyhow::ensure!(
+        hook_log.ends_with('\n'),
+        "queue hook log must end with a newline"
+    );
+    assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
+    Ok(())
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -427,11 +548,6 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -448,6 +564,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchLease> {
+        // Exercise expiration after admission, not during the initial SQLite claim.
         let lease_expires_at_ms = if self.short_dispatch_lease {
             now_ms + 250
         } else {
@@ -1989,6 +2106,13 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
         matches!(event, EventMsg::TurnComplete(_)).then_some(())
     })
     .await;
+    // TurnComplete is published before terminal cleanup releases admission.
+    // This manual idle notification is for duplicate reconciliation after cleanup.
+    if let Some(completion) = test.codex.pending_admission_fence_completion() {
+        tokio::time::timeout(Duration::from_secs(10), completion)
+            .await
+            .context("terminal cleanup should finish before duplicate reconciliation")?;
+    }
     emit_idle(&service, thread_id).await;
 
     assert!(service.list(thread_id).await?.is_empty());
@@ -2361,16 +2485,24 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(10), async {
+        // This helper already consumes A's completion. The only queued
+        // attempt required here is the rejected head, not a second wake.
         test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
+        let rejected_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test
+            .codex
+            .pending_normal_turn_finish_completion(&rejected_turn_id)
+        {
+            completion.await;
         }
         anyhow::Ok(())
     })
-    .await??;
+    .await
+    .context("the queued head must complete its rejection after turn A")??;
 
     let prompts = responses
         .requests()
@@ -2715,5 +2847,255 @@ async fn resumed_idle_dispatches_input_without_a_loaded_manager() -> anyhow::Res
     );
     emit_idle(&service, thread_id).await;
     assert!(service.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_callers()
+-> anyhow::Result<()> {
+    struct FirstIdleGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for FirstIdleGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let server = start_mock_server().await;
+    let responses = responses::mount_sse_sequence(
+        &server,
+        ["fenced-turn-a", "queued-turn-b"]
+            .into_iter()
+            .map(responses::sse_completed)
+            .collect(),
+    )
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(installed.clone());
+    extensions.thread_lifecycle_contributor(Arc::new(FirstIdleGate {
+        first: AtomicBool::new(true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    let queued = staging.enqueue(thread_id, user_input("B")).await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(10), async {
+        let first_turn = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::new(user_input("A")))
+            .await?;
+        let TurnInputSubmission::Started {
+            turn_id: first_turn_id,
+        } = first_turn
+        else {
+            anyhow::bail!("expected a new first turn, got {first_turn:?}");
+        };
+        entered.notified().await;
+
+        // Queue's callback must already have returned for the next contributor
+        // to reach this gate, but the exact terminalizer must remain fenced.
+        let observer = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("idle callback must retain its terminalization fence");
+        drop(observer);
+        assert!(test.codex.pending_admission_fence_completion().is_some());
+
+        // A positively pre-routing refusal releases only that attempt's lease.
+        // Repeating it must not encounter ambiguous authority from either the
+        // deferred lifecycle wake or the earlier rejected manual attempt.
+        for _ in 0..2 {
+            let submission = queue
+                .start(
+                    test.codex.as_ref(),
+                    Some(queued.id.clone()),
+                    /*trace*/ None,
+                )
+                .await?;
+            assert_eq!(
+                StartIfIdleSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                },
+                submission
+            );
+        }
+        let error = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "must remain fenced".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await
+            .expect_err("ordinary callers must not cross the terminalization fence");
+        assert!(
+            matches!(error.details(), CodexErrorDetails::InvalidRequest(_)),
+            "ordinary admission should retain the terminalizing error: {error}"
+        );
+        assert_eq!(vec![queued.clone()], queue.list(thread_id).await?);
+        assert_eq!(1, responses.requests().len());
+
+        release.notify_one();
+        let queued_turn = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(event) if event.turn_id != first_turn_id => Some(event.clone()),
+            _ => None,
+        })
+        .await;
+        assert!(queued_turn.error.is_none(), "queued turn did not succeed");
+        anyhow::Ok(())
+    })
+    .await??;
+
+    let prompts = responses
+        .requests()
+        .into_iter()
+        .map(|request| {
+            request
+                .message_input_texts("user")
+                .pop()
+                .context("model request has no user input")
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    assert_eq!(vec!["A", "B"], prompts);
+    assert!(queue.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence()
+-> anyhow::Result<()> {
+    struct BeforeQueueGate {
+        first: AtomicBool,
+        entered: Arc<tokio::sync::Notify>,
+        release: Arc<tokio::sync::Notify>,
+    }
+
+    impl ThreadLifecycleContributor<codex_core::config::Config> for BeforeQueueGate {
+        fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                if self.first.swap(/*val*/ false, Ordering::SeqCst) {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                }
+            })
+        }
+    }
+
+    let (release_response, blocked_response) = oneshot::channel();
+    let (server, _completions) = start_streaming_sse_server(vec![
+        vec![StreamingSseChunk {
+            gate: None,
+            body: responses::sse_completed("initial-turn"),
+        }],
+        vec![
+            StreamingSseChunk {
+                gate: None,
+                body: responses::sse(vec![responses::ev_response_created("queued-turn")]),
+            },
+            StreamingSseChunk {
+                gate: Some(blocked_response),
+                body: responses::sse(vec![responses::ev_completed("queued-turn")]),
+            },
+        ],
+    ])
+    .await;
+    let installed = Arc::new(InstalledQueue::default());
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BeforeQueueGate {
+        first: AtomicBool::new(/*v*/ true),
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    extensions.thread_lifecycle_contributor(installed.clone());
+    let test = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_streaming_server(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    staging
+        .enqueue(thread_id, user_input("queued user B"))
+        .await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        let first_turn = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::new(user_input("initial user A")))
+            .await?;
+        assert!(matches!(first_turn, TurnInputSubmission::Started { .. }));
+        entered.notified().await;
+        let completion = test
+            .codex
+            .pending_admission_fence_completion()
+            .expect("the terminalizer must still own its fence");
+        let automatic_thread = Arc::clone(&test.codex);
+        let (automatic_tx, automatic_rx) = oneshot::channel();
+        // Model the previous idle notification reaching Goal before this
+        // terminalizer reaches Queue. The actual queue contributor below must
+        // still win admission, despite registering its deferred callback later.
+        test.codex.defer_idle_work(
+            IdleWorkPriority::AutomaticContinuation,
+            completion,
+            async move {
+                let item = ContextualUserFragment::into(InternalModelContextFragment::new(
+                    InternalContextSource::from_static("goal"),
+                    "automatic goal continuation".to_string(),
+                ));
+                let submission = automatic_thread
+                    .start_turn_if_idle(TurnInputRequest::new(TurnInput::ResponseItem(item)))
+                    .await;
+                let _ = automatic_tx.send(submission);
+            },
+        )?;
+        release.notify_one();
+
+        assert_eq!(
+            automatic_rx.await??,
+            StartIfIdleSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            }
+        );
+        assert!(queue.list(thread_id).await?.is_empty());
+        server.wait_for_request_count(/*count*/ 2).await;
+        anyhow::Ok(())
+    })
+    .await??;
+    assert_eq!(server.requests().await.len(), 2);
+    release_response
+        .send(())
+        .expect("queued response remains live");
+    test.codex.shutdown_and_wait().await?;
+    server.shutdown().await;
     Ok(())
 }

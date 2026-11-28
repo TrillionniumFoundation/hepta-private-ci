@@ -938,6 +938,15 @@ async fn run_review_on_session(
             guardian_model_provider_id: params.spawn_config.model_provider_id.clone(),
             had_prior_review_context: had_prior_review_context(&prompt_mode),
         });
+    // The previous review may have emitted its terminal event before its
+    // turn releases admission. Wait inside this review's existing deadline,
+    // then let normal Core routing decide whether the next review may start.
+    if let Some(completion) = review_session.session.pending_admission_fence_completion()
+        && let Err(outcome) =
+            run_before_review_deadline(deadline, params.external_cancel.as_ref(), completion).await
+    {
+        return (outcome, false, analytics_result);
+    }
     if send_followup_reminder {
         append_guardian_followup_reminder(review_session).await;
     }
@@ -1468,8 +1477,8 @@ async fn run_before_review_deadline<T>(
     future: impl Future<Output = T>,
 ) -> Result<T, GuardianReviewSessionOutcome> {
     tokio::select! {
+        biased;
         _ = tokio::time::sleep_until(deadline) => Err(GuardianReviewSessionOutcome::TimedOut),
-        result = future => Ok(result),
         _ = async {
             if let Some(cancel_token) = external_cancel {
                 cancel_token.cancelled().await;
@@ -1477,6 +1486,16 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
+        result = future => {
+            // A timer can still be pending when the result first becomes ready.
+            if tokio::time::Instant::now() >= deadline {
+                Err(GuardianReviewSessionOutcome::TimedOut)
+            } else if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+                Err(GuardianReviewSessionOutcome::Aborted)
+            } else {
+                Ok(result)
+            }
+        },
     }
 }
 
@@ -2032,12 +2051,28 @@ mod tests {
 
     #[tokio::test(flavor = "current_thread")]
     async fn run_before_review_deadline_times_out_before_future_completes() {
+        tokio::time::pause();
         let outcome = run_before_review_deadline(
             tokio::time::Instant::now() + Duration::from_millis(10),
             /*external_cancel*/ None,
             async {
                 tokio::time::sleep(Duration::from_millis(50)).await;
             },
+        )
+        .await;
+
+        assert!(matches!(
+            outcome,
+            Err(GuardianReviewSessionOutcome::TimedOut)
+        ));
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_before_review_deadline_rejects_a_ready_result_after_expiry() {
+        let outcome = run_before_review_deadline(
+            tokio::time::Instant::now() - Duration::from_millis(1),
+            /*external_cancel*/ None,
+            std::future::ready(()),
         )
         .await;
 

@@ -145,14 +145,29 @@ pub fn local_selections(cwd: AbsolutePathBuf) -> TurnEnvironmentSelections {
     TurnEnvironmentSelections::new(cwd.clone(), vec![local(cwd)])
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TestEnv {
     environment: codex_exec_server::Environment,
     exec_server_url: Option<String>,
     cwd: AbsolutePathBuf,
     selection: TurnEnvironmentSelection,
     local_cwd_temp_dir: Option<Arc<TempDir>>,
-    remote_container_name: Option<String>,
+    _remote_workspace: Option<Arc<RemoteTestWorkspace>>,
+}
+
+#[derive(Debug)]
+struct RemoteTestWorkspace {
+    container: String,
+    cwd: AbsolutePathBuf,
+}
+
+impl Drop for RemoteTestWorkspace {
+    fn drop(&mut self) {
+        if let Some(path) = self.cwd.as_path().to_str() {
+            let _ =
+                docker_command_capture_stdout(["exec", &self.container, "rm", "-rf", "--", path]);
+        }
+    }
 }
 
 impl TestEnv {
@@ -182,7 +197,7 @@ impl TestEnv {
             cwd,
             selection,
             local_cwd_temp_dir: Some(local_cwd_temp_dir),
-            remote_container_name: None,
+            _remote_workspace: None,
         })
     }
 
@@ -205,15 +220,6 @@ impl TestEnv {
 
     fn local_cwd_temp_dir(&self) -> Option<Arc<TempDir>> {
         self.local_cwd_temp_dir.clone()
-    }
-}
-
-impl Drop for TestEnv {
-    fn drop(&mut self) {
-        if let Some(container_name) = &self.remote_container_name {
-            let script = format!("rm -rf {}", self.cwd.as_path().display());
-            let _ = docker_command_capture_stdout(["exec", container_name, "sh", "-lc", &script]);
-        }
     }
 }
 
@@ -258,13 +264,19 @@ pub async fn test_env() -> Result<TestEnv> {
             } else {
                 cwd_uri.to_abs_path()?
             };
+            let remote_workspace = remote_env.docker_container_name().map(|container| {
+                Arc::new(RemoteTestWorkspace {
+                    container: container.to_owned(),
+                    cwd: cwd.clone(),
+                })
+            });
             Ok(TestEnv {
                 environment,
                 exec_server_url: Some(websocket_url),
                 cwd,
                 selection,
                 local_cwd_temp_dir: None,
-                remote_container_name: remote_env.docker_container_name().map(str::to_owned),
+                _remote_workspace: remote_workspace,
             })
         }
         TestEnvironment::Local => TestEnv::local().await,
@@ -338,6 +350,11 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+}
+
+struct ResumeTestThread {
+    rollout_path: PathBuf,
+    environments: Option<Vec<TurnEnvironmentSelection>>,
 }
 
 impl TestCodexBuilder {
@@ -579,7 +596,10 @@ impl TestCodexBuilder {
         Box::pin(self.build_with_home_and_base_url(
             base_url,
             home,
-            Some(rollout_path),
+            Some(ResumeTestThread {
+                rollout_path,
+                environments: None,
+            }),
             test_env,
             /*include_local_environment*/ false,
         ))
@@ -601,11 +621,36 @@ impl TestCodexBuilder {
             .await
     }
 
+    /// Resumes a stopped thread without changing the executor or its workspace.
+    pub async fn resume_in_same_environment(
+        &mut self,
+        server: &MockServer,
+        previous: &TestCodex,
+    ) -> Result<TestCodex> {
+        let rollout_path = previous
+            .session_configured
+            .rollout_path
+            .clone()
+            .context("rollout path")?;
+        let base_url = format!("{}/v1", server.uri());
+        Box::pin(self.build_with_home_and_base_url(
+            base_url,
+            Arc::clone(&previous.home),
+            Some(ResumeTestThread {
+                rollout_path,
+                environments: Some(previous.codex.environment_selections().await),
+            }),
+            previous.executor_environment().clone(),
+            /*include_local_environment*/ false,
+        ))
+        .await
+    }
+
     async fn build_with_home_and_base_url(
         &mut self,
         base_url: String,
         home: Arc<TempDir>,
-        resume_from: Option<PathBuf>,
+        resume_from: Option<ResumeTestThread>,
         test_env: TestEnv,
         include_local_environment: bool,
     ) -> anyhow::Result<TestCodex> {
@@ -663,7 +708,7 @@ impl TestCodexBuilder {
         config: Config,
         cwd: Arc<TempDir>,
         home: Arc<TempDir>,
-        resume_from: Option<PathBuf>,
+        resume_from: Option<ResumeTestThread>,
         mut test_env: TestEnv,
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
@@ -726,7 +771,7 @@ impl TestCodexBuilder {
         };
 
         let new_conversation = match (resume_from, user_shell_override) {
-            (Some(path), Some(user_shell_override)) => {
+            (Some(resume), Some(user_shell_override)) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
@@ -735,7 +780,7 @@ impl TestCodexBuilder {
                     codex_core::test_support::resume_thread_from_rollout_with_user_shell_override(
                         thread_manager.as_ref(),
                         config.clone(),
-                        path,
+                        resume.rollout_path,
                         auth_manager,
                         user_shell_override,
                         self.supports_openai_form_elicitation,
@@ -743,19 +788,36 @@ impl TestCodexBuilder {
                 )
                 .await?
             }
-            (Some(path), None) => {
+            (Some(resume), None) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if let Some(environments) = resume.environments {
+                    // A Windows executor's selection is native to that executor.
+                    // Reusing it avoids replacing the retained paths with the
+                    // Linux compatibility spelling in the thread configuration.
+                    Box::pin(
+                        codex_core::test_support::resume_thread_from_rollout_with_environments(
+                            thread_manager.as_ref(),
+                            config.clone(),
+                            resume.rollout_path,
+                            auth_manager,
+                            client_mcp_extensions(),
+                            environments,
+                        ),
+                    )
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        resume.rollout_path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(
@@ -810,13 +872,17 @@ impl TestCodexBuilder {
         home: &TempDir,
         cwd_override: AbsolutePathBuf,
     ) -> anyhow::Result<(Config, Arc<TempDir>)> {
-        let model_provider = ModelProviderInfo {
+        let mut model_provider = ModelProviderInfo {
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
             // a test explicitly opts into websocket coverage.
             supports_websockets: false,
             ..built_in_model_providers(/*openai_base_url*/ None)["openai"].clone()
         };
+        codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
+            &mut model_provider,
+        )
+        .map_err(anyhow::Error::msg)?;
         let cwd = Arc::new(TempDir::new()?);
         for hook in self.pre_build_hooks.drain(..) {
             hook(home.path());

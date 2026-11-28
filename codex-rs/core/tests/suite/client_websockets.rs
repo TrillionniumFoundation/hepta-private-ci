@@ -506,13 +506,13 @@ async fn responses_websocket_preconnect_reuses_connection() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn responses_websocket_request_prewarm_reuses_connection() {
+async fn responses_websocket_prewarm_and_turn_preserve_reasoning_stream_options() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let mut provider = websocket_provider(&server);
@@ -541,21 +541,26 @@ async fn responses_websocket_request_prewarm_reuses_connection() {
         .expect("websocket prewarm failed");
     stream_until_complete(&mut client_session, &harness, &prompt).await;
 
-    assert_eq!(server.handshakes().len(), 1);
-    assert_eq!(
-        server.single_handshake().header(USER_AGENT_HEADER),
-        Some(codex_login::default_client::get_codex_user_agent())
-    );
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 2);
-    let warmup = connection
-        .first()
-        .expect("missing warmup request")
-        .body_json();
-    let follow_up = connection
-        .get(1)
-        .expect("missing follow-up request")
-        .body_json();
+    let handshakes = server.handshakes();
+    assert_eq!(handshakes.len(), 2);
+    for handshake in handshakes {
+        assert_eq!(
+            handshake.header(USER_AGENT_HEADER),
+            Some(codex_login::default_client::get_codex_user_agent())
+        );
+    }
+    let connections = server.connections();
+    let [prewarm, turn] = connections.as_slice() else {
+        panic!("expected separate prewarm and turn connections");
+    };
+    let [warmup] = prewarm.as_slice() else {
+        panic!("expected one prewarm request");
+    };
+    let [follow_up] = turn.as_slice() else {
+        panic!("expected one turn request");
+    };
+    let warmup = warmup.body_json();
+    let follow_up = follow_up.body_json();
 
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
@@ -575,8 +580,8 @@ async fn responses_websocket_request_prewarm_reuses_connection() {
         Some("prewarm")
     );
     assert_eq!(follow_up["type"].as_str(), Some("response.create"));
-    assert_eq!(follow_up["previous_response_id"].as_str(), Some("warm-1"));
-    assert_eq!(follow_up["input"], serde_json::json!([]));
+    assert_eq!(follow_up.get("previous_response_id"), None);
+    assert_eq!(follow_up["input"], warmup["input"]);
     assert_eq!(
         follow_up["stream_options"]["reasoning_summary_delivery"].as_str(),
         Some("sequential_cutoff")
@@ -632,10 +637,10 @@ async fn responses_websocket_request_prewarm_uses_caller_supplied_metadata() {
 async fn responses_websocket_request_prewarm_traces_logical_request() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let harness = websocket_harness_with_options(&server, /*runtime_metrics_enabled*/ true).await;
@@ -709,13 +714,18 @@ async fn responses_websocket_request_prewarm_traces_logical_request() {
         }
     }
 
-    let connection = server.single_connection();
-    let follow_up = connection
-        .get(1)
-        .expect("missing follow-up request")
-        .body_json();
-    assert_eq!(follow_up["previous_response_id"].as_str(), Some("warm-1"));
-    assert_eq!(follow_up["input"], serde_json::json!([]));
+    // The prewarm and the turn have different trusted request metadata.
+    // The turn must send its full logical input, not reuse the warmup response.
+    let connections = server.connections();
+    assert_eq!(connections.iter().map(Vec::len).collect::<Vec<_>>(), [1, 1]);
+    let warmup = connections[0][0].body_json();
+    assert_eq!(warmup["generate"].as_bool(), Some(false));
+    let turn = connections[1][0].body_json();
+    assert!(turn["previous_response_id"].is_null());
+    assert_eq!(
+        turn["input"][0]["content"][0]["text"].as_str(),
+        Some("hello")
+    );
 
     let rollout = replay_bundle(trace_dir.path()).expect("replay trace");
     let inference = rollout
@@ -888,13 +898,13 @@ async fn responses_websocket_preconnect_is_reused_even_with_header_changes() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes() {
+async fn responses_websocket_request_prewarm_does_not_cross_turn_compatibility_boundary() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let harness = websocket_harness_with_options(&server, /*runtime_metrics_enabled*/ true).await;
@@ -934,23 +944,30 @@ async fn responses_websocket_request_prewarm_is_reused_even_with_header_changes(
         }
     }
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 2);
-    let warmup = connection
-        .first()
-        .expect("missing warmup request")
-        .body_json();
-    let follow_up = connection
-        .get(1)
-        .expect("missing follow-up request")
-        .body_json();
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    let [warmup_connection, turn_connection] = connections.as_slice() else {
+        panic!("expected separate prewarm and turn connections");
+    };
+    let [warmup] = warmup_connection.as_slice() else {
+        panic!("expected one prewarm request");
+    };
+    let [follow_up] = turn_connection.as_slice() else {
+        panic!("expected one full turn request");
+    };
+    let warmup = warmup.body_json();
+    let follow_up = follow_up.body_json();
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(warmup["tools"], serde_json::json!([]));
     assert_eq!(follow_up["type"].as_str(), Some("response.create"));
-    assert_eq!(follow_up["previous_response_id"].as_str(), Some("warm-1"));
-    assert_eq!(follow_up["input"], serde_json::json!([]));
+    assert_eq!(follow_up.get("previous_response_id"), None);
+    assert_eq!(follow_up["input"], warmup["input"]);
+    assert!(
+        follow_up["input"]
+            .as_array()
+            .is_some_and(|input| !input.is_empty())
+    );
 
     server.shutdown().await;
 }
@@ -1012,10 +1029,10 @@ async fn responses_websocket_prewarm_includes_model_and_tier_routing_hint() {
 async fn responses_websocket_prewarm_uses_v2_when_provider_supports_websockets() {
     skip_if_no_network!();
 
-    let server = start_websocket_server(vec![vec![vec![
-        ev_response_created("resp-1"),
-        ev_completed("resp-1"),
-    ]]])
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![ev_response_created("resp-1"), ev_completed("resp-1")]],
+    ])
     .await;
 
     let harness = websocket_harness_with_options(&server, /*runtime_metrics_enabled*/ false).await;
@@ -1050,13 +1067,20 @@ async fn responses_websocket_prewarm_uses_v2_when_provider_supports_websockets()
             .any(|value| value == WS_V2_BETA_HEADER_VALUE)
     );
     stream_until_complete(&mut client_session, &harness, &prompt).await;
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 1);
-    let prewarm = connection
-        .first()
-        .expect("missing prewarm request")
-        .body_json();
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    let [prewarm, turn] = connections.as_slice() else {
+        panic!("expected separate prewarm and turn connections");
+    };
+    let [prewarm] = prewarm.as_slice() else {
+        panic!("expected one prewarm request");
+    };
+    let [turn] = turn.as_slice() else {
+        panic!("expected one turn request");
+    };
+    assert_eq!(turn.body_json()["type"].as_str(), Some("response.create"));
+    assert_eq!(turn.body_json().get("previous_response_id"), None);
+    let prewarm = prewarm.body_json();
     assert_eq!(prewarm["type"].as_str(), Some("response.create"));
     assert_eq!(
         prewarm["input"],
@@ -1592,13 +1616,13 @@ async fn responses_websocket_usage_limit_error_emits_rate_limit_event() {
         }
     });
 
-    let server = start_websocket_server(vec![vec![
-        vec![
+    let server = start_websocket_server(vec![
+        vec![vec![
             ev_response_created("resp-prewarm"),
             ev_completed("resp-prewarm"),
-        ],
-        vec![usage_limit_error],
-    ]])
+        ]],
+        vec![vec![usage_limit_error]],
+    ])
     .await;
     let mut builder = test_codex().with_config(|config| {
         config.model_provider.request_max_retries = Some(0);
@@ -1681,13 +1705,13 @@ async fn responses_websocket_invalid_request_error_with_status_is_forwarded() {
         }
     });
 
-    let server = start_websocket_server(vec![vec![
-        vec![
+    let server = start_websocket_server(vec![
+        vec![vec![
             ev_response_created("resp-prewarm"),
             ev_completed("resp-prewarm"),
-        ],
-        vec![invalid_request_error],
-    ]])
+        ]],
+        vec![vec![invalid_request_error]],
+    ])
     .await;
     let mut builder = test_codex().with_config(|config| {
         config.model_provider.request_max_retries = Some(0);
@@ -1845,10 +1869,13 @@ async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_c
         prior_assistant_output,
         message_item("second"),
     ]);
+    // Parent provenance is stable for compatible requests; turn IDs may change
+    // without reusing stale per-request metadata.
+    let parent_turn_id = "parent-turn-123";
     let first_responses_metadata =
-        with_parent_turn(turn_metadata(&harness, Some("turn-123")), "parent-turn-123");
+        with_parent_turn(turn_metadata(&harness, Some("turn-123")), parent_turn_id);
     let second_responses_metadata =
-        with_parent_turn(turn_metadata(&harness, Some("turn-456")), "parent-turn-456");
+        with_parent_turn(turn_metadata(&harness, Some("turn-456")), parent_turn_id);
 
     stream_until_complete_with_metadata(
         &mut client_session,
@@ -1890,9 +1917,9 @@ async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_c
 
     assert_eq!(first_metadata["turn_id"].as_str(), Some("turn-123"));
     assert_eq!(second_metadata["turn_id"].as_str(), Some("turn-456"));
-    core_test_support::responses::assert_parent_turn(&first, Some("parent-turn-123"))
+    core_test_support::responses::assert_parent_turn(&first, Some(parent_turn_id))
         .expect("initial WebSocket parent-turn metadata");
-    core_test_support::responses::assert_parent_turn(&second, Some("parent-turn-456"))
+    core_test_support::responses::assert_parent_turn(&second, Some(parent_turn_id))
         .expect("incremental WebSocket parent-turn metadata");
     assert_eq!(
         first["client_metadata"]["turn_id"].as_str(),
@@ -2384,6 +2411,7 @@ fn websocket_provider_with_connect_timeout(
         requires_openai_auth: false,
         supports_websockets: true,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     }
 }
 

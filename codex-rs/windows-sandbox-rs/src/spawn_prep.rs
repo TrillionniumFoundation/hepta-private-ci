@@ -138,6 +138,9 @@ pub(crate) fn prepare_legacy_spawn_context(
         command,
         options,
     )?;
+    if common.permissions.has_write_policy() {
+        anyhow::bail!("write-capable filesystem policies require the elevated Windows sandbox");
+    }
     if common.permissions.should_apply_network_block() {
         apply_no_network_to_env(env_map)?;
     }
@@ -532,7 +535,7 @@ mod tests {
         let workspace_roots = workspace_roots_for(cwd.path());
 
         let _context = prepare_legacy_spawn_context(
-            &PermissionProfile::workspace_write(),
+            &PermissionProfile::read_only(),
             workspace_roots.as_slice(),
             codex_home.path(),
             cwd.path(),

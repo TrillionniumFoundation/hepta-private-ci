@@ -78,6 +78,16 @@ jobs:
         shell: bash
         run: ./scripts/check-module-bazel-lock.sh
 
+      - name: Install native Linux test tools
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-client bubblewrap
+          test -x /usr/bin/ssh-keygen
+          dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+          sha256sum /usr/bin/ssh-keygen
+
       - name: bazel test //...
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -92,6 +102,18 @@ jobs:
             -//codex-rs/v8-poc:v8-poc-unit-tests
           )
 
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            # These targets are still required; their native steps below
+            # provide system OpenSSH or working nested user namespaces.
+            bazel_targets+=(
+              -//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+              -//codex-rs/core:core-all-test
+              -//codex-rs/core:core-all-wine-exec-test
+              -//codex-rs/app-server:app-server-all-test
+              -//codex-rs/app-server:app-server-all-wine-exec-test
+            )
+          fi
+
           bazel_wrapper_args=(
             --print-failed-action-summary
             --print-failed-test-logs
@@ -102,12 +124,64 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            # Darwin has a short Unix socket address limit. Use an owned,
+            # canonical temporary directory rather than the long runner alias.
+            mac_test_tmpdir="$(mktemp -d /private/tmp/bz.XXXXXX)"
+            bazel_test_args+=(
+              "--test_env=CODEX_BAZEL_MAC_TEST_TMPDIR=${mac_test_tmpdir}"
+              "--sandbox_writable_path=${mac_test_tmpdir}"
+            )
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Run operator acceptance with native OpenSSH
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=sandboxed \
+            --test_tag_filters=-argument-comment-lint \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-openssh-test \
+            -- \
+            //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+
+      - name: Run Core and App Server integration tests with native user namespaces
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=local \
+            --test_env=PATH \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-core-integration-test \
+            -- \
+            //codex-rs/core:core-all-test \
+            //codex-rs/core:core-all-wine-exec-test \
+            //codex-rs/app-server:app-server-all-test \
+            //codex-rs/app-server:app-server-all-wine-exec-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

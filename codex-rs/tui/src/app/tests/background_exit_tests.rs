@@ -1,4 +1,6 @@
 use super::*;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server;
 use pretty_assertions::assert_eq;
 
 fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
@@ -148,11 +150,35 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
     prepare_running_local_daemon(&mut app)?;
     app.chat_widget
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
-    let (mut app_server, mut tui) =
-        prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
-        .await?;
+    // Keep a real model turn active until the exit action interrupts it.
+    let (release_response, response_gate) = tokio::sync::oneshot::channel();
+    let (server, _) = start_streaming_sse_server(vec![vec![StreamingSseChunk {
+        gate: Some(response_gate),
+        body: String::new(),
+    }]])
+    .await;
+    let mut config = app.chat_widget.config_ref().clone();
+    let home = tempfile::tempdir()?;
+    config.codex_home = AbsolutePathBuf::try_from(home.path())?;
+    let base_url = format!("{}/v1", server.uri());
+    std::fs::write(
+        home.path().join("config.toml"),
+        format!(
+            "[model_providers.interrupt-fixture]\nname = \"Interrupt fixture\"\nbase_url = \"{base_url}\"\nwire_api = \"responses\"\n"
+        ),
+    )?;
+    config.model_provider_id = "interrupt-fixture".to_string();
+    config.model_provider = codex_model_provider_info::create_oss_provider_with_base_url(
+        &base_url,
+        codex_model_provider_info::WireApi::Responses,
+    );
+    config.model_providers.insert(
+        config.model_provider_id.clone(),
+        config.model_provider.clone(),
+    );
+    let mut app_server = crate::start_embedded_app_server_for_picker(&config).await?;
+    let mut tui = crate::tui::test_support::make_test_tui()?;
+    let started = app_server.start_thread(&config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
     app.chat_widget
@@ -179,26 +205,35 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         ),
         /*replay_kind*/ None,
     );
-    let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
-    } else {
-        "sleep 30"
-    };
-    app_server
-        .thread_shell_command(thread_id, command.to_string())
-        .await?;
-    let turn_id = loop {
-        let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
-            .await
-            .expect("app-server should emit a turn/start event")
-            .expect("app-server event stream should remain open");
-        if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
-            && let ServerNotification::TurnStarted(notification) = notification.as_ref()
-            && notification.thread_id == thread_id.to_string()
-        {
-            break notification.turn.id.clone();
-        }
-    };
+    let turn = app_server
+        .turn_start(
+            thread_id,
+            vec![UserInput::Text {
+                text: "Wait for the pending response".to_string(),
+                text_elements: Vec::new(),
+            }],
+            config.cwd.to_path_buf(),
+            started.session.approval_policy,
+            started.session.approvals_reviewer,
+            TurnPermissionsOverride::Preserve,
+            config.permissions.user_visible_workspace_roots(),
+            started.session.model.clone(),
+            /*effort*/ None,
+            /*summary*/ None,
+            /*service_tier*/ None,
+            /*collaboration_mode*/ None,
+            /*personality*/ None,
+            /*output_schema*/ None,
+        )
+        .await?
+        .turn;
+    assert_eq!(turn.status, TurnStatus::InProgress);
+    let turn_id = turn.id;
+    time::timeout(
+        Duration::from_secs(/*secs*/ 5),
+        server.wait_for_request_count(/*count*/ 1),
+    )
+    .await?;
     app.thread_event_channels.insert(
         thread_id,
         ThreadEventChannel::new_with_session(
@@ -230,6 +265,8 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         app_event_rx.try_recv(),
         Ok(AppEvent::Exit(ExitMode::ShutdownFirst))
     );
+    drop(release_response);
+    server.shutdown().await;
     Ok(())
 }
 

@@ -1,6 +1,4 @@
 use super::*;
-use chrono::TimeZone;
-use chrono::Utc;
 use codex_protocol::auth::KnownPlan;
 use pretty_assertions::assert_eq;
 use serde::Serialize;
@@ -196,7 +194,10 @@ fn jwt_expiration_parses_exp_claim() {
     }));
 
     let expires_at = parse_jwt_expiration(&fake_jwt).expect("should parse");
-    assert_eq!(expires_at, Utc.timestamp_opt(1_700_000_000, 0).single());
+    assert_eq!(
+        expires_at,
+        codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0)
+    );
 }
 
 #[test]

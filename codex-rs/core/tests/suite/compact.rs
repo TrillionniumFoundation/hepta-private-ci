@@ -39,6 +39,7 @@ use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses;
 use core_test_support::responses::ev_reasoning_item;
 use core_test_support::responses::mount_models_once;
+use core_test_support::responses::strip_metadata_from_json;
 use core_test_support::responses::strip_response_item_ids_from_json;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::local_selections;
@@ -1250,7 +1251,8 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
         values
             .iter()
             .filter_map(|value| {
-                let value = strip_response_item_ids_from_json(value.clone());
+                let value =
+                    strip_metadata_from_json(strip_response_item_ids_from_json(value.clone()));
                 if value
                     .get("type")
                     .and_then(|ty| ty.as_str())
@@ -1299,10 +1301,10 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
         let input = body.get("input").and_then(|v| v.as_array()).unwrap();
         let input = normalize_inputs(input);
         assert_eq!(input.len(), 3);
-        let environment_message = input[0]["content"][0]["text"].as_str().unwrap();
+        let received_environment_message = input[0]["content"][0]["text"].as_str().unwrap();
         let user_message_received = input[1]["content"][0]["text"].as_str().unwrap();
         let summary_message = input[2]["content"][0]["text"].as_str().unwrap();
-        assert_eq!(environment_message, environment_message);
+        assert_eq!(received_environment_message, environment_message);
         assert_eq!(user_message_received, user_message);
         assert_eq!(
             summary_message, expected_summary,
@@ -1888,7 +1890,12 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
+                EventMsg::TurnComplete(turn) if !event.id.starts_with("auto-compact-") => {
+                    if let Some(finished) =
+                        codex.pending_normal_turn_finish_completion(&turn.turn_id)
+                    {
+                        finished.await;
+                    }
                     break;
                 }
                 _ => {}
@@ -4031,9 +4038,12 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(turn) = &event.msg
                 && !event.id.starts_with("auto-compact-")
             {
+                if let Some(finished) = codex.pending_normal_turn_finish_completion(&turn.turn_id) {
+                    finished.await;
+                }
                 break;
             }
         }

@@ -105,6 +105,40 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             WindowsSdkDir=r"C:\SDK",
         )
 
+    def test_clippy_selects_test_binaries_for_the_build_mode(self) -> None:
+        unit = "//codex-rs/fake:fake-unit-tests-bin"
+        native = "//codex-rs/fake:fake-integration-test-bin"
+        cross = "//codex-rs/fake:fake-integration-test-windows-cross-bin"
+        unix_process = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+        query_output = self.root / "clippy-query.txt"
+        query_output.write_text(
+            f"{unit}\n{native}\n{cross}\n{unix_process}\n", encoding="utf-8"
+        )
+        script = SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"
+        for runner_os, flags, integration in (
+            ("Windows", [], [native]),
+            ("Windows", ["--windows-cross-compile"], [cross]),
+            ("Linux", [], [native, unix_process]),
+            ("macOS", [], [native, unix_process]),
+        ):
+            with self.subTest(runner_os=runner_os, flags=flags):
+                result = subprocess.run(
+                    [self.bash, str(script), *flags],
+                    env={
+                        **self.env,
+                        "RUNNER_OS": runner_os,
+                        "BAZEL_PROBE_QUERY_FILE": str(query_output),
+                    },
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    result.stdout.splitlines(),
+                    ["//codex-rs/...", "-//codex-rs/v8-poc:all", unit, *integration],
+                )
+
     def run_wrapper(
         self, *args: str
     ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:
@@ -149,6 +183,35 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             args.index("--repo_contents_cache=job scoped cache"),
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
+    def test_macos_remote_release_build_limits_jobs_without_changing_targets(
+        self,
+    ) -> None:
+        self.env.update(RUNNER_OS="macOS", BUILDBUDDY_API_KEY="recording-probe-key")
+        targets = ["//codex-rs/fake:release", "//codex-rs/other:release"]
+        for override, expected in (([], "--jobs=128"), (["--jobs=16"], "--jobs=16")):
+            with self.subTest(override=override):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.run_wrapper(
+                    "--",
+                    "build",
+                    "--compilation_mode=fastbuild",
+                    *override,
+                    "--",
+                    *targets,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(len(calls), 1)
+                args = calls[0]
+                self.assertEqual(
+                    [arg for arg in args if arg.startswith("--jobs=")], [expected]
+                )
+                if not override:
+                    self.assertLess(
+                        args.index("--config=ci-macos"), args.index(expected)
+                    )
+                self.assertIn("--compilation_mode=fastbuild", args)
+                self.assertEqual(args[args.index("--") + 1 :], targets)
 
     def test_large_windows_build_preserves_all_targets_without_a_large_native_command(
         self,

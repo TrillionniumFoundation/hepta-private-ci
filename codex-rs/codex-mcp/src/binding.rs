@@ -9,6 +9,7 @@ use std::time::Duration;
 use anyhow::Context;
 use anyhow::Result;
 use codex_config::AppToolApproval;
+use codex_exec_server::LOCAL_ENVIRONMENT_ID;
 use codex_protocol::mcp::CallToolResult;
 use rmcp::model::ListResourceTemplatesResult;
 use rmcp::model::ListResourcesResult;
@@ -25,6 +26,7 @@ use crate::binding_clients::McpBindingClients;
 use crate::connection_manager::McpConnectionSet;
 use crate::rmcp_client::ManagedClient;
 use crate::server::McpServerMetadata;
+use crate::server::McpServerOrigin;
 use crate::tools::ToolInfo;
 
 /// Validated plugin identities projected for one published MCP runtime.
@@ -115,6 +117,27 @@ impl McpBinding {
         self.calls
             .get(&(server.to_string(), tool.to_string()))
             .filter(|call| crate::tool_is_model_visible(call.tool_info()))
+            .cloned()
+    }
+
+    /// Binds the local notes thread hint without exposing hidden catalog entries
+    /// to model calls or making them generally callable from hooks.
+    pub fn prepare_local_notes_thread_hint(&self) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&("notes".to_string(), "thread_hint".to_string()))
+            .filter(|call| {
+                call.server_environment_id() == LOCAL_ENVIRONMENT_ID
+                    && call.server_metadata.origin == Some(McpServerOrigin::Stdio)
+                    && call.plugin_id().is_none()
+                    && !call.is_selected_plugin_server()
+                    && call
+                        .tool_info()
+                        .tool
+                        .annotations
+                        .as_ref()
+                        .and_then(|annotations| annotations.read_only_hint)
+                        == Some(true)
+            })
             .cloned()
     }
 

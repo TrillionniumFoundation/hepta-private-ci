@@ -29,6 +29,7 @@ use codex_protocol::mcp::OPENAI_FORM_EXTENSION_ID;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelPreset;
 use codex_protocol::protocol::SessionSource;
+use codex_protocol::protocol::TurnEnvironmentSelection;
 use once_cell::sync::Lazy;
 
 use crate::ThreadManager;
@@ -142,6 +143,28 @@ pub async fn resume_thread_from_rollout_with_user_shell_override(
             ),
         )
         .await
+}
+
+pub async fn resume_thread_from_rollout_with_environments(
+    thread_manager: &ThreadManager,
+    config: Config,
+    rollout_path: PathBuf,
+    auth_manager: Arc<AuthManager>,
+    client_mcp_extensions: ClientMcpExtensions,
+    environments: Vec<TurnEnvironmentSelection>,
+) -> codex_protocol::error::Result<crate::NewThread> {
+    let initial_history = thread_manager
+        .initial_history_from_rollout_path(rollout_path)
+        .await?;
+    Box::pin(thread_manager.resume_thread_with_history_and_environments(
+        config,
+        initial_history,
+        auth_manager,
+        /*parent_trace*/ None,
+        client_mcp_extensions,
+        Some(environments),
+    ))
+    .await
 }
 
 pub fn models_manager_with_provider(

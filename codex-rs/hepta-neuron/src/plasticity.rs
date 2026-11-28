@@ -15,6 +15,20 @@ use codex_hepta_types::StableId;
 
 use crate::SparseCheckpoint;
 
+mod temporal_credit;
+
+pub use temporal_credit::FrozenTemporalCreditProposalV1;
+pub use temporal_credit::TemporalCreditArmV1;
+pub use temporal_credit::TemporalCreditContractV1;
+pub use temporal_credit::TemporalCreditError;
+pub use temporal_credit::TemporalCreditReceiptV1;
+pub use temporal_credit::TemporalEligibilityActionV1;
+pub use temporal_credit::TemporalFeedbackV1;
+pub use temporal_credit::TemporalGroupDeltaV1;
+pub use temporal_credit::TemporalSplitV1;
+pub use temporal_credit::accumulate_frozen_temporal_credit_q24;
+pub use temporal_credit::accumulate_temporal_credit_q24;
+
 const Q: i64 = 1 << 24;
 const ELIGIBILITY_L1: i64 = 4 * Q;
 const MAX_HISTORY: usize = 1024;

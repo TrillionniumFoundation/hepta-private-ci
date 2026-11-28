@@ -511,13 +511,14 @@ goals = true
             .take()
             .expect("active response should still be gated")
             .send(());
-        drive_until_request_count(
-            &mut app,
-            &mut app_server,
-            &server,
-            usize::from(previous_prompt.is_some()) + 2,
+        // Observe the server's next request without dispatching its steer
+        // echo to the widget. The steer is committed but still locally pending.
+        tokio::time::timeout(
+            std::time::Duration::from_secs(/*secs*/ 5),
+            server.wait_for_request_count(usize::from(previous_prompt.is_some()) + 2),
         )
-        .await;
+        .await
+        .expect("the server should commit the steer before retry");
         let source = app_server
             .thread_read(source_thread_id, /*include_turns*/ true)
             .await?;
@@ -814,6 +815,7 @@ goals = true
     assert_eq!(user_message_count(&retry, &expected_retry_prompt), 1);
     if let Some(committed_steer) = committed_steer {
         assert_eq!(user_message_count(&source, committed_steer), 1);
+        assert_eq!(user_message_count(&retry, committed_steer), 0);
     }
     if let Some(previous_prompt) = previous_prompt {
         assert_eq!(user_message_count(&source, previous_prompt), 1);
