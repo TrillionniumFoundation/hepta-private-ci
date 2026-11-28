@@ -47,6 +47,13 @@ use crate::framing::workspace_digest;
 #[path = "combined_digest_table.rs"]
 mod combined_digest_table;
 
+#[path = "federation_workspace.rs"]
+mod workspace_identity;
+
+#[cfg(all(test, windows))]
+#[path = "federation_workspace_tests.rs"]
+mod workspace_tests;
+
 use combined_digest_table::intern_combined_digests;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
@@ -230,6 +237,7 @@ impl FederatedCognitiveExtension {
         {
             return None;
         }
+        let workspace = workspace_identity::from_transport(input.cwd).ok()?;
         let thread_state = input.thread_store.get::<HeptaMemoryThreadState>()?;
         if !thread_state.attachment_proposal_enabled {
             return None;
@@ -237,7 +245,7 @@ impl FederatedCognitiveExtension {
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(&workspace)
         {
             return None;
         }
@@ -252,7 +260,7 @@ impl FederatedCognitiveExtension {
         }
         let now = now_unix_seconds()?;
         let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(&workspace));
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -282,7 +290,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            &workspace,
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -393,6 +401,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if !workspace.is_absolute() {
                 return Vec::new();
             }
+            let Ok(workspace) = workspace_identity::from_transport(&workspace) else {
+                return Vec::new();
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
