@@ -170,6 +170,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
+    // A Unix regular file is never a socket rendezvous. Darwin reports
+    // ENOTSOCK for it, while Linux can report ConnectionRefused.
+    #[cfg(unix)]
+    if let Ok(metadata) = tokio::fs::symlink_metadata(socket_path).await
+        && metadata.is_file()
+    {
+        return Err(AgentdError::Io(std::io::Error::new(
+            ErrorKind::AlreadyExists,
+            format!(
+                "agentd control socket path is not a stale socket: {}",
+                socket_path.display()
+            ),
+        )));
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
