@@ -1899,6 +1899,34 @@ jobs:
           assert report["passed"] and report["tests"] == 14, report
           assert not report["errors"] and not report["failures"], report
           PY
+      - name: Check out the immutable Windows fleet predecessor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 8dc5802777bbf076a37daea8f0e47a3f0ec663f7
+          path: dependency-fleet-original
+          persist-credentials: false
+          sparse-checkout: |
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            codex-rs/hepta-fleet
+            codex-rs/utils/path-utils
+          sparse-checkout-cone-mode: false
+      - name: Verify complete fleet and path-utils custody before native owner gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_windows_fleet_dependency_sources.py \
+            --repo "$GITHUB_WORKSPACE/codex" --original-root "$GITHUB_WORKSPACE/codex" \
+            --predecessor-root "$GITHUB_WORKSPACE/dependency-fleet-original" \
+            --report "$RUNNER_TEMP/hia-dependency-windows-fleet-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-dependency-windows-fleet-controls.log"
+          python3 - <<'PY'
+          import json, os, pathlib
+          report = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) / "hia-dependency-windows-fleet-controls.json").read_bytes())
+          assert report["passed"] and report["tests"] == 16, report
+          assert not report["errors"] and not report["failures"], report
+          assert not report["windows_execution_qualified"]
+          PY
       - name: Preserve dependency source control evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -1913,6 +1941,8 @@ jobs:
             ${{ runner.temp }}/hia-dependency-oauth2-controls.log
             ${{ runner.temp }}/hia-dependency-otel-controls.json
             ${{ runner.temp }}/hia-dependency-otel-controls.log
+            ${{ runner.temp }}/hia-dependency-windows-fleet-controls.json
+            ${{ runner.temp }}/hia-dependency-windows-fleet-controls.log
 
   native-required:
     name: native-components
