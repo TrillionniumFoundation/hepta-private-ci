@@ -13,7 +13,7 @@ import tempfile
 R=Path.home()/".local/state/hepta-hcsn-1140569-audit"
 H=R/"historical-closure-9de7";sys.path.insert(0,str(R));import screen
 repo=H/"objects.git";path=Path(sys.argv[1]);workers=int(sys.argv[2]);label=sys.argv[3]
-stage=H/"payloads"/label;stage.mkdir(exist_ok=True,parents=True)
+stage=Path(os.environ.get("HEPTA_AUDIT_OUTPUT",str(H/"payloads")))/label;stage.mkdir(exist_ok=True,parents=True)
 target=set(gzip.decompress(path.read_bytes()).decode().splitlines())
 db=sqlite3.connect(stage/"results.sqlite");db.execute("create table if not exists files(oid text primary key,size integer,sha text,nul integer,flags integer)")
 done={x for x, in db.execute("select oid from files")};missing=sorted(target-done)
