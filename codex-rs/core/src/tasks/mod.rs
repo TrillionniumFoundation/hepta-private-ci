@@ -962,7 +962,7 @@ impl Session {
         completion.complete();
     }
 
-    fn pending_task_terminalization_completions_except(
+    pub(crate) fn pending_task_terminalization_completions_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
     ) -> Vec<Arc<StartTransitionCompletion>> {

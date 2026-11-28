@@ -19,14 +19,8 @@ async fn prunes_only_old_resources_from_extensions_with_instructions() {
     .await
     .expect("write chronicle instructions");
 
-    let now = DateTime::from_naive_utc_and_offset(
-        NaiveDateTime::parse_from_str(
-            "2026-04-14T12-00-00",
-            crate::extension_resources::FILENAME_TS_FORMAT,
-        )
-        .expect("parse now"),
-        Utc,
-    );
+    let now = codex_utils_time::Timestamp::parse_filename_timestamp("2026-04-14T12-00-00")
+        .expect("parse now");
     let old_file = chronicle_resources.join("2026-04-06T11-59-59-abcd-10min-old.md");
     let exact_cutoff_file = chronicle_resources.join("2026-04-07T12-00-00-abcd-10min-cutoff.md");
     let recent_file = chronicle_resources.join("2026-04-08T12-00-00-abcd-10min-recent.md");

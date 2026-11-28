@@ -1,8 +1,12 @@
 use anyhow::Result;
+use codex_core::CodexThread;
 use codex_core::TurnInputRequest;
 use codex_core::config::RolloutBudgetConfig;
 use codex_features::Feature;
+use codex_history::RolloutItem;
+use codex_history::RolloutLine;
 use codex_model_provider_info::built_in_model_providers;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::CodexErrorInfo;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
@@ -27,6 +31,15 @@ use test_case::test_case;
 use tokio::time::timeout;
 
 const MULTI_AGENT_V2_NAMESPACE: &str = "collaboration";
+
+async fn wait_for_terminalization(thread: &CodexThread) {
+    timeout(
+        Duration::from_secs(10),
+        thread.wait_for_terminalization_for_test(),
+    )
+    .await
+    .expect("the thread's terminalization owner must finish before the next operation");
+}
 
 fn rollout_budget() -> RolloutBudgetConfig {
     RolloutBudgetConfig {
@@ -100,10 +113,42 @@ async fn adds_weighted_initial_and_threshold_reminders(
         .await?;
 
     test.submit_turn("first turn").await?;
-    test.submit_turn("second turn").await?;
+    wait_for_terminalization(&test.codex).await;
+    test.codex.flush_rollout().await?;
+    let rollout_path = test.codex.rollout_path().expect("local rollout path");
+    let rollout = tokio::fs::read_to_string(rollout_path).await?;
+    let lines = rollout
+        .lines()
+        .map(serde_json::from_str::<RolloutLine>)
+        .collect::<serde_json::Result<Vec<_>>>()?;
+    assert!(
+        lines.iter().any(|line| matches!(
+            &line.item,
+            RolloutItem::ResponseItem(item)
+                if matches!(
+                    &item.item,
+                    ResponseItem::Message {
+                        internal_chat_message_metadata_passthrough: Some(metadata),
+                        ..
+                    } if metadata.content_item_kinds.as_deref().is_some_and(|kinds| {
+                        kinds.len() == 1 && kinds[0].0 == "rollout_budget.remaining_tokens"
+                    })
+                )
+        )),
+        "the local rollout must retain the typed budget reminder"
+    );
 
+    test.submit_turn("second turn").await?;
     let requests = responses.requests();
-    assert!(requests[0].has_content_kinds(&["rollout_budget.remaining_tokens"]));
+    assert!(
+        requests.iter().all(|request| {
+            request.input().iter().all(|item| {
+                item.get("internal_chat_message_metadata_passthrough")
+                    .is_none()
+            })
+        }),
+        "the mock provider must not receive internal classification metadata"
+    );
     assert_eq!(
         rollout_budget_texts(&requests[0]),
         vec![rollout_budget_message(/*remaining_tokens*/ 100)]
@@ -253,6 +298,8 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    wait_for_terminalization(child_thread.as_ref()).await;
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn(FOLLOW_UP_PROMPT).await?;
 
     let requests = follow_up
@@ -326,6 +373,7 @@ async fn exhausted_budget_fails_current_and_later_turns() -> Result<()> {
             matches!(event, EventMsg::TurnComplete(_))
         })
         .await;
+        wait_for_terminalization(&test.codex).await;
     }
 
     Ok(())
@@ -443,11 +491,13 @@ async fn restates_the_current_remainder_after_compaction() -> Result<()> {
         .await?;
 
     test.submit_turn("first turn").await?;
+    wait_for_terminalization(&test.codex).await;
     test.codex.submit(Op::Compact).await?;
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
+    wait_for_terminalization(&test.codex).await;
     test.submit_turn("second turn").await?;
 
     let requests = responses.requests();
@@ -498,6 +548,7 @@ async fn restates_the_current_remainder_after_rollback() -> Result<()> {
         .await?;
 
     test.submit_turn("rolled-back turn").await?;
+    wait_for_terminalization(&test.codex).await;
     test.codex
         .submit(Op::ThreadRollback { num_turns: 1 })
         .await?;

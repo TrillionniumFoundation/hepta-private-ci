@@ -153,8 +153,6 @@ fn pick_tooltip<R: Rng + ?Sized>(rng: &mut R) -> Option<&'static str> {
 pub(crate) mod announcement {
     use crate::tooltips::ANNOUNCEMENT_TIP_URL;
     use crate::version::CODEX_CLI_VERSION;
-    use chrono::NaiveDate;
-    use chrono::Utc;
     use codex_http_client::ClientRouteClass;
     use codex_http_client::HttpClientFactory;
     use codex_http_client::RouteAwareClientPool;
@@ -163,6 +161,7 @@ pub(crate) mod announcement {
     use serde::Deserialize;
     use std::sync::OnceLock;
     use std::time::Duration;
+    use time::Date;
 
     static ANNOUNCEMENT_TIP: OnceLock<Option<String>> = OnceLock::new();
     const CURRENT_OS: TargetOs = TargetOs::current();
@@ -206,8 +205,8 @@ pub(crate) mod announcement {
     #[derive(Debug)]
     struct AnnouncementTip {
         content: String,
-        from_date: Option<NaiveDate>,
-        to_date: Option<NaiveDate>,
+        from_date: Option<Date>,
+        to_date: Option<Date>,
         version_regex: Option<Regex>,
         target_app: String,
         target_plan_types: Option<Vec<PlanType>>,
@@ -258,7 +257,7 @@ pub(crate) mod announcement {
             .ok()?;
 
         let mut latest_match = None;
-        let today = Utc::now().date_naive();
+        let today = codex_utils_time::Timestamp::now().calendar().date();
         for raw in announcements {
             let Some(tip) = AnnouncementTip::from_raw(raw) else {
                 continue;
@@ -291,11 +290,11 @@ pub(crate) mod announcement {
             }
 
             let from_date = match raw.from_date {
-                Some(date) => Some(NaiveDate::parse_from_str(&date, "%Y-%m-%d").ok()?),
+                Some(date) => Some(codex_utils_time::parse_date(&date).ok()?),
                 None => None,
             };
             let to_date = match raw.to_date {
-                Some(date) => Some(NaiveDate::parse_from_str(&date, "%Y-%m-%d").ok()?),
+                Some(date) => Some(codex_utils_time::parse_date(&date).ok()?),
                 None => None,
             };
             let version_regex = match raw.version_regex {
@@ -334,7 +333,7 @@ pub(crate) mod announcement {
                 .is_none_or(|regex| regex.is_match(version))
         }
 
-        fn date_matches(&self, today: NaiveDate) -> bool {
+        fn date_matches(&self, today: Date) -> bool {
             if let Some(from) = self.from_date
                 && today < from
             {
