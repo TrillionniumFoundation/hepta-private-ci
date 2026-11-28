@@ -1,0 +1,15 @@
+{
+"schema": "hepta.opaque-teacher-codec-freeze.v1",
+"base": "fe65dd25d152d8ea3b5c581a8a6fd3412442ca00",
+"prospective_commit": "60584475e2854e1cea43cd7fa86d995ff3bc7cfc",
+"files": {"scripts/cell_experiments/data.py": {"git_blob": "1f32cb00fb815ced989580a31dd8d39424d3e1e8", "sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09"}, "scripts/cell_experiments/opaque_teacher_data.py": {"git_blob": "43865d180e6898532d0a6200f8d42032aedb3810", "sha256": "720a9936c4286b7857d7f669b8d371874123b221f9f279d6801f60ebe659118c"}, "scripts/cell_experiments/test_opaque_teacher_data.py": {"git_blob": "1c7fdce7d65fdfa6d801773aa3a965878776dd3e", "sha256": "3df63949cad5ef28408857e6ab616e7578572436b746d69ef8e34070fef88cbc"}},
+"exact_tests": ["test_explicit_observation_preserves_unknown_weights_and_no_consent", "test_model_labels_hashes_and_execution_claims_cannot_be_promoted", "test_raw_source_and_explicit_item_inventory_are_bound", "test_prompt_payload_identity_and_order_are_exact", "test_local_semantic_receipt_is_bound_and_never_signed_authority", "test_profile_rejects_floats_fake_targets_and_unsupported_fields", "test_source_rebuild_rejects_changed_provider_phase_or_selected_text"],
+"command_cap_seconds": 30,
+"teacher_calls": 0,
+"human_sessions": 0,
+"fits": 0,
+"cargo": false,
+"executed": {"count": 7, "outer_elapsed_ns": 199754626, "result_sha256": "3621576544de64dd5160619071572b09f7cb5ba343af34be22b37b20ace43ffb", "status": "PASS"},
+"archive_sha256": "939e5ec51bb9d429eb8777c9f949daf2895da6d63312380fc34f081a8e033398",
+"native_training_connected": false
+}
