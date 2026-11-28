@@ -82,12 +82,15 @@ async fn test_config_with_cli_overrides(
     mut cli_overrides: Vec<(String, TomlValue)>,
 ) -> (TempDir, Config) {
     let home = TempDir::new().expect("create temp dir");
+    let workspace = home.path().join("workspace");
+    std::fs::create_dir(&workspace).expect("create isolated agent test workspace");
     cli_overrides.push((
         "model".to_string(),
         TomlValue::String("gpt-5.5".to_string()),
     ));
     let config = ConfigBuilder::without_managed_config_for_tests()
         .codex_home(home.path().to_path_buf())
+        .fallback_cwd(Some(workspace))
         .cli_overrides(cli_overrides)
         .build()
         .await
@@ -3666,7 +3669,8 @@ async fn resume_agent_from_rollout_reads_archived_rollout_path() {
 
 #[tokio::test]
 async fn resume_agent_from_paginated_rollout_loads_model_context() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
     let (parent_thread_id, parent_thread) = harness.start_paginated_thread().await;
     let child_thread_id = harness
         .spawn_anonymous_child(
@@ -4370,7 +4374,9 @@ async fn resume_agent_from_rollout_reopens_open_descendants_after_manager_shutdo
 
 #[tokio::test]
 async fn resume_agent_from_rollout_uses_edge_data_when_descendant_metadata_source_is_stale() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let harness = AgentControlHarness::new_with_mock_model(&server).await;
+    let _ = mount_sse_once(&server, sse_completed("grandchild-turn-recorded")).await;
     let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness
