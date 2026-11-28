@@ -70,7 +70,7 @@ def cases():
 
 def verify(directory, report, profile='full-native38'):
     native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta', profile, report)
-    verified = {'full-native38': 'full38_manifest_verified', 'full-native39': 'full39_manifest_verified', 'full-native41': 'full41_manifest_verified'}[profile]
+    verified = {'full-native38': 'full38_manifest_verified', 'full-native39': 'full39_manifest_verified', 'full-native41': 'full41_manifest_verified', 'full-native42': 'full42_manifest_verified'}[profile]
     if not report['native_build'][verified]:
         raise RuntimeError('the requested complete build was not admitted')
     contract_path = ROOT / 'retry_decision_buffer_contract.json'
@@ -114,7 +114,7 @@ def verify(directory, report, profile='full-native38'):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native38', 'full-native39', 'full-native41'], default='full-native38')
+    parser.add_argument('--build-profile', choices=['full-native38', 'full-native39', 'full-native41', 'full-native42'], default='full-native38')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {'schema': 'codex.hia.retry-decision-abi.v1', 'passed': False, 'calls': [],
