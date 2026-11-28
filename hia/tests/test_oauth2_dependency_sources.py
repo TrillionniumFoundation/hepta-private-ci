@@ -27,6 +27,17 @@ class OAuth2DependencySourceTests(unittest.TestCase):
             cls.history["predecessor_revision"] + ":" + p])
             for p in admission.ROOT_FILES}
 
+        cls.otel_fixture = None
+        if admission._pair_identity(cls.current) != cls.history["current_files"]:
+            from file_update_oracle.otel_source_history import restore_predecessor
+            cls.otel_fixture = restore_predecessor(REPO, cls.current, cls.history["current_files"])
+            cls.current = cls.otel_fixture["restored"]
+
+    @classmethod
+    def tearDownClass(cls):
+        from file_update_oracle.otel_source_history import verify_predecessor
+        verify_predecessor(cls.otel_fixture)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="oauth2-source-controls-")
         self.addCleanup(self.temporary.cleanup)
@@ -169,6 +180,10 @@ if __name__ == "__main__":
               "failures": [(str(case), trace) for case, trace in result.failures],
               "errors": [(str(case), trace) for case, trace in result.errors],
               "physical_source_admission": physical_admission["report"],
+              "current_fixture_admission": (None if OAuth2DependencySourceTests.otel_fixture is None
+                  else OAuth2DependencySourceTests.otel_fixture["report"]),
+              "historical_fixture_source_sha256": {p: hashlib.sha256(data).hexdigest()
+                  for p, data in OAuth2DependencySourceTests.current.items()},
               "physical_source_sha256": {p: hashlib.sha256((REPO / p).read_bytes()).hexdigest()
                                          for p in admission.ROOT_FILES},
               "history_sha256": hashlib.sha256(epoch.HISTORY.read_bytes()).hexdigest(),

@@ -1,0 +1,395 @@
+{
+  "bazel_lock": {
+    "bytes": 1743125,
+    "sha256": "303c5f4c929ab5343c1e29292a850482944690a7736b6d12ad2ea63d7dafb1a6"
+  },
+  "crate": {
+    "current_files": {
+      "BUILD.bazel": {
+        "bytes": 161,
+        "sha256": "51ceff12267eedbc127a2c535373fbb262ad6d9f3aa0a92c60fd7a7a4d906f0d"
+      },
+      "Cargo.toml": {
+        "bytes": 1937,
+        "sha256": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f"
+      },
+      "README.md": {
+        "bytes": 5080,
+        "sha256": "bf2c7dda1a1e3c23f6917f6ccf3156506991e33a7a23a276c267bd77918d1907"
+      },
+      "src/config.rs": {
+        "bytes": 3679,
+        "sha256": "7c29ae31c5d3bef74f3c9e53a909698afeadd6e1f1b83ea88f19e4239eed3621"
+      },
+      "src/events/mod.rs": {
+        "bytes": 57,
+        "sha256": "7ff247efd4f2de0da5bef63c226ebb3ccabb38702d9fb84a9a0307d1702b377d"
+      },
+      "src/events/session_telemetry.rs": {
+        "bytes": 50035,
+        "sha256": "362ee7d9228e2f7204885f2a9f772cb085e2be0019d990fe1530f708b25b2c3c"
+      },
+      "src/events/shared.rs": {
+        "bytes": 2613,
+        "sha256": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9"
+      },
+      "src/events/shared_tests.rs": {
+        "bytes": 1361,
+        "sha256": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+      },
+      "src/lib.rs": {
+        "bytes": 2995,
+        "sha256": "dea75ca1e3ae342e0674f9a644bc838c300fe2a13bcefbc1aee4af3361091a74"
+      },
+      "src/metrics/client.rs": {
+        "bytes": 20899,
+        "sha256": "b381b27bd09ca44fcc549ce742d638c0bc45b6e71b1ae1473d7ebd3fbb740cee"
+      },
+      "src/metrics/config.rs": {
+        "bytes": 4073,
+        "sha256": "6658c992de4f39d9de06b86f3f06317bb00f0e6afb31cb170cbd4ed435d4951a"
+      },
+      "src/metrics/error.rs": {
+        "bytes": 1427,
+        "sha256": "010a44803febcb3ae4213e0287709d4284eba40d5ae4087308069b4d90b5f0c1"
+      },
+      "src/metrics/mod.rs": {
+        "bytes": 1686,
+        "sha256": "e33aa7539f27e5303fdd91280211a38cde7ded73da776d61e13cd63909183457"
+      },
+      "src/metrics/names.rs": {
+        "bytes": 4744,
+        "sha256": "f5a979d97486476392fa5d2cd8dc26f12aefcd18f69b5271593a147ab15e8902"
+      },
+      "src/metrics/process.rs": {
+        "bytes": 809,
+        "sha256": "ad4a8bf5079e1f59b599ed6fa552f1e0bc0478de70dacd0f831918d3c07cf2c6"
+      },
+      "src/metrics/runtime_metrics.rs": {
+        "bytes": 9296,
+        "sha256": "19ef05befdee8aff734207763f09ac251cef1d3cb588fccced0f0e3dca813ea6"
+      },
+      "src/metrics/tags.rs": {
+        "bytes": 4105,
+        "sha256": "dab54d496b12d8a3d5e450654c9a1402ee7aacb501208615453a2f7dafbea337"
+      },
+      "src/metrics/timer.rs": {
+        "bytes": 1169,
+        "sha256": "0ae1e2251e7b6bd18183cbddb88cdf40dcb225dd40ffa2576ebf14b8923c338e"
+      },
+      "src/metrics/validation.rs": {
+        "bytes": 1456,
+        "sha256": "ca885aadb6c4d7a8c1513640a015132dce078bdf4c737a5c5164dc54ec707f4a"
+      },
+      "src/otlp.rs": {
+        "bytes": 9525,
+        "sha256": "eb523dadd8371c790a68f63340eb00aacf67ae6124e9baffdcbcb7f6597af11a"
+      },
+      "src/provider.rs": {
+        "bytes": 27568,
+        "sha256": "3b3cb6ec0c8ff498615c980baf051f1d99326c1e2d64744a28ac79fedd5ebb07"
+      },
+      "src/provider_shutdown_tests.rs": {
+        "bytes": 15371,
+        "sha256": "56277620f922a4d9ab7aa080645a881b778651b252f5ee679392852d2e010d3c"
+      },
+      "src/targets.rs": {
+        "bytes": 447,
+        "sha256": "11fb3bc5505129dbe1e5767b777c0f1813a400ee4ad1e66b16b08cbcf72e0210"
+      },
+      "src/tool_result.rs": {
+        "bytes": 3552,
+        "sha256": "27b0a55a3c4536c4fb13a7f30a78023ab53e5a5626a84ef6c6ae5512ae2f07e3"
+      },
+      "src/tool_result_tests.rs": {
+        "bytes": 2141,
+        "sha256": "7ed3b2bf5937c7cca8a14daa066c240234a6f21d6f7c6031c14fb4038c4bde4b"
+      },
+      "src/trace_context.rs": {
+        "bytes": 14032,
+        "sha256": "b0633668880806f66e67465eee6845ff8e426c697f63bbbbf69dd1fde508729a"
+      },
+      "tests/harness/mod.rs": {
+        "bytes": 2607,
+        "sha256": "10ff311398bae92e1ae5490f25563439d2b0ef450481561ffea0d845bb63ee0c"
+      },
+      "tests/suite/manager_metrics.rs": {
+        "bytes": 8631,
+        "sha256": "57145a560dca00597435591f82c27dbb502b689fb3422d7963307eb082547a6f"
+      },
+      "tests/suite/mod.rs": {
+        "bytes": 150,
+        "sha256": "04c87b5c2db1681624e621cc54ad54422be0b7eaebd12db6a20dae0b7c730936"
+      },
+      "tests/suite/otel_export_routing_policy.rs": {
+        "bytes": 35520,
+        "sha256": "f15f9b6176bc3a6a24092b8b27234c22c72bbf9ebf70992a7a391f7f8fb43f20"
+      },
+      "tests/suite/otlp_http_loopback.rs": {
+        "bytes": 32166,
+        "sha256": "433a0bfd4073b2952ca6c9844c50592f9ac932194e397cb168b1c6cfa41837c3"
+      },
+      "tests/suite/runtime_summary.rs": {
+        "bytes": 4971,
+        "sha256": "401363d0462c90a5593494feb7e9444daefe97742ad3a528693271ba2ac99722"
+      },
+      "tests/suite/send.rs": {
+        "bytes": 9225,
+        "sha256": "0e956e70ac453dc28b5e899cb0473a2ce6b3d4e75b46f27cf9f35672e1dc463b"
+      },
+      "tests/suite/snapshot.rs": {
+        "bytes": 5315,
+        "sha256": "55796fdf9b5fc4b913387ff4ab2c770ada11550dd1ba216fe79be5ed0fe7fab1"
+      },
+      "tests/suite/timing.rs": {
+        "bytes": 5089,
+        "sha256": "14613d94ee1e4c5a615abdab273f63aebb708ce6da7176bea4cf4cbf9ba2d310"
+      },
+      "tests/suite/validation.rs": {
+        "bytes": 2677,
+        "sha256": "88f2c2a80d719350ec73f39c4c7bc75ea8333c6aaf6ab069752c86d5cac6546a"
+      },
+      "tests/tests.rs": {
+        "bytes": 56,
+        "sha256": "e689d73babbe32944aa721f7651816f62c466c004567c3327f7a49967cfe3f33"
+      }
+    },
+    "directories": [
+      ".",
+      "src",
+      "src/events",
+      "src/metrics",
+      "tests",
+      "tests/harness",
+      "tests/suite"
+    ],
+    "inverse": {
+      "Cargo.toml": {
+        "before": "[package]\nname = \"codex-otel\"\nversion.workspace = true\nedition.workspace = true\nlicense.workspace = true\n\n[lib]\ndoctest = false\nname = \"codex_otel\"\npath = \"src/lib.rs\"\n\n[lints]\nworkspace = true\n\n[dependencies]\nchrono = { workspace = true }\ncodex-utils-absolute-path = { workspace = true }\ncodex-utils-string = { workspace = true }\ncodex-api = { workspace = true }\ncodex-protocol = { workspace = true }\neventsource-stream = { workspace = true }\ngethostname = { workspace = true }\nopentelemetry = { workspace = true, features = [\"logs\", \"metrics\", \"trace\"] }\nopentelemetry-appender-tracing = { workspace = true }\nopentelemetry-otlp = { workspace = true, features = [\n    \"grpc-tonic\",\n    \"http-proto\",\n    \"http-json\",\n    \"logs\",\n    \"metrics\",\n    \"trace\",\n    \"reqwest-blocking-client\",\n    \"reqwest-rustls\",\n    \"tls\",\n    \"tls-roots\",\n]}\nopentelemetry-semantic-conventions = { workspace = true }\nopentelemetry_sdk = { workspace = true, features = [\n    \"experimental_trace_batch_span_processor_with_async_runtime\",\n    \"experimental_metrics_custom_reader\",\n    \"logs\",\n    \"metrics\",\n    \"rt-tokio\",\n    \"testing\",\n    \"trace\",\n] }\nhttp = { workspace = true }\nos_info = { workspace = true }\nreqwest = { workspace = true, features = [\"blocking\", \"rustls-tls\"] }\nserde = { workspace = true, features = [\"derive\"] }\nserde_json = { workspace = true }\nstrum_macros = { workspace = true }\nthiserror = { workspace = true }\ntokio = { workspace = true }\ntokio-tungstenite = { workspace = true }\ntracing = { workspace = true }\ntracing-opentelemetry = { workspace = true }\ntracing-subscriber = { workspace = true }\n\n[dev-dependencies]\nopentelemetry_sdk = { workspace = true, features = [\n    \"experimental_metrics_custom_reader\",\n    \"testing\",\n] }\npretty_assertions = { workspace = true }\n\n[target.'cfg(unix)'.dev-dependencies]\nlibc = { workspace = true }\n\n[target.'cfg(target_os = \"linux\")'.dev-dependencies]\nseccompiler = { workspace = true }\n"
+      },
+      "src/events/shared.rs": {
+        "before": "use chrono::SecondsFormat;\nuse chrono::Utc;\nuse codex_protocol::DEFAULT_FUNCTION_NAMESPACE;\nuse codex_protocol::ToolName;\n\npub(crate) fn tool_namespace(tool_name: &ToolName) -> &str {\n    tool_name\n        .namespace\n        .as_deref()\n        .filter(|namespace| !namespace.is_empty())\n        .unwrap_or(DEFAULT_FUNCTION_NAMESPACE)\n}\n\nmacro_rules! log_event {\n    ($self:expr, $($fields:tt)*) => {{\n        tracing::event!(\n            target: $crate::targets::OTEL_LOG_ONLY_TARGET,\n            tracing::Level::INFO,\n            $($fields)*\n            event.timestamp = %$crate::events::shared::timestamp(),\n            conversation.id = %$self.metadata.conversation_id,\n            app.version = %$self.metadata.app_version,\n            auth_mode = $self.metadata.auth_mode,\n            originator = %$self.metadata.originator,\n            user.account_id = $self.metadata.account_id,\n            user.email = $self.metadata.account_email,\n            terminal.type = %$self.metadata.terminal_type,\n            model = %$self.metadata.model,\n            slug = %$self.metadata.slug,\n        );\n    }};\n}\n\nmacro_rules! trace_event {\n    ($self:expr, $($fields:tt)*) => {{\n        tracing::event!(\n            target: $crate::targets::OTEL_TRACE_SAFE_TARGET,\n            tracing::Level::INFO,\n            $($fields)*\n            event.timestamp = %$crate::events::shared::timestamp(),\n            conversation.id = %$self.metadata.conversation_id,\n            app.version = %$self.metadata.app_version,\n            auth_mode = $self.metadata.auth_mode,\n            originator = %$self.metadata.originator,\n            terminal.type = %$self.metadata.terminal_type,\n            model = %$self.metadata.model,\n            slug = %$self.metadata.slug,\n        );\n    }};\n}\n\nmacro_rules! log_and_trace_event {\n    (\n        $self:expr,\n        common: { $($common:tt)* },\n        log: { $($log:tt)* },\n        trace: { $($trace:tt)* },\n    ) => {{\n        log_event!($self, $($common)* $($log)*);\n        trace_event!($self, $($common)* $($trace)*);\n    }};\n}\n\npub(crate) use log_and_trace_event;\npub(crate) use log_event;\npub(crate) use trace_event;\n\npub(crate) fn timestamp() -> String {\n    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)\n}\n"
+      },
+      "src/events/shared_tests.rs": {
+        "before": null
+      }
+    },
+    "modes": {
+      "BUILD.bazel": "100644",
+      "Cargo.toml": "100644",
+      "README.md": "100644",
+      "src/config.rs": "100644",
+      "src/events/mod.rs": "100644",
+      "src/events/session_telemetry.rs": "100644",
+      "src/events/shared.rs": "100644",
+      "src/events/shared_tests.rs": "100644",
+      "src/lib.rs": "100644",
+      "src/metrics/client.rs": "100644",
+      "src/metrics/config.rs": "100644",
+      "src/metrics/error.rs": "100644",
+      "src/metrics/mod.rs": "100644",
+      "src/metrics/names.rs": "100644",
+      "src/metrics/process.rs": "100644",
+      "src/metrics/runtime_metrics.rs": "100644",
+      "src/metrics/tags.rs": "100644",
+      "src/metrics/timer.rs": "100644",
+      "src/metrics/validation.rs": "100644",
+      "src/otlp.rs": "100644",
+      "src/provider.rs": "100644",
+      "src/provider_shutdown_tests.rs": "100644",
+      "src/targets.rs": "100644",
+      "src/tool_result.rs": "100644",
+      "src/tool_result_tests.rs": "100644",
+      "src/trace_context.rs": "100644",
+      "tests/harness/mod.rs": "100644",
+      "tests/suite/manager_metrics.rs": "100644",
+      "tests/suite/mod.rs": "100644",
+      "tests/suite/otel_export_routing_policy.rs": "100644",
+      "tests/suite/otlp_http_loopback.rs": "100644",
+      "tests/suite/runtime_summary.rs": "100644",
+      "tests/suite/send.rs": "100644",
+      "tests/suite/snapshot.rs": "100644",
+      "tests/suite/timing.rs": "100644",
+      "tests/suite/validation.rs": "100644",
+      "tests/tests.rs": "100644"
+    },
+    "original_files": {
+      "BUILD.bazel": {
+        "bytes": 161,
+        "sha256": "51ceff12267eedbc127a2c535373fbb262ad6d9f3aa0a92c60fd7a7a4d906f0d"
+      },
+      "Cargo.toml": {
+        "bytes": 1939,
+        "sha256": "013fdd3948fdeec49c7cc94b61088a470ca9db9a472e927d5bfd5adaccc44cb3"
+      },
+      "README.md": {
+        "bytes": 5080,
+        "sha256": "bf2c7dda1a1e3c23f6917f6ccf3156506991e33a7a23a276c267bd77918d1907"
+      },
+      "src/config.rs": {
+        "bytes": 3679,
+        "sha256": "7c29ae31c5d3bef74f3c9e53a909698afeadd6e1f1b83ea88f19e4239eed3621"
+      },
+      "src/events/mod.rs": {
+        "bytes": 57,
+        "sha256": "7ff247efd4f2de0da5bef63c226ebb3ccabb38702d9fb84a9a0307d1702b377d"
+      },
+      "src/events/session_telemetry.rs": {
+        "bytes": 50035,
+        "sha256": "362ee7d9228e2f7204885f2a9f772cb085e2be0019d990fe1530f708b25b2c3c"
+      },
+      "src/events/shared.rs": {
+        "bytes": 2251,
+        "sha256": "a1faa6568bccf8ffe0db78518758744af54e7a94ea2b324a66cd31349fd0eda6"
+      },
+      "src/lib.rs": {
+        "bytes": 2995,
+        "sha256": "dea75ca1e3ae342e0674f9a644bc838c300fe2a13bcefbc1aee4af3361091a74"
+      },
+      "src/metrics/client.rs": {
+        "bytes": 20899,
+        "sha256": "b381b27bd09ca44fcc549ce742d638c0bc45b6e71b1ae1473d7ebd3fbb740cee"
+      },
+      "src/metrics/config.rs": {
+        "bytes": 4073,
+        "sha256": "6658c992de4f39d9de06b86f3f06317bb00f0e6afb31cb170cbd4ed435d4951a"
+      },
+      "src/metrics/error.rs": {
+        "bytes": 1427,
+        "sha256": "010a44803febcb3ae4213e0287709d4284eba40d5ae4087308069b4d90b5f0c1"
+      },
+      "src/metrics/mod.rs": {
+        "bytes": 1686,
+        "sha256": "e33aa7539f27e5303fdd91280211a38cde7ded73da776d61e13cd63909183457"
+      },
+      "src/metrics/names.rs": {
+        "bytes": 4744,
+        "sha256": "f5a979d97486476392fa5d2cd8dc26f12aefcd18f69b5271593a147ab15e8902"
+      },
+      "src/metrics/process.rs": {
+        "bytes": 809,
+        "sha256": "ad4a8bf5079e1f59b599ed6fa552f1e0bc0478de70dacd0f831918d3c07cf2c6"
+      },
+      "src/metrics/runtime_metrics.rs": {
+        "bytes": 9296,
+        "sha256": "19ef05befdee8aff734207763f09ac251cef1d3cb588fccced0f0e3dca813ea6"
+      },
+      "src/metrics/tags.rs": {
+        "bytes": 4105,
+        "sha256": "dab54d496b12d8a3d5e450654c9a1402ee7aacb501208615453a2f7dafbea337"
+      },
+      "src/metrics/timer.rs": {
+        "bytes": 1169,
+        "sha256": "0ae1e2251e7b6bd18183cbddb88cdf40dcb225dd40ffa2576ebf14b8923c338e"
+      },
+      "src/metrics/validation.rs": {
+        "bytes": 1456,
+        "sha256": "ca885aadb6c4d7a8c1513640a015132dce078bdf4c737a5c5164dc54ec707f4a"
+      },
+      "src/otlp.rs": {
+        "bytes": 9525,
+        "sha256": "eb523dadd8371c790a68f63340eb00aacf67ae6124e9baffdcbcb7f6597af11a"
+      },
+      "src/provider.rs": {
+        "bytes": 27568,
+        "sha256": "3b3cb6ec0c8ff498615c980baf051f1d99326c1e2d64744a28ac79fedd5ebb07"
+      },
+      "src/provider_shutdown_tests.rs": {
+        "bytes": 15371,
+        "sha256": "56277620f922a4d9ab7aa080645a881b778651b252f5ee679392852d2e010d3c"
+      },
+      "src/targets.rs": {
+        "bytes": 447,
+        "sha256": "11fb3bc5505129dbe1e5767b777c0f1813a400ee4ad1e66b16b08cbcf72e0210"
+      },
+      "src/tool_result.rs": {
+        "bytes": 3552,
+        "sha256": "27b0a55a3c4536c4fb13a7f30a78023ab53e5a5626a84ef6c6ae5512ae2f07e3"
+      },
+      "src/tool_result_tests.rs": {
+        "bytes": 2141,
+        "sha256": "7ed3b2bf5937c7cca8a14daa066c240234a6f21d6f7c6031c14fb4038c4bde4b"
+      },
+      "src/trace_context.rs": {
+        "bytes": 14032,
+        "sha256": "b0633668880806f66e67465eee6845ff8e426c697f63bbbbf69dd1fde508729a"
+      },
+      "tests/harness/mod.rs": {
+        "bytes": 2607,
+        "sha256": "10ff311398bae92e1ae5490f25563439d2b0ef450481561ffea0d845bb63ee0c"
+      },
+      "tests/suite/manager_metrics.rs": {
+        "bytes": 8631,
+        "sha256": "57145a560dca00597435591f82c27dbb502b689fb3422d7963307eb082547a6f"
+      },
+      "tests/suite/mod.rs": {
+        "bytes": 150,
+        "sha256": "04c87b5c2db1681624e621cc54ad54422be0b7eaebd12db6a20dae0b7c730936"
+      },
+      "tests/suite/otel_export_routing_policy.rs": {
+        "bytes": 35520,
+        "sha256": "f15f9b6176bc3a6a24092b8b27234c22c72bbf9ebf70992a7a391f7f8fb43f20"
+      },
+      "tests/suite/otlp_http_loopback.rs": {
+        "bytes": 32166,
+        "sha256": "433a0bfd4073b2952ca6c9844c50592f9ac932194e397cb168b1c6cfa41837c3"
+      },
+      "tests/suite/runtime_summary.rs": {
+        "bytes": 4971,
+        "sha256": "401363d0462c90a5593494feb7e9444daefe97742ad3a528693271ba2ac99722"
+      },
+      "tests/suite/send.rs": {
+        "bytes": 9225,
+        "sha256": "0e956e70ac453dc28b5e899cb0473a2ce6b3d4e75b46f27cf9f35672e1dc463b"
+      },
+      "tests/suite/snapshot.rs": {
+        "bytes": 5315,
+        "sha256": "55796fdf9b5fc4b913387ff4ab2c770ada11550dd1ba216fe79be5ed0fe7fab1"
+      },
+      "tests/suite/timing.rs": {
+        "bytes": 5089,
+        "sha256": "14613d94ee1e4c5a615abdab273f63aebb708ce6da7176bea4cf4cbf9ba2d310"
+      },
+      "tests/suite/validation.rs": {
+        "bytes": 2677,
+        "sha256": "88f2c2a80d719350ec73f39c4c7bc75ea8333c6aaf6ab069752c86d5cac6546a"
+      },
+      "tests/tests.rs": {
+        "bytes": 56,
+        "sha256": "e689d73babbe32944aa721f7651816f62c466c004567c3327f7a49967cfe3f33"
+      }
+    }
+  },
+  "current_files": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 423224,
+      "sha256": "8088a2797efb63448b4eae4dcf0f86932ce5fc67b6df9cdd4b5926091461b34d"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22696,
+      "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    }
+  },
+  "dependency_graph_equivalence_claimed": false,
+  "lock_inverse": {
+    "after": "name = \"codex-otel\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-api\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-string\",\n \"eventsource-stream\",\n \"gethostname\",\n \"http 1.5.0\",\n \"libc\",\n \"opentelemetry\",\n \"opentelemetry-appender-tracing\",\n \"opentelemetry-otlp\",\n \"opentelemetry-semantic-conventions\",\n \"opentelemetry_sdk\",\n \"os_info\",\n \"pretty_assertions\",\n \"reqwest 0.12.28\",\n \"seccompiler\",\n \"serde\",\n \"serde_json\",\n \"strum_macros 0.28.0\",\n \"thiserror 2.0.21\",\n \"time\",\n \"tokio\",\n \"tokio-tungstenite\",\n \"tracing\",\n \"tracing-opentelemetry\",\n \"tracing-subscriber\",\n]\n",
+    "before": "name = \"codex-otel\"\nversion = \"0.0.0\"\ndependencies = [\n \"chrono\",\n \"codex-api\",\n \"codex-protocol\",\n \"codex-utils-absolute-path\",\n \"codex-utils-string\",\n \"eventsource-stream\",\n \"gethostname\",\n \"http 1.5.0\",\n \"libc\",\n \"opentelemetry\",\n \"opentelemetry-appender-tracing\",\n \"opentelemetry-otlp\",\n \"opentelemetry-semantic-conventions\",\n \"opentelemetry_sdk\",\n \"os_info\",\n \"pretty_assertions\",\n \"reqwest 0.12.28\",\n \"seccompiler\",\n \"serde\",\n \"serde_json\",\n \"strum_macros 0.28.0\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-tungstenite\",\n \"tracing\",\n \"tracing-opentelemetry\",\n \"tracing-subscriber\",\n]\n",
+    "package": "codex-otel"
+  },
+  "original_code_revision": "40990b8cdebe89f15933a89050987a17c4b6581c",
+  "predecessor_files": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 423226,
+      "sha256": "77927d7c01a431f48f2d9361cf02b3acb317c73a3c4271bf68190e7877829d6a"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22696,
+      "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    }
+  },
+  "predecessor_revision": "3b68508d43b74f59f7d7f79ca72010111d987a0b",
+  "reused_code_revision": "4280cfe7e4ab7fca7371e499482b6adff7ac31de",
+  "schema": "codex.hia.otel-dependency-source-history.v1",
+  "source_variant": "codex-otel-time-migration-20261128",
+  "unchanged_lock_packages": 1533
+}

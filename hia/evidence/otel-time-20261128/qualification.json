@@ -1,0 +1,283 @@
+{
+  "additional_14_source_controls": true,
+  "base_revision": "3b68508d43b74f59f7d7f79ca72010111d987a0b",
+  "bazel_lock_unchanged_from_base": {
+    "bytes": 1743125,
+    "git_blob": "a1932b117d06a9630ae844aa6c6ab94b9dc95aa7",
+    "sha256": "303c5f4c929ab5343c1e29292a850482944690a7736b6d12ad2ea63d7dafb1a6"
+  },
+  "cargo_test_result": {
+    "existing_skipped": 1,
+    "failed": 0,
+    "passed": 62
+  },
+  "cargo_validation": {
+    "after": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 423224,
+        "sha256": "8088a2797efb63448b4eae4dcf0f86932ce5fc67b6df9cdd4b5926091461b34d"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 22696,
+        "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+      },
+      "codex-rs/otel/Cargo.toml": {
+        "bytes": 1937,
+        "sha256": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f"
+      },
+      "codex-rs/otel/src/events/shared.rs": {
+        "bytes": 2613,
+        "sha256": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9"
+      },
+      "codex-rs/otel/src/events/shared_tests.rs": {
+        "bytes": 1361,
+        "sha256": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+      }
+    },
+    "before": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 423224,
+        "sha256": "8088a2797efb63448b4eae4dcf0f86932ce5fc67b6df9cdd4b5926091461b34d"
+      },
+      "codex-rs/Cargo.toml": {
+        "bytes": 22696,
+        "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+      },
+      "codex-rs/otel/Cargo.toml": {
+        "bytes": 1937,
+        "sha256": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f"
+      },
+      "codex-rs/otel/src/events/shared.rs": {
+        "bytes": 2613,
+        "sha256": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9"
+      },
+      "codex-rs/otel/src/events/shared_tests.rs": {
+        "bytes": 1361,
+        "sha256": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+      }
+    },
+    "source": "/home/qq/hia-chrono-firstparty-20261128-03da85/source",
+    "steps": [
+      {
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-otel"
+        ],
+        "bytes": 35199,
+        "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/otel-test-v1.log",
+        "name": "test",
+        "returncode": 0,
+        "seconds": 73.03981924289837,
+        "sha256": "2b5f7aacb111b5b1626f2d3ddaade8e90c71e619031b18584fdb9b5f772649d2"
+      },
+      {
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-otel"
+        ],
+        "bytes": 15951,
+        "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/otel-fix-v1.log",
+        "name": "fix",
+        "returncode": 0,
+        "seconds": 46.501611112616956,
+        "sha256": "592ef160d12953733aa917280fbeb82b3879c30dc9f5a768af0270bfc9455848"
+      },
+      {
+        "argv": [
+          "just",
+          "fmt"
+        ],
+        "bytes": 0,
+        "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/otel-format-v1.log",
+        "name": "format",
+        "returncode": 0,
+        "seconds": 1.3666146392934024,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "bytes": 1324,
+        "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/otel-bazel-lock-update-v1.log",
+        "name": "bazel-lock-update",
+        "returncode": 0,
+        "seconds": 4.727394442074001,
+        "sha256": "1079675d8075b8b598f98fbe631b9195712351e43eb85c15c2ae134fd06b718e"
+      }
+    ],
+    "whole": false
+  },
+  "dependency_graph_equivalence_claimed": false,
+  "existing_static_controls": {
+    "bytes": 105,
+    "git_blob": "923abddf8e0a9be567338194f1ebcbc462896fa3",
+    "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/file-update-static-otel-v1.log",
+    "passed": 7,
+    "returncode": 0,
+    "sha256": "e586fc0f3bb2a05f4c80f07d1b4c6171e830592f6c7aaf70d4af3b0aa3ebd072"
+  },
+  "oauth2_history_sha256": "3ce6e2158869d74f5c2a26d124bfcdd0ae17375fbe61c128822749d33184aac0",
+  "original_37_source_test_method_asts_unchanged": true,
+  "original_dependency_job_budget_minutes": 15,
+  "original_frozen_history_sha256": "151080d3dd24f67cae951c5166755fdd874d2b7197bcde08a1121ec2f1a503a6",
+  "reused_original_pr": 7197,
+  "reused_original_revision": "4280cfe7e4ab7fca7371e499482b6adff7ac31de",
+  "schema": "codex.hia.otel-time-migration-qualification.v1",
+  "source_controls": [
+    {
+      "bytes": 2941,
+      "errors": 0,
+      "failures": 0,
+      "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/test_workspace_dependency_sources-otel-v1.log",
+      "name": "test_workspace_dependency_sources",
+      "passed": true,
+      "returncode": 0,
+      "seconds": 0.21396976010873914,
+      "sha256": "8d988783698d8f0ce68f40e03c90949f969015d39b3b6e3f59412b5cf51ffc76",
+      "tests": 22
+    },
+    {
+      "bytes": 2153,
+      "errors": 0,
+      "failures": 0,
+      "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/test_oauth2_dependency_sources-otel-v1.log",
+      "name": "test_oauth2_dependency_sources",
+      "passed": true,
+      "returncode": 0,
+      "seconds": 0.36445118486881256,
+      "sha256": "61d784c5bf9572d75034f6a72cae38c260a1349e184b9cffd695bd1d7f3c2382",
+      "tests": 15
+    },
+    {
+      "bytes": 2025,
+      "errors": 0,
+      "failures": 0,
+      "log": "/home/qq/hia-chrono-firstparty-20261128-03da85/test_otel_dependency_sources-otel-v1.log",
+      "name": "test_otel_dependency_sources",
+      "passed": true,
+      "returncode": 0,
+      "seconds": 0.41461180336773396,
+      "sha256": "10976ae9b91d4c14c3260fabd56a05f9a0072d1fc38e473ded26e8bc2891e255",
+      "tests": 14
+    }
+  ],
+  "source_files": {
+    ".github/workflows/codex-hia-native.yml": {
+      "bytes": 133853,
+      "git_blob": "1b2965a392d937a8281068968e7a17a543f13cf5",
+      "sha256": "969406c893236543454db65634798e12f88a81f47b8959f860fabeddcb089588"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423224,
+      "git_blob": "66e7fb4ecb931f366bbbbbdfb75353b9bba7be6d",
+      "sha256": "8088a2797efb63448b4eae4dcf0f86932ce5fc67b6df9cdd4b5926091461b34d"
+    },
+    "codex-rs/otel/Cargo.toml": {
+      "bytes": 1937,
+      "git_blob": "e6dda45843e7e85f595849857249919affe40159",
+      "sha256": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f"
+    },
+    "codex-rs/otel/src/events/shared.rs": {
+      "bytes": 2613,
+      "git_blob": "e0fec5b1b62b67b8af7b3d7c54fce09aa2aa37cd",
+      "sha256": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9"
+    },
+    "codex-rs/otel/src/events/shared_tests.rs": {
+      "bytes": 1361,
+      "git_blob": "d7b328cfcc190a3f56179cf0a22ec3eb2020e6c3",
+      "sha256": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+    },
+    "hia/tests/file_update_oracle/dependencies.py": {
+      "bytes": 7066,
+      "git_blob": "9c289b16dd048a05b937836b1e1c5fca7fd353f6",
+      "sha256": "33fbb52751b77b88744bc21a82c4d27162dcbcb3544bdc6db3e1304571b34480"
+    },
+    "hia/tests/file_update_oracle/oauth2_source_history.py": {
+      "bytes": 6571,
+      "git_blob": "78dc94f54aab9c0bfc2f7da8ed3da8f0b91a0cf1",
+      "sha256": "09ef2c2c7536a33eac487022702a0149fd7e36ee293aa61022cee28eaa0679ec"
+    },
+    "hia/tests/file_update_oracle/otel_source_history.py": {
+      "bytes": 5635,
+      "git_blob": "2148a76dde8b6ab4db508fbda8edf666d4304a90",
+      "sha256": "bf8fb8484543f0dd5287e2639776650c5c9ba05d3ad13c583b7f3b7204261f99"
+    },
+    "hia/tests/file_update_oracle/otel_source_history_20261128.json": {
+      "bytes": 19880,
+      "git_blob": "17a5704507e9e4c54d907818b0808c78990f8965",
+      "sha256": "298ba4ea19333fc3ec22526767815efcaacff113b9e2a5f829b70ef56c7d2d0f"
+    },
+    "hia/tests/test_oauth2_dependency_sources.py": {
+      "bytes": 9584,
+      "git_blob": "756f1a17deeba427deb6b7b4b600bc78dfc29126",
+      "sha256": "240405c8d7d13d2010f0e54714a25d4c6bdffec674778ad47642d919812ee208"
+    },
+    "hia/tests/test_otel_dependency_sources.py": {
+      "bytes": 8793,
+      "git_blob": "497a629db3b6225fbb76d44e95fbda634ea6883f",
+      "sha256": "375ddaf890f48fda775b4d30e56407d2d42f1c25a4038cf28f3d4824d2df4991"
+    }
+  },
+  "source_preflight": {
+    "changed_source_files": [
+      "Cargo.toml",
+      "src/events/shared.rs",
+      "src/events/shared_tests.rs"
+    ],
+    "crate_current_files": 37,
+    "crate_original_files": 36,
+    "files": {
+      "hia/tests/file_update_oracle/dependencies.py": {
+        "bytes": 7066,
+        "sha256": "33fbb52751b77b88744bc21a82c4d27162dcbcb3544bdc6db3e1304571b34480"
+      },
+      "hia/tests/file_update_oracle/oauth2_source_history.py": {
+        "bytes": 6571,
+        "sha256": "09ef2c2c7536a33eac487022702a0149fd7e36ee293aa61022cee28eaa0679ec"
+      },
+      "hia/tests/file_update_oracle/otel_source_history.py": {
+        "bytes": 5635,
+        "sha256": "bf8fb8484543f0dd5287e2639776650c5c9ba05d3ad13c583b7f3b7204261f99"
+      },
+      "hia/tests/file_update_oracle/otel_source_history_20261128.json": {
+        "bytes": 19880,
+        "sha256": "298ba4ea19333fc3ec22526767815efcaacff113b9e2a5f829b70ef56c7d2d0f"
+      },
+      "hia/tests/test_oauth2_dependency_sources.py": {
+        "bytes": 9584,
+        "sha256": "240405c8d7d13d2010f0e54714a25d4c6bdffec674778ad47642d919812ee208"
+      },
+      "hia/tests/test_otel_dependency_sources.py": {
+        "bytes": 8793,
+        "sha256": "375ddaf890f48fda775b4d30e56407d2d42f1c25a4038cf28f3d4824d2df4991"
+      }
+    },
+    "history": {
+      "bytes": 19880,
+      "sha256": "298ba4ea19333fc3ec22526767815efcaacff113b9e2a5f829b70ef56c7d2d0f"
+    },
+    "original_test_counts": {
+      "hia/tests/test_file_update_dependency_admission.py": 7,
+      "hia/tests/test_oauth2_dependency_sources.py": 15,
+      "hia/tests/test_workspace_dependency_sources.py": 22
+    },
+    "unchanged_lock_packages": 1533
+  },
+  "unchanged_jobs_and_step_counts": {
+    "historical-native17": 50,
+    "native-components": 125,
+    "native-required": 1
+  },
+  "unchanged_original_dependency_steps": true,
+  "whole_chrono_removal_claimed": false
+}
