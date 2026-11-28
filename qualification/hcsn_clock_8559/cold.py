@@ -46,12 +46,16 @@ def confirm(root,results,out,budget,matched_step=0,device="cpu"):
                 kwargs[name]=torch.cat([model(batch.to(device)).cpu() for batch in x.split(48)]).numpy()
                 timings[name]=time.perf_counter()-stamp
                 assert kwargs[name].shape==(len(y),20) and np.isfinite(kwargs[name]).all()
+        forward_stop=time.perf_counter()
         tmp=probs.with_suffix('.tmp')
         with tmp.open('wb') as h:np.savez_compressed(h,row=row,y=y,speaker=speaker,**kwargs)
         os.replace(tmp,probs)
+        score_hash=digest(probs)
+        write_and_hash_s=time.perf_counter()-forward_stop
         atomic_json(checkfile,dict(arm=info['arm'],seed=info['seed'],rung=budget,matched_step=matched_step,device=device,
-                    checkpoint_sha256=digest(chosen),score_sha256=digest(probs),seal_sha256=digest(manifest),
-                    input_setup_wall_s=common,model_restore_wall_s=init_wall,forward_wall_s=timings))
+                    checkpoint_sha256=digest(chosen),score_sha256=score_hash,seal_sha256=digest(manifest),
+                    input_setup_wall_s=common,model_restore_wall_s=init_wall,forward_wall_s=timings,
+                    prediction_write_hash_wall_s=write_and_hash_s,cold_arm_wall_s=time.perf_counter()-started))
         print(folder.name,budget,matched_step,flush=True)
     atomic_json(out/'complete.json',{'seal':digest(manifest),'files':{f.name:digest(f) for f in sorted(out.glob('*.npz'))}})
 if __name__=='__main__':
