@@ -26,7 +26,10 @@ SUITES = (
     ("pft_statistics_codec_tests", "CodecTests", 5),
     ("pft_online_peer_tests", "PeerTests", 4),
     ("pft_binary_peer_tests", "BinaryPeerTests", 4),
+    ("pft_admission_validation_tests", "AdmissionTests", 3),
 )
+BASELINE_FIXTURE = "pft_admission_validation/SYNTHETIC_SINGLE_OFFER.json"
+BASELINE_SHA256 = "23b5ac14950e21c18dcdb636e0eca1a58fbc3104d3c85226356a0e87ce3321c5"
 CORE = (
     "__init__.py",
     "pft_linear.py",
@@ -88,6 +91,8 @@ def main():
         names += [
             ".github/workflows/pft-online-regression.yml",
             prefix + "pft_online_regression/PROTOCOL.md",
+            prefix + "pft_online_regression/ADMISSION_GATE.md",
+            prefix + BASELINE_FIXTURE,
         ]
         if (root / "qualification/__init__.py").exists():
             names.append("qualification/__init__.py")
@@ -132,10 +137,16 @@ def main():
                 runtime_closure_complete=False,
             ),
         )
+        fixture = root / prefix / BASELINE_FIXTURE
+        if sha(fixture) != BASELINE_SHA256:
+            raise ValueError("observed baseline fixture bytes differ from the pinned reference")
+        baseline = json.loads(fixture.read_bytes())
         for name, class_name, expected_count in SUITES:
             module = importlib.import_module(
                 "qualification.hcsn_closure_20261124." + name
             )
+            if name == "pft_admission_validation_tests":
+                module.BASELINE = baseline
             suite = unittest.defaultTestLoader.loadTestsFromTestCase(
                 getattr(module, class_name)
             )
