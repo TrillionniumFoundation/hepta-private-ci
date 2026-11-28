@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checked_paths": [
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime.rs"
+  ],
+  "protected_rows": 1,
+  "checker_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+  "manifest_sha256": "95da443a50a1fac7bd6f397f134b5d17bc235f42a29094a1d0747f55f3746c70",
+  "postimages_sha256": {
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime.rs": "3aa200003fb0c1f3b7413f9bbf3b5fbdaa01dbe5ddf1bb490488d4396a48b6cf",
+    "codex-rs/hepta-agentd/src/terminal_native_lifetime_tests.rs": "29fa2caf90390cddbed98516df422bb0d2286e3926de29c2950d9a66b65c0d90"
+  },
+  "scope": "unchanged original terminal native lifetime protected rule; no closed-set changes or native execution"
+}

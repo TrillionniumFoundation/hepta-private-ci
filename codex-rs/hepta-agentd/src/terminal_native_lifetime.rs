@@ -20,6 +20,8 @@ pub(crate) struct TerminalNativeLifetimeV1 {
     pub(crate) before_fit: std::sync::Mutex<Option<Box<dyn FnOnce() + Send>>>,
     #[cfg(test)]
     pub(crate) fit_calls: std::sync::atomic::AtomicUsize,
+    #[cfg(test)]
+    pub(crate) blocker_checks: std::sync::atomic::AtomicUsize,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -47,6 +49,8 @@ impl TerminalNativeLifetimeV1 {
             before_fit: std::sync::Mutex::new(/*t*/ None),
             #[cfg(test)]
             fit_calls: std::sync::atomic::AtomicUsize::new(/*v*/ 0),
+            #[cfg(test)]
+            blocker_checks: std::sync::atomic::AtomicUsize::new(/*v*/ 0),
         }
     }
 
@@ -72,6 +76,9 @@ impl TerminalNativeLifetimeV1 {
     }
 
     pub(crate) fn blockers(&self) -> u32 {
+        #[cfg(test)]
+        self.blocker_checks
+            .fetch_add(/*val*/ 1, std::sync::atomic::Ordering::SeqCst);
         u32::from(self.compute.available_permits() == 0)
     }
 
