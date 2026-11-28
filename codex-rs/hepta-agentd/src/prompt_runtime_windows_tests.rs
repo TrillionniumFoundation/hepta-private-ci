@@ -1,3 +1,4 @@
+use std::io;
 use std::io::Write;
 use std::sync::atomic::Ordering;
 
@@ -6,6 +7,7 @@ use codex_utils_path::windows_private_fs::PrivateDirectory;
 use pretty_assertions::assert_eq;
 
 use super::AgentdPromptRuntimeError;
+use super::LOCK_FILE;
 use super::NEXT_FILE;
 use super::PromptRuntimeState;
 use super::PromptRuntimeStore;
@@ -22,7 +24,31 @@ fn runtime_store_reopens_and_keeps_its_retained_directory_after_rename() -> Resu
         PromptRuntimeStore::open(&path),
         Err(AgentdPromptRuntimeError::StateLocked)
     ));
+    // Windows rejects moving a directory while a child file is open, even
+    // when that file shares delete access. Check the live owner's protection,
+    // then release only the fixture's child lock while retaining its directory.
+    assert_eq!(
+        std::fs::rename(&path, &retained_path).unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    let PromptRuntimeStore {
+        directory,
+        _lock,
+        fail_directory_sync_after_rename_once,
+    } = store;
+    drop(_lock);
     std::fs::rename(&path, &retained_path)?;
+    let lock = directory.open_write(LOCK_FILE)?;
+    lock.try_lock()?;
+    let store = PromptRuntimeStore {
+        directory,
+        _lock: lock,
+        fail_directory_sync_after_rename_once,
+    };
+    assert!(matches!(
+        PromptRuntimeStore::open(&retained_path),
+        Err(AgentdPromptRuntimeError::StateLocked)
+    ));
     let replacement = PrivateDirectory::open_or_create(&path)?;
     store.persist(&state)?;
     assert!(!replacement.entry_exists(STATE_FILE)?);
