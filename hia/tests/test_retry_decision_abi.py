@@ -68,10 +68,11 @@ def cases():
     return encoded
 
 
-def verify(directory, report):
-    native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta', 'full-native38', report)
-    if not report['native_build']['full38_manifest_verified']:
-        raise RuntimeError('the complete native38 build was not admitted')
+def verify(directory, report, profile='full-native38'):
+    native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta', profile, report)
+    verified = {'full-native38': 'full38_manifest_verified', 'full-native39': 'full39_manifest_verified'}[profile]
+    if not report['native_build'][verified]:
+        raise RuntimeError('the requested complete build was not admitted')
     contract_path = ROOT / 'retry_decision_buffer_contract.json'
     contract_bytes = contract_path.read_bytes()
     contract = json.loads(contract_bytes)
@@ -113,12 +114,14 @@ def verify(directory, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native38', 'full-native39'], default='full-native38')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {'schema': 'codex.hia.retry-decision-abi.v1', 'passed': False, 'calls': [],
-              'scope': 'Exact native38 literal retry states, full-width attempts, capacities and guards; public async provider tests are separate.'}
+              'requested_build_profile': args.build_profile,
+              'scope': 'Exact selected-build literal retry states, full-width attempts, capacities and guards; public async provider tests are separate.'}
     try:
-        verify(args.library_dir.resolve(strict=True), report)
+        verify(args.library_dir.resolve(strict=True), report, args.build_profile)
         if not recheck_inputs(report):
             raise RuntimeError('bound input changed during raw execution')
         report['passed'] = True

@@ -9,6 +9,9 @@ doctest = false
 name = "codex_core_plugins"
 path = "src/lib.rs"
 
+[features]
+hia-native = []
+
 [lints]
 workspace = true
 

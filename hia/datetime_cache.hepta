@@ -1,0 +1,221 @@
+hia-asm.v1 hepta.hia.program.v9 codex_datetime_cache
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_size:usize = buffer.len(output)
+  required:usize = const() {"value":32}
+  enough:bool = compare.ge(output_size,required)
+  branch enough frame(source,output,workspace) short()
+block frame(frame_source:readbuf,frame_output:mutbuf,frame_workspace:mutbuf)
+  source_size:usize = buffer.len(frame_source)
+  workspace_size:usize = buffer.len(frame_workspace)
+  frame_required:usize = const() {"value":64}
+  empty:usize = const() {"value":0}
+  source_ok:bool = compare.eq(source_size,frame_required)
+  workspace_ok:bool = compare.eq(workspace_size,empty)
+  sizes_ok:bool = bool.and(source_ok,workspace_ok)
+  branch sizes_ok decode(frame_source,frame_output) invalid_frame()
+block decode(decode_source:readbuf,decode_output:mutbuf)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  version:u64 = buffer.load.u64.le(decode_source,p0)
+  operation:u64 = buffer.load.u64.le(decode_source,p8)
+  fetched_bits:u64 = buffer.load.u64.le(decode_source,p16)
+  fetched_nanos:u64 = buffer.load.u64.le(decode_source,p24)
+  now_bits:u64 = buffer.load.u64.le(decode_source,p32)
+  now_nanos:u64 = buffer.load.u64.le(decode_source,p40)
+  ttl_seconds:u64 = buffer.load.u64.le(decode_source,p48)
+  ttl_nanos:u64 = buffer.load.u64.le(decode_source,p56)
+  one:u64 = const() {"value":1}
+  two:u64 = const() {"value":2}
+  zero:u64 = const() {"value":0}
+  version_ok:bool = compare.eq(version,one)
+  operation_ok:bool = compare.le(operation,two)
+  not_preflight:bool = compare.ne(operation,zero)
+  fetched_fields:u64 = bit.or(fetched_bits,fetched_nanos)
+  now_fields:u64 = bit.or(now_bits,now_nanos)
+  date_fields:u64 = bit.or(fetched_fields,now_fields)
+  dates_empty:bool = compare.eq(date_fields,zero)
+  unused_ok:bool = bool.or(not_preflight,dates_empty)
+  header_ok:bool = bool.and(version_ok,operation_ok)
+  frame_ok:bool = bool.and(header_ok,unused_ok)
+  fetched_seconds:i64 = int.cast(fetched_bits) {"mode":"wrap"}
+  now_seconds:i64 = int.cast(now_bits) {"mode":"wrap"}
+  branch frame_ok dates(decode_output,operation,fetched_seconds,fetched_nanos,now_seconds,now_nanos,ttl_seconds,ttl_nanos) invalid_frame()
+block dates(date_output:mutbuf,date_operation:u64,fs:i64,fn:u64,ns:i64,nn:u64,ts:u64,tn:u64)
+  fetched_valid:bool = call(fs,fn) {"function":"timestamp_valid"}
+  now_valid:bool = call(ns,nn) {"function":"timestamp_valid"}
+  dates_valid:bool = bool.and(fetched_valid,now_valid)
+  branch dates_valid ttl(date_output,date_operation,fs,fn,ns,nn,ts,tn) invalid_dates(date_output)
+block ttl(ttl_output:mutbuf,ttl_operation:u64,tfs:i64,tfn:u64,tns:i64,tnn:u64,tts:u64,ttn:u64)
+  maximum:u64 = const() {"value":9223372036854775}
+  billion:u64 = const() {"value":1000000000}
+  seconds_fit:bool = compare.le(tts,maximum)
+  fraction_fit:bool = compare.lt(ttn,billion)
+  unsigned_fit:bool = bool.and(seconds_fit,fraction_fit)
+  signed_ttl:i64 = int.cast(tts) {"mode":"wrap"}
+  branch unsigned_fit bound(ttl_output,ttl_operation,tfs,tfn,tns,tnn,signed_ttl,ttn) invalid_ttl(ttl_output)
+block bound(bound_output:mutbuf,bound_operation:u64,bfs:i64,bfn:u64,bns:i64,bnn:u64,bts:i64,btn:u64)
+  valid:bool = call(bts,btn) {"function":"delta_valid"}
+  branch valid dispatch(bound_output,bound_operation,bfs,bfn,bns,bnn,bts,btn) invalid_ttl(bound_output)
+block dispatch(dispatch_output:mutbuf,dispatch_operation:u64,dfs:i64,dfn:u64,dns:i64,dnn:u64,dts:i64,dtn:u64)
+  preflight:u64 = const() {"value":0}
+  is_preflight:bool = compare.eq(dispatch_operation,preflight)
+  branch is_preflight admitted(dispatch_output) decide(dispatch_output,dispatch_operation,dfs,dfn,dns,dnn,dts,dtn)
+block decide(decision_output:mutbuf,decision_operation:u64,cfs:i64,cfn:u64,cns:i64,cnn:u64,cts:i64,ctn:u64)
+  age_seconds:i64,age_nanos:u64 = call(cns,cnn,cfs,cfn) {"function":"difference"}
+  shorter:bool = compare.lt(age_seconds,cts)
+  same_second:bool = compare.eq(age_seconds,cts)
+  within_fraction:bool = compare.le(age_nanos,ctn)
+  same_within:bool = bool.and(same_second,within_fraction)
+  within_ttl:bool = bool.or(shorter,same_within)
+  signed_zero:i64 = const() {"value":0}
+  zero_word:u64 = const() {"value":0}
+  model_operation:u64 = const() {"value":1}
+  models:bool = compare.eq(decision_operation,model_operation)
+  nonnegative:bool = compare.ge(age_seconds,signed_zero)
+  age_admitted:bool = bool.or(models,nonnegative)
+  whole_nonzero:bool = compare.ne(cts,signed_zero)
+  fraction_nonzero:bool = compare.ne(ctn,zero_word)
+  ttl_nonzero:bool = bool.or(whole_nonzero,fraction_nonzero)
+  plugins:bool = bool.not(models)
+  zero_admitted:bool = bool.or(plugins,ttl_nonzero)
+  age_within:bool = bool.and(age_admitted,within_ttl)
+  fresh:bool = bool.and(age_within,zero_admitted)
+  yes:u64 = const() {"value":1}
+  fresh_word:u64 = select(fresh,yes,zero_word)
+  result:u32 = call(decision_output,yes,yes,fresh_word) {"function":"publish"}
+  ret(result)
+block admitted(admitted_output:mutbuf)
+  admitted_yes:u64 = const() {"value":1}
+  admitted_zero:u64 = const() {"value":0}
+  admitted_result:u32 = call(admitted_output,admitted_yes,admitted_yes,admitted_zero) {"function":"publish"}
+  ret(admitted_result)
+block invalid_dates(invalid_date_output:mutbuf)
+  invalid_date_zero:u64 = const() {"value":0}
+  invalid_date_result:u32 = call(invalid_date_output,invalid_date_zero,invalid_date_zero,invalid_date_zero) {"function":"publish"}
+  ret(invalid_date_result)
+block invalid_ttl(invalid_ttl_output:mutbuf)
+  valid_dates:u64 = const() {"value":1}
+  invalid_ttl_zero:u64 = const() {"value":0}
+  invalid_ttl_result:u32 = call(invalid_ttl_output,valid_dates,invalid_ttl_zero,invalid_ttl_zero) {"function":"publish"}
+  ret(invalid_ttl_result)
+block short()
+  short_code:u32 = const() {"value":4294967294}
+  ret(short_code)
+block invalid_frame()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+end
+fn publish(output:mutbuf,dates_valid:u64,ttl_valid:u64,fresh:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,dates_valid:u64,ttl_valid:u64,fresh:u64)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  version:u64 = const() {"value":1}
+  _ = buffer.store.u64.le(output,p0,version)
+  _ = buffer.store.u64.le(output,p8,dates_valid)
+  _ = buffer.store.u64.le(output,p16,ttl_valid)
+  _ = buffer.store.u64.le(output,p24,fresh)
+  success:u32 = const() {"value":0}
+  ret(success)
+end
+fn floor_div(numerator:i64,denominator:i64) -> (i64) effects(trap) entry(entry)
+block entry(numerator:i64,denominator:i64)
+  quotient:i64 = int.div.checked(numerator,denominator)
+  remainder:i64 = int.rem.checked(numerator,denominator)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  negative:bool = compare.lt(remainder,zero)
+  adjustment:i64 = select(negative,one,zero)
+  result:i64 = int.sub.checked(quotient,adjustment)
+  ret(result)
+end
+fn timestamp_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-8334601228800}
+  maximum:i64 = const() {"value":8210266876799}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  range_ok:bool = bool.and(after_minimum,before_maximum)
+  branch range_ok fraction(seconds,nanos) invalid()
+block fraction(fraction_seconds:i64,fraction_nanos:u64)
+  minute:i64 = const() {"value":60}
+  last:i64 = const() {"value":59}
+  billion:u64 = const() {"value":1000000000}
+  two_billion:u64 = const() {"value":2000000000}
+  minute_index:i64 = call(fraction_seconds,minute) {"function":"floor_div"}
+  minute_start:i64 = int.mul.checked(minute_index,minute)
+  within_minute:i64 = int.sub.checked(fraction_seconds,minute_start)
+  leap_position:bool = compare.eq(within_minute,last)
+  ordinary:bool = compare.lt(fraction_nanos,billion)
+  fraction_bound:bool = compare.lt(fraction_nanos,two_billion)
+  position_ok:bool = bool.or(ordinary,leap_position)
+  valid:bool = bool.and(fraction_bound,position_ok)
+  ret(valid)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn delta_valid(seconds:i64,nanos:u64) -> (bool) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  minimum:i64 = const() {"value":-9223372036854776}
+  maximum:i64 = const() {"value":9223372036854775}
+  minimum_fraction:u64 = const() {"value":193000000}
+  maximum_fraction:u64 = const() {"value":807000000}
+  billion:u64 = const() {"value":1000000000}
+  after_minimum:bool = compare.ge(seconds,minimum)
+  before_maximum:bool = compare.le(seconds,maximum)
+  seconds_ok:bool = bool.and(after_minimum,before_maximum)
+  fraction_ok:bool = compare.lt(nanos,billion)
+  not_minimum:bool = compare.ne(seconds,minimum)
+  not_maximum:bool = compare.ne(seconds,maximum)
+  after_fraction_minimum:bool = compare.ge(nanos,minimum_fraction)
+  before_fraction_maximum:bool = compare.le(nanos,maximum_fraction)
+  lower_ok:bool = bool.or(not_minimum,after_fraction_minimum)
+  upper_ok:bool = bool.or(not_maximum,before_fraction_maximum)
+  basic_ok:bool = bool.and(seconds_ok,fraction_ok)
+  endpoint_ok:bool = bool.and(lower_ok,upper_ok)
+  valid:bool = bool.and(basic_ok,endpoint_ok)
+  ret(valid)
+end
+fn difference(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(left_seconds:i64,left_nanos:u64,right_seconds:i64,right_nanos:u64)
+  day:i64 = const() {"value":86400}
+  billion:i64 = const() {"value":1000000000}
+  billion_word:u64 = const() {"value":1000000000}
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  minus_one:i64 = const() {"value":-1}
+  left_day:i64 = call(left_seconds,day) {"function":"floor_div"}
+  right_day:i64 = call(right_seconds,day) {"function":"floor_div"}
+  left_start:i64 = int.mul.checked(left_day,day)
+  right_start:i64 = int.mul.checked(right_day,day)
+  left_sod:i64 = int.sub.checked(left_seconds,left_start)
+  right_sod:i64 = int.sub.checked(right_seconds,right_start)
+  after:bool = compare.gt(left_sod,right_sod)
+  before:bool = compare.lt(left_sod,right_sod)
+  left_leap:bool = compare.ge(left_nanos,billion_word)
+  right_leap:bool = compare.ge(right_nanos,billion_word)
+  add_leap:bool = bool.and(after,right_leap)
+  subtract_leap:bool = bool.and(before,left_leap)
+  minus_adjustment:i64 = select(subtract_leap,minus_one,zero)
+  leap_adjustment:i64 = select(add_leap,one,minus_adjustment)
+  seconds:i64 = int.sub.checked(left_seconds,right_seconds)
+  with_leap:i64 = int.add.checked(seconds,leap_adjustment)
+  left_fraction:i64 = int.cast(left_nanos) {"mode":"checked"}
+  right_fraction:i64 = int.cast(right_nanos) {"mode":"checked"}
+  fraction:i64 = int.sub.checked(left_fraction,right_fraction)
+  fraction_seconds:i64 = call(fraction,billion) {"function":"floor_div"}
+  whole_fraction:i64 = int.mul.checked(fraction_seconds,billion)
+  positive_fraction:i64 = int.sub.checked(fraction,whole_fraction)
+  result_seconds:i64 = int.add.checked(with_leap,fraction_seconds)
+  result_nanos:u64 = int.cast(positive_fraction) {"mode":"checked"}
+  ret(result_seconds,result_nanos)
+end
