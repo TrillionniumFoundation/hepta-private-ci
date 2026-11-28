@@ -119,7 +119,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"exact_head": true, "tree_bound": true}),
-    );
+    )?;
     let exact_request = signed_request(
         ARCHITECTURE_ISSUER,
         &architecture_key,
@@ -179,7 +179,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"must_not_commit": "wrong-role"}),
-    );
+    )?;
     let wrong_role_rejection = control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -203,7 +203,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"must_not_commit": "replay"}),
-    );
+    )?;
     let replay_rejection = control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -227,7 +227,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"must_not_commit": "expired"}),
-    );
+    )?;
     let expired_rejection = control
         .append_kernel_evidence(signed_request_with_expiry(
             ARCHITECTURE_ISSUER,
@@ -254,7 +254,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         json!({
             "registry_digest": Sha256Digest::for_bytes(b"kernel-evidence-registry-v1").as_str()
         }),
-    );
+    )?;
     control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -275,7 +275,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
             "test_evidence_digest": Sha256Digest::for_bytes(b"kernel-evidence-tests-v1").as_str(),
             "passed": true
         }),
-    );
+    )?;
     control
         .append_kernel_evidence(signed_request(
             SECURITY_ISSUER,
@@ -314,7 +314,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         source_set_digest.clone(),
         observed,
         decision_expiry,
-    );
+    )?;
     control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -334,7 +334,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         source_set_digest,
         observed,
         decision_expiry,
-    );
+    )?;
     control
         .append_kernel_evidence(signed_request(
             SECURITY_ISSUER,
@@ -369,7 +369,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
             "provider_operation_digest": Sha256Digest::for_bytes(b"provider-operation").as_str(),
             "terminal_state": "completed"
         }),
-    );
+    )?;
     control
         .append_kernel_evidence(signed_request(
             TERMINAL_ISSUER,
@@ -443,7 +443,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"must_not_commit": "stale-key"}),
-    );
+    )?;
     let stale_key_rejection = control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -491,7 +491,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         observed,
         None,
         json!({"must_not_commit": "revoked"}),
-    );
+    )?;
     let revoked_rejection = control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
@@ -550,7 +550,7 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
         now_ms()?,
         None,
         json!({"frontier": "current"}),
-    );
+    )?;
     append_direct_evidence(&store, ARCHITECTURE_ISSUER, &architecture_key, 1, &envelope).await?;
     let snapshot = store.recovery_snapshot().await?;
     store.close().await;
@@ -632,7 +632,7 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
         now_ms()?,
         None,
         json!({"frontier": "newer"}),
-    );
+    )?;
     append_direct_evidence(
         &current_store,
         ARCHITECTURE_ISSUER,
@@ -677,10 +677,10 @@ fn base_evidence(
     observed_unix_ms: u64,
     expires_unix_ms: Option<u64>,
     payload: serde_json::Value,
-) -> QualificationEvidenceEnvelopeV1 {
-    QualificationEvidenceEnvelopeV1 {
+) -> Result<QualificationEvidenceEnvelopeV1> {
+    Ok(QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id).expect("evidence id"),
+        evidence_id: EvidenceId::parse(id).map_err(anyhow::Error::msg)?,
         candidate,
         claim_class,
         receipt_kind: EvidenceReceiptKindV1::Evidence,
@@ -691,7 +691,7 @@ fn base_evidence(
         observed_unix_ms,
         expires_unix_ms,
         asset_digests: Vec::new(),
-    }
+    })
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -705,7 +705,7 @@ fn independent_decision(
     evidence_set_digest: Sha256Digest,
     observed: u64,
     expires: u64,
-) -> QualificationEvidenceEnvelopeV1 {
+) -> Result<QualificationEvidenceEnvelopeV1> {
     let receipt = IndependentDecisionReceiptV1 {
         decision_id: id.to_string(),
         candidate_id: candidate.candidate_id.clone(),
@@ -724,7 +724,7 @@ fn independent_decision(
         issuer_role,
         observed,
         Some(expires),
-        serde_json::to_value(receipt).expect("decision payload"),
+        serde_json::to_value(receipt)?,
     )
 }
 

@@ -2014,7 +2014,10 @@ mod tests {
         ];
         std::fs::write(&rollout_path, lines.join("\n") + "\n")?;
         let updated_at = codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
-        let times = std::fs::FileTimes::new().set_modified(updated_at.into());
+        let modified = updated_at
+            .to_system_time()
+            .ok_or_else(|| std::io::Error::other("fixture timestamp is out of range"))?;
+        let times = std::fs::FileTimes::new().set_modified(modified);
         std::fs::OpenOptions::new()
             .append(true)
             .open(rollout_path)?
