@@ -222,23 +222,26 @@ def fresh_map(task):
     if terminal['actual_groups']!=36 or terminal['score_archives']!=36 or digest(base/'FRESH_SEAL.json')!=terminal['seal_sha256']:
         raise ValueError('incomplete fresh panel')
     if terminal['summary_sha256']!=digest(base/'result/SUMMARY.json'):raise ValueError('summary mismatch')
+    data_manifest=task/'reconstructed/data.json'
+    if digest(data_manifest)!=seal['data_manifest_sha256']:raise ValueError('fresh data manifest hash')
     sys.path.insert(0,str(task/'source'))
     import verify as replay
     replay.DESIGNS=DESIGNS;replay.SHARED=('fp_h','fp_r','random_h','bp_h','transformer','fp_h_av')
     with tempfile.TemporaryDirectory(dir=task) as temp:
         saved=sys.argv[:]
         try:
-            sys.argv=['verify.py',str(base/'models'),str(base/'cold'),str(task/'reconstructed/data.json'),
+            sys.argv=['verify.py',str(base/'models'),str(base/'cold'),str(data_manifest),
                       str(base/'FRESH_SEAL.json'),temp]
             replay.main()
         finally:sys.argv=saved
         for n in ('SUMMARY.json','all_intact_models.json'):
             if digest(Path(temp)/n)!=digest(base/'result'/n):raise ValueError('independent metric replay mismatch')
-    result={'FRESH_SEAL.json':base/'FRESH_SEAL.json','terminal_manifest.json':base/'terminal_manifest.json',
+    result={'data.json':data_manifest,'FRESH_SEAL.json':base/'FRESH_SEAL.json','terminal_manifest.json':base/'terminal_manifest.json',
             'AV_input_provenance.json':base/'av_train_inputs/manifest.json','PROSPECTIVE_REPLICATION.md':task/'PROSPECTIVE_REPLICATION.md',
             'fresh_study.py':task/'fresh_study.py','input_recovery.json':task/'input_recovery.json'}
     for rel,h in terminal['files'].items():
         if Path(rel).is_absolute() or '..' in Path(rel).parts or '\n' in rel:raise ValueError('path')
+        if rel in result:raise ValueError('fresh object overlaps required input '+rel)
         p=base/rel
         if digest(p)!=h:raise ValueError('fresh object hash '+rel)
         result[rel]=p

@@ -4,10 +4,12 @@ import hashlib
 import importlib.util
 import io
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -116,7 +118,8 @@ class PublicationResumeTests(unittest.TestCase):
                 stack.enter_context(mock.patch.object(relay,target,value))
             stack.enter_context(mock.patch.object(importlib.util,'spec_from_file_location',spec_for))
             stack.enter_context(mock.patch.object(relay,'native',side_effect=AssertionError('no publication fallback in controls')))
-            stack.enter_context(mock.patch.object(relay.time,'sleep',side_effect=AssertionError('no waiting in controls')))
+            stack.enter_context(mock.patch.object(relay,'time',SimpleNamespace(
+                time=relay.time.time,sleep=mock.Mock(side_effect=AssertionError('no waiting in controls')))))
             stack.enter_context(redirect_stdout(self.output))
             relay.run(self.task)
 
@@ -269,6 +272,137 @@ else:
         self.push.side_effect=lambda *args:self.archive(omit=target)
         with self.assertRaisesRegex(relay.PublicationIncomplete,'remote object mismatch'):self.run_relay()
         self.assertFalse(self.marker(kind).exists());self.assertEqual(self.map_calls[1].call_count,0)
+
+
+    def fresh_map_fixture(self):
+        """Synthetic publication inputs only; original model math is not executed."""
+        from types import ModuleType
+        actual_map=relay.fresh_map;kind=self.kinds[1];base=self.task/'fresh'
+        data=self.task/'reconstructed/data.json';data.parent.mkdir()
+        data.write_text('{"fixture_only":true,"feature_prep_total_wall_s":1.25}\n')
+        paths={
+            'AV_input_provenance.json':base/'av_train_inputs/manifest.json',
+            'PROSPECTIVE_REPLICATION.md':self.task/'PROSPECTIVE_REPLICATION.md',
+            'fresh_study.py':self.task/'fresh_study.py',
+            'input_recovery.json':self.task/'input_recovery.json',
+            'result/SUMMARY.json':base/'result/SUMMARY.json',
+            'result/all_intact_models.json':base/'result/all_intact_models.json',
+            'models/control.pt':base/'models/control.pt',
+        }
+        for name,path in paths.items():
+            path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes(('synthetic publisher fixture only: '+name+'\n').encode())
+        seal=base/'FRESH_SEAL.json'
+        seal.write_text(json.dumps({'fixture_only':True,'data_manifest_sha256':relay.digest(data)})+'\n')
+        terminal=base/'terminal_manifest.json'
+        terminal.write_text(json.dumps({'fixture_only':True,'actual_groups':36,'score_archives':36,
+            'seal_sha256':relay.digest(seal),'summary_sha256':relay.digest(paths['result/SUMMARY.json']),
+            'files':{n:relay.digest(p) for n,p in paths.items() if n.startswith(('models/','result/'))}})+'\n')
+        self.maps[kind]={**paths,'data.json':data,'FRESH_SEAL.json':seal,'terminal_manifest.json':terminal}
+        report={name:{'sha256':relay.digest(path),'size':path.stat().st_size}
+                for name,path in sorted(self.maps[kind].items())}
+        self.manifests[kind]=(json.dumps(report,indent=2,allow_nan=False)+'\n').encode()
+        self.commit=self.archive();self.push.return_value=self.commit
+        self.fresh_data=data;self.replay_outputs=[]
+        def arithmetic_stub():
+            self.assertEqual(Path(sys.argv[3]),data)
+            self.assertEqual(relay.digest(data),json.loads(seal.read_text())['data_manifest_sha256'])
+            out=Path(sys.argv[-1]);self.replay_outputs.append(out)
+            for name in ('SUMMARY.json','all_intact_models.json'):
+                (out/name).write_bytes(paths['result/'+name].read_bytes())
+        self.arithmetic_stub=mock.Mock(side_effect=arithmetic_stub)
+        verify=ModuleType('verify');verify.main=self.arithmetic_stub
+        driver=ModuleType('fresh_study');driver.DESIGNS=[(0,'publisher_fixture_only')]
+        # The mapper's unused NumPy import is stubbed with the model arithmetic;
+        # these are stdlib publication controls, not a scientific replay.
+        modules=mock.patch.dict(sys.modules,{'verify':verify,'fresh_study':driver,'numpy':ModuleType('numpy')})
+        modules.start();self.addCleanup(modules.stop)
+        original_path=sys.path[:];self.addCleanup(setattr,sys,'path',original_path)
+        self.map_calls[1]=mock.Mock(side_effect=actual_map)
+        return actual_map
+
+    def test_fresh_map_keeps_same_sealed_data_for_replay_and_publication(self):
+        actual=self.fresh_map_fixture()
+        before={name:path.read_bytes() for name,path in self.maps[self.kinds[1]].items()}
+        files=actual(self.task)
+        self.assertEqual(files,self.maps[self.kinds[1]])
+        self.assertEqual(files['data.json'],self.fresh_data)
+        self.arithmetic_stub.assert_called_once_with()
+        self.assertTrue(self.replay_outputs and all(not p.exists() for p in self.replay_outputs))
+        self.assertEqual({name:path.read_bytes() for name,path in files.items()},before)
+
+    def test_fresh_new_publication_covers_data_in_manifest_and_fixed_tree(self):
+        self.fresh_map_fixture();kind=self.kinds[1]
+        self.marker(self.kinds[0]).write_text(json.dumps(self.receipt(self.kinds[0]))+'\n')
+        source=self.fresh_data.read_bytes();self.run_relay()
+        self.assertEqual([call.args[0] for call in self.push.call_args_list],[kind])
+        self.assertEqual((self.root/kind/'data.json').read_bytes(),source)
+        self.assertEqual(self.fresh_data.read_bytes(),source)
+        receipt=relay.receipt_from(self.marker(kind),kind)
+        self.assertEqual(receipt['file_count'],len(self.maps[kind])+1)
+        data,objects=relay.publication_snapshot(self.maps[kind])
+        self.assertIn('data.json',json.loads(data))
+        actual=relay.api_objects(type('API',(),{'gh':staticmethod(self.git_api)})(),receipt['commit'],receipt['repo_prefix'])
+        self.assertEqual(actual['data.json']['sha'],objects['data.json'])
+        self.arithmetic_stub.assert_called_once_with()
+
+    def test_fresh_missing_or_wrong_local_data_stops_before_replay(self):
+        self.fresh_map_fixture();self.receipts();original=self.fresh_data.read_bytes()
+        before=[self.marker(k).read_bytes() for k in self.kinds]
+        for mutation in ('missing','wrong'):
+            with self.subTest(mutation=mutation):
+                if mutation=='missing':self.fresh_data.unlink()
+                else:self.fresh_data.write_bytes(b'changed data manifest, not a scientific original')
+                self.arithmetic_stub.reset_mock()
+                with self.assertRaisesRegex(relay.PublicationIncomplete,'current input verification failed'):
+                    self.run_relay()
+                self.arithmetic_stub.assert_not_called();self.push.assert_not_called()
+                self.assertEqual([self.marker(k).read_bytes() for k in self.kinds],before)
+                if mutation=='missing':self.assertFalse(self.fresh_data.exists())
+                else:self.assertEqual(self.fresh_data.read_bytes(),b'changed data manifest, not a scientific original')
+                self.fresh_data.write_bytes(original)
+
+    def test_fresh_remote_missing_or_wrong_data_refuses_api_and_native_readback(self):
+        self.fresh_map_fixture();kind=self.kinds[1];target=relay.PREFIX+kind+'/data.json'
+        for route in ('api','native'):
+            for mutation in ('omit','corrupt'):
+                with self.subTest(route=route,mutation=mutation):
+                    commit=self.archive(**{mutation:target});self.receipts()
+                    raw=(json.dumps(self.receipt(kind,commit))+'\n').encode();self.marker(kind).write_bytes(raw)
+                    self.api.side_effect=self.git_api if route=='api' else RuntimeError('fixture API unavailable')
+                    with self.assertRaisesRegex(relay.PublicationIncomplete,'remote object mismatch data.json'):
+                        self.run_relay()
+                    self.assertEqual(self.marker(kind).read_bytes(),raw);self.push.assert_not_called()
+                    if route=='native':self.assertTrue(any(a[0]=='fetch' and a[-1]==commit for a in self.git_calls))
+
+    def test_fresh_legacy_manifest_receipt_cannot_skip_new_required_data(self):
+        self.fresh_map_fixture();kind=self.kinds[1]
+        current_files=self.maps[kind];current_manifest=self.manifests[kind]
+        self.maps[kind]={k:v for k,v in current_files.items() if k!='data.json'}
+        report={name:{'sha256':relay.digest(path),'size':path.stat().st_size}
+                for name,path in sorted(self.maps[kind].items())}
+        self.manifests[kind]=(json.dumps(report,indent=2)+'\n').encode()
+        old_commit=self.archive();old_receipt=(json.dumps(self.receipt(kind,old_commit))+'\n').encode()
+        self.maps[kind]=current_files;self.manifests[kind]=current_manifest
+        self.receipts();self.marker(kind).write_bytes(old_receipt)
+        with self.assertRaisesRegex(relay.PublicationIncomplete,'receipt does not bind current verified inputs'):
+            self.run_relay()
+        self.assertEqual(self.marker(kind).read_bytes(),old_receipt);self.push.assert_not_called()
+        self.arithmetic_stub.assert_called_once_with()
+
+    def test_fresh_terminal_cannot_replace_any_required_original(self):
+        actual=self.fresh_map_fixture();base=self.task/'fresh';path=base/'terminal_manifest.json'
+        original=path.read_bytes();source=self.fresh_data.read_bytes()
+        required=('data.json','FRESH_SEAL.json','terminal_manifest.json','AV_input_provenance.json',
+                  'PROSPECTIVE_REPLICATION.md','fresh_study.py','input_recovery.json')
+        for name in required:
+            with self.subTest(name=name):
+                terminal=json.loads(original);terminal['files'][name]='1'*64
+                path.write_text(json.dumps(terminal)+'\n')
+                with self.assertRaisesRegex(ValueError,'fresh object overlaps required input '+re.escape(name)):
+                    actual(self.task)
+                self.assertEqual(self.fresh_data.read_bytes(),source)
+        path.write_bytes(original)
 
 
 if __name__=='__main__':unittest.main()
