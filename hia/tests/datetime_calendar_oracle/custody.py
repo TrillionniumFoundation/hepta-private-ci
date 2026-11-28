@@ -18,11 +18,13 @@ def binding(path):
     return {"path": str(path), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
 
 
-def compile_original(producer, original_lock, cargo, rustc, output, contract):
+def compile_original(producer, original_lock, cargo, rustc, output, contract,
+                     oracle_directory="hia/tests/datetime_calendar_oracle"):
     reference = binding(original_lock)
     require(reference["sha256"] == contract["reference"]["workspace_lock_sha256"],
             "original workspace lock differs from its immutable reference")
-    oracle = producer / "hia/tests/datetime_calendar_oracle"
+    oracle = (producer / oracle_directory).resolve(strict=True)
+    require(oracle.is_relative_to(producer), "original observer must remain inside its source checkout")
     source_inputs = [binding(oracle / name) for name in ("Cargo.toml", "Cargo.lock", "src/main.rs")]
     locked = tomllib.loads((oracle / "Cargo.lock").read_text())["package"]
     original = tomllib.loads(original_lock.read_text())["package"]

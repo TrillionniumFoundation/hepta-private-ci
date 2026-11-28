@@ -1,0 +1,185 @@
+{
+  "schema": "codex.hia.datetime-rfc3339-buffer-contract.v1",
+  "revision": 1,
+  "status": "UTC RFC3339 formatting and JSON string serialization component; parsing, Local, production integration and whole-product qualification remain separate gates.",
+  "module": "datetime_rfc3339",
+  "source_sha256": "4c3b16fca5b22a39a1226071ada22261a7758ab4e3f6cbd2e24010470f900eef",
+  "core_sha256": "3b52b7a9ab09106d8bcdf413f0f15454b3078cf52c50966802ac5aae7dfa93c1",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "DateTime::from_timestamp",
+      "DateTime<Utc>::to_rfc3339_opts",
+      "serde_json::to_string(&DateTime<Utc>)"
+    ],
+    "oracle_registry_packages": 43
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed seconds use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "values": {
+          "0": "DateTime<Utc>::to_rfc3339_opts",
+          "1": "serde_json::to_string(&DateTime<Utc>)"
+        }
+      },
+      {
+        "offset": 16,
+        "name": "unix_seconds",
+        "type": "i64 bits"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "type": "u64"
+      },
+      {
+        "offset": 32,
+        "name": "precision",
+        "values": {
+          "0": "Secs",
+          "1": "Millis",
+          "2": "Micros",
+          "3": "Nanos",
+          "4": "AutoSi"
+        },
+        "json_requirement": 0
+      },
+      {
+        "offset": 40,
+        "name": "use_z",
+        "values": {
+          "0": "+00:00",
+          "1": "Z"
+        },
+        "json_requirement": 0
+      },
+      {
+        "offset": 48,
+        "name": "reserved0",
+        "required": 0
+      },
+      {
+        "offset": 56,
+        "name": "reserved1",
+        "required": 0
+      }
+    ],
+    "mutation": "Never modified."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 96,
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "valid",
+        "value": "1 when constructor succeeds; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "length",
+        "value": "ASCII byte count when valid; otherwise 0"
+      },
+      {
+        "offset": 24,
+        "name": "reserved",
+        "value": 0
+      },
+      {
+        "offset": 32,
+        "name": "text",
+        "capacity": 64,
+        "value": "Exact original formatted bytes followed by zeros, or all zeros when invalid"
+      }
+    ],
+    "tail": "All bytes after offset 96 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "unix_seconds_minimum": -8334601228800,
+    "unix_seconds_maximum": 8210266876799,
+    "years": [
+      -262143,
+      262142
+    ],
+    "ordinary_nanoseconds": "0 <= nanoseconds < 1000000000",
+    "leap_nanoseconds": "1000000000 <= nanoseconds < 2000000000 only when Euclidean seconds modulo 60 equals 59",
+    "leap_second_rules": "Match the original constructor, including leap fractions on the last second of any minute. Do not apply an external leap-second table or normalize the fraction.",
+    "calendar": "Proleptic Gregorian calendar, including year zero and negative years, with floor division across negative days and 400-year eras.",
+    "invalid_values": "Return a zeroed 96-byte result with version 1 and valid 0, without trapping or formatting an invalid date.",
+    "year": "Years 0 through 9999 use exactly four digits. Other years use an explicit sign and at least four magnitude digits.",
+    "fractional_digits": "Secs omits fractions; Millis/Micros/Nanos truncate to 3/6/9 digits. AutoSi chooses no fraction for zero, then 3 or 6 exact decimal places, otherwise 9.",
+    "leap_formatting": "A valid leap fraction renders second 60 and formats nanos minus 1000000000; it does not normalize into the following minute.",
+    "json": "Operation 1 always uses AutoSi and Z, surrounded by JSON double quotes. Its precision and use_z input fields must both be zero because they are reserved in this mode.",
+    "timezones": "This component accepts UTC timestamps only. FixedOffset rendering and Local timezone rules are not claimed."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is less than 96, before source or workspace validation"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source length is not 64, workspace is nonempty, version is not 1, operation is not 0 or 1, metadata is outside its specified mode, or a reserved word is nonzero"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 96 output bytes are written for a valid or invalid timestamp"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 406379,
+    "calendar_cycle_cases": 146097,
+    "mode_count": 11,
+    "input_sha256": "7ca81f71b0411f08aceacee418ce5335d57ec5398a55e34431124822a3b9fcdc",
+    "original_output_sha256": "efb0fea2de5dca8acfc1a9ab4da58e8ca27a1092937dd586dd5bf287d1770e81",
+    "buffer_control_calls": 695,
+    "native_calls_required": 1626211,
+    "controls": "Two fills and exact/excess capacities on every case; all shorter capacities, invalid frame lengths and metadata, reserved JSON fields, and nonempty workspace. Verify all input, output, tail and guard bytes."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "parsing_qualified": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}

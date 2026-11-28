@@ -1,0 +1,98 @@
+name: Codex HIA UTC RFC3339 formatting component
+
+on:
+  pull_request:
+    paths:
+      - hia/datetime_rfc3339.hepta
+      - hia/datetime_rfc3339_buffer_contract.json
+      - hia/build_datetime_rfc3339.py
+      - hia/tests/test_datetime_rfc3339.py
+      - hia/tests/datetime_rfc3339_oracle/**
+      - hia/tests/datetime_calendar_oracle/custody.py
+      - hia/tests/test_datetime_calendar.py
+      - hia/toolchain.json
+      - .github/workflows/codex-hia-datetime-rfc3339.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rfc3339-component:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_BUILD_JOBS: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out the producing source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out the unchanged pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
+          path: Hepta
+          persist-credentials: false
+
+      - name: Check out the immutable original dependency lock
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 756f7a31ad4373809a00da65a91ba1ca4571f6cb
+          path: original
+          persist-credentials: false
+          sparse-checkout: codex-rs/Cargo.lock
+          sparse-checkout-cone-mode: false
+
+      - name: Select the formal Rust oracle compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          echo "RUSTUP_TOOLCHAIN=1.96.1" >> "$GITHUB_ENV"
+          echo "RFC3339_RUSTC=$(rustup which --toolchain 1.96.1 rustc)" >> "$GITHUB_ENV"
+          echo "RFC3339_CARGO=$(rustup which --toolchain 1.96.1 cargo)" >> "$GITHUB_ENV"
+
+      - name: Rebuild B1, B2, B3 and the rfc3339 with native HIA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build_datetime_rfc3339.py \
+            --hepta-root "$GITHUB_WORKSPACE/Hepta" \
+            --output "$RUNNER_TEMP/rfc3339-native" \
+            2>&1 | tee "$RUNNER_TEMP/rfc3339-build.log"
+
+      - name: Run original Chrono RFC3339 and JSON differentials and buffer controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_datetime_rfc3339.py \
+            --build "$RUNNER_TEMP/rfc3339-native" \
+            --original-lock "$GITHUB_WORKSPACE/original/codex-rs/Cargo.lock" \
+            --cargo "$RFC3339_CARGO" --rustc "$RFC3339_RUSTC" \
+            --output "$RUNNER_TEMP/rfc3339-differential" \
+            2>&1 | tee "$RUNNER_TEMP/rfc3339-differential.log"
+
+      - name: Preserve complete component receipts and call transcripts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hia-datetime-rfc3339-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/rfc3339-build.log
+            ${{ runner.temp }}/rfc3339-differential.log
+            ${{ runner.temp }}/rfc3339-native/**
+            ${{ runner.temp }}/rfc3339-differential/*.json
+            ${{ runner.temp }}/rfc3339-differential/*.bin
+            ${{ runner.temp }}/rfc3339-differential/*.gz
+            ${{ runner.temp }}/rfc3339-differential/*.stdout
+            ${{ runner.temp }}/rfc3339-differential/*.stderr
+            ${{ runner.temp }}/rfc3339-differential/target/debug/codex-hia-datetime-rfc3339-oracle
