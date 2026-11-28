@@ -1,0 +1,50 @@
+{
+  "schema": "rsicd-score-cache-binding-control-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "24ac9e35603ecb8d6a96377394fb3d7feba6a5ec",
+  "source_subject": "qualification/hcsn_sustained_20261128/rsicd_external/evaluate.py",
+  "source_git_blob_oid": "0120c439acbdf7a699ebec16c91cce9128b232bf",
+  "subject_boundary": "Actual cached scores() aggregation with synthetic Dataset/corpus and explicit non-model identity files. Actual metric implementation, NumPy archives and bootstrap; model construction/inference/generation forbidden.",
+  "controls": [
+    "Original scores() valid cache control",
+    "Original scores() accepts different score_file while expected NPZ SHA remains valid; independently recompute changed paired mean from real NPZ files",
+    "Patched valid cache preserves all existing cache bytes and best/final duplicate-selection behavior",
+    "Patched different basename, parent path and absolute path rejected before loading any cached array or writing terminal",
+    "Patched gate mismatch rejected",
+    "Existing score archive SHA, cached model identity and selected model file SHA rejection preserved",
+    "Previously tested first patch reproduces same-path replacement at np.load entry after SHA validation; final patch retains the original immutable arrays under the same actual-file replacement"
+  ],
+  "runtime": {
+    "host": "desktop",
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "torch": "2.8.0+cpu",
+    "new_packages_installed": false,
+    "max_cpus": 1,
+    "nice": 10,
+    "thread_limits": 1
+  },
+  "executed_command": [
+    "/usr/bin/nice",
+    "-n",
+    "10",
+    "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+    "run_controls_v2.py"
+  ],
+  "no_scientific_job_execution": true,
+  "no_live_experiment_directory_mutation": true,
+  "separate_open_baseline": {
+    "subject": "ravdess/complete.py",
+    "git_blob_oid": "38e179ae2a75541d9d115c64cafa6b24b26fd331",
+    "host": "ai395",
+    "python": "3.14.4",
+    "status": "BUG_REPRODUCED; production remains unchanged"
+  },
+  "remaining_scope": [
+    "Evaluation-context and actual source/input identity binding",
+    "Terminal existence paths in generation and RAVDESS",
+    "Authenticity and consistency of the independently mutable JSON-plus-NPZ set",
+    "Cross-architecture weight-only deduplication"
+  ],
+  "npz_consumption": "Read bytes once; compare SHA-256 of those bytes; np.load(BytesIO(bytes), allow_pickle=False); materialize four consumed fields before closing; set each array read-only; no later reopen"
+}
