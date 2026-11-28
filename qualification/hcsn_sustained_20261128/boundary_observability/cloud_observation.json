@@ -1,0 +1,105 @@
+{
+  "request_id": "hcsn-9de7-first-passage-observability-v1",
+  "provider_request_id": "hc-47c73d1ebb6f56ef7ecdff3b39cc6799536c7a6b",
+  "provider": "colab",
+  "state": "RECONCILIATION_REQUIRED",
+  "source_sha256": "2faf4563e33ba18ada19e8395466a24dec05ac519e936e102229fbca221ea7fd",
+  "accelerator_requested": "T4",
+  "compute_verified": false,
+  "original": {
+    "phase": "allocation_unknown",
+    "error_code": "ALLOCATION_UNCONFIRMED",
+    "runtime_submit_attempts": 1,
+    "kernel_submit_attempts": 0
+  },
+  "inspected": {
+    "phase": "allocation_unknown",
+    "error_code": "ALLOCATION_NOT_OBSERVED_NO_RESUBMIT",
+    "owned_runtime": false,
+    "observed_at": "2026-11-28T14:09:37.148884+00:00"
+  },
+  "events": [
+    {
+      "at": "2026-11-28T14:06:58.032901+00:00",
+      "event": "planned_and_reserved"
+    },
+    {
+      "at": "2026-11-28T14:07:36.594459+00:00",
+      "event": "execution_reservation_claimed"
+    },
+    {
+      "at": "2026-11-28T14:07:43.407668+00:00",
+      "event": "effect_intent_persisted",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T14:08:39.851699+00:00",
+      "event": "effect_response_received",
+      "stage": "allocate"
+    },
+    {
+      "at": "2026-11-28T14:08:39.868098+00:00",
+      "error_code": "ALLOCATION_NOT_CONFIRMED",
+      "event": "execution_needs_observation"
+    },
+    {
+      "at": "2026-11-28T14:08:49.483992+00:00",
+      "event": "observed_original_binding"
+    },
+    {
+      "at": "2026-11-28T14:09:37.148884+00:00",
+      "event": "observed_original_binding"
+    }
+  ],
+  "program_source_commit": "30db22e2ee4585fb9d08f15c53a677c14c126cc1",
+  "allocation_origin": {
+    "phase": "allocation_unknown",
+    "first_failure": {
+      "at": "2026-11-28T14:08:39.634277+00:00",
+      "exception_class": "requests.exceptions.ReadTimeout",
+      "phase": "exception",
+      "seq": 6,
+      "stage": "ASSIGNMENT_POST"
+    },
+    "persistence_failed": false,
+    "events": [
+      {
+        "stage": "SDK_PARAMETERS",
+        "phase": "begin",
+        "seq": 1,
+        "at": "2026-11-28T14:07:53.215251+00:00"
+      },
+      {
+        "stage": "SDK_PARAMETERS",
+        "phase": "parameters_ready",
+        "seq": 2,
+        "at": "2026-11-28T14:07:53.229699+00:00"
+      },
+      {
+        "stage": "ASSIGNMENT_GET",
+        "phase": "dispatch_intent",
+        "seq": 3,
+        "at": "2026-11-28T14:07:53.234429+00:00"
+      },
+      {
+        "stage": "ASSIGNMENT_GET",
+        "phase": "response",
+        "seq": 4,
+        "at": "2026-11-28T14:07:54.567581+00:00"
+      },
+      {
+        "stage": "ASSIGNMENT_POST",
+        "phase": "dispatch_intent",
+        "seq": 5,
+        "at": "2026-11-28T14:07:54.586075+00:00"
+      },
+      {
+        "stage": "ASSIGNMENT_POST",
+        "phase": "exception",
+        "seq": 6,
+        "at": "2026-11-28T14:08:39.634277+00:00",
+        "exception_class": "requests.exceptions.ReadTimeout"
+      }
+    ]
+  }
+}

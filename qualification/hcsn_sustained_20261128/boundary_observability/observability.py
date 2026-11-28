@@ -5,6 +5,7 @@ Outputs JSON containing independently verified extremal probability pairs.
 """
 import argparse
 import json
+import lzma
 import platform
 import time
 from pathlib import Path
@@ -13,7 +14,6 @@ import numpy as np
 import scipy
 from scipy.optimize import linprog
 from scipy.special import ndtr
-import torch
 
 SIGMA = 0.23
 MU = 0.08 - 0.02 - 0.5 * SIGMA**2
@@ -37,6 +37,7 @@ def hit_numpy(x, t):
 
 
 def hit_torch(x, t):
+    import torch
     xplus = torch.clamp_min(x, 0)
     scale = SIGMA * np.sqrt(t)
     # erfc keeps the negative tails on the same numerical scale as scipy.ndtr.
@@ -79,6 +80,7 @@ def minimax(q, target, noise):
 
 
 def run(device):
+    import torch
     start = time.perf_counter()
     if device == "cuda":
         if not torch.cuda.is_available() or "T4" not in torch.cuda.get_device_name(0):
@@ -130,9 +132,29 @@ def run(device):
     return result
 
 
+def solve_cpu():
+    """Run only the two SciPy linear programs and retain both sharp witnesses."""
+    rows = []
+    for k in (12, 32, 64):
+        grid = np.linspace(.015, 1.30, k)
+        for name, queries in PORTS.items():
+            q = np.asarray([hit_numpy(grid+s, t) for t, s in queries]).reshape(-1, k)
+            for shift in SHOCKS:
+                target = hit_numpy(grid+shift, DT)
+                for noise in (0., 1e-4, 1e-3):
+                    bounds = minimax(q, target, noise)
+                    rows.append(dict(atoms=k,port=name,shift=shift,noise=noise,**bounds))
+    return rows
+
+
 if __name__ == "__main__":
     parser=argparse.ArgumentParser()
-    parser.add_argument("--device",choices=["cpu","cuda"],default="cuda")
+    parser.add_argument("--device",choices=["cpu","cuda","scipy"],default="cuda")
     parser.add_argument("--out",default="result.json")
     a=parser.parse_args()
-    Path(a.out).write_text(json.dumps(run(a.device),sort_keys=True,allow_nan=False)+"\n")
+    if a.device == "scipy":
+        payload = json.dumps(solve_cpu(), allow_nan=False).encode()
+        dest = Path(a.out)
+        dest.write_bytes(lzma.compress(payload,preset=9) if dest.suffix==".xz" else payload)
+    else:
+        Path(a.out).write_text(json.dumps(run(a.device),sort_keys=True,allow_nan=False)+"\n")
