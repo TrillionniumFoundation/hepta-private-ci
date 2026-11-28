@@ -4,6 +4,32 @@ The selected native suite passed **26/26** tests. The separate required scoped
 `just fix` did **not** pass: its Clippy child received SIGKILL 9. These outcomes
 must remain separate. No SFT or useful-work result is claimed.
 
+## Subsequent hosted evidence
+
+On the published head `6ea0fb48d109b48c38f42bf84e5970b275b64740`, hosted
+Linux Bazel Clippy succeeded for 1,303 targets, including the agentd library,
+test library, unit-test binary, and qualification targets. The actual checkout
+was merge `86b205e3981488b2fb9d93cb2e88205fdce4d4b1`; its complete Git tree
+equals the published head's `4257b81fd997a52497934c5c0cc37692e400c66a`.
+The hosted gate uses the repository's explicit deny/warn rules and emitted
+warnings. This is a Bazel gate success, not a successful Cargo `just fix`,
+a `-D warnings` run, or a zero-warning result.
+
+The GNU job separately reports
+`//codex-rs/hepta-agentd:hepta-agentd-unit-tests PASSED in 107.6s`.
+Its successful test's per-case log/count is not included in the job log; no
+hosted case count or independent musl repeat is inferred. The wider GNU job
+failed other targets. Windows shard 1 also retained an existing exec-server
+test failure: the test expected RestrictedToken launch, but the unchanged
+legacy admission guard refused unsafe filesystem isolation. That guard remains.
+
+`HOSTED_CI.json` binds the original decoded logs, API responses, Git commit
+objects, and separately labelled source/coverage analysis to a read-back-verified
+archive. The original `native-opaque-original-observations.tar.gz` is unchanged.
+The later merge of base `c076d74a013a9be0b969fd42c3932fdcee74e3f0` preserves
+all 11 native implementation/fixture/build files byte for byte. Its combined
+integration gates remain pending; the old-head successes are not new-head runs.
+
 ## Accepted scope
 
 The new native profile retains one prompt and one observed final answer as

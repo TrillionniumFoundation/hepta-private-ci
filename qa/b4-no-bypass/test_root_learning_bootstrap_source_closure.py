@@ -49,7 +49,10 @@ CALLERS = {
     "root_learning_original_stage_assembly": (),
     "root_learning_original_runtime_consume": (CONFIG,),
     "root_original_registered_ready_serve": (CLI,),
-    "root_original_private_sealed_bytes": (REGISTRATION,),
+    "root_original_private_sealed_bytes": (
+        REGISTRATION,
+        AGENT + "authority_host_paired_startup.rs",
+    ),
 }
 
 

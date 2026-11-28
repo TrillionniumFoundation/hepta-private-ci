@@ -1,0 +1,29 @@
+{
+  "schema": "hepta-native-opaque-hosted-ci-evidence-v1",
+  "head": "6ea0fb48d109b48c38f42bf84e5970b275b64740",
+  "actual_checkout": "86b205e3981488b2fb9d93cb2e88205fdce4d4b1",
+  "same_tree": "4257b81fd997a52497934c5c0cc37692e400c66a",
+  "integration_merge_parents": ["6ea0fb48d109b48c38f42bf84e5970b275b64740", "c076d74a013a9be0b969fd42c3932fdcee74e3f0"],
+  "linux_clippy": "job 140975717215 succeeded under repository deny/warn policy; warnings present",
+  "gnu_agentd_unit_target": "job 140975717115: PASSED in 107.6s; per-case count unavailable",
+  "windows_failure": "job 140975717109: existing legacy RestrictedToken launch expectation refused by unchanged guard",
+  "local_just_fix": "original SIGKILL retained; not reclassified as pass",
+  "new_integration_gates": "pending; no Rust execution during evidence/base integration",
+  "original_archive_sha256_unchanged": "c452fd9bf4f936de80ed49704e9b6814a6203d0b4959483d126f2a80be850c4c",
+  "archive": {"path": "hosted-ci-6ea0-original-observations.tar.gz", "bytes": 299801, "sha256": "9d542a3ab66cf4ecac2823207d3f8bb390f4dee5714f538f651e555a7aacfd51", "all_members_readback_verified": true},
+  "members": [
+    {"path": "derived/assessment.json", "bytes": 7147, "sha256": "4a420fac55e423b851b50a2ae48d85e13b42b34f3809db8aec4f686ea4c99218"},
+    {"path": "derived/source-bindings.json", "bytes": 4056, "sha256": "8404f91ee91f2f2f0819cdb5c1aeaca4691d2795882838b2da0867d98c110209"},
+    {"path": "originals/git/6ea0fb48d109b48c38f42bf84e5970b275b64740.commit", "bytes": 925, "sha256": "29414c16baed3d1ec5204c5824aba91bfb75aef2eca15ecc7737807ea306a5bc"},
+    {"path": "originals/git/86b205e3981488b2fb9d93cb2e88205fdce4d4b1.commit", "bytes": 1195, "sha256": "cfe5df92f88dbeaf64f3cf0f6182a9a287dbf446e25608deae2afa3bd21e2d3a"},
+    {"path": "originals/git/c076d74a013a9be0b969fd42c3932fdcee74e3f0.commit", "bytes": 770, "sha256": "0cafdda5d6c1984ec6d77551973a0247f530683b192b3f98aa773f0fdb8fdaaa"},
+    {"path": "originals/github/job-140975717109.log", "bytes": 422442, "sha256": "a6a6de689a7cedba57a6f672ceb24b30cd61f9f7c7ad0d1453c9fe237907eaf1"},
+    {"path": "originals/github/job-140975717115.log", "bytes": 1378359, "sha256": "5c39bd92c0c45b75eefaa43d968de0c77dcbd6aeecf21ff915cff6deed17ba4c"},
+    {"path": "originals/github/job-140975717215.log", "bytes": 827920, "sha256": "341f165698db32ab8fdd47e4a5a7dbfbc6d9d8eecfc2fa87502910bba6ddbac6"},
+    {"path": "originals/github/merge-source-compare.json", "bytes": 972, "sha256": "dc0d3bdd8f8c39f9ba966ba1f11c01efac9622fe93df5759e2b4969bb5a9b6f1"},
+    {"path": "originals/github/run-46143863536-jobs.json", "bytes": 55572, "sha256": "5936af425e5d51cbdb0d25434f6e9b685fdf6f4bfea21d80104d22943627410c"},
+    {"path": "originals/github/workflow-runs.json", "bytes": 2234, "sha256": "077310a77a58cf13a4eea192543b5050ca3a72c21c5aaf9a8b8e7e7d4c1148ca"},
+    {"path": "originals/source/.bazelrc", "bytes": 14000, "sha256": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4"},
+    {"path": "originals/source/scripts/list-bazel-clippy-targets.sh", "bytes": 3317, "sha256": "ba364ad22996cf63c5ce1721c369726c932c4299a999e7d9e50ca4e5c5598bfc"}
+  ]
+}
