@@ -11,7 +11,7 @@ from torch import nn
 from he_xiong import Published
 
 class BoundaryPopulation(nn.Module):
-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None):
+    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None,initial_flow_coupling=None):
         super().__init__()
         if boundary_path not in ("step", "linear_log"):
             raise ValueError("boundary_path must be step or linear_log")
@@ -36,6 +36,11 @@ class BoundaryPopulation(nn.Module):
         self.prices=Published()
         self.sender=nn.Linear(input_size,width,dtype=torch.float64)
         self.recurrent=nn.Linear(width,width,bias=False,dtype=torch.float64)
+        if initial_flow_coupling is not None and not math.isfinite(initial_flow_coupling):
+            raise ValueError("flow-to-boundary coupling must be finite")
+        coupling = None if initial_flow_coupling is None else nn.Parameter(
+            torch.full((width,),float(initial_flow_coupling),dtype=torch.float64))
+        self.register_parameter("flow_coupling",coupling)
         self.signed_forces = signed_force_gains is not None
         if self.signed_forces:
             gains = torch.as_tensor(signed_force_gains, dtype=torch.float64)
@@ -136,6 +141,8 @@ class BoundaryPopulation(nn.Module):
         frame=frame.to(self.sender.weight)
         mass,refractory,old_b,old_value=state
         u=self.sender(frame)+self.recurrent(old_b)
+        if self.flow_coupling is not None:
+            u=u+self.flow_coupling*refractory
         if not self.signed_forces:
             u=u+(old_value.tanh()*self.feedback).sum(-1)
         P=self.prices.p.P0*(1+.28*u.tanh());b=torch.log(self.prices.boundary(P)/self.prices.B0)
@@ -190,13 +197,13 @@ class BoundaryPopulation(nn.Module):
         return torch.stack(outputs),state
 
 class ContinuousSpikingNetwork(nn.Module):
-    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None):
+    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False,cache_prices=False,initial_physical_gain=None,boundary_path="step",signed_force_gains=None,initial_flow_coupling=None):
         super().__init__()
         if port not in ('boundary','priced','augmented'):raise ValueError('unknown message port')
         self.port=port
-        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains)
+        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains,initial_flow_coupling=initial_flow_coupling)
         channels={'boundary':1,'priced':4,'augmented':4+len(self.first.probe_horizons)}[port]
-        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains)
+        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free,cache_prices=cache_prices,initial_physical_gain=initial_physical_gain,boundary_path=boundary_path,signed_force_gains=signed_force_gains,initial_flow_coupling=initial_flow_coupling)
         self.head=nn.Linear(width*(4+len(self.second.probe_horizons)),outputs,dtype=torch.float64)
         self.channels=channels
     def forward(self,frames,state=None):

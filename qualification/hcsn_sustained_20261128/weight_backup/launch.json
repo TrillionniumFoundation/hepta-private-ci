@@ -1,0 +1,51 @@
+{
+  "study": "cross-host private checkpoint restoration of two fixed ongoing experiments",
+  "source_roots": [
+    "ai395:/home/qq/.local/share/hepta-research/hcsn-rsicd-generation-1140569",
+    "ai395:/home/qq/.local/share/hepta-research/hcsn-billion-epoch-1140569/run"
+  ],
+  "source_staging": "ai395:/home/qq/.local/share/hepta-research/hcsn-weight-backup-source-1140569",
+  "destination_root": "desktop:/home/qian-qi/.local/share/hepta-research/hcsn-private-weight-backup-1140569",
+  "local_devices": {
+    "ai395": {
+      "device": "/dev/nvme0n1p2",
+      "fs": "ext4",
+      "free_bytes_at_enrollment": 545610715136,
+      "machine_id_sha256": "425aa533e64f94429710d565b262368df1ccf2a6b99521a02fcd82a62916b4d2"
+    },
+    "desktop": {
+      "device": "/dev/sda2",
+      "fs": "ext4",
+      "free_bytes_at_enrollment": 155431821312,
+      "total_bytes": 982240026624,
+      "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3"
+    }
+  },
+  "expected": {
+    "rsicd_model": 36,
+    "rsicd_final_resume": 12,
+    "full_epoch": 6,
+    "total": 54
+  },
+  "initial_copy_process": "dpty-f956fdd35cb5b93420bf295425245a7e74e25e9db834171d0bc74322ad04487a",
+  "service_install_process": "dpty-cf18f87a623fd308844d954876305294cacdeb77d3d394e23e58e60623ad312f",
+  "service_at_install": {
+    "MainPID": 3373398,
+    "Result": "success",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled",
+    "user_linger": true,
+    "unit": "hcsn-weight-backup-1140569.service"
+  },
+  "evidence": {
+    "first_verified_checkpoint.json": "2c360dde43ee482f9d1ccb6503aa01cd4c2c09c445f9998a90ce1c99eb590a5b",
+    "hcsn-weight-backup-1140569.service": "5941756daefe655a154945788e07a8afa4b27769069580f626ca6e5eaa40530c",
+    "initial_status.json": "706363aa265f60197175ff1117f0f9a5710ac5f1a2b45a67e3ea28be5cb26815",
+    "mirror.py": "21d0ac96c8027395ee78ca8f991cb556c2a92609887e2de1fb74e689bfeab760",
+    "service_owner.py": "8dfceff98bfc4524e5f921ef0f67eaac26e04ae3f1b46c512b594e6aa0cce3cb",
+    "service_route.json": "affcd51dd49fc0d9d88ac4d1a554d14abbd22fe4ca6dd5a45ba7f92fa8311c55",
+    "source.py": "dfc31b973c6928a6c4b2eae43f97f0575d7d973962f54a2bf3937b7aa6e65673",
+    "state_integrity.py": "79d81fa08fd839d30c35416c076b64fbab346d9ad6c2516387cacbbad4a185cd"
+  }
+}

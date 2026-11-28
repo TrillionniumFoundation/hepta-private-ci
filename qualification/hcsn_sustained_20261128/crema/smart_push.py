@@ -92,9 +92,25 @@ def stage(root, base, kind, repo):
         combined.update(content)
     if combined.hexdigest() != manifest["archive_sha256"]:
         raise ValueError("archive digest")
+    # A moderate pack size keeps individual pushes within the operator
+    # connection's transfer window. The public-facing manifest goes in last.
+    journal = root / (kind+"-groups.json")
+    completed = json.loads(journal.read_text()) if journal.exists() else {}
+    for first in range(1,len(names),6):
+        group = names[first:first+6]
+        key = ",".join(group)
+        if key in completed:
+            continue
+        with (repo.parent / "update.lock").open("a") as guard:
+            fcntl.flock(guard,fcntl.LOCK_EX)
+            head = publish([local/n for n in group],kind,root,repo)
+        completed[key] = head
+        tmp = journal.with_suffix(".tmp")
+        tmp.write_text(json.dumps(completed));tmp.replace(journal)
+        print(kind,"published",first,len(group),head,flush=True)
     with (repo.parent / "update.lock").open("a") as guard:
-        fcntl.flock(guard, fcntl.LOCK_EX)
-        commit = publish([local / n for n in names], kind, root, repo)
+        fcntl.flock(guard,fcntl.LOCK_EX)
+        commit = publish([local/"manifest.json"],kind,root,repo)
     receipt = dict(files=manifest["file_count"], parts=len(manifest["parts"]), archive_sha256=combined.hexdigest(),
                    terminal_sha256=manifest["terminal_sha256"], commit=commit, utc=time.time())
     tmp = root / (kind + "-receipt.tmp")

@@ -29,6 +29,21 @@ def prepare(base, kind, destination):
                 path=base/key/r["weights"]
                 if sha(path)!=r["sha256"]:raise ValueError(str(path))
                 names+= [key+"/"+r["weights"],f"{key}/dev-{r['epoch']}.npz",f"{key}/cold-{r['epoch']}.npz"]
+    elif kind=="analytic_encoder":
+        seal=base/"seal.json";verified=json.loads((base/"verification.json").read_text())
+        if (not verified["verified"] or verified["weight_endpoints"]!=30
+                or verified["terminal_sha256"]!=sha(base/"terminal.json") or result["seal_sha256"]!=sha(seal)):
+            raise ValueError("all analytic endpoints must be verified")
+        fits=json.loads(seal.read_text());names=["terminal.json","seal.json","verification.json"]
+        for key,fit in fits.items():
+            names.append(key+"/fit.json")
+            for tag,row in fit["history"].items():
+                for field,digest in (("file","sha256"),("dev_file","dev_sha256")):
+                    if sha(base/key/row[field])!=row[digest]:raise ValueError(key+row[field])
+                    names.append(key+"/"+row[field])
+                cold=f"{key}/cold-{tag}.npz"
+                if sha(base/cold)!=result["results"][key][tag]["score_sha256"]:raise ValueError(cold)
+                names.append(cold)
     elif kind=="billion_epoch":
         verification=json.loads((base/"verification.json").read_text())
         if (not verification["verified"] or verification["final_fits"]!=6

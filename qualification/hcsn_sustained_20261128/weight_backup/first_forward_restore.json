@@ -1,0 +1,35 @@
+{
+  "role": "restore",
+  "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+  "model": "literal-109-300",
+  "checkpoint_sha256": "b53c6fb0ceddf5ae421dc0f0264418b1f8f2018ee16f0fd49d16dcb626c31c5f",
+  "model_parameters": 11101984,
+  "tensor_keys_loaded": 123,
+  "shape": [
+    1,
+    4,
+    850
+  ],
+  "dtype": "<f4",
+  "torch": "2.8.0+cpu",
+  "device": "cpu",
+  "threads": 1,
+  "synthetic_probe_only": true,
+  "pixels_sha256": "9d3b49bc9a98ee282d452a178f2d3502f823c2f2b13eec4f5ff6fccb4eb14b9e",
+  "tokens_sha256": "73e200e2b048c86d4e8c86b86bf62bbda84c7384e34e250b01aa30ab29d234a4",
+  "result_sha256": "7a14a938a52dbfc75a8f7fc8da8e10b4dc618a821921364904571a577f96613d",
+  "argmax": [
+    [
+      10,
+      8,
+      4,
+      29
+    ]
+  ],
+  "source_logit_sha256": "7c1fedc337a76487ac8f4356c33ef77fdaa78860afe15702568858dd843f26c5",
+  "max_abs_difference": 1.9073486328125e-06,
+  "mean_abs_difference": 3.26430205913151e-07,
+  "agreeing_token_argmax": 4,
+  "max_abs_tolerance": 0.0003,
+  "passed": true
+}

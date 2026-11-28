@@ -1,0 +1,39 @@
+{
+  "reference_blob": "94d66893f9d1a6aa2c027c76de6bea0cdee8cdf8",
+  "cases": [
+    {
+      "worst_abs_cider_d": 8.881784197001252e-16,
+      "summary": {
+        "bleu4": 1.0,
+        "rouge_l": 1.0,
+        "cider_d": 5.770209738957814,
+        "unique_captions": 4,
+        "empty": 0,
+        "mean_length": 4.75,
+        "distinct_ngram_fraction": {
+          "1": 0.8421052631578947,
+          "2": 0.9333333333333333,
+          "3": 1.0,
+          "4": 1.0
+        }
+      }
+    },
+    {
+      "worst_abs_cider_d": 1.1102230246251565e-16,
+      "summary": {
+        "bleu4": 0.27743956179340074,
+        "rouge_l": 0.5332943534914801,
+        "cider_d": 1.777204922645343,
+        "unique_captions": 4,
+        "empty": 1,
+        "mean_length": 2.0,
+        "distinct_ngram_fraction": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0
+        }
+      }
+    }
+  ]
+}
