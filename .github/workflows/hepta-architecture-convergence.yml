@@ -242,6 +242,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-training-bootstrap.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(paired_training_bootstrap::tests)'
+      - name: Original paired session exit and peer controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-session-lifecycle.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(authority_host_runtime::session::paired::tests)'
       - name: Isolated paired Root gate rejection controls
         if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
