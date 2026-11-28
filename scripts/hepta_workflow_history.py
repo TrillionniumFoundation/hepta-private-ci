@@ -8,6 +8,9 @@ import hashlib
 # Only these original records may refer to retired workflow paths. Neighboring
 # files, new observations and changed bytes still require ordinary validation.
 FROZEN_WORKFLOW_HISTORY = {
+    "qualification/hcsn_sustained_20261128/audit/source_and_tag_evidence.json": (
+        "8574d49c06501095855008b156ad1fb0d08defd08dbccdef56a58090c1c96635"
+    ),
     "qualification/continuation-20261021/environment/prior-worktree-observations.json": (
         "57ca9800d444693535d03e18b588f099158a8c127d77ec364e627e77b98b11b2"
     ),

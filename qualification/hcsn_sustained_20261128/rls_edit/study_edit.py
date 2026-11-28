@@ -127,13 +127,13 @@ def fit_one(out,seed,arm):
         start,_=prior(w0,anchors,mu);p=torch.linalg.inv(start)
     else:p=torch.empty(0,dtype=torch.float64)
     inverse_setup=time.perf_counter()-tic;setup=time.perf_counter()-setup_begin;w=w0.clone();elapsed=setup;written={}
-    allk=[];allv=[];alllabels=[]
+    all_keys=[];allv=[];alllabels=[]
     for stage in range(6):
         sf=dest/f'stage{stage}.json';saved=dest/f'stage{stage}.npz'
         tic=time.perf_counter()
         order=np.flatnonzero(y.numpy()//6==stage);order=order[np.argsort(idxs[order],kind='stable')]
         k=keys[order].double();new=target_labels(y[order],stage)
-        v=(k@w0).norm(dim=1,keepdim=True)*template[new];allk.append(k);allv.append(v);alllabels.append(new)
+        v=(k@w0).norm(dim=1,keepdim=True)*template[new];all_keys.append(k);allv.append(v);alllabels.append(new)
         if sf.exists():
             note=read(sf);assert sha(saved)==note['archive_sha256'];st=load_arrays(saved)
             w=st['last'].double();p=st['inverse'].double();elapsed=note['through_stage_s'];written[str(stage)]=note;continue
@@ -153,7 +153,7 @@ def fit_one(out,seed,arm):
             w,p=rls_step(w,p,k,v);capture(0,w)
             # Batch parity is an audit cost tracked separately for this arm.
             audit_start=time.perf_counter()
-            kk=torch.cat(allk);vv=torch.cat(allv);s,t=prior(w0,anchors,mu)
+            kk=torch.cat(all_keys);vv=torch.cat(allv);s,t=prior(w0,anchors,mu)
             ref=torch.linalg.solve(s+kk.T@kk,t+kk.T@vv)
             diff=w-ref;rel=float(diff.norm()/ref.norm());absolute=float(diff.abs().max())
             assert rel<1e-7 and absolute<1e-7,(stage,rel,absolute)
@@ -161,11 +161,11 @@ def fit_one(out,seed,arm):
         elif arm.startswith('recent'):
             s,t=prior(w0,anchors,mu);w=torch.linalg.solve(s+k.T@k,t+k.T@v);capture(0,w)
         else:
-            w=gradients(arm.split('-')[0],w,w0,anchors,mu,torch.cat(allk).float(),torch.cat(allv).float(),torch.cat(alllabels),text,capture)
+            w=gradients(arm.split('-')[0],w,w0,anchors,mu,torch.cat(all_keys).float(),torch.cat(allv).float(),torch.cat(alllabels),text,capture)
         audit_s=numerical['audit_wall_s'] if numerical else 0.
         optimize_s=time.perf_counter()-training_start-dev_s-audit_s;save_start=time.perf_counter()
         npz(saved,last=strain(w),inverse=strain(p),**checkpoints);save_s=time.perf_counter()-save_start;elapsed+=time.perf_counter()-tic-audit_s
-        note={'stage':stage,'train_examples_current':len(order),'train_examples_cumulative':sum(map(len,allk)),
+        note={'stage':stage,'train_examples_current':len(order),'train_examples_cumulative':sum(map(len,all_keys)),
               'owner_seed':seed,'arm':arm,'anchor_ids_sha256':hashlib.sha256('\n'.join(idxs[keep]).encode()).hexdigest(),
               'train_order_sha256':hashlib.sha256('\n'.join(idxs[order]).encode()).hexdigest(),'anchor_count':200,
               'setup_s':setup,'basis_read_s':basis_read,'initial_inverse_setup_s':inverse_setup,

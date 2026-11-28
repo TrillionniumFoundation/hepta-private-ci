@@ -32,6 +32,23 @@ BINARY_ARCHIVE_PATHS = frozenset(
 
 # These retained qualification inputs admit only their registered original bytes.
 QUALIFICATION_SOURCE_SHA256 = {
+    # The historical GPU runner contains an embedded checkpoint. The four
+    # binary shards retain original byte sequences and per-file digests.
+    "qualification/hcsn_continuous_20261127/evidence/part012.bin": (
+        "8ad22c69d15b4b87eebe1983b9a059d526efb93beaed0eb43e39acadcde01db8"
+    ),
+    "qualification/hcsn_continuous_20261127/evidence/part019.bin": (
+        "d8b362289b86059b6ec62de8eba9cb0b66b20b650ac33359e54f157255e953b4"
+    ),
+    "qualification/hcsn_continuous_20261127/evidence/part020.bin": (
+        "1c3b09d2cbf0925fa04dce7dadb73477faa934c226b9a4b01d5b05d59d0097d0"
+    ),
+    "qualification/hcsn_continuous_20261127/evidence/part034.bin": (
+        "af61d3bdb801460fabd46455d444ba6f65607c4b6f7b761fe9b766ec2739cbdf"
+    ),
+    "qualification/hcsn_sustained_20261128/price_cache/sealed_t4.py": (
+        "cc77d3d5c81465678d3673f867b026457267e765cdde0f1b5aa8d4adf4bca40c"
+    ),
     # The archived GPU pilot embeds opaque base64 checkpoint bytes.
     "qualification/hcsn_research_20261127/feedback/rog_pilot.json": (
         "d17b48c0d9c227fffb32000ae2284df652027a69b20cd4af06ed721bb3af4141"
