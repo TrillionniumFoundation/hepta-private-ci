@@ -312,11 +312,16 @@ fn audit_timestamp(now: OffsetDateTime) -> String {
     )))]
     assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
 
-    now.to_offset(UtcOffset::UTC)
-        .format(time::macros::format_description!(
-            "[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:3]Z"
-        ))
-        .expect("UTC timestamp contains every component required by the static format")
+    let now = now.to_offset(UtcOffset::UTC);
+    // Date's Display preserves the year; the fractional field still truncates.
+    format!(
+        "{}T{:02}:{:02}:{:02}.{:03}Z",
+        now.date(),
+        now.hour(),
+        now.minute(),
+        now.second(),
+        now.nanosecond() / 1_000_000,
+    )
 }
 
 /// Decide whether a network request should be allowed.

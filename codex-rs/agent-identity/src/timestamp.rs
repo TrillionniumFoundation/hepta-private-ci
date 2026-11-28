@@ -13,11 +13,15 @@ fn seconds_at(now: OffsetDateTime) -> String {
     )))]
     assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
 
-    now.to_offset(UtcOffset::UTC)
-        .format(time::macros::format_description!(
-            "[year]-[month]-[day]T[hour]:[minute]:[second]Z"
-        ))
-        .expect("UTC timestamp contains every component required by the static format")
+    let now = now.to_offset(UtcOffset::UTC);
+    // Date's Display preserves the signed, zero-padded Gregorian year.
+    format!(
+        "{}T{:02}:{:02}:{:02}Z",
+        now.date(),
+        now.hour(),
+        now.minute(),
+        now.second(),
+    )
 }
 
 #[cfg(test)]

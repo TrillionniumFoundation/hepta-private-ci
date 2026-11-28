@@ -52,39 +52,44 @@ use ledger_support::digest;
 use ledger_support::id;
 use ledger_support::sign;
 
-fn ledger() -> (
-    tempfile::TempDir,
-    ledger_support::Fixture,
-    Arc<Mutex<LedgerWriter>>,
-) {
+fn ledger() -> Result<
+    (
+        tempfile::TempDir,
+        ledger_support::Fixture,
+        Arc<Mutex<LedgerWriter>>,
+    ),
+    Box<dyn Error>,
+> {
     // Use a unique test directory: including the shared fixture module must
     // not collide with its separate per-module serial in other native tests.
-    let directory = tempfile::tempdir().unwrap();
+    let directory = tempfile::tempdir()?;
     let fixture = ledger_support::Fixture {
         root: directory.path().join("factory-ledger"),
     };
-    std::fs::create_dir(&fixture.root).unwrap();
-    std::fs::File::create(fixture.root.join("ledger")).unwrap();
-    std::fs::File::create(fixture.root.join("witness")).unwrap();
+    std::fs::create_dir(&fixture.root)?;
+    std::fs::File::create(fixture.root.join("ledger"))?;
+    std::fs::File::create(fixture.root.join("witness"))?;
     let writer = fixture.writer();
-    (directory, fixture, Arc::new(Mutex::new(writer)))
+    Ok((directory, fixture, Arc::new(Mutex::new(writer))))
 }
 
-fn metadata(ledger: &Arc<Mutex<LedgerWriter>>) -> PairedTerminalCompositionV1 {
+fn metadata(
+    ledger: &Arc<Mutex<LedgerWriter>>,
+) -> Result<PairedTerminalCompositionV1, Box<dyn Error>> {
     let manifest = PairedTrainingMaterialManifestV1 {
         failure_sha256: digest("fixture-failure"),
         failure_bytes: 1,
         correction_sha256: digest("fixture-correction"),
         correction_bytes: 1,
     };
-    PairedTerminalCompositionV1 {
+    Ok(PairedTerminalCompositionV1 {
         original: PairedTrainingPlanV1 {
             preparation: PairedPreparationRegistration {
                 study: digest("factory-study"),
                 enrollment: digest("factory-enrollment"),
-                frozen_materials: manifest.commitment().unwrap(),
+                frozen_materials: manifest.commitment()?,
                 principal_id: "fixture.principal".into(),
-                policy_generation: Generation::new(/*value*/ 1).unwrap(),
+                policy_generation: Generation::new(/*value*/ 1)?,
             },
             manifest,
             operation: digest("factory-original-operation"),
@@ -106,7 +111,10 @@ fn metadata(ledger: &Arc<Mutex<LedgerWriter>>) -> PairedTerminalCompositionV1 {
             // This actual fixture signature covers deliberately different
             // bytes. Assembly accepts metadata; no training can use it.
             dataset_evidence: sign(
-                ledger.lock().unwrap().verifier(),
+                ledger
+                    .lock()
+                    .map_err(|error| std::io::Error::other(error.to_string()))?
+                    .verifier(),
                 "evaluator",
                 LearningEvidenceRoleV1::Evaluator,
                 b"factory-assembly-only-no-fit",
@@ -114,7 +122,7 @@ fn metadata(ledger: &Arc<Mutex<LedgerWriter>>) -> PairedTerminalCompositionV1 {
             profile: TerminalCellProfileV1 {
                 artifact_id: id("factory-artifact"),
                 producer_id: id("factory-producer"),
-                generation: Generation::new(/*value*/ 1).unwrap(),
+                generation: Generation::new(/*value*/ 1)?,
                 sensor_id: id("fixture-state"),
                 objective_digest: digest("objective"),
                 run_snapshot_digest: digest("run-snapshot"),
@@ -134,7 +142,7 @@ fn metadata(ledger: &Arc<Mutex<LedgerWriter>>) -> PairedTerminalCompositionV1 {
         failure_outcome: digest("fixture-failure-outcome"),
         correction_decision: digest("fixture-correction-decision"),
         correction_outcome: digest("fixture-correction-outcome"),
-    }
+    })
 }
 
 fn end() -> tokio::time::Instant {
@@ -152,9 +160,9 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
     // process-owner lock even after the first assembled owner is dropped.
     let cloned_host = Arc::new(config.production_writer_host().unwrap().as_ref().clone());
     let identity = config.identity().clone();
-    let (_directory, _ledger_fixture, ledger) = ledger();
+    let (_directory, _ledger_fixture, ledger) = ledger()?;
     let before = ledger.lock().unwrap().snapshot()?;
-    let pins = metadata(&ledger);
+    let pins = metadata(&ledger)?;
     let (mut config, handle, inbox) = config
         .with_original_terminal_learning_owners_v1(
             Arc::clone(&ledger),
@@ -218,8 +226,8 @@ async fn unavailable_or_configured_owner_and_deadline_refuse_before_live_verifie
         if case != 0 {
             attach_production_operation_host(&mut config, inputs).await?;
         }
-        let (_directory, _ledger_fixture, ledger) = ledger();
-        let pins = metadata(&ledger);
+        let (_directory, _ledger_fixture, ledger) = ledger()?;
+        let pins = metadata(&ledger)?;
         if case == 3 {
             let (installed, _handle, _inbox) = config
                 .with_original_terminal_learning_owners_v1(
@@ -268,8 +276,8 @@ async fn assembly_rechecks_original_live_authority_before_claim() -> Result<(), 
         .verifier
         .reject_at_call
         .store(calls + 2, Ordering::SeqCst);
-    let (_directory, _ledger_fixture, ledger) = ledger();
-    let pins = metadata(&ledger);
+    let (_directory, _ledger_fixture, ledger) = ledger()?;
+    let pins = metadata(&ledger)?;
     let result = config
         .with_original_terminal_learning_owners_v1(
             ledger,
