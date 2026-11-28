@@ -18,6 +18,12 @@ use crate::LearningEvidenceTrustV1;
 use crate::LearningEvidenceVerifierV1;
 use crate::SignedEvidenceError;
 
+#[path = "trust_distribution_signature.rs"]
+mod signature;
+pub use signature::LearningTrustDistributionIdentityV1;
+pub use signature::SignatureVerifiedLearningTrustV1;
+pub use signature::verify_learning_trust_distribution_signature;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LearningTrustRootV1 {
     pub root_id: StableId,
@@ -110,73 +116,33 @@ pub fn activate_learning_trust(
     previous: Option<&ActivatedLearningTrustV1>,
     now: u64,
 ) -> Result<ActivatedLearningTrustV1, LearningTrustDistributionError> {
-    let root_digest = validate_root(root, now)?;
-    if signed.root_id != root.root_id {
-        return Err(LearningTrustDistributionError::RootMismatch);
-    }
-    if signed.issued_at > now
-        || signed.issued_at > signed.expires_at
-        || signed.issued_at > signed.distribution.effective_at
-        || now > signed.expires_at
-        || signed.issued_at < root.valid_from
-        || signed.expires_at > root.expires_at
-    {
-        return Err(LearningTrustDistributionError::DistributionWindow);
-    }
-
-    let distribution = &signed.distribution;
-    if distribution.generation == 0
-        || distribution.effective_at > now
-        || distribution.trust.scope_digest != root.scope_digest
-    {
-        return Err(LearningTrustDistributionError::InvalidGeneration);
-    }
-
-    let verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
-    let payload = distribution_signing_bytes(
-        &signed.root_id,
-        distribution,
-        signed.issued_at,
-        signed.expires_at,
-    )?;
-    VerifyingKey::from_bytes(&root.verifying_key)
-        .map_err(|_| LearningTrustDistributionError::InvalidRoot)?
-        .verify_strict(&payload, &Signature::from_bytes(&signed.signature))
-        .map_err(|_| LearningTrustDistributionError::InvalidSignature)?;
-
+    let verified = verify_learning_trust_distribution_signature(root, &signed, now)?;
+    let identity = &verified.identity;
     if let Some(previous) = previous {
         let expected = previous
             .generation
             .checked_add(1)
             .ok_or(LearningTrustDistributionError::InvalidGeneration)?;
-        if previous.root_digest != root_digest || previous.root_id != root.root_id {
+        if previous.root_digest != identity.root_digest || previous.root_id != identity.root_id {
             return Err(LearningTrustDistributionError::RootRotationRequiresCeremony);
         }
-        if distribution.generation != expected
-            || distribution.effective_at < previous.effective_at
-            || verifier.authority_epoch() < previous.verifier.authority_epoch()
+        if identity.generation != expected
+            || identity.effective_at < previous.effective_at
+            || identity.authority_epoch < previous.verifier.authority_epoch()
         {
             return Err(LearningTrustDistributionError::NonMonotonicRotation);
         }
     }
 
-    let distribution_digest = digest_distribution(
-        root_digest,
-        &distribution.distribution_id,
-        distribution.generation,
-        distribution.effective_at,
-        signed.issued_at,
-        signed.expires_at,
-        &verifier,
-    );
+    let identity = verified.identity;
     Ok(ActivatedLearningTrustV1 {
-        root_id: root.root_id.clone(),
-        root_digest,
-        distribution_id: distribution.distribution_id.clone(),
-        generation: distribution.generation,
-        effective_at: distribution.effective_at,
-        distribution_digest,
-        verifier,
+        root_id: identity.root_id,
+        root_digest: identity.root_digest,
+        distribution_id: identity.distribution_id,
+        generation: identity.generation,
+        effective_at: identity.effective_at,
+        distribution_digest: identity.distribution_digest,
+        verifier: verified.verifier,
     })
 }
 

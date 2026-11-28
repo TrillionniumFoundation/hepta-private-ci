@@ -238,3 +238,6 @@ fn trust_distribution_rejects_root_substitution_and_revocation() {
         LearningTrustDistributionError::InvalidRoot
     );
 }
+
+#[path = "trust_distribution_signature_tests.rs"]
+mod signature_tests;

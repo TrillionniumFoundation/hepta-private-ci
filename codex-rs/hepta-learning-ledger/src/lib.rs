@@ -162,10 +162,13 @@ pub use signed_evidence::verify_signed_role_separation;
 pub use signed_evidence::verify_verified_role_separation;
 pub use trust_distribution::ActivatedLearningTrustV1;
 pub use trust_distribution::LearningTrustDistributionError;
+pub use trust_distribution::LearningTrustDistributionIdentityV1;
 pub use trust_distribution::LearningTrustDistributionV1;
 pub use trust_distribution::LearningTrustRootV1;
+pub use trust_distribution::SignatureVerifiedLearningTrustV1;
 pub use trust_distribution::SignedLearningTrustDistributionV1;
 pub use trust_distribution::activate_learning_trust;
+pub use trust_distribution::verify_learning_trust_distribution_signature;
 pub use witness::LedgerWitnessFrontier;
 pub use witness::LedgerWitnessStore;
 
