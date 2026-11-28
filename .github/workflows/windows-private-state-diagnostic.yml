@@ -1,0 +1,35 @@
+name: Windows private state rename diagnostic
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-private-state-20261128-03da85
+    paths:
+      - .github/scripts/windows_private_fs_rename_probe.py
+      - .github/workflows/windows-private-state-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Preserve exact repository source bytes
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Capture the exact Windows rename parameter comparisons
+        shell: pwsh
+        run: python .github/scripts/windows_private_fs_rename_probe.py --output "${{ runner.temp }}/windows-private-state-rename.json"
+      - name: Preserve the complete native diagnostic
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-private-state-rename
+          path: ${{ runner.temp }}/windows-private-state-rename.json
+          if-no-files-found: error
