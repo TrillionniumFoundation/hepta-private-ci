@@ -349,8 +349,17 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
+    let manifest_path = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
+    let manifest = codex_utils_cargo_bin::find_resource!(manifest_path)?;
+    let manifest = if codex_utils_cargo_bin::runfiles_available() {
+        manifest.canonicalize()?
+    } else {
+        manifest
+    };
     read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
+        manifest
+            .parent()
+            .context("projection manifest has no parent")?,
     )
 }
 
