@@ -46,8 +46,10 @@ def verify(args, report):
         raise RuntimeError("a real Rust compiler is required")
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / "network_host.so", ROOT / "hia/network_host.hepta",
-                  "full-native37", report)
-    if not report["native_build"]["full37_manifest_verified"]:
+                  args.build_profile, report)
+    verified = {"full-native37": "full37_manifest_verified",
+                "full-native38": "full38_manifest_verified"}[args.build_profile]
+    if report["native_build"].get(verified) is not True:
         raise RuntimeError("the complete pinned native build was not admitted")
     for path in [*STREAM.glob("*.rs"), PROMPT, PROMPT.with_name("prompt_decode_tests.rs"),
                  Path(__file__).resolve()]:
@@ -132,6 +134,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library-dir", required=True, type=Path)
     parser.add_argument("--rustc", default="rustc")
+    parser.add_argument("--build-profile", choices=("full-native37", "full-native38"),
+                        default="full-native37")
     parser.add_argument("--report", required=True, type=Path)
     args = parser.parse_args()
     report = {"schema": "codex.hia.prompt-decode-caller.v1", "passed": False,

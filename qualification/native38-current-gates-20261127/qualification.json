@@ -1,0 +1,90 @@
+{
+  "base": "d00df8af27b40c7ada9efc76d998464d7dd7912e",
+  "change": {
+    "dependency": "one exact BUILD.bazel successor only, then original full Darwin and Wine inverses",
+    "original_cargo_graphs_changed": false,
+    "original_prompt_body_and_budgets_changed": false,
+    "prompt": "explicit full-native38 workflow; full-native37 remains CLI default; own manifest flag must be literal True"
+  },
+  "complete_native_ci_passed": false,
+  "files": {
+    "complete-exec-server-tree-diff.patch": {
+      "bytes": 1217,
+      "sha256": "7b021451a42365c6a7b37025916ec49b6b9a9e9c030f295aee401ea4e50f7eeb"
+    },
+    "d00-core-140728629041-original.log.gz": {
+      "bytes": 80322,
+      "sha256": "3c134c5075bc0ec56eba8a0fa945e5c10c5fc6f971c5a1215616ed3b65cf0c44"
+    },
+    "d00-core-original-15230424660.zip": {
+      "bytes": 3541786,
+      "sha256": "cad09f137655fea8087766fb48d6e276ab07bc52c3a8dddbc449b0c4f080e166"
+    },
+    "d00-core-original-artifact-readback.json": {
+      "bytes": 743,
+      "sha256": "d8115e1a498ff2d912ab140c91d2d3d0f4fd72237bce4ef9841ac48819a68547"
+    },
+    "d00-historical-140728629917-original.log.gz": {
+      "bytes": 15313,
+      "sha256": "a50c2b3cc8a3c2dfb4a42f4dbe562edacdc163e00f7866127d06290f49c557f1"
+    },
+    "diff-check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "diff-check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "just-fmt.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "just-fmt.stdout": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    "original-and-successor-admission.stderr": {
+      "bytes": 4708,
+      "sha256": "3101646d298420261ec902a9edbca7e0068c0660e3d691714fe12f8b8f230734"
+    },
+    "original-and-successor-admission.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "owner86-original-140666984197.log.gz": {
+      "bytes": 416020,
+      "sha256": "48e75cca414c5c9fcd8127fb0983a406c344ce3bbb96f21cc0d83a781a3aaa29"
+    },
+    "owner86-original-140667004515.log.gz": {
+      "bytes": 339235,
+      "sha256": "fbb14c963744a510a975e05d0d1281c820f016bdf7d02e16f0c7db7852dc8b3e"
+    },
+    "owner86-original-readback.json": {
+      "bytes": 625,
+      "sha256": "9c97b0aa7684d12041666fab1b681ed3a7ea3e80092eef6903a89c3fd77a29bf"
+    },
+    "prompt-caller-original-d00.py": {
+      "bytes": 8109,
+      "sha256": "c42d96a30c6616e8157cba134e1402c282bfa2070b00261c3ba3bfec6d0505e0"
+    },
+    "source-change-intent.json": {
+      "bytes": 386,
+      "sha256": "a9223d62c7043ed000b00e1eddb56ceaadb2192296fd51fd80ad4bbfe0c67af1"
+    },
+    "source-controls-and-format.json": {
+      "bytes": 1747,
+      "sha256": "67a51df3e88f33a287b68a4dddc2e01a73b2dd221e5266217818e255b4453eed"
+    }
+  },
+  "original_failures": {
+    "core_first_failure_methods": 3,
+    "core_flaky": true,
+    "core_job": 140728629041,
+    "historical_error": "unreviewed exec-server Darwin dependency projection",
+    "historical_job": 140728629917,
+    "owner86_status": "cancelled, not PASS"
+  },
+  "schema": "codex.hia.native38-current-gate-successor.v1",
+  "source_controls_passed": 24
+}
