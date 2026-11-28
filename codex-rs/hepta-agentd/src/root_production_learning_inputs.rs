@@ -223,4 +223,4 @@ fn refused(message: impl Into<String>) -> AgentdError {
 
 #[cfg(test)]
 #[path = "root_production_learning_inputs_tests.rs"]
-mod tests;
+pub(crate) mod tests;

@@ -217,6 +217,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-ack.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(authbus_dispatch::tests) | test(paired_preparation::training::tests::readiness)'
+      - name: Original paired sealed purpose and startup binding controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-handoff.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(root_production_handoff::paired_training::tests) | test(root_production_paired_inputs::tests)'
       - name: Root CLI original descriptor ownership and login controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
