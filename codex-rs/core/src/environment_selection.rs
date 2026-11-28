@@ -1221,6 +1221,11 @@ url = "ws://127.0.0.1:8765"
 
     #[tokio::test]
     async fn blocking_snapshot_waits_for_starting_environment() {
+        // Keep callsite registration aware of this scoped subscriber when a
+        // parallel test first reaches a shared callsite without a subscriber.
+        // tracing-core's single-dispatch fast path otherwise caches it as off.
+        let _callsite_registry_guard =
+            tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
         let subscriber = tracing_subscriber::fmt()
@@ -1260,18 +1265,15 @@ url = "ws://127.0.0.1:8765"
         ));
         environments
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
-        let snapshot_task = tokio::spawn({
-            let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
-        });
-        tokio::task::yield_now().await;
-        assert!(!snapshot_task.is_finished());
+        let snapshot = environments.snapshot();
+        tokio::pin!(snapshot);
+        // Poll the snapshot before serving the handshake so it reaches the wait span.
+        assert!(futures::poll!(&mut snapshot).is_pending());
 
         let server = tokio::spawn(serve_environment_info(listener));
-        let snapshot = timeout(Duration::from_secs(5), snapshot_task)
+        let snapshot = timeout(Duration::from_secs(5), snapshot)
             .await
-            .expect("snapshot should finish after the environment starts")
-            .expect("snapshot task");
+            .expect("snapshot should finish after the environment starts");
 
         assert!(snapshot.starting().next().is_none());
         assert_eq!(snapshot.to_selections(), vec![selection]);
