@@ -28,6 +28,37 @@ class ReferenceChecks(unittest.TestCase):
                     expect = torch.tensor([fn(float(x)) for x in cell.grid],dtype=cell.grid.dtype)
                     torch.testing.assert_close(torch.lerp(quotes[0], quotes[1], weight), expect, atol=5e-12, rtol=0)
 
+    def test_reset_state_prices_match_the_initial_population(self):
+        law = Contract(maturity=.75)
+        prices = Prices(law)
+        for reset in (.015, .30, 1.30):
+            cell = PopulationCell(1, 2, law=law, reset=reset, atoms=11)
+            state = cell.initial_state(3)
+            for observed, quote in ((state.equity, prices.equity),
+                                    (state.credit_loss, prices.credit_loss)):
+                values = cell.grid.new_tensor([quote(float(x)) for x in cell.grid])
+                expected = (state.active * values).sum(dim=-1)
+                torch.testing.assert_close(observed, expected, rtol=1e-12, atol=1e-12)
+
+    def test_deep_tail_hit_probability_and_gradient(self):
+        for dtype, tolerance in ((torch.float64, 2e-11), (torch.float32, 2e-5)):
+            cell = PopulationCell(1, 1, dtype=dtype)
+            active = torch.zeros_like(cell.grid).view(1, 1, -1)
+            active[..., -1] = 1
+            drift = cell.grid.new_zeros(1, 1, requires_grad=True)
+            _, hit = cell._transport(active, drift)
+            x = cell.grid[-1].item()
+            expected = math.erfc(x / (cell.sigma * math.sqrt(2 * cell.dt)))
+            expected_gradient = -x * expected / cell.sigma**2
+            grad = torch.autograd.grad(hit, drift)[0].item()
+            self.assertLess(abs(hit.item() / expected - 1), tolerance)
+            self.assertLess(abs(grad / expected_gradient - 1), tolerance)
+            step = 1e-3 if dtype == torch.float32 else 1e-4
+            def measure(offset):
+                return cell._transport(active, drift.detach() + offset * step)[1].item()
+            difference = (measure(-2) - 8 * measure(-1) + 8 * measure(1) - measure(2)) / (12 * step)
+            self.assertLess(abs(difference / expected_gradient - 1), 5e-4 if dtype == torch.float32 else 2e-8)
+
     def test_absorbed_distribution_against_quadrature(self):
         cell = PopulationCell(1,1,atoms=7)
         for mu in (-1.2,-.02,.8):

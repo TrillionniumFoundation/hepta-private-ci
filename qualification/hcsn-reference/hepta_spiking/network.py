@@ -74,7 +74,12 @@ class PopulationCell(nn.Module):
         if batch_size < 1:
             raise ValueError("A batch must contain at least one trajectory")
         zeros = self.grid.new_zeros(batch_size, self.width)
-        return PopulationState(self.reset_weights.expand(batch_size, self.width, -1), zeros, zeros, zeros, zeros)
+        active = self.reset_weights.expand(batch_size, self.width, -1)
+        # Zero log boundary is the reference principal, midway between the
+        # endpoint contracts. Its reset population already carries both prices.
+        equity = self.reset_weights.dot(self.equity_quotes.mean(dim=0)).expand_as(zeros)
+        loss = self.reset_weights.dot(self.loss_quotes.mean(dim=0)).expand_as(zeros)
+        return PopulationState(active, zeros, zeros, equity, loss)
 
     def _bin_log_masses(self, mean: Tensor) -> Tensor:
         scale = self.sigma * math.sqrt(self.dt)
@@ -103,7 +108,8 @@ class PopulationCell(nn.Module):
         ratio = (reflected + log_tilt.unsqueeze(-1) - normal).clamp_max(0)
         survival = torch.exp(normal) * (-torch.expm1(ratio))
         width = self.sigma*math.sqrt(self.dt)
-        direct_hit = torch.special.ndtr((-self.grid-mu*self.dt)/width)
+        # Both first-passage terms can be deep in the left Gaussian tail.
+        direct_hit = torch.exp(torch.special.log_ndtr((-self.grid-mu*self.dt)/width))
         reflected_hit = torch.exp(log_tilt + torch.special.log_ndtr((-self.grid+mu*self.dt)/width))
         hit = (direct_hit+reflected_hit).clamp(0, 1)
         return (active.unsqueeze(-1)*survival).sum(-2), (active*hit).sum(-1)
