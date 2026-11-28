@@ -207,6 +207,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 15 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests) | test(notes_thread_tool::items::tests)'
+      - name: Original paired consent notification and material consumer controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-consumer.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(notes_thread_tool::training_trigger::tests) | test(paired_preparation::training::consumer::tests)'
       - name: Root CLI original descriptor ownership and login controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

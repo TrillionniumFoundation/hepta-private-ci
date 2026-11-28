@@ -119,6 +119,9 @@ pub struct AgentdConfig {
     #[cfg(target_os = "linux")]
     notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
     #[cfg(target_os = "linux")]
+    pub(crate) paired_training_consumer:
+        Option<crate::paired_preparation::training::consumer::OriginalPairedTrainingConsumer>,
+    #[cfg(target_os = "linux")]
     desktop_thread_tools: Option<crate::AgentdDesktopThreadToolRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -287,6 +290,8 @@ impl AgentdConfig {
             notes_ui: None,
             #[cfg(target_os = "linux")]
             notes_thread_tools: None,
+            #[cfg(target_os = "linux")]
+            paired_training_consumer: None,
             #[cfg(target_os = "linux")]
             desktop_thread_tools: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
@@ -621,6 +626,43 @@ impl AgentdConfig {
             })?
             .install_paired_training(client)?;
         Ok((self, handle))
+    }
+
+    /// Compose one fixed purpose on the original Notes owner and move the
+    /// resulting material ownership to the explicitly retained native caller.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_original_paired_training_consumer(
+        self,
+        plan: crate::PairedTrainingPlanV1,
+        client: crate::AgentdPairedMaterialClient,
+    ) -> Result<
+        (
+            Self,
+            tokio::sync::oneshot::Receiver<
+                crate::paired_preparation::training::consumer::OriginalPairedTrainingDelivery,
+            >,
+        ),
+        AgentdError,
+    > {
+        if self.paired_training_consumer.is_some() {
+            return Err(AgentdError::Invalid(
+                "original paired consumer already installed".into(),
+            ));
+        }
+        plan.validate()?;
+        let (configured, preparation) =
+            self.with_original_paired_preparation(plan.preparation.clone())?;
+        let (mut configured, training) = configured.with_original_paired_training(client)?;
+        let (consumer, delivery) = configured
+            .notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| AgentdError::Invalid("original paired Notes owner absent".into()))?
+            .install_paired_training_consumer(plan, training)?;
+        // Training already retained the same original journal. Closing the
+        // unused public preparation handle creates no preparation request.
+        drop(preparation);
+        configured.paired_training_consumer = Some(consumer);
+        Ok((configured, delivery))
     }
 
     /// Explicit old-incarnation recovery from the trusted sealed deployment.

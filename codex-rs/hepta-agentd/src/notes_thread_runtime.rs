@@ -378,6 +378,17 @@ impl AgentdNotesThreadToolRuntime {
             if event.connection_id() != connection.client.connection_id() {
                 return Err(invalid("original Notes callback connection changed"));
             }
+            if let AppServerEvent::ServerNotification(notification) = event.event()
+                && let codex_app_server_protocol::ServerNotification::ItemCompleted(completed) =
+                    notification.as_ref()
+                && let Some(trigger) = self.paired_training_trigger.as_mut()
+            {
+                trigger.observe_completed(
+                    &completed.thread_id,
+                    &completed.turn_id,
+                    &completed.item,
+                )?;
+            }
             let (request_id, params) = match event.event() {
                 AppServerEvent::ServerRequest(request) => {
                     let ServerRequest::DynamicToolCall { request_id, params } = request.as_ref()
