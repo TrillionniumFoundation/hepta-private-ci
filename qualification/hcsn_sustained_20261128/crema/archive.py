@@ -2,15 +2,18 @@
 import argparse
 import fcntl
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import subprocess
+import tempfile
 import time
 
 REPO = "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
 BRANCH = "research/hcsn-sustained-boundary-20261128-1140569-results"
 PREFIX = "qualification/hcsn_sustained_20261128/crema/evidence/"
+COLD_SCHEMA = "hcsn-cold-selection-v1"
 
 
 def sha(path):
@@ -22,34 +25,131 @@ def read(path):
     return json.loads(path.read_text())
 
 
+def retain(path, payload):
+    """Keep the first bytes; an exact resumed write is idempotent."""
+    fd, temporary = tempfile.mkstemp(prefix=".cold-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(temporary, path)
+        except FileExistsError:
+            if path.read_bytes() != payload:
+                raise ValueError("retained evidence bytes changed: " + path.name)
+    finally:
+        Path(temporary).unlink()
+
+
+def retain_cold_scores(root, checkpoint, arrays, best=False):
+    """Bind every actually scored checkpoint to its original numeric output."""
+    import numpy as np
+
+    name = checkpoint["file"]
+    if Path(name).name != name or not name.endswith(".pt"):
+        raise ValueError("unexpected checkpoint name")
+    output = root / ("cold-" + Path(name).stem + ".npz")
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer, **arrays)
+    payload = buffer.getvalue()
+    retain(output, payload)
+    if best:
+        retain(root / "cold.npz", payload)
+    return dict(
+        file=output.name, sha256=sha(output), checkpoint_sha256=checkpoint["sha256"]
+    )
+
+
+def retain_cold_index(root, index):
+    retain(
+        root / "cold_index.json",
+        (json.dumps(index, sort_keys=True, indent=2) + "\n").encode(),
+    )
+
+
 def inventory(root, kind):
-    term = read(root/"terminal.json")
-    if term["seal_sha256"] != sha(root/"seal.json"):
+    """Publisher boundary: this pinned collector requires the current run profile."""
+    return _inventory(root, kind, require_cold_schema=True)
+
+
+def legacy_inventory(root):
+    """Recover surviving originals without certifying complete cold evidence."""
+    return dict(
+        status="UNKNOWN",
+        complete=False,
+        reason="legacy runs may lack original quality-gate score arrays",
+        files=_inventory(root, "run", require_cold_schema=False),
+    )
+
+
+def _inventory(root, kind, *, require_cold_schema):
+    term = read(root / "terminal.json")
+    if term["seal_sha256"] != sha(root / "seal.json"):
         raise ValueError("seal checksum mismatch")
-    sealed = read(root/"seal.json")
-    files = {root/"terminal.json",root/"seal.json"}
+    sealed = read(root / "seal.json")
+    files = {root / "terminal.json", root / "seal.json"}
     if kind == "edit":
-        if len(sealed)!=15 or len(term["cells"])!=15:
+        if len(sealed) != 15 or len(term["cells"]) != 15:
             raise ValueError("incomplete edit conditions")
         for group in sealed.values():
             for row in group:
-                weights=root/row["path"]
-                if sha(weights)!=row["sha256"]:
+                weights = root / row["path"]
+                if sha(weights) != row["sha256"]:
                     raise ValueError("edit weights mismatch")
-                files.update((weights,weights.parent/"fit.json",weights.parent/"cold.npz"))
+                files.update(
+                    (weights, weights.parent / "fit.json", weights.parent / "cold.npz")
+                )
     else:
-        if len(sealed)!=12 or len(term["cells"])!=12:
+        if len(sealed) != 12 or len(term["cells"]) != 12:
             raise ValueError("incomplete sustained conditions")
-        files.update(root/name for name in ("sessions.jsonl","segments.jsonl","events.jsonl"))
-        for key,j in sealed.items():
-            p=root/key
-            progress=read(p/"progress.json")
+        schema = term.get("cold_evidence_schema")
+        if require_cold_schema and schema != COLD_SCHEMA:
+            raise ValueError("pinned collector requires current cold evidence schema")
+        if schema is not None and schema != COLD_SCHEMA:
+            raise ValueError("unsupported cold evidence schema")
+        files.update(
+            root / name for name in ("sessions.jsonl", "segments.jsonl", "events.jsonl")
+        )
+        for key, j in sealed.items():
+            p = root / key
+            progress = read(p / "progress.json")
             if progress["optimization_wall"] < 3150:
                 raise ValueError("optimization under budget")
             for row in progress["history"]:
-                if sha(p/row["file"]) != row["sha256"]:
+                weights = p / row["file"]
+                if sha(weights) != row["sha256"]:
                     raise ValueError("sustained checkpoint mismatch")
-            files.update((p/"progress.json",p/"cold.npz",p/j["best"]["file"]))
+                files.add(weights)
+            selected = [
+                row for row in [j["best"], *j["gates"].values()] if row is not None
+            ]
+            if any(row not in progress["history"] for row in selected):
+                raise ValueError("sealed checkpoint is absent from verified history")
+            needed = {row["file"]: row for row in selected}
+            index_path = p / "cold_index.json"
+            if schema == COLD_SCHEMA and not index_path.is_file():
+                raise ValueError("declared cold index is missing")
+            if index_path.exists():
+                index = read(index_path)
+                if set(index) != set(needed):
+                    raise ValueError("cold index does not cover the sealed selections")
+                for name, row in needed.items():
+                    item = index[name]
+                    expected_name = "cold-" + Path(name).stem + ".npz"
+                    if (
+                        item["file"] != expected_name
+                        or item["checkpoint_sha256"] != row["sha256"]
+                        or sha(p / item["file"]) != item["sha256"]
+                    ):
+                        raise ValueError("cold score binding mismatch")
+                    files.add(p / item["file"])
+                if sha(p / "cold.npz") != index[j["best"]["file"]]["sha256"]:
+                    raise ValueError("selected cold score alias mismatch")
+                files.add(index_path)
+            # Legacy runs retain every original checkpoint and their existing best
+            # scores. Missing historical gate scores are never manufactured here.
+            files.update((p / "progress.json", p / "cold.npz"))
     return sorted(files)
 
 

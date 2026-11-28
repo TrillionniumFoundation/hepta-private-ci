@@ -84,45 +84,56 @@ def push(kind,files,root):
 
 
 def main():
-    root=Path(sys.argv[1]).resolve()
-    root.mkdir(parents=True,exist_ok=True)
-    with (root/"relay.lock").open("a") as guard:
-        fcntl.flock(guard,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        for kind in ("edit","run"):
-            completed=root/(kind+"-receipt.json")
+    root = Path(sys.argv[1]).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    with (root / "relay.lock").open("a") as guard:
+        fcntl.flock(guard, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        for kind in ("edit", "run"):
+            completed = root / (kind + "-receipt.json")
             if completed.is_file():
                 continue
             while True:
                 try:
-                    names=file_list(kind)
+                    names = file_list(kind)
                     if not names:
                         time.sleep(45)
                         continue
-                    if any(Path(n).is_absolute() or ".." in Path(n).parts or "\n" in n for n in names):
+                    if any(
+                        Path(n).is_absolute() or ".." in Path(n).parts or "\n" in n
+                        for n in names
+                    ):
                         raise ValueError("unexpected relative path")
-                    dest=root/kind
+                    dest = root / kind
                     dest.mkdir(exist_ok=True)
-                    run(["rsync","-a","--files-from=-","-e","ssh -o BatchMode=yes -o StrictHostKeyChecking=yes",
-                         "ai395:"+HOST_DIR+"/"+kind+"/",str(dest)+"/"], ("\n".join(names)+"\n").encode())
-                    # Recreate all selected live-model files except the unselected sustained checkpoints.
-                    if kind=="edit":
-                        files=inventory(dest,kind)
-                    else:
-                        files=[dest/n for n in names]
-                        if sha(dest/"seal.json")!=json.loads((dest/"terminal.json").read_text())["seal_sha256"]:
-                            raise ValueError("relay seal mismatch")
-                        for key,item in json.loads((dest/"seal.json").read_text()).items():
-                            if sha(dest/key/item["best"]["file"])!=item["best"]["sha256"]:
-                                raise ValueError("relay weight mismatch")
-                    commit=push(kind,files,root)
-                    receipt=dict(commit=commit,branch=BRANCH,files=len(files),terminal_sha256=sha(dest/"terminal.json"),utc=time.time())
-                    completed.write_text(json.dumps(receipt,indent=2)+"\n")
-                    print(json.dumps(receipt),flush=True)
+                    run(
+                        [
+                            "rsync",
+                            "-a",
+                            "--files-from=-",
+                            "-e",
+                            "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes",
+                            "ai395:" + HOST_DIR + "/" + kind + "/",
+                            str(dest) + "/",
+                        ],
+                        ("\n".join(names) + "\n").encode(),
+                    )
+                    # Revalidate the same complete inventory after transport.
+                    files = inventory(dest, kind)
+                    commit = push(kind, files, root)
+                    receipt = dict(
+                        commit=commit,
+                        branch=BRANCH,
+                        files=len(files),
+                        terminal_sha256=sha(dest / "terminal.json"),
+                        utc=time.time(),
+                    )
+                    completed.write_text(json.dumps(receipt, indent=2) + "\n")
+                    print(json.dumps(receipt), flush=True)
                     break
-                except (RuntimeError,subprocess.TimeoutExpired) as exc:
-                    print(type(exc).__name__,str(exc),flush=True)
+                except (RuntimeError, subprocess.TimeoutExpired) as exc:
+                    print(type(exc).__name__, str(exc), flush=True)
                     time.sleep(55)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

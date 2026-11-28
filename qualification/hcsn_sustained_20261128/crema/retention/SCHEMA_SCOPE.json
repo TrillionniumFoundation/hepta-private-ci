@@ -1,0 +1,20 @@
+{
+  "previous_source": "f2d08345463dbd7b8294ea4ed72146f3de9ca834",
+  "first_run_records": "Retained unchanged in first-observation.tar.gz; it passed before the later schema downgrade and selection alias gaps were found.",
+  "expectation": "The collector at its externally pinned source commit requires hcsn-cold-selection-v1 for ordinary run publication, independently of fields declared by the run. The marker itself is not a completeness authority.",
+  "legacy": "Explicit legacy_inventory returns UNKNOWN and complete=false; neither publishing entrypoint uses that recovery API. Historical missing scores remain absent.",
+  "new_cases": [
+    "Whole cold index removed",
+    "Schema marker and cold index both removed",
+    "Incorrect best digest shadowed by a gate with the same filename"
+  ],
+  "reason_for_new_execution": "Publication boundary and selection validation semantics changed after the first format; these concrete new rejection cases require another execution.",
+  "model_training_or_forward_budget_used": false,
+  "active_job_modified_or_restarted": false,
+  "expected_test_methods": 5,
+  "limits": [
+    "Content hashes establish internal file consistency, not host authenticity or model quality.",
+    "An existing running producer loaded from earlier source will not gain these changes retroactively.",
+    "Legacy recovery is not accepted as complete publication even when surviving files are internally valid."
+  ]
+}

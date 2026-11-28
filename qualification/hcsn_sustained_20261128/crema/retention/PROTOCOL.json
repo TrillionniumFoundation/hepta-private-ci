@@ -1,0 +1,21 @@
+{
+  "base": "cba2602af7c090323ba47d98d45ccaef5bb7edbb",
+  "base_archive_sha256": "be141f99e01d06eaee8febbf215cc13646f0de893f474816bf55cc4abe5c54a2",
+  "baseline_execution_commit": "0225f59961e9a62d1a1e4129aa9f581a75c2db62",
+  "explicit_tests": 5,
+  "limits": [
+    "Synthetic engineering files exercise real filesystem and archive operations; no model training, Torch forward or held-out scoring is invoked",
+    "The study loop integration changes storage only and is reviewed structurally; model execution is not part of this qualification",
+    "New producer writes scores for every selected/gate checkpoint; older runs with no index cannot supply previously unsaved gate scores",
+    "No source is deployed onto an active host and no running experiment is restarted"
+  ],
+  "original_inventory_ast_equal_at_base": true,
+  "registered_controls": [
+    "Physical tar roundtrip retains every checkpoint, each actually scored selection and unchanged arrays",
+    "Missing, altered or incompletely indexed scores refuse publication",
+    "Sealed checkpoint must be in the verified history",
+    "Legacy originals remain available, with absent historical gate scores left absent",
+    "Exact resumed score writes are idempotent and conflicting bytes cannot replace originals"
+  ],
+  "test_command": "python -m unittest discover -s qualification/hcsn_sustained_20261128/crema -p test_archive_retention.py -v"
+}
