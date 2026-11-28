@@ -1,0 +1,30 @@
+{
+  "baseline_commit": "4686c861e54179690c4a668a356a4b0ce57639d5",
+  "qualification_source_commit": "24bab56ad9ce7f1158a35b7e2668cb0a0ff68010",
+  "schema": "pft-observed-single-offer-v1",
+  "single_offer": {
+    "counts": {
+      "eigvalsh": 2,
+      "validate_packet": 2
+    },
+    "measurement": "one received TCP offer; fixture production excluded",
+    "packet_sha256": "e74fe8723886026360cc068e3da77d5b43a74e5f8e82e39ed8e7df9e5d616ad1",
+    "receipt": {
+      "head": "9c31c969a8bb2ca9ae43f71bbd6cd66512da6e03622ce5b583937a63eeb1d7da",
+      "material": {
+        "batches": [
+          [
+            "peer-batch-0",
+            "e74fe8723886026360cc068e3da77d5b43a74e5f8e82e39ed8e7df9e5d616ad1"
+          ]
+        ],
+        "contract_sha256": "2a8151fc28fb8fd378a6fb942b7349a30b37971328da143ae6e958cf1c6e7fa0"
+      },
+      "revision": 1,
+      "status": "accepted"
+    }
+  },
+  "source_archive_member": "baseline.json",
+  "source_archive_sha256": "4e2f434043987965308f2b8b07cea1e7de1e867840e1801360966d98a60b0b48",
+  "source_baseline_json_sha256": "260c129ece72d865883cb676e7a642cce82de0f2f59585a940450d242c46889e"
+}
