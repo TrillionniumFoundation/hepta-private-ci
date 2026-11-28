@@ -48,6 +48,22 @@ pub enum ConsoleMode {
     NoWindow,
 }
 
+impl ConsoleMode {
+    pub fn for_piped_command(command: &[String]) -> Self {
+        // Keep in sync with codex_exec_server::CODEX_FS_HELPER_ARG1 without
+        // introducing a dependency cycle. A filesystem helper consumes its
+        // request over pipes and must not attach to the parent's console.
+        if command
+            .get(1)
+            .is_some_and(|arg| arg == "--codex-run-as-fs-helper")
+        {
+            Self::NoWindow
+        } else {
+            Self::Inherit
+        }
+    }
+}
+
 pub fn make_env_block(env: &HashMap<String, String>) -> Vec<u16> {
     let mut items: Vec<(String, String)> =
         env.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
@@ -353,4 +369,28 @@ where
             CloseHandle(handle);
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ConsoleMode;
+
+    #[test]
+    fn only_filesystem_helper_mode_skips_console_attachment() {
+        let command = ["codex.exe", "--codex-run-as-fs-helper"].map(String::from);
+        assert!(matches!(
+            ConsoleMode::for_piped_command(&command),
+            ConsoleMode::NoWindow
+        ));
+
+        let ordinary = ["codex.exe", "exec", "--codex-run-as-fs-helper"].map(String::from);
+        assert!(matches!(
+            ConsoleMode::for_piped_command(&ordinary),
+            ConsoleMode::Inherit
+        ));
+        assert!(matches!(
+            ConsoleMode::for_piped_command(&ordinary[..1]),
+            ConsoleMode::Inherit
+        ));
+    }
 }

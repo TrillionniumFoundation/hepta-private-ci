@@ -105,7 +105,7 @@ fn spawn_legacy_process(
                 StdinMode::Closed
             },
             StderrMode::Separate,
-            ConsoleMode::Inherit,
+            ConsoleMode::for_piped_command(command),
             use_private_desktop,
             logs_base_dir,
         )?;
