@@ -40,7 +40,9 @@ class FrameMeter(legacy.Meter):
                 try:
                     self.stream.sendall(data)
                 except Exception:
-                    meter.add(failed_sendall_calls=1, failed_sendall_attempted_bytes=len(data))
+                    meter.add(
+                        failed_sendall_calls=1, failed_sendall_attempted_bytes=len(data)
+                    )
                     raise
                 meter.add(completed_sent_bytes=len(data))
 
@@ -82,7 +84,9 @@ def main():
     args = parser.parse_args()
     started = time.monotonic()
     here = Path(__file__).parent
-    if any(os.environ.get(k) != "1" for k in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")):
+    if any(
+        os.environ.get(k) != "1" for k in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")
+    ):
         raise ValueError("registered execution requires one BLAS thread")
     inputs = here / "pft_cache_network/INPUTS.json"
     if legacy.sha(inputs) != legacy.INPUTS_SHA256:
@@ -101,7 +105,9 @@ def main():
         if actual != item["sha256"]:
             raise ValueError("published dependency bytes differ")
         source[item["path"]] = actual
-    source["qualification/hcsn_closure_20261124/pft_binary_cache_network.py"] = legacy.sha(__file__)
+    source["qualification/hcsn_closure_20261124/pft_binary_cache_network.py"] = (
+        legacy.sha(__file__)
+    )
     source["dependency_manifest"] = legacy.sha(dependencies)
     identity = digest(source)
     protocol_sha = legacy.sha(here / "pft_binary_cache_network/PROTOCOL.md")
@@ -109,57 +115,129 @@ def main():
     args.budget.parent.mkdir(parents=True, exist_ok=True)
     with args.budget.with_suffix(".lock").open("a") as lease:
         fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        budget = json.loads(args.budget.read_text()) if args.budget.exists() else dict(
-            schema="pft-binary-cache-network-budget-v1", protocol_sha256=protocol_sha, attempts=[])
+        budget = (
+            json.loads(args.budget.read_text())
+            if args.budget.exists()
+            else dict(
+                schema="pft-binary-cache-network-budget-v1",
+                protocol_sha256=protocol_sha,
+                attempts=[],
+            )
+        )
         if budget["protocol_sha256"] != protocol_sha:
             raise ValueError("cannot reset the registered budget with another protocol")
         prior = budget["attempts"]
-        if prior and (not args.correction_note.strip() or any(a["source_identity"] == identity for a in prior)):
-            raise ValueError("another attempt requires a source correction and a new identity")
+        if prior and (
+            not args.correction_note.strip()
+            or any(a["source_identity"] == identity for a in prior)
+        ):
+            raise ValueError(
+                "another attempt requires a source correction and a new identity"
+            )
         charged = lambda case: case.get("elapsed_seconds", case["reserved_seconds"])
-        total_prior = sum(a.get("elapsed_seconds", sum(charged(c) for c in a["cases"])) for a in prior)
-        parent_spent = {p: sum(charged(c) for a in prior for c in a["cases"] if c["parent"] == p) for p in legacy.PARENTS}
-        attempt = dict(source_identity=identity, source=source, correction_note=args.correction_note,
-                       output=str(args.output.resolve()), started_unix=time.time(), cases=[])
+        total_prior = sum(
+            a.get("elapsed_seconds", sum(charged(c) for c in a["cases"])) for a in prior
+        )
+        parent_spent = {
+            p: sum(charged(c) for a in prior for c in a["cases"] if c["parent"] == p)
+            for p in legacy.PARENTS
+        }
+        attempt = dict(
+            source_identity=identity,
+            source=source,
+            correction_note=args.correction_note,
+            output=str(args.output.resolve()),
+            started_unix=time.time(),
+            cases=[],
+        )
         prior.append(attempt)
 
         def save_budget():
             temporary = args.budget.with_suffix(".pending")
-            temporary.write_text(json.dumps(budget, sort_keys=True, indent=2, allow_nan=False) + "\n")
+            temporary.write_text(
+                json.dumps(budget, sort_keys=True, indent=2, allow_nan=False) + "\n"
+            )
             os.replace(temporary, args.budget)
 
         save_budget()
-        legacy.write(args.output / "SOURCE_FROZEN.json", dict(
-            protocol_commit=PROTOCOL_COMMIT, base_commit=BASE_COMMIT, source=source,
-            inputs_sha256=legacy.INPUTS_SHA256, pid=os.getpid(), numeric_rtol=1e-7, numeric_atol=1e-7,
-            python=platform.python_version(), numpy=np.__version__, platform=platform.platform(),
-            threads={k:os.environ.get(k) for k in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")}))
+        legacy.write(
+            args.output / "SOURCE_FROZEN.json",
+            dict(
+                protocol_commit=PROTOCOL_COMMIT,
+                base_commit=BASE_COMMIT,
+                source=source,
+                inputs_sha256=legacy.INPUTS_SHA256,
+                pid=os.getpid(),
+                numeric_rtol=1e-7,
+                numeric_atol=1e-7,
+                python=platform.python_version(),
+                numpy=np.__version__,
+                platform=platform.platform(),
+                threads={
+                    k: os.environ.get(k)
+                    for k in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")
+                },
+            ),
+        )
         legacy.worker = binary_worker
         rows = []
         for item in document["parents"]:
-            allowance = min(60 - parent_spent[item["parent"]], 600 - total_prior - (time.monotonic() - started))
-            case = dict(parent=item["parent"], reserved_seconds=max(0, allowance), started_unix=time.time())
+            allowance = min(
+                60 - parent_spent[item["parent"]],
+                600 - total_prior - (time.monotonic() - started),
+            )
+            case = dict(
+                parent=item["parent"],
+                reserved_seconds=max(0, allowance),
+                started_unix=time.time(),
+            )
             attempt["cases"].append(case)
             save_budget()
             case_started = time.monotonic()
-            result = legacy.run_case(item, args.fixture_root, args.output / item["parent"], allowance)
+            result = legacy.run_case(
+                item, args.fixture_root, args.output / item["parent"], allowance
+            )
             result["charged_seconds"] = time.monotonic() - case_started
-            result["passed"] = result["passed"] and result["charged_seconds"] <= allowance
+            result["passed"] = (
+                result["passed"] and result["charged_seconds"] <= allowance
+            )
             rows.append(result)
-            case.update(elapsed_seconds=result["charged_seconds"], passed=result["passed"])
+            case.update(
+                elapsed_seconds=result["charged_seconds"], passed=result["passed"]
+            )
             save_budget()
-            print(json.dumps(dict(parent=item["parent"], passed=result["passed"], elapsed_seconds=result["elapsed_seconds"])), flush=True)
+            print(
+                json.dumps(
+                    dict(
+                        parent=item["parent"],
+                        passed=result["passed"],
+                        elapsed_seconds=result["elapsed_seconds"],
+                    )
+                ),
+                flush=True,
+            )
             if not result["passed"]:
                 break
         attempt["elapsed_seconds"] = time.monotonic() - started
         save_budget()
         legacy.write(args.output / "BUDGET.json", budget)
-        summary = dict(schema="pft-binary-cache-network-result-v1", rows=rows,
-                       passed=sum(r["passed"] for r in rows), expected=9, not_run=legacy.PARENTS[len(rows):],
-                       total_seconds=attempt["elapsed_seconds"], cumulative_seconds=total_prior+attempt["elapsed_seconds"],
-                       scientific_gain=False, training_speedup_established=False, production_settlement=False, real_user_adoption=False)
+        summary = dict(
+            schema="pft-binary-cache-network-result-v1",
+            rows=rows,
+            passed=sum(r["passed"] for r in rows),
+            expected=9,
+            not_run=legacy.PARENTS[len(rows) :],
+            total_seconds=attempt["elapsed_seconds"],
+            cumulative_seconds=total_prior + attempt["elapsed_seconds"],
+            scientific_gain=False,
+            training_speedup_established=False,
+            production_settlement=False,
+            real_user_adoption=False,
+        )
         legacy.write(args.output / "RESULTS.json", summary)
-        raise SystemExit(0 if summary["passed"] == 9 and summary["cumulative_seconds"] <= 600 else 1)
+        raise SystemExit(
+            0 if summary["passed"] == 9 and summary["cumulative_seconds"] <= 600 else 1
+        )
 
 
 if __name__ == "__main__":
