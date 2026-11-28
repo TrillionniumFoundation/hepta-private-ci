@@ -5,6 +5,8 @@
 //! permutations of the crate.
 
 pub use crate::tasks::recovery_diagnostics::RecoveryDiagnostics;
+pub use codex_hooks::test_support::ExecutorHookCompletion;
+pub use codex_hooks::test_support::ExecutorHookTerminal;
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -67,6 +69,22 @@ pub fn set_thread_manager_test_mode(enabled: bool) {
 
 pub fn set_deterministic_process_ids(enabled: bool) {
     unified_exec::set_deterministic_process_ids_for_tests(enabled);
+}
+
+/// Observe real executor-hook terminals for one exclusively owned test session.
+///
+/// Install once while the fixture is idle, before submitting any turns or
+/// refreshing its configuration. This does not replace the MCP executor or its
+/// current-binding and environment checks, and does not add public hook events.
+pub fn observe_executor_hook_completions(
+    thread: &crate::CodexThread,
+) -> async_channel::Receiver<ExecutorHookCompletion> {
+    let (hooks, completions) = thread
+        .session
+        .hooks()
+        .with_executor_completion_observer_for_tests();
+    thread.session.services.hooks.store(Arc::new(hooks));
+    completions
 }
 
 /// Read-only context and base instructions owned by a completed test thread.

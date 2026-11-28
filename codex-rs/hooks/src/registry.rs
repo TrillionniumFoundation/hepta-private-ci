@@ -96,6 +96,21 @@ impl Hooks {
         )
     }
 
+    /// Installs a passive observer on this clone for cross-crate integration tests.
+    ///
+    /// Call before starting turns. Results are bounded and sent without waiting;
+    /// a dropped or full receiver never changes a handler's execution or result.
+    #[doc(hidden)]
+    pub fn with_executor_completion_observer_for_tests(
+        &self,
+    ) -> (Self, Receiver<crate::test_support::ExecutorHookCompletion>) {
+        let (sender, receiver) =
+            async_channel::bounded(crate::test_support::EXECUTOR_COMPLETION_CAPACITY);
+        let mut hooks = self.clone();
+        hooks.engine.command_runtime.executor_completion_observer = Some(sender);
+        (hooks, receiver)
+    }
+
     pub fn with_executor_hooks(&self, executor_hooks: Vec<ExecutorPluginHookSource>) -> Self {
         let mut hooks = self.clone();
         hooks.engine.set_executor_hooks(executor_hooks);

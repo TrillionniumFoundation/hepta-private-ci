@@ -50,6 +50,8 @@ pub(crate) struct CommandHookRuntime {
     shell: CommandShell,
     environment: Arc<Vec<(OsString, OsString)>>,
     result_sender: Sender<HookCompletedEvent>,
+    pub(crate) executor_completion_observer:
+        Option<Sender<crate::test_support::ExecutorHookCompletion>>,
     state: Arc<Mutex<CommandHookRuntimeState>>,
     output_spiller: HookOutputSpiller,
 }
@@ -79,6 +81,7 @@ impl CommandHookRuntime {
             shell,
             environment,
             result_sender,
+            executor_completion_observer: None,
             state: Arc::new(Mutex::new(CommandHookRuntimeState::default())),
             output_spiller: HookOutputSpiller::new(thread_id),
         }
@@ -95,6 +98,7 @@ impl CommandHookRuntime {
             shell,
             environment: Arc::clone(&self.environment),
             result_sender: self.result_sender.clone(),
+            executor_completion_observer: self.executor_completion_observer.clone(),
             state: Arc::clone(&self.state),
             output_spiller: self.output_spiller.clone(),
         }

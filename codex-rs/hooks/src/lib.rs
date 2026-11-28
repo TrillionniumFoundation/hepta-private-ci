@@ -7,6 +7,8 @@ mod mcp;
 mod output_spill;
 mod registry;
 mod schema;
+#[doc(hidden)]
+pub mod test_support;
 mod types;
 
 use codex_protocol::protocol::HookEventName;
