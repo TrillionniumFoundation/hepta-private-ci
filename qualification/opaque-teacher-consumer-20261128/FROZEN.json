@@ -1,0 +1,16 @@
+{
+"schema": "hepta.opaque-paired-consumer-freeze.v1",
+"base": "4284e2d57b9975fea1a19fb82493183b070873bc",
+"prospective_commit": "feae9e59516ddeb469c6b9ed27d944ba2bb1f92d",
+"exact_tests": ["test_actual_source_dispatch_and_native_encoder_mask_failure_without_answer_leak", "test_capture_preserves_denied_training_and_both_consumers_refuse", "test_full_recomputed_receipt_and_source_must_match", "test_student_policy_task_and_failure_execution_cannot_be_replaced", "test_derived_tampering_and_insecure_originals_are_refused", "test_exact_claim_and_count_types_preserve_legitimate_payload_float", "test_old_engineering_fit_entry_rejects_observed_records_before_fit"],
+"command_cap_seconds": 30,
+"teacher_calls": 0,
+"human_sessions": 0,
+"fits": 0,
+"cargo": false,
+"changed_files": {"scripts/cell_experiments/chat_protocol.py": {"git_blob": "7122dd8cc6b84b94f7ffff60358fbf53f5b6fff5", "sha256": "63a5ea82c3fc1fac303378ecabbb7468885ff408f6187aa52497a56889c4231c"}, "scripts/cell_experiments/opaque_teacher_data.py": {"git_blob": "c656f89c83334101682efcf475e976318cd2dead", "sha256": "03b01b717d213080e61fe813425750ab83f7ab4c3f0f87008cea417d61310220"}, "scripts/cell_experiments/paired_opaque_teacher.py": {"git_blob": "f9530a1856b9072611069e2910909c78d325b4a4", "sha256": "f3a7ee5073b35648c04244f354eeec3e561ada9866ac3c393dfa1c63f28cc428"}, "scripts/cell_experiments/paired_source.py": {"git_blob": "22b8a17682818721bcc4cdac463df6b935eedbef", "sha256": "7110947aa4af337bbccbd1279b148656d521664a0eb4bbfcb28de2ff6a093116"}, "scripts/cell_experiments/paired_source_train.py": {"git_blob": "9c5e2cab749a963d4adc96f81df55888ce2b6b5c", "sha256": "cb64e0dc1a19b974d555156a68c8f1b136043b1acf5add1c273c0339b8cb100b"}, "scripts/cell_experiments/test_paired_opaque_teacher.py": {"git_blob": "6014660c2b7dec36055c2c3abf4f3a1f04c46ab8", "sha256": "9738ffe844d3e41fafc3e8fc9ef73bd54af10b7b5864ad2e9e1370c92c7214a4"}},
+"context_source_freeze_sha256": "e95acdf56a454ab8f956f4c7cd571b87ab7cfc6a2459578b77d6c30723d5472e",
+"first_gate": {"outer_elapsed_ns": 307095539, "passed": 7},
+"native_owner_connected": false,
+"archive_sha256": "b1e59e931b5099adbefda8ed3fa3782ddc21c70b2c03899cf9b76a6b851a58cd"
+}

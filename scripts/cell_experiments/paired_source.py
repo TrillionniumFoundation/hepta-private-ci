@@ -95,6 +95,10 @@ def check_attempt(record, expected_success, originals):
 
 
 def derive(failure, correction, originals):
+    from . import opaque_teacher_data, paired_opaque_teacher
+
+    if correction.get("schema") == opaque_teacher_data.SCHEMA:
+        return paired_opaque_teacher.derive(failure, correction, originals)
     for key in ("task_id", "lineage_id", "project_id", "task"):
         require(
             failure[key] == correction[key],

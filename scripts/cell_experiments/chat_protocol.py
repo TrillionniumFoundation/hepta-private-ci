@@ -84,6 +84,15 @@ def training_examples(records, mode, protocol):
     """Carry per-event loss masks into the encoder for the selected protocol."""
     if protocol not in (LEGACY, NATIVE):
         raise ValueError("unsupported training protocol")
+    from . import paired_opaque_teacher
+
+    if len(records) == 1 and records[0].get("schema") == paired_opaque_teacher.DERIVED:
+        example = paired_opaque_teacher.training_example(records[0], mode)
+        if protocol == NATIVE:
+            example["initial_messages"] = inference_messages(
+                records[0]["task"]["input"], records[0]["task"].get("messages")
+            )
+        return [example]
     examples = build_sft_examples(records, mode)
     for record, example in zip(records, examples):
         if protocol == NATIVE:
