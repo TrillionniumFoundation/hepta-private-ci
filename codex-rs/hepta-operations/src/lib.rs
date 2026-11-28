@@ -19,6 +19,7 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod split_receipt_gate;
 mod sqlite;
 
 pub use destination_dedupe::DestinationApplyStart;
@@ -61,6 +62,10 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
+pub use split_receipt_gate::SplitReceiptErrorV1;
+pub use split_receipt_gate::SplitReceiptGateV1;
+pub use split_receipt_gate::SplitStageReceiptV1;
+pub use split_receipt_gate::SplitStageV1;
 
 #[cfg(test)]
 mod exact_claim_tests;
