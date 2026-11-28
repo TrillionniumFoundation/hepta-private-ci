@@ -46,6 +46,17 @@ pub struct JournalAnchor {
 enum RecoveryPolicy {
     Unanchored,
     Require(JournalAnchor),
+    SealedPrefix,
+    RequireExact(JournalAnchor),
+}
+
+impl RecoveryPolicy {
+    fn anchor(self) -> Option<JournalAnchor> {
+        match self {
+            Self::Require(anchor) | Self::RequireExact(anchor) => Some(anchor),
+            Self::Unanchored | Self::SealedPrefix => None,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -96,6 +107,9 @@ pub struct SparseJournal {
 }
 
 impl SparseJournal {
+    /// Maximum number of already existing segments in a single chain recovery.
+    pub const MAX_CHAIN_SEGMENTS: usize = 16;
+
     /// Bootstrap or recover the first segment without an external acknowledgement
     /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(
@@ -125,6 +139,74 @@ impl SparseJournal {
         )
     }
 
+    /// Recover an ordered chain of host-authorized files through the exact
+    /// independent acknowledgement. Each predecessor must be complete and free
+    /// of trailing bytes. Only the final segment can be repaired, after the
+    /// complete chain and its latest checkpoint have been validated.
+    ///
+    /// The host must supply distinct, existing files using the same ownership
+    /// contract as `open_anchored`. Predecessor locks are held until the final
+    /// segment has been recovered.
+    pub fn recover_exact_chain(
+        mut segments: Vec<(File, usize)>,
+        config: SparseConfig,
+        scope: JournalScope,
+        anchor: JournalAnchor,
+    ) -> Result<Self, JournalError> {
+        if !(2..=Self::MAX_CHAIN_SEGMENTS).contains(&segments.len()) {
+            return Err(JournalError::InvalidLimit);
+        }
+        let (final_file, final_limit) = segments.pop().ok_or(JournalError::InvalidLimit)?;
+        validate_limit(final_limit)?;
+        let mut prefix_capacity = 0;
+        for (_, limit) in &segments {
+            validate_limit(*limit)?;
+            prefix_capacity += *limit as u64;
+        }
+        if anchor.sequence <= prefix_capacity
+            || anchor.sequence > prefix_capacity + final_limit as u64
+            || anchor.checkpoint_digest.is_zero()
+        {
+            return Err(JournalError::InvalidAnchor);
+        }
+
+        let mut predecessor_locks = Vec::with_capacity(segments.len());
+        let mut checkpoint = None;
+        for (file, limit) in segments {
+            let predecessor = if let Some(seed) = &checkpoint {
+                Self::open_successor_with_policy(
+                    file,
+                    config.clone(),
+                    scope,
+                    limit,
+                    seed,
+                    RecoveryPolicy::SealedPrefix,
+                )?
+            } else {
+                Self::open_with_policy(
+                    file,
+                    config.clone(),
+                    scope,
+                    limit,
+                    RecoveryPolicy::SealedPrefix,
+                )?
+            };
+            let Self { file, current, .. } = predecessor;
+            predecessor_locks.push(file);
+            checkpoint = current;
+        }
+
+        let seed = checkpoint.ok_or(JournalError::AcknowledgedHistoryMissing)?;
+        Self::open_successor_with_policy(
+            final_file,
+            config,
+            scope,
+            final_limit,
+            &seed,
+            RecoveryPolicy::RequireExact(anchor),
+        )
+    }
+
     fn open_with_policy(
         file: File,
         config: SparseConfig,
@@ -133,7 +215,7 @@ impl SparseJournal {
         policy: RecoveryPolicy,
     ) -> Result<Self, JournalError> {
         validate_limit(max_records)?;
-        if let RecoveryPolicy::Require(anchor) = policy
+        if let Some(anchor) = policy.anchor()
             && (anchor.sequence == 0
                 || anchor.sequence > max_records as u64
                 || anchor.checkpoint_digest.is_zero())
@@ -147,7 +229,7 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(_) = policy {
+            if !matches!(policy, RecoveryPolicy::Unanchored) {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
             file.write_all(&header)
@@ -220,7 +302,7 @@ impl SparseJournal {
             sequence: seed.sequence(),
             checkpoint_digest: seed.digest(),
         };
-        if let RecoveryPolicy::Require(anchor) = policy {
+        if let Some(anchor) = policy.anchor() {
             if anchor.sequence == 0
                 || anchor.sequence < seed_anchor.sequence
                 || anchor.sequence > seed_anchor.sequence.saturating_add(max_records as u64)
@@ -240,6 +322,12 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
+            if matches!(
+                policy,
+                RecoveryPolicy::SealedPrefix | RecoveryPolicy::RequireExact(_)
+            ) {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
             if let RecoveryPolicy::Require(anchor) = policy
                 && anchor.sequence > seed_anchor.sequence
             {
@@ -300,6 +388,14 @@ impl SparseJournal {
         if complete > max_records {
             return Err(JournalError::Capacity);
         }
+        if matches!(policy, RecoveryPolicy::SealedPrefix) {
+            if complete != max_records {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
+            if !available.is_multiple_of(frame_len) {
+                return Err(JournalError::Corrupt);
+            }
+        }
         journal.file.seek(SeekFrom::Start(data_offset as u64))?;
         let mut frame = vec![0; frame_len];
         for _ in 0..complete {
@@ -324,7 +420,7 @@ impl SparseJournal {
             journal.current = Some(state);
         }
 
-        if let RecoveryPolicy::Require(anchor) = policy {
+        if let Some(anchor) = policy.anchor() {
             let actual = journal.anchor_at(anchor.sequence);
             match actual {
                 None => return Err(JournalError::AcknowledgedHistoryMissing),
@@ -333,6 +429,14 @@ impl SparseJournal {
                 }
                 Some(_) => {}
             }
+        }
+        if let RecoveryPolicy::RequireExact(anchor) = policy
+            && journal.current.as_ref().map(SparseCheckpoint::sequence) != Some(anchor.sequence)
+        {
+            return Err(JournalError::AnchorMismatch);
+        }
+        if matches!(policy, RecoveryPolicy::SealedPrefix) {
+            return Ok(journal);
         }
 
         if !available.is_multiple_of(frame_len) {

@@ -267,3 +267,102 @@ fn matching_anchor_does_not_hide_corruption_in_a_later_full_frame() {
     assert_eq!(fixture.open(anchor).err(), Some(JournalError::Corrupt));
     assert_eq!(checked(fs::read(fixture.path())), corrupt);
 }
+
+struct ChainFixture {
+    root: Fixture,
+    middle: PathBuf,
+    final_path: PathBuf,
+    anchors: [JournalAnchor; 2],
+}
+
+impl ChainFixture {
+    fn new() -> Self {
+        let root = Fixture::new();
+        let middle = root.root.join("middle");
+        let final_path = root.root.join("final");
+        let start = checked(root.open(root.anchor()));
+        let mut next = checked(start.start_successor(Self::create_segment(&middle), 1));
+        let third = checked(next.commit(root.anchor().checkpoint_digest, &tick(3)));
+        let mut active = checked(next.start_successor(Self::create_segment(&final_path), 2));
+        let fourth = checked(active.commit(third.checkpoint_after, &tick(4)));
+        let fifth = checked(active.commit(fourth.checkpoint_after, &tick(5)));
+        Self {
+            root,
+            middle,
+            final_path,
+            anchors: [
+                JournalAnchor {
+                    sequence: 4,
+                    checkpoint_digest: fourth.checkpoint_after,
+                },
+                JournalAnchor {
+                    sequence: 5,
+                    checkpoint_digest: fifth.checkpoint_after,
+                },
+            ],
+        }
+    }
+
+    fn create_segment(path: &std::path::Path) -> File {
+        checked(
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .open(path),
+        )
+    }
+
+    fn recover(&self, anchor: JournalAnchor) -> Result<SparseJournal, JournalError> {
+        let files = [
+            (self.root.path(), 2),
+            (self.middle.clone(), 1),
+            (self.final_path.clone(), 2),
+        ]
+        .into_iter()
+        .map(|(path, limit)| {
+            let file = checked(OpenOptions::new().read(true).write(true).open(path));
+            (file, limit)
+        })
+        .collect();
+        SparseJournal::recover_exact_chain(files, config(), scope(), anchor)
+    }
+}
+
+#[test]
+fn exact_chain_repairs_only_the_active_tail_after_verification() {
+    let chain = ChainFixture::new();
+    let root = checked(fs::read(chain.root.path()));
+    let middle = checked(fs::read(&chain.middle));
+    let active = checked(fs::read(&chain.final_path));
+    let mut unclean = active.clone();
+    unclean.extend_from_slice(b"partial");
+    checked(fs::write(&chain.final_path, &unclean));
+
+    assert_eq!(
+        chain.recover(chain.anchors[0]).err(),
+        Some(JournalError::AnchorMismatch)
+    );
+    assert_eq!(checked(fs::read(&chain.final_path)), unclean);
+    let recovered = checked(chain.recover(chain.anchors[1]));
+    assert_eq!(checked(recovered.current_anchor()), Some(chain.anchors[1]));
+    drop(recovered);
+    assert_eq!(checked(fs::read(chain.root.path())), root);
+    assert_eq!(checked(fs::read(&chain.middle)), middle);
+    assert_eq!(checked(fs::read(&chain.final_path)), active);
+}
+
+#[test]
+fn exact_chain_leaves_incomplete_predecessor_untouched() {
+    let chain = ChainFixture::new();
+    let mut predecessor = checked(fs::read(&chain.middle));
+    predecessor.extend_from_slice(b"partial");
+    let active = checked(fs::read(&chain.final_path));
+    checked(fs::write(&chain.middle, &predecessor));
+    assert_eq!(
+        chain.recover(chain.anchors[1]).err(),
+        Some(JournalError::Corrupt)
+    );
+    assert_eq!(checked(fs::read(&chain.middle)), predecessor);
+    assert_eq!(checked(fs::read(&chain.final_path)), active);
+}
