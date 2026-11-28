@@ -1,0 +1,15 @@
+{
+  "scope": "explicit resolved read-only authority before both spawns; whole effective environment and cwd retained; original five controls unchanged",
+  "original_counterexample": {
+    "returncode": 100,
+    "pid": 48344,
+    "seconds": 33.599110584007576
+  },
+  "candidate": {
+    "returncode": 0,
+    "pid": 49412,
+    "seconds": 35.08042537490837
+  },
+  "source_unchanged": true,
+  "candidate_retry_or_flaky_seen": false
+}

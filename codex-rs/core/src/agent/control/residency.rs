@@ -2,6 +2,7 @@ use super::AgentControl;
 use crate::agent::AgentStatus;
 use crate::codex_thread::CodexThread;
 use crate::config::Config;
+use crate::session::FinishRetryState;
 use crate::thread_manager::ThreadManagerState;
 use codex_protocol::ThreadId;
 use codex_protocol::error::CodexErr;
@@ -119,6 +120,59 @@ impl V2Residency {
         manager: &Arc<ThreadManagerState>,
         protected_thread_id: Option<ThreadId>,
     ) -> bool {
+        // A terminal event precedes its exact Finish owner's durable cleanup.
+        // Inspect without popping the LRU: waiting must not expose a free slot.
+        let candidates = {
+            let state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            state
+                .residents
+                .iter()
+                .copied()
+                .filter(|thread_id| Some(*thread_id) != protected_thread_id)
+                .collect::<Vec<_>>()
+        };
+        let mut finish_wait = None;
+        for candidate_thread_id in candidates {
+            let Ok(candidate) = manager.get_thread(candidate_thread_id).await else {
+                continue;
+            };
+            if !is_resident_candidate(candidate.as_ref()) {
+                continue;
+            }
+            // Preserve the existing preference for any immediately idle resident.
+            if is_unloadable(candidate.as_ref()).await {
+                finish_wait = None;
+                break;
+            }
+            if finish_wait.is_none()
+                && matches!(
+                    candidate.agent_status().await,
+                    AgentStatus::Completed(_) | AgentStatus::Errored(_) | AgentStatus::Interrupted
+                )
+            {
+                let finish_state = {
+                    let active = candidate.session.active_turn.lock().await;
+                    candidate.session.finish_retry_state(active.as_ref())
+                };
+                if let FinishRetryState::Finishing(fences) = finish_state {
+                    finish_wait = Some((candidate, fences));
+                }
+            }
+        }
+        if let Some((candidate, fences)) = finish_wait {
+            'finish_wait: for completion in fences {
+                tokio::select! {
+                    biased;
+                    () = completion.wait() => {},
+                    () = candidate.wait_until_terminated() => break 'finish_wait,
+                }
+            }
+        }
+        // Do not capture a successor fence. Re-run the complete original unload
+        // guards, including active ownership, shutdown, terminalization and mail.
         let candidates_to_scan = self.resident_count();
         for _ in 0..candidates_to_scan {
             let Some(candidate_thread_id) = self.pop_lru_candidate(protected_thread_id) else {
