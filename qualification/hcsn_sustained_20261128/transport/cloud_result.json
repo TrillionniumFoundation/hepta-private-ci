@@ -1,0 +1,13 @@
+{
+  "request": "hcsn-fft-native-1140569-20261128",
+  "payload_sha256": "d653278e737e59020faf599b13f5c49bb986b7350f09b8b4a4d3b8052fe2640e",
+  "device_request": "T4",
+  "started_unix": 1795862285.7985659,
+  "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+  "measurements": {},
+  "passed": false,
+  "framework": "2.11.0+cpu",
+  "cuda_available": false,
+  "error": "Traceback (most recent call last):\n  File \"/tmp/hepta-source-1j8wmy80/train.py\", line 28, in <module>\n    if not torch.cuda.is_available(): raise RuntimeError(\"Cloud kernel has no CUDA device\")\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Cloud kernel has no CUDA device\n",
+  "ended_unix": 1795862290.345079
+}

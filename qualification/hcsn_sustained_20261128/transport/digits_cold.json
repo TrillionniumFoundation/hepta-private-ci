@@ -1,0 +1,495 @@
+{
+  "dataset_sha256": "64e0d2d6eefdf5690076708a08bc4ef38a2a8d996158f0c455386fdaf6ae255f",
+  "protocol": "class 0 vs 1; split seed 20261128; two paired seeds; sorted grid schedule",
+  "arm_source_sha256": "9295b3831f9554fa11fd78b8d8eaa30a511803eced2b6423f5d90878d95b70a8",
+  "runs": [
+    {
+      "k": 12,
+      "seed": 314,
+      "mode": "dense",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6949403531872029,
+          "seconds": 0.7442763252183795
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7220991090439629,
+          "seconds": 0.9195555662736297
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7190092194706602,
+          "seconds": 1.0890630800276995
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6859148253275722,
+          "seconds": 1.3034643009305
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7377175388793064,
+          "seconds": 1.4856834402307868
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 1.601185825187713,
+      "training_plus_final_eval_seconds": 0.9226909456774592,
+      "heldout_final": {
+        "balanced_accuracy": 0.5,
+        "ce": 0.7419646824450313
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 3.339064330793917
+    },
+    {
+      "k": 12,
+      "seed": 314,
+      "mode": "fft",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6949403531872029,
+          "seconds": 1.063539994880557
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7220991090439628,
+          "seconds": 1.4118076986633241
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7190092194706602,
+          "seconds": 1.664644923992455
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6859148253275722,
+          "seconds": 1.888037550728768
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7377175388793064,
+          "seconds": 2.124681733548641
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 2.2238459405489266,
+      "training_plus_final_eval_seconds": 1.2846532119438052,
+      "heldout_final": {
+        "balanced_accuracy": 0.5,
+        "ce": 0.7419646824450311
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 3.955179980956018
+    },
+    {
+      "k": 12,
+      "seed": 159,
+      "mode": "fft",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7073748766124758,
+          "seconds": 1.0731215309351683
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.68708505627958,
+          "seconds": 1.422577163670212
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.686048621199252,
+          "seconds": 1.7996764588169754
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6653565858883811,
+          "seconds": 2.1136060347780585
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.7758620689655172,
+          "ce": 0.6041630828428595,
+          "seconds": 2.3927521407604218
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 2.540017773862928,
+      "training_plus_final_eval_seconds": 1.5890283659100533,
+      "heldout_final": {
+        "balanced_accuracy": 0.8108108108108107,
+        "ce": 0.6044168403573004
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 4.511185998097062
+    },
+    {
+      "k": 12,
+      "seed": 159,
+      "mode": "dense",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7073748766124758,
+          "seconds": 0.809919560328126
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.68708505627958,
+          "seconds": 0.9475860693491995
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.686048621199252,
+          "seconds": 1.0866808681748807
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6653565858883811,
+          "seconds": 1.2342347921803594
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.7758620689655172,
+          "ce": 0.6041630828428594,
+          "seconds": 1.3775285542942584
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 1.4641380412504077,
+      "training_plus_final_eval_seconds": 0.7160344868898392,
+      "heldout_final": {
+        "balanced_accuracy": 0.8108108108108107,
+        "ce": 0.6044168403573003
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 3.3776937257498503
+    },
+    {
+      "k": 128,
+      "seed": 314,
+      "mode": "fft",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6948301641828989,
+          "seconds": 0.8522153296507895
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7213060906442635,
+          "seconds": 1.2163948975503445
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.719573786907993,
+          "seconds": 1.5823187259957194
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.68512230929704,
+          "seconds": 1.9550672136247158
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7343268357248207,
+          "seconds": 2.3418623809702694
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 2.554880321957171,
+      "training_plus_final_eval_seconds": 1.8521959958598018,
+      "heldout_final": {
+        "balanced_accuracy": 0.5,
+        "ce": 0.7384289840157123
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 4.321758524980396
+    },
+    {
+      "k": 128,
+      "seed": 314,
+      "mode": "dense",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.694830164182899,
+          "seconds": 1.3340295818634331
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7213060906442637,
+          "seconds": 2.744608733803034
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.719573786907993,
+          "seconds": 4.189164367970079
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.68512230929704,
+          "seconds": 5.62869694782421
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7343268357248208,
+          "seconds": 7.0314772548154
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 7.832611466757953,
+      "training_plus_final_eval_seconds": 7.068468512035906,
+      "heldout_final": {
+        "balanced_accuracy": 0.5,
+        "ce": 0.7384289840157124
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 9.654362274799496
+    },
+    {
+      "k": 128,
+      "seed": 159,
+      "mode": "dense",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7065565781405001,
+          "seconds": 1.487394327763468
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6868633747128217,
+          "seconds": 2.9099710159935057
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6852327276567207,
+          "seconds": 4.288887472823262
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6644171243580786,
+          "seconds": 5.6638681488111615
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.7758620689655172,
+          "ce": 0.6029508414269573,
+          "seconds": 7.093615797813982
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 7.8991943979635835,
+      "training_plus_final_eval_seconds": 7.003837493248284,
+      "heldout_final": {
+        "balanced_accuracy": 0.7972972972972974,
+        "ce": 0.603270462223226
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 9.796929253265262
+    },
+    {
+      "k": 128,
+      "seed": 159,
+      "mode": "fft",
+      "split_counts": [
+        229,
+        58,
+        73
+      ],
+      "updates": 16,
+      "batch": 8,
+      "hidden_width": 3,
+      "sequence_rows": 8,
+      "port": "priced",
+      "dev": [
+        {
+          "updates": 0,
+          "balanced_accuracy": 0.5,
+          "ce": 0.7065565781404999,
+          "seconds": 0.9735768609680235
+        },
+        {
+          "updates": 4,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6868633747128217,
+          "seconds": 1.3974274541251361
+        },
+        {
+          "updates": 8,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6852327276567207,
+          "seconds": 1.809073654934764
+        },
+        {
+          "updates": 12,
+          "balanced_accuracy": 0.5,
+          "ce": 0.6644171243580786,
+          "seconds": 2.1999087939038873
+        },
+        {
+          "updates": 16,
+          "balanced_accuracy": 0.7758620689655172,
+          "ce": 0.6029508414269574,
+          "seconds": 2.587452767882496
+        }
+      ],
+      "time_to_dev_80_s": null,
+      "local_setup_training_eval_seconds": 2.802744721993804,
+      "training_plus_final_eval_seconds": 1.9966666782274842,
+      "heldout_final": {
+        "balanced_accuracy": 0.7972972972972974,
+        "ce": 0.6032704622232262
+      },
+      "torch": "2.13.0+rocm10.0.0",
+      "cold_wall_seconds": 4.656548120081425
+    }
+  ],
+  "paired": [
+    {
+      "k": 12,
+      "seed": 314,
+      "cold_speed_ratio": 0.8442256349575329,
+      "heldout_ce_absolute_gap": 2.220446049250313e-16,
+      "heldout_balanced_accuracy_absolute_gap": 0.0,
+      "dev_ce_max_absolute_gap": 1.1102230246251565e-16,
+      "both_reached_dev_80": false
+    },
+    {
+      "k": 12,
+      "seed": 159,
+      "cold_speed_ratio": 0.7487374112206083,
+      "heldout_ce_absolute_gap": 1.1102230246251565e-16,
+      "heldout_balanced_accuracy_absolute_gap": 0.0,
+      "dev_ce_max_absolute_gap": 1.1102230246251565e-16,
+      "both_reached_dev_80": false
+    },
+    {
+      "k": 128,
+      "seed": 314,
+      "cold_speed_ratio": 2.23389673879183,
+      "heldout_ce_absolute_gap": 1.1102230246251565e-16,
+      "heldout_balanced_accuracy_absolute_gap": 0.0,
+      "dev_ce_max_absolute_gap": 1.1102230246251565e-16,
+      "both_reached_dev_80": false
+    },
+    {
+      "k": 128,
+      "seed": 159,
+      "cold_speed_ratio": 2.103903793244587,
+      "heldout_ce_absolute_gap": 2.220446049250313e-16,
+      "heldout_balanced_accuracy_absolute_gap": 0.0,
+      "dev_ce_max_absolute_gap": 2.220446049250313e-16,
+      "both_reached_dev_80": false
+    }
+  ],
+  "finished_pairs": 4,
+  "terminal": true
+}
