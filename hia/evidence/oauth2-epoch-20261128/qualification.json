@@ -1,0 +1,289 @@
+{
+  "base": "40990b8cdebe89f15933a89050987a17c4b6581c",
+  "bazel_lock": {
+    "bytes": 1368,
+    "module_lock_sha256": "303c5f4c929ab5343c1e29292a850482944690a7736b6d12ad2ea63d7dafb1a6",
+    "returncode": 0,
+    "seconds": 5.52534357085824,
+    "sha256": "4b2afcbde4c3dfdf7c1b75450fb013f0a64f4afc18bc2da45e3f08d91a357165",
+    "workspace_source_after": {
+      "codex-rs/Cargo.lock": "77927d7c01a431f48f2d9361cf02b3acb317c73a3c4271bf68190e7877829d6a",
+      "codex-rs/Cargo.toml": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    },
+    "workspace_source_before": {
+      "codex-rs/Cargo.lock": "77927d7c01a431f48f2d9361cf02b3acb317c73a3c4271bf68190e7877829d6a",
+      "codex-rs/Cargo.toml": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    }
+  },
+  "current_cli_and_remote_tests": [
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "bytes": 55494,
+      "label": "epoch-current-codex-build",
+      "returncode": 0,
+      "seconds": 317.7963935146108,
+      "sha256": "163cdb73fa38146651fdbca34c774ad518a326d1a3b0edd90506375fa10c390b"
+    },
+    {
+      "argv": [
+        "/home/qq/hia-chrono-oauth2-20261128-03da85/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-rmcp-client",
+        "--test",
+        "streamable_http_remote"
+      ],
+      "bytes": 21017,
+      "label": "epoch-rmcp-remote-caller-tests",
+      "returncode": 0,
+      "seconds": 2.2675140388309956,
+      "sha256": "a75a9b0551282d66064438c516101da6b00fa35daa5eb03f465d7b83ceed5645"
+    }
+  ],
+  "dependency_graph_equivalence_claimed": false,
+  "failures_retained": {
+    "initial_missing_c_headers": "workspace-epoch-qualification.json",
+    "remote_callers_before_current_cli_build": "epoch-rmcp-caller-tests-headers.log"
+  },
+  "lock_delta": {
+    "added": [
+      {
+        "dependencies": [
+          "base64 0.22.1",
+          "getrandom 0.2.17",
+          "http 1.5.0",
+          "js-sys",
+          "rand 0.8.6",
+          "reqwest 0.12.28",
+          "serde",
+          "serde_json",
+          "serde_path_to_error",
+          "sha2 0.10.9",
+          "thiserror 1.0.69",
+          "url"
+        ],
+        "name": "oauth2",
+        "version": "5.0.0+hepta.epoch.1"
+      }
+    ],
+    "after_sha256": "77927d7c01a431f48f2d9361cf02b3acb317c73a3c4271bf68190e7877829d6a",
+    "before_sha256": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007",
+    "changed": [],
+    "removed": [
+      {
+        "checksum": "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d",
+        "dependencies": [
+          "base64 0.22.1",
+          "chrono",
+          "getrandom 0.2.17",
+          "http 1.5.0",
+          "rand 0.8.6",
+          "reqwest 0.12.28",
+          "serde",
+          "serde_json",
+          "serde_path_to_error",
+          "sha2 0.10.9",
+          "thiserror 1.0.69",
+          "url"
+        ],
+        "name": "oauth2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "5.0.0"
+      }
+    ],
+    "unchanged_packages": 1533
+  },
+  "logs": {
+    "epoch-bazel-lock-update.log": {
+      "bytes": 1368,
+      "sha256": "4b2afcbde4c3dfdf7c1b75450fb013f0a64f4afc18bc2da45e3f08d91a357165",
+      "summaries": []
+    },
+    "epoch-current-codex-build.log": {
+      "bytes": 55494,
+      "sha256": "163cdb73fa38146651fdbca34c774ad518a326d1a3b0edd90506375fa10c390b",
+      "summaries": [
+        "Finished `dev` profile [unoptimized + debuginfo] target(s) in 5m 17s"
+      ]
+    },
+    "epoch-matrix-caller-check-headers.log": {
+      "bytes": 39852,
+      "sha256": "0e2d5355dd825b929c70405981e340b69c223b4bed904fd6fcf0d1d9440c9b95",
+      "summaries": [
+        "Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 01s"
+      ]
+    },
+    "epoch-original-dependency-controls7.log": {
+      "bytes": 1274,
+      "sha256": "f6d2d1294631ede83092a99613e229784ed81385c3518d1ae054c6cb5f43ab74",
+      "summaries": [
+        "Ran 7 tests in 0.006s"
+      ]
+    },
+    "epoch-rmcp-caller-tests-headers.log": {
+      "bytes": 83388,
+      "sha256": "141d07820b3fe46edf687beb84875289cc08833346421059bdddc8f4a3c107fa",
+      "summaries": [
+        "Finished `test` profile [unoptimized + debuginfo] target(s) in 2m 45s",
+        "Summary [   6.208s] 256 tests run: 253 passed, 3 failed, 7 skipped"
+      ]
+    },
+    "epoch-rmcp-remote-caller-tests.log": {
+      "bytes": 21017,
+      "sha256": "a75a9b0551282d66064438c516101da6b00fa35daa5eb03f465d7b83ceed5645",
+      "summaries": [
+        "Finished `test` profile [unoptimized + debuginfo] target(s) in 1.27s",
+        "Summary [   0.627s] 3 tests run: 3 passed, 0 skipped"
+      ]
+    },
+    "epoch-source-history-new15-v2.log": {
+      "bytes": 2153,
+      "sha256": "2eeb09f7b4daafff69077f5b5502fe85b0a82bf18052e1ca65af3cb8fe7988d6",
+      "summaries": [
+        "Ran 15 tests in 0.211s"
+      ]
+    },
+    "epoch-source-history-original22-v2.log": {
+      "bytes": 2941,
+      "sha256": "40244a59173094f23882d5a331dc260e07f3914c40097641874ca426a91e286a",
+      "summaries": [
+        "Ran 22 tests in 0.125s"
+      ]
+    },
+    "epoch-upstream-tests-v3.log": {
+      "bytes": 13846,
+      "sha256": "e2763719f9b725f977cd25598a4fed2eb39f7679b6bcb87ad4687ed5ab3f0fdc",
+      "summaries": [
+        "Finished `test` profile [unoptimized + debuginfo] target(s) in 3.13s",
+        "Summary [   0.028s] 66 tests run: 66 passed, 0 skipped"
+      ]
+    },
+    "original-upstream-tests-scoped.log": {
+      "bytes": 18462,
+      "sha256": "059b12b780588ab6bc9f6f5408681d9e3d4dde975784417c77d4912ed0b1a722",
+      "summaries": [
+        "Finished `test` profile [unoptimized + debuginfo] target(s) in 20.93s",
+        "Summary [   0.036s] 66 tests run: 66 passed, 0 skipped"
+      ]
+    }
+  },
+  "paired_boundary_observations": {
+    "candidate_records": 558,
+    "differences": [],
+    "identical_bytes": true,
+    "kinds": {
+      "addition": 360,
+      "bounds": 1,
+      "constructor": 77,
+      "device": 54,
+      "introspection": 61,
+      "ordering": 1,
+      "serialize": 4
+    },
+    "original_records": 558,
+    "runs": [
+      {
+        "label": "original",
+        "output_bytes": 62338,
+        "output_sha256": "b943318fb4f28deac451feed74d44ce328b46703bf35184e2a812401ccfa17fb",
+        "returncode": 0,
+        "seconds": 1.4173392402008176,
+        "source_sha256": "949c2debf27565d63d5de559157a882f84ee089449a727f2ff35ad6b0a0493ca"
+      },
+      {
+        "label": "candidate",
+        "output_bytes": 62338,
+        "output_sha256": "b943318fb4f28deac451feed74d44ce328b46703bf35184e2a812401ccfa17fb",
+        "returncode": 0,
+        "seconds": 2.218189725652337,
+        "source_sha256": "51e952352ee2e6d03c4c5b2a7446d04ed0ade6b2d360f53b0815353b5d8bc4aa"
+      }
+    ]
+  },
+  "public_api_change": "The vendored variant uses its own epoch Timestamp type rather than chrono DateTime. Complete public Chrono API equivalence is not claimed.",
+  "rmcp_current_execution": "253 original tests passed in the package run; 3 remote tests initially lacked the current CLI, then all 3 passed after the current CLI build. The 7 original skips remain reported.",
+  "schema": "codex.hia.oauth2-epoch-qualification.v1",
+  "scope": "OAuth2 epoch timestamp dependency removal only. Remaining first-party and serde_with Chrono consumers still require migration. No advisory waiver or complete Chrono closure is claimed.",
+  "source_controls": {
+    "original_current_steps": 125,
+    "original_historical_steps": 50,
+    "original_jobs_unchanged": true,
+    "validation": [
+      {
+        "bytes": 2941,
+        "command": [
+          "/usr/bin/python3",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source/hia/tests/test_workspace_dependency_sources.py",
+          "--repo",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source",
+          "--original-root",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source",
+          "--report",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/epoch-source-history-original22-v2.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.19673558278009295,
+        "sha256": "40244a59173094f23882d5a331dc260e07f3914c40097641874ca426a91e286a"
+      },
+      {
+        "bytes": 2153,
+        "command": [
+          "/usr/bin/python3",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source/hia/tests/test_oauth2_dependency_sources.py",
+          "--repo",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source",
+          "--original-root",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source",
+          "--report",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/epoch-source-history-new15-v2.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.30066489800810814,
+        "sha256": "2eeb09f7b4daafff69077f5b5502fe85b0a82bf18052e1ca65af3cb8fe7988d6"
+      },
+      {
+        "bytes": 1274,
+        "command": [
+          "/usr/bin/python3",
+          "/home/qq/hia-chrono-oauth2-20261128-03da85/source/hia/tests/test_file_update_dependency_admission.py",
+          "-v"
+        ],
+        "returncode": 0,
+        "seconds": 0.08120913663879037,
+        "sha256": "f6d2d1294631ede83092a99613e229784ed81385c3518d1ae054c6cb5f43ab74"
+      }
+    ]
+  },
+  "source_variant": "oauth2-5.0.0+hepta.epoch.1",
+  "upstream_current_tests": {
+    "argv": [
+      "/home/qq/hia-chrono-oauth2-20261128-03da85/bin/just",
+      "test",
+      "--offline",
+      "--manifest-path",
+      "/home/qq/hia-chrono-oauth2-20261128-03da85/oauth2-epoch-test/Cargo.toml",
+      "--config-file",
+      "/home/qq/hia-chrono-oauth2-20261128-03da85/oauth2-nextest.toml",
+      "--retries",
+      "0",
+      "-p",
+      "oauth2"
+    ],
+    "bytes": 13846,
+    "label": "epoch-upstream-tests-v3",
+    "returncode": 0,
+    "seconds": 3.8214552188292146,
+    "sha256": "e2763719f9b725f977cd25598a4fed2eb39f7679b6bcb87ad4687ed5ab3f0fdc"
+  }
+}

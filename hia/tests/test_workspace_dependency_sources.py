@@ -28,6 +28,18 @@ class DependencySourceTests(unittest.TestCase):
             if aeb != cls.original[p]:
                 raise RuntimeError("the two immutable original dependency pairs differ")
 
+        cls.oauth2_fixture = None
+        history, _ = admission._history()
+        if admission._pair_identity(cls.current) != history["identities"]["sqlx"]:
+            from file_update_oracle.oauth2_source_history import restore_predecessor
+            cls.oauth2_fixture = restore_predecessor(REPO, cls.current, history["identities"]["sqlx"])
+            cls.current = cls.oauth2_fixture["restored"]
+
+    @classmethod
+    def tearDownClass(cls):
+        from file_update_oracle.oauth2_source_history import verify_predecessor
+        verify_predecessor(cls.oauth2_fixture)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="dependency-source-controls-")
         self.addCleanup(self.temporary.cleanup)
@@ -246,6 +258,10 @@ if __name__ == "__main__":
                   ["git", "-C", str(REPO), "rev-parse", "HEAD"]).decode().strip(),
               "physical_source_sha256": {p: hashlib.sha256((REPO / p).read_bytes()).hexdigest()
                                          for p in admission.ROOT_FILES},
+              "current_fixture_admission": (None if DependencySourceTests.oauth2_fixture is None
+                  else DependencySourceTests.oauth2_fixture["report"]),
+              "historical_fixture_source_sha256": {p: hashlib.sha256(data).hexdigest()
+                  for p, data in DependencySourceTests.current.items()},
               "history_sha256": hashlib.sha256(admission.HISTORY.read_bytes()).hexdigest(),
               "helper_sha256": hashlib.sha256(Path(admission.__file__).read_bytes()).hexdigest(),
               "controls_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}

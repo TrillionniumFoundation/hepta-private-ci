@@ -197,6 +197,7 @@ exclude = [
     "third_party/matrix-sdk-sqlite-0.19.1",
     "third_party/sqlx-sqlite-0.9.0",
     "third_party/starlark-0.14.2",
+    "third_party/oauth2-5.0.0",
 ]
 resolver = "2"
 
@@ -697,6 +698,8 @@ matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
 sqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }
 # Match encrypted Matrix storage's BLAKE3 floor without changing Starlark code.
 starlark = { path = "third_party/starlark-0.14.2" }
+# Preserve OAuth2 polling and token wire limits without a calendar dependency.
+oauth2 = { path = "third_party/oauth2-5.0.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }
