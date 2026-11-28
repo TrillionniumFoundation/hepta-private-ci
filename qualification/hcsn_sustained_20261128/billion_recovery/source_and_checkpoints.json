@@ -1,0 +1,179 @@
+{
+  "data_source": {
+    "parent_source": {
+      "PROTOCOL.md": {
+        "bytes": 3529,
+        "sha256": "a1214c4b7db364cd17c7e7da966e61303bf906e2fa8fafb809a198d0b14aad6e"
+      },
+      "controller.py": {
+        "bytes": 2048,
+        "sha256": "62e601e453821d561f894af73131c97e3325b118fc01ca138d0bf37b3a7b059b"
+      },
+      "run_initial_float_probe.py": {
+        "bytes": 10099,
+        "sha256": "4702b77edac8fcdb8c7f2a162932380d927624794f250ec9d70cd9a7b01f5a1c"
+      },
+      "run_intprobe.py": {
+        "bytes": 10136,
+        "sha256": "d76c1583d81c130c2ba3a0f9cc0070b4fc88817f09fa42d2b7abab599cb7632c"
+      },
+      "prepare.py": {
+        "bytes": 7130,
+        "sha256": "961649a0e3b6027e6416d82b80b0a273393e34f7dd01c56d47922c0d690b1406"
+      },
+      "run.py": {
+        "bytes": 10136,
+        "sha256": "d76c1583d81c130c2ba3a0f9cc0070b4fc88817f09fa42d2b7abab599cb7632c"
+      },
+      "law4.npz": {
+        "bytes": 330072,
+        "sha256": "de7378f3c170750fb16d1280bcaa376a8904a207da32d268cac82525469e2ea4"
+      },
+      "hcsn_temporal.py": {
+        "bytes": 5923,
+        "sha256": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec"
+      },
+      "qualify.py": {
+        "bytes": 3808,
+        "sha256": "c63565e8325cdffbfb42b8e453f3c08a1dff962efd7e5b4ab886a0a0c57f1dc8"
+      },
+      "encoder.py": {
+        "bytes": 2080,
+        "sha256": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df"
+      },
+      "score.py": {
+        "bytes": 5690,
+        "sha256": "059cc755158a30df4d7490811f3cca0d7453d4a4698f170c2324a59cf170cd4e"
+      }
+    },
+    "data": {
+      "bytes": 58831581,
+      "sha256": "18423277257e2e487521d83a8c116bc7cf5599411f4ff769e569bd849beae6ad"
+    },
+    "split_counts": {
+      "0": {
+        "clips": 4984,
+        "actors": 61,
+        "min_class_n": 60,
+        "max_class_n": 183
+      },
+      "1": {
+        "clips": 1147,
+        "actors": 14,
+        "min_class_n": 13,
+        "max_class_n": 42
+      },
+      "2": {
+        "clips": 1311,
+        "actors": 16,
+        "min_class_n": 15,
+        "max_class_n": 48
+      }
+    },
+    "shapes": {
+      "images.npy": {
+        "shape": [
+          7442,
+          12,
+          28,
+          28
+        ],
+        "dtype": "uint8"
+      },
+      "audio.npy": {
+        "shape": [
+          7442,
+          12,
+          64
+        ],
+        "dtype": "float32"
+      },
+      "ids.npy": {
+        "shape": [
+          7442
+        ],
+        "dtype": "<U15"
+      },
+      "split.npy": {
+        "shape": [
+          7442
+        ],
+        "dtype": "int64"
+      },
+      "labels.npy": {
+        "shape": [
+          7442
+        ],
+        "dtype": "int64"
+      },
+      "tokens.npy": {
+        "shape": [
+          72,
+          12
+        ],
+        "dtype": "int64"
+      }
+    }
+  },
+  "weights": [
+    {
+      "bytes": 4066268811,
+      "sha256": "9ece004ff26ec3f7f09e8420f3b6380e239bd398c33a7e9ca67e89867d927fb1",
+      "arm": "literal",
+      "step": 4,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4066268943,
+      "sha256": "4beb2fa4ac4268f8f0b1b10da55a060e241ead8980b2ea0039c1dc87c7bbfc58",
+      "arm": "literal",
+      "step": 16,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4066268811,
+      "sha256": "1bd16ba9813ccb07e46494461ea9cfb8d598fc222527026031c931e01648f9eb",
+      "arm": "smooth",
+      "step": 4,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4066268943,
+      "sha256": "04f8b57ae66be4eb6d60e7a61facaa424ffb9734c216d9d7169492618b448e57",
+      "arm": "smooth",
+      "step": 16,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4066268811,
+      "sha256": "4366d1b2ec5a504cd0d5aebb0da3bb79227488022c2340e3625a6bdcb438b08a",
+      "arm": "lif",
+      "step": 4,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4066268943,
+      "sha256": "aa9a57d191f77bdf6fc24fc0e2fc77114215c36faa0f6c1687fb8b86307d7e3e",
+      "arm": "lif",
+      "step": 16,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4047384852,
+      "sha256": "7ce49393ced6b737034933a33edd6fffb8cd1b29f241631d0290ba8d789ceb65",
+      "arm": "sdpa",
+      "step": 4,
+      "matches_sealed": true
+    },
+    {
+      "bytes": 4047384949,
+      "sha256": "7cc1cbc1b48a9e609b99a3f3f2246a1d036271d31e3ced9a0bd9a2d183a342e7",
+      "arm": "sdpa",
+      "step": 16,
+      "matches_sealed": true
+    }
+  ],
+  "state": "exited",
+  "exit_code": 0,
+  "session_id": "dpty-efbc7b91be3e08ca85e580afb334cfc88aa4e4ab8caae75504ac2aa5f45c8cca"
+}

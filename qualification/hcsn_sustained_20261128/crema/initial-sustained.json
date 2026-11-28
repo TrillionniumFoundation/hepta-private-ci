@@ -1,0 +1,159 @@
+{
+  "observed_unix": 1795863155.4204593,
+  "session": {
+    "t_unix": 1795862254.5532951,
+    "source": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+    "input_hashes": {
+      "src/encoder.py": "1c5ee669c47adaca3bec2ae3def64aec117596c8628345beb300e143628824df",
+      "src/hcsn_temporal.py": "1c5ee332f549e3d9ffbff21bfeeef0e181d34e0606e5c27b38bcc66a48ae5eec",
+      "src/law4.npz": "de7378f3c170750fb16d1280bcaa376a8904a207da32d268cac82525469e2ea4",
+      "data/data.npz": "18423277257e2e487521d83a8c116bc7cf5599411f4ff769e569bd849beae6ad"
+    },
+    "arms": [
+      "literal",
+      "smooth",
+      "lif",
+      "sdpa"
+    ],
+    "seeds": [
+      137,
+      311,
+      557
+    ],
+    "rungs": [
+      20,
+      240,
+      1000,
+      3150
+    ],
+    "torch": "2.13.0+rocm10.0.0",
+    "width": 96,
+    "dtype": "float32",
+    "device": "cpu",
+    "boot_unix": 1795862253.7028055,
+    "preflight_s": 0.8504772186279297
+  },
+  "wall_since_launch_s": 901.7176542282104,
+  "progress_optimization_sum": 800.1700340253301,
+  "updates": 21129,
+  "checkpoints_by_tag": {
+    "update16": 12,
+    "update128": 12,
+    "time20": 12,
+    "time240": 2,
+    "time1000": 0,
+    "time3150": 0
+  },
+  "time20": [
+    {
+      "seed": 137,
+      "arm": "literal",
+      "dev_nll": 3.5042076110839844,
+      "steps": 383
+    },
+    {
+      "seed": 137,
+      "arm": "smooth",
+      "dev_nll": 3.9913582801818848,
+      "steps": 395
+    },
+    {
+      "seed": 137,
+      "arm": "lif",
+      "dev_nll": 3.714956521987915,
+      "steps": 829
+    },
+    {
+      "seed": 137,
+      "arm": "sdpa",
+      "dev_nll": 2.9690325260162354,
+      "steps": 1238
+    },
+    {
+      "seed": 311,
+      "arm": "smooth",
+      "dev_nll": 3.8011529445648193,
+      "steps": 344
+    },
+    {
+      "seed": 311,
+      "arm": "lif",
+      "dev_nll": 3.8499913215637207,
+      "steps": 787
+    },
+    {
+      "seed": 311,
+      "arm": "sdpa",
+      "dev_nll": 3.279684066772461,
+      "steps": 1127
+    },
+    {
+      "seed": 311,
+      "arm": "literal",
+      "dev_nll": 3.649303436279297,
+      "steps": 366
+    },
+    {
+      "seed": 557,
+      "arm": "lif",
+      "dev_nll": 3.8119146823883057,
+      "steps": 656
+    },
+    {
+      "seed": 557,
+      "arm": "sdpa",
+      "dev_nll": 2.9436745643615723,
+      "steps": 1107
+    },
+    {
+      "seed": 557,
+      "arm": "literal",
+      "dev_nll": 3.468749761581421,
+      "steps": 423
+    },
+    {
+      "seed": 557,
+      "arm": "smooth",
+      "dev_nll": 3.6024327278137207,
+      "steps": 425
+    }
+  ],
+  "freshest_events": [
+    {
+      "t_unix": 1795862729.6677024,
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4783,
+      "optimization_wall": 240.0107709900476,
+      "optimization_cpu": 239.91674813399942,
+      "cumulative_validation_and_checkpoint_s": 2.0021589626558125,
+      "development_nll": 2.278407573699951,
+      "development_top1": 0.3722755014896393,
+      "last_training_loss": 0.5560104846954346,
+      "last_grad_norm": 7.477759838104248,
+      "file": "step4783.pt",
+      "sha256": "1b154f441abbb860311199d29f17bc9db4ce91bd96f1439f1440cdd71327deae"
+    },
+    {
+      "t_unix": 1795862950.2557843,
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4378,
+      "optimization_wall": 240.01210642419755,
+      "optimization_cpu": 239.91248457900284,
+      "cumulative_validation_and_checkpoint_s": 2.0871473597362638,
+      "development_nll": 2.368119716644287,
+      "development_top1": 0.346992164850235,
+      "last_training_loss": 0.6722937822341919,
+      "last_grad_norm": 11.444625854492188,
+      "file": "step4378.pt",
+      "sha256": "79162a2b307937b95659c7b117257b425e75224d7eb57f463d9abfb4fce4b925"
+    }
+  ]
+}
