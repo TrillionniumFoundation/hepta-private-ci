@@ -237,6 +237,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-late-admission.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(deployment_issuer::paired::tests::materials::admission)'
+      - name: Original paired training startup metadata controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-training-bootstrap.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(paired_training_bootstrap::tests)'
       - name: Isolated paired Root gate rejection controls
         if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
