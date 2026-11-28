@@ -1890,7 +1890,12 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
+                EventMsg::TurnComplete(turn) if !event.id.starts_with("auto-compact-") => {
+                    if let Some(finished) =
+                        codex.pending_normal_turn_finish_completion(&turn.turn_id)
+                    {
+                        finished.await;
+                    }
                     break;
                 }
                 _ => {}
@@ -4033,9 +4038,12 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(turn) = &event.msg
                 && !event.id.starts_with("auto-compact-")
             {
+                if let Some(finished) = codex.pending_normal_turn_finish_completion(&turn.turn_id) {
+                    finished.await;
+                }
                 break;
             }
         }
