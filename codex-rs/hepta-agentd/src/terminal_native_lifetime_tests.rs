@@ -102,7 +102,10 @@ async fn draining_closes_native_admission_and_cannot_finish_with_live_worker() {
     let lifetime = owner.native_lifetime();
     let (entered, release) = pause_before_fit(&lifetime);
     let state = fixture.daemon.state();
-    let stale_running_state = fixture.daemon.state();
+    // Each state opens exclusive prompt-pipeline owners. Independent cached
+    // states therefore need independent original durable fixture directories.
+    let stale_daemon = AgentdFixture::new();
+    let stale_running_state = stale_daemon.state();
     let (handle, bootstrap) = terminal_learning_channel_v1(
         fixture.daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
@@ -143,7 +146,17 @@ async fn draining_closes_native_admission_and_cannot_finish_with_live_worker() {
     assert!(snapshot.admission_closed && !snapshot.drained);
     // A runtime which already observed Draining with no registered lane cannot
     // acquire one afterward. The worker stays owned by its original state.
-    let late_state = fixture.daemon.state();
+    let late_daemon = AgentdFixture::new();
+    let late_state = late_daemon.state();
+    late_daemon
+        .registry
+        .compare_and_transition(
+            &late_daemon.identity.agent_id,
+            /*expected_generation*/ 2,
+            codex_hepta_fleet::AgentLifecycle::Draining,
+        )
+        .unwrap();
+    late_state.refresh_generation().unwrap();
     assert!(
         late_state
             .attach_terminal_native_lifetime(Arc::clone(&lifetime))
@@ -169,11 +182,18 @@ async fn draining_closes_native_admission_and_cannot_finish_with_live_worker() {
     assert!(fixture.ledger.try_lock().is_ok());
     // A generation rejection must leave a sticky terminal fence even when the
     // rejected state still caches Running and had no registered worker lane.
-    fixture
-        .daemon
+    stale_daemon
         .registry
         .compare_and_transition(
-            &fixture.daemon.identity.agent_id,
+            &stale_daemon.identity.agent_id,
+            /*expected_generation*/ 2,
+            codex_hepta_fleet::AgentLifecycle::Draining,
+        )
+        .unwrap();
+    stale_daemon
+        .registry
+        .compare_and_transition(
+            &stale_daemon.identity.agent_id,
             /*expected_generation*/ 3,
             codex_hepta_fleet::AgentLifecycle::Stopped,
         )
