@@ -29,8 +29,9 @@ block decode(decode_source:readbuf,decode_output:mutbuf)
   actual_word:u64 = int.cast(actual_length) {"mode":"checked"}
   zero:u64 = const() {"value":0}
   one:u64 = const() {"value":1}
+  last_operation:u64 = const() {"value":2}
   version_ok:bool = compare.eq(version,one)
-  operation_ok:bool = compare.eq(operation,zero)
+  operation_ok:bool = compare.le(operation,last_operation)
   length_ok:bool = compare.eq(length,actual_word)
   reserved_ok:bool = compare.eq(reserved,zero)
   first_ok:bool = bool.and(version_ok,operation_ok)
@@ -38,7 +39,7 @@ block decode(decode_source:readbuf,decode_output:mutbuf)
   frame_ok:bool = bool.and(first_ok,second_ok)
   branch frame_ok parse(decode_source,decode_output) invalid_frame()
 block parse(parse_source:readbuf,parse_output:mutbuf)
-  result:u32 = call(parse_source,parse_output) {"function":"parse_strict"}
+  result:u32 = call(parse_source,parse_output) {"function":"parse_relaxed"}
   ret(result)
 block short()
   short_code:u32 = const() {"value":4294967294}
@@ -107,103 +108,6 @@ block read(read_source:readbuf,read_position:usize,read_wanted:u8)
 block short()
   error:u64 = const() {"value":5}
   ret(error)
-end
-fn parse_date(source:readbuf) -> (i64,u64) effects(read,trap) entry(entry)
-block entry(source:readbuf)
-  p32:usize = const() {"value":32}
-  p34:usize = const() {"value":34}
-  p36:usize = const() {"value":36}
-  p37:usize = const() {"value":37}
-  p39:usize = const() {"value":39}
-  p40:usize = const() {"value":40}
-  dash:u8 = const() {"value":45}
-  high:u64,e1:u64 = call(source,p32) {"function":"pair"}
-  low:u64,e2:u64 = call(source,p34) {"function":"pair"}
-  e3:u64 = call(source,p36,dash) {"function":"character"}
-  month:u64,e4:u64 = call(source,p37) {"function":"pair"}
-  e5:u64 = call(source,p39,dash) {"function":"character"}
-  day:u64,e6:u64 = call(source,p40) {"function":"pair"}
-  e12:u64 = bit.or(e1,e2)
-  e34:u64 = bit.or(e3,e4)
-  e56:u64 = bit.or(e5,e6)
-  e1234:u64 = bit.or(e12,e34)
-  errors:u64 = bit.or(e1234,e56)
-  zero:u64 = const() {"value":0}
-  valid:bool = compare.eq(errors,zero)
-  branch valid date(high,low,month,day) invalid()
-block date(date_high:u64,date_low:u64,date_month:u64,date_day:u64)
-  hundred:u64 = const() {"value":100}
-  centuries:u64 = int.mul.checked(date_high,hundred)
-  year_word:u64 = int.add.checked(centuries,date_low)
-  year:i64 = int.cast(year_word) {"mode":"checked"}
-  days:i64,error:u64 = call(year,date_month,date_day) {"function":"civil_days"}
-  ret(days,error)
-block invalid()
-  invalid_days:i64 = const() {"value":0}
-  invalid_error:u64 = const() {"value":4}
-  ret(invalid_days,invalid_error)
-end
-fn parse_time(source:readbuf) -> (u64,usize,u64) effects(read,trap) entry(entry)
-block entry(source:readbuf)
-  p42:usize = const() {"value":42}
-  p43:usize = const() {"value":43}
-  p45:usize = const() {"value":45}
-  p46:usize = const() {"value":46}
-  p48:usize = const() {"value":48}
-  p49:usize = const() {"value":49}
-  colon:u8 = const() {"value":58}
-  separator:u8 = buffer.load(source,p42)
-  upper:u8 = const() {"value":84}
-  lower:u8 = const() {"value":116}
-  space:u8 = const() {"value":32}
-  upper_ok:bool = compare.eq(separator,upper)
-  lower_ok:bool = compare.eq(separator,lower)
-  space_ok:bool = compare.eq(separator,space)
-  tee_ok:bool = bool.or(upper_ok,lower_ok)
-  separator_ok:bool = bool.or(tee_ok,space_ok)
-  hour:u64,e1:u64 = call(source,p43) {"function":"pair"}
-  e2:u64 = call(source,p45,colon) {"function":"character"}
-  minute:u64,e3:u64 = call(source,p46) {"function":"pair"}
-  e4:u64 = call(source,p48,colon) {"function":"character"}
-  second:u64,e5:u64 = call(source,p49) {"function":"pair"}
-  e12:u64 = bit.or(e1,e2)
-  e34:u64 = bit.or(e3,e4)
-  e1234:u64 = bit.or(e12,e34)
-  errors:u64 = bit.or(e1234,e5)
-  zero:u64 = const() {"value":0}
-  digits_ok:bool = compare.eq(errors,zero)
-  lexical_ok:bool = bool.and(digits_ok,separator_ok)
-  branch lexical_ok fraction_check(source,hour,minute,second) invalid()
-block fraction_check(check_source:readbuf,check_hour:u64,check_minute:u64,check_second:u64)
-  position:usize = const() {"value":51}
-  size:usize = buffer.len(check_source)
-  present:bool = compare.lt(position,size)
-  branch present fraction_marker(check_source,check_hour,check_minute,check_second,position) no_fraction(check_hour,check_minute,check_second,position)
-block fraction_marker(marker_source:readbuf,marker_hour:u64,marker_minute:u64,marker_second:u64,marker_position:usize)
-  marker:u8 = buffer.load(marker_source,marker_position)
-  dot:u8 = const() {"value":46}
-  has_fraction:bool = compare.eq(marker,dot)
-  branch has_fraction fraction(marker_source,marker_hour,marker_minute,marker_second,marker_position) no_fraction(marker_hour,marker_minute,marker_second,marker_position)
-block fraction(fraction_source:readbuf,fraction_hour:u64,fraction_minute:u64,fraction_second:u64,fraction_marker_position:usize)
-  one:usize = const() {"value":1}
-  fraction_start:usize = int.add.checked(fraction_marker_position,one)
-  nanos:u64,after:usize,fraction_error:u64 = call(fraction_source,fraction_start) {"function":"parse_fraction"}
-  no_error:u64 = const() {"value":0}
-  fraction_ok:bool = compare.eq(fraction_error,no_error)
-  branch fraction_ok finish(fraction_hour,fraction_minute,fraction_second,nanos,after) failed(fraction_error)
-block no_fraction(plain_hour:u64,plain_minute:u64,plain_second:u64,plain_position:usize)
-  no_nanos:u64 = const() {"value":0}
-  jump finish(plain_hour,plain_minute,plain_second,no_nanos,plain_position)
-block finish(finish_hour:u64,finish_minute:u64,finish_second:u64,finish_nanos:u64,finish_position:usize)
-  packed:u64,zone:usize,error:u64 = call(finish_hour,finish_minute,finish_second,finish_nanos,finish_position) {"function":"time_result"}
-  ret(packed,zone,error)
-block invalid()
-  invalid_error:u64 = const() {"value":4}
-  jump failed(invalid_error)
-block failed(failed_error:u64)
-  failed_value:u64 = const() {"value":0}
-  failed_position:usize = const() {"value":0}
-  ret(failed_value,failed_position,failed_error)
 end
 fn time_result(hour:u64,minute:u64,second:u64,nanos:u64,position:usize) -> (u64,usize,u64) effects(trap) entry(entry)
 block entry(hour:u64,minute:u64,second:u64,nanos:u64,position:usize)
@@ -373,14 +277,9 @@ block hours(hours_source:readbuf,hours_position:usize,hours_negative:bool)
 block colon(colon_source:readbuf,colon_hours_position:usize,colon_negative:bool,colon_hours:u64)
   hours_width:usize = const() {"value":2}
   colon_position:usize = int.add.checked(colon_hours_position,hours_width)
-  colon_character:u8 = const() {"value":58}
-  colon_error:u64 = call(colon_source,colon_position,colon_character) {"function":"character"}
-  colon_zero:u64 = const() {"value":0}
-  colon_ok:bool = compare.eq(colon_error,colon_zero)
-  branch colon_ok minutes(colon_source,colon_position,colon_negative,colon_hours) failed(colon_error)
-block minutes(minutes_source:readbuf,minutes_colon:usize,minutes_negative:bool,minutes_hours:u64)
-  colon_width:usize = const() {"value":1}
-  minutes_position:usize = int.add.checked(minutes_colon,colon_width)
+  after_separators:usize = call(colon_source,colon_position) {"function":"zone_separators"}
+  jump minutes(colon_source,after_separators,colon_negative,colon_hours)
+block minutes(minutes_source:readbuf,minutes_position:usize,minutes_negative:bool,minutes_hours:u64)
   minutes_value:u64,minutes_error:u64 = call(minutes_source,minutes_position) {"function":"pair"}
   minutes_zero:u64 = const() {"value":0}
   minutes_ok:bool = compare.eq(minutes_error,minutes_zero)
@@ -416,54 +315,6 @@ block failed(failed_error:u64)
   failed_offset:i64 = const() {"value":0}
   failed_position:usize = const() {"value":0}
   ret(failed_offset,failed_position,failed_error)
-end
-fn parse_strict(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
-block entry(source:readbuf,output:mutbuf)
-  size:usize = buffer.len(source)
-  minimum:usize = const() {"value":51}
-  enough:bool = compare.ge(size,minimum)
-  branch enough date(source,output) short(output)
-block date(date_source:readbuf,date_output:mutbuf)
-  days:i64,date_error:u64 = call(date_source) {"function":"parse_date"}
-  date_zero:u64 = const() {"value":0}
-  date_ok:bool = compare.eq(date_error,date_zero)
-  branch date_ok time(date_source,date_output,days) failed(date_output,date_error)
-block time(time_source:readbuf,time_output:mutbuf,time_days:i64)
-  packed:u64,position:usize,time_error:u64 = call(time_source) {"function":"parse_time"}
-  time_zero:u64 = const() {"value":0}
-  time_ok:bool = compare.eq(time_error,time_zero)
-  branch time_ok zone(time_source,time_output,time_days,packed,position) failed(time_output,time_error)
-block zone(zone_source:readbuf,zone_output:mutbuf,zone_days:i64,zone_packed:u64,zone_position:usize)
-  offset:i64,after:usize,zone_error:u64 = call(zone_source,zone_position) {"function":"parse_zone"}
-  zone_zero:u64 = const() {"value":0}
-  zone_ok:bool = compare.eq(zone_error,zone_zero)
-  branch zone_ok remainder(zone_source,zone_output,zone_days,zone_packed,offset,after) failed(zone_output,zone_error)
-block remainder(remainder_source:readbuf,remainder_output:mutbuf,remainder_days:i64,remainder_packed:u64,remainder_offset:i64,remainder_position:usize)
-  length:usize = buffer.len(remainder_source)
-  consumed:bool = compare.eq(length,remainder_position)
-  branch consumed bounds(remainder_output,remainder_days,remainder_packed,remainder_offset) long(remainder_output)
-block bounds(bounds_output:mutbuf,bounds_days:i64,bounds_packed:u64,bounds_offset:i64)
-  lower:i64 = const() {"value":-86400}
-  upper:i64 = const() {"value":86400}
-  after_lower:bool = compare.gt(bounds_offset,lower)
-  before_upper:bool = compare.lt(bounds_offset,upper)
-  valid:bool = bool.and(after_lower,before_upper)
-  branch valid success(bounds_output,bounds_days,bounds_packed,bounds_offset) out_of_range(bounds_output)
-block success(success_output:mutbuf,success_days:i64,success_packed:u64,success_offset:i64)
-  result:u32 = call(success_output,success_days,success_packed,success_offset) {"function":"publish_value"}
-  ret(result)
-block short(short_output:mutbuf)
-  short_error:u64 = const() {"value":5}
-  jump failed(short_output,short_error)
-block long(long_output:mutbuf)
-  long_error:u64 = const() {"value":6}
-  jump failed(long_output,long_error)
-block out_of_range(range_output:mutbuf)
-  range_error:u64 = const() {"value":1}
-  jump failed(range_output,range_error)
-block failed(failed_output:mutbuf,failed_error:u64)
-  failed_result:u32 = call(failed_output,failed_error) {"function":"publish_error"}
-  ret(failed_result)
 end
 fn publish_error(output:mutbuf,error:u64) -> (u32) effects(write,trap) entry(entry)
 block entry(output:mutbuf,error:u64)
@@ -859,4 +710,265 @@ block advance(advance_source:readbuf,advance_index:usize)
   jump scan(advance_source,next)
 block done(done_index:usize)
   ret(done_index)
+end
+fn parse_relaxed(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  start:usize = const() {"value":32}
+  year:i64,after_year:usize,year_error:u64 = call(source,start) {"function":"parse_year"}
+  zero:u64 = const() {"value":0}
+  year_ok:bool = compare.eq(year_error,zero)
+  branch year_ok year_value(source,output,year,after_year) failed(output,year_error)
+block year_value(year_source:readbuf,year_output:mutbuf,year_value:i64,year_position:usize)
+  p0:usize = const() {"value":0}
+  year_word:u64 = int.cast(year_value) {"mode":"wrap"}
+  _ = buffer.store.u64.le(year_output,p0,year_word)
+  year_index:u64 = const() {"value":0}
+  jump delimiter(year_source,year_output,year_index,year_position)
+block field(field_source:readbuf,field_output:mutbuf,field_index:u64,field_position:usize)
+  field_start:usize = call(field_source,field_position) {"function":"trim_space"}
+  two:usize = const() {"value":2}
+  field_value:u64,field_after:usize,field_error:u64 = call(field_source,field_start,two) {"function":"scan_number"}
+  field_zero:u64 = const() {"value":0}
+  number_ok:bool = compare.eq(field_error,field_zero)
+  branch number_ok bounds(field_source,field_output,field_index,field_after,field_value) failed(field_output,field_error)
+block bounds(bounds_source:readbuf,bounds_output:mutbuf,bounds_index:u64,bounds_position:usize,bounds_value:u64)
+  month_index:u64 = const() {"value":1}
+  day_index:u64 = const() {"value":2}
+  hour_index:u64 = const() {"value":3}
+  minute_index:u64 = const() {"value":4}
+  is_month:bool = compare.eq(bounds_index,month_index)
+  is_day:bool = compare.eq(bounds_index,day_index)
+  is_hour:bool = compare.eq(bounds_index,hour_index)
+  is_minute:bool = compare.eq(bounds_index,minute_index)
+  positive:bool = bool.or(is_month,is_day)
+  minimum_zero:u64 = const() {"value":0}
+  minimum_one:u64 = const() {"value":1}
+  month_max:u64 = const() {"value":12}
+  day_max:u64 = const() {"value":31}
+  hour_max:u64 = const() {"value":23}
+  minute_max:u64 = const() {"value":59}
+  second_max:u64 = const() {"value":60}
+  minimum:u64 = select(positive,minimum_one,minimum_zero)
+  after_hour_max:u64 = select(is_minute,minute_max,second_max)
+  after_day_max:u64 = select(is_hour,hour_max,after_hour_max)
+  after_month_max:u64 = select(is_day,day_max,after_day_max)
+  maximum:u64 = select(is_month,month_max,after_month_max)
+  above_min:bool = compare.ge(bounds_value,minimum)
+  below_max:bool = compare.le(bounds_value,maximum)
+  field_ok:bool = bool.and(above_min,below_max)
+  branch field_ok store(bounds_source,bounds_output,bounds_index,bounds_position,bounds_value) out_of_range(bounds_output)
+block store(store_source:readbuf,store_output:mutbuf,store_index:u64,store_position:usize,store_value:u64)
+  index:usize = int.cast(store_index) {"mode":"checked"}
+  eight:usize = const() {"value":8}
+  address:usize = int.mul.checked(index,eight)
+  _ = buffer.store.u64.le(store_output,address,store_value)
+  last:u64 = const() {"value":5}
+  last_field:bool = compare.eq(store_index,last)
+  branch last_field fraction_check(store_source,store_output,store_position) delimiter(store_source,store_output,store_index,store_position)
+block delimiter(delimiter_source:readbuf,delimiter_output:mutbuf,delimiter_index:u64,delimiter_position:usize)
+  day:u64 = const() {"value":2}
+  date_done:bool = compare.eq(delimiter_index,day)
+  branch date_done date_separator(delimiter_source,delimiter_output,delimiter_index,delimiter_position) punctuation(delimiter_source,delimiter_output,delimiter_index,delimiter_position)
+block punctuation(punctuation_source:readbuf,punctuation_output:mutbuf,punctuation_index:u64,punctuation_position:usize)
+  punctuation_start:usize = call(punctuation_source,punctuation_position) {"function":"trim_space"}
+  first_time:u64 = const() {"value":3}
+  date_part:bool = compare.lt(punctuation_index,first_time)
+  dash:u8 = const() {"value":45}
+  colon:u8 = const() {"value":58}
+  wanted:u8 = select(date_part,dash,colon)
+  punctuation_error:u64 = call(punctuation_source,punctuation_start,wanted) {"function":"character"}
+  punctuation_zero:u64 = const() {"value":0}
+  punctuation_ok:bool = compare.eq(punctuation_error,punctuation_zero)
+  branch punctuation_ok advance(punctuation_source,punctuation_output,punctuation_index,punctuation_start) failed(punctuation_output,punctuation_error)
+block date_separator(separator_source:readbuf,separator_output:mutbuf,separator_index:u64,separator_position:usize)
+  size:usize = buffer.len(separator_source)
+  present:bool = compare.lt(separator_position,size)
+  branch present separator_byte(separator_source,separator_output,separator_index,separator_position) short(separator_output)
+block separator_byte(byte_source:readbuf,byte_output:mutbuf,byte_index:u64,byte_position:usize)
+  byte:u8 = buffer.load(byte_source,byte_position)
+  upper:u8 = const() {"value":84}
+  lower:u8 = const() {"value":116}
+  space:u8 = const() {"value":32}
+  upper_ok:bool = compare.eq(byte,upper)
+  lower_ok:bool = compare.eq(byte,lower)
+  space_ok:bool = compare.eq(byte,space)
+  tee_ok:bool = bool.or(upper_ok,lower_ok)
+  separator_ok:bool = bool.or(tee_ok,space_ok)
+  branch separator_ok advance(byte_source,byte_output,byte_index,byte_position) invalid(byte_output)
+block advance(advance_source:readbuf,advance_output:mutbuf,advance_index:u64,advance_position:usize)
+  one_word:u64 = const() {"value":1}
+  one_index:usize = const() {"value":1}
+  next_field:u64 = int.add.checked(advance_index,one_word)
+  next_position:usize = int.add.checked(advance_position,one_index)
+  jump field(advance_source,advance_output,next_field,next_position)
+block fraction_check(check_source:readbuf,check_output:mutbuf,check_position:usize)
+  check_size:usize = buffer.len(check_source)
+  check_present:bool = compare.lt(check_position,check_size)
+  branch check_present fraction_marker(check_source,check_output,check_position) no_fraction(check_source,check_output,check_position)
+block fraction_marker(marker_source:readbuf,marker_output:mutbuf,marker_position:usize)
+  marker:u8 = buffer.load(marker_source,marker_position)
+  dot:u8 = const() {"value":46}
+  has_fraction:bool = compare.eq(marker,dot)
+  branch has_fraction fraction(marker_source,marker_output,marker_position) no_fraction(marker_source,marker_output,marker_position)
+block fraction(fraction_source:readbuf,fraction_output:mutbuf,fraction_position:usize)
+  fraction_step:usize = const() {"value":1}
+  fraction_start:usize = int.add.checked(fraction_position,fraction_step)
+  nanos:u64,after_fraction:usize,fraction_error:u64 = call(fraction_source,fraction_start) {"function":"parse_fraction"}
+  fraction_zero:u64 = const() {"value":0}
+  fraction_ok:bool = compare.eq(fraction_error,fraction_zero)
+  branch fraction_ok fraction_value(fraction_source,fraction_output,after_fraction,nanos) failed(fraction_output,fraction_error)
+block no_fraction(plain_source:readbuf,plain_output:mutbuf,plain_position:usize)
+  plain_nanos:u64 = const() {"value":0}
+  jump fraction_value(plain_source,plain_output,plain_position,plain_nanos)
+block fraction_value(value_source:readbuf,value_output:mutbuf,value_position:usize,value_nanos:u64)
+  p48:usize = const() {"value":48}
+  _ = buffer.store.u64.le(value_output,p48,value_nanos)
+  zone_start:usize = call(value_source,value_position) {"function":"trim_space"}
+  zone_offset:i64,zone_after:usize,zone_error:u64 = call(value_source,zone_start) {"function":"relaxed_zone"}
+  zone_zero:u64 = const() {"value":0}
+  zone_ok:bool = compare.eq(zone_error,zone_zero)
+  branch zone_ok zone_value(value_source,value_output,zone_after,zone_offset) failed(value_output,zone_error)
+block zone_value(zone_source:readbuf,zone_output:mutbuf,zone_position:usize,zone_value:i64)
+  p56:usize = const() {"value":56}
+  zone_word:u64 = int.cast(zone_value) {"mode":"wrap"}
+  _ = buffer.store.u64.le(zone_output,p56,zone_word)
+  trailing_end:usize = call(zone_source,zone_position) {"function":"trim_space"}
+  total:usize = buffer.len(zone_source)
+  consumed:bool = compare.eq(trailing_end,total)
+  branch consumed finish(zone_source,zone_output) long(zone_output)
+block finish(finish_source:readbuf,finish_output:mutbuf)
+  result:u32 = call(finish_source,finish_output) {"function":"finish_relaxed"}
+  ret(result)
+block short(short_output:mutbuf)
+  short_error:u64 = const() {"value":5}
+  jump failed(short_output,short_error)
+block invalid(invalid_output:mutbuf)
+  invalid_error:u64 = const() {"value":4}
+  jump failed(invalid_output,invalid_error)
+block out_of_range(range_output:mutbuf)
+  range_error:u64 = const() {"value":1}
+  jump failed(range_output,range_error)
+block long(long_output:mutbuf)
+  long_error:u64 = const() {"value":6}
+  jump failed(long_output,long_error)
+block failed(failed_output:mutbuf,failed_error:u64)
+  failed_result:u32 = call(failed_output,failed_error) {"function":"publish_error"}
+  ret(failed_result)
+end
+fn relaxed_zone(source:readbuf,position:usize) -> (i64,usize,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  size:usize = buffer.len(source)
+  remaining:usize = int.sub.checked(size,position)
+  three:usize = const() {"value":3}
+  candidate:bool = compare.ge(remaining,three)
+  branch candidate utc_check(source,position) numeric(source,position)
+block utc_check(check_source:readbuf,check_position:usize)
+  one:usize = const() {"value":1}
+  two:usize = const() {"value":2}
+  p1:usize = int.add.checked(check_position,one)
+  p2:usize = int.add.checked(check_position,two)
+  b0:u8 = buffer.load(check_source,check_position)
+  b1:u8 = buffer.load(check_source,p1)
+  b2:u8 = buffer.load(check_source,p2)
+  mask:u8 = const() {"value":32}
+  c0:u8 = bit.or(b0,mask)
+  c1:u8 = bit.or(b1,mask)
+  c2:u8 = bit.or(b2,mask)
+  u:u8 = const() {"value":117}
+  tee:u8 = const() {"value":116}
+  c:u8 = const() {"value":99}
+  u_ok:bool = compare.eq(c0,u)
+  t_ok:bool = compare.eq(c1,tee)
+  c_ok:bool = compare.eq(c2,c)
+  ut_ok:bool = bool.and(u_ok,t_ok)
+  utc_ok:bool = bool.and(ut_ok,c_ok)
+  branch utc_ok utc(check_position) numeric(check_source,check_position)
+block utc(utc_position:usize)
+  zero_offset:i64 = const() {"value":0}
+  utc_width:usize = const() {"value":3}
+  utc_next:usize = int.add.checked(utc_position,utc_width)
+  success:u64 = const() {"value":0}
+  ret(zero_offset,utc_next,success)
+block numeric(numeric_source:readbuf,numeric_position:usize)
+  offset:i64,after:usize,error:u64 = call(numeric_source,numeric_position) {"function":"parse_zone"}
+  ret(offset,after,error)
+end
+fn finish_relaxed(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  p0:usize = const() {"value":0}
+  year_word:u64 = buffer.load.u64.le(output,p0)
+  year:i64 = int.cast(year_word) {"mode":"wrap"}
+  minimum_year:i64 = const() {"value":-262143}
+  maximum_year:i64 = const() {"value":262142}
+  above_min:bool = compare.ge(year,minimum_year)
+  below_max:bool = compare.le(year,maximum_year)
+  year_ok:bool = bool.and(above_min,below_max)
+  branch year_ok date(source,output,year) out_of_range(output)
+block date(date_source:readbuf,date_output:mutbuf,date_year:i64)
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  month:u64 = buffer.load.u64.le(date_output,p8)
+  day:u64 = buffer.load.u64.le(date_output,p16)
+  days:i64,date_error:u64 = call(date_year,month,day) {"function":"civil_days"}
+  date_zero:u64 = const() {"value":0}
+  date_ok:bool = compare.eq(date_error,date_zero)
+  branch date_ok time(date_source,date_output,days) failed(date_output,date_error)
+block time(time_source:readbuf,time_output:mutbuf,time_days:i64)
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  unused:usize = const() {"value":0}
+  hour:u64 = buffer.load.u64.le(time_output,p24)
+  minute:u64 = buffer.load.u64.le(time_output,p32)
+  second:u64 = buffer.load.u64.le(time_output,p40)
+  nanos:u64 = buffer.load.u64.le(time_output,p48)
+  packed:u64,position:usize,time_error:u64 = call(hour,minute,second,nanos,unused) {"function":"time_result"}
+  time_zero:u64 = const() {"value":0}
+  time_ok:bool = compare.eq(time_error,time_zero)
+  branch time_ok offset(time_source,time_output,time_days,packed) failed(time_output,time_error)
+block offset(offset_source:readbuf,offset_output:mutbuf,offset_days:i64,offset_packed:u64)
+  p56:usize = const() {"value":56}
+  offset_word:u64 = buffer.load.u64.le(offset_output,p56)
+  offset_value:i64 = int.cast(offset_word) {"mode":"wrap"}
+  offset_min:i64 = const() {"value":-86400}
+  offset_max:i64 = const() {"value":86400}
+  offset_low:bool = compare.gt(offset_value,offset_min)
+  offset_high:bool = compare.lt(offset_value,offset_max)
+  offset_ok:bool = bool.and(offset_low,offset_high)
+  branch offset_ok utc(offset_source,offset_output,offset_days,offset_packed,offset_value) out_of_range(offset_output)
+block utc(utc_source:readbuf,utc_output:mutbuf,utc_days:i64,utc_packed:u64,utc_offset:i64)
+  day_length:i64 = const() {"value":86400}
+  base:u64 = const() {"value":2000000000}
+  day_seconds_word:u64 = int.div.checked(utc_packed,base)
+  day_seconds:i64 = int.cast(day_seconds_word) {"mode":"checked"}
+  midnight:i64 = int.mul.checked(utc_days,day_length)
+  local_seconds:i64 = int.add.checked(midnight,day_seconds)
+  utc_seconds:i64 = int.sub.checked(local_seconds,utc_offset)
+  minimum:i64 = const() {"value":-8334601228800}
+  maximum:i64 = const() {"value":8210266876799}
+  utc_low:bool = compare.ge(utc_seconds,minimum)
+  utc_high:bool = compare.le(utc_seconds,maximum)
+  utc_ok:bool = bool.and(utc_low,utc_high)
+  branch utc_ok publish(utc_source,utc_output,utc_days,utc_packed,utc_offset) impossible(utc_output)
+block publish(publish_source:readbuf,publish_output:mutbuf,publish_days:i64,publish_packed:u64,publish_offset:i64)
+  mode_position:usize = const() {"value":8}
+  mode:u64 = buffer.load.u64.le(publish_source,mode_position)
+  zero:u64 = const() {"value":0}
+  as_utc:bool = compare.ne(mode,zero)
+  original_offset:u64 = int.cast(publish_offset) {"mode":"wrap"}
+  result_offset:u64 = select(as_utc,zero,original_offset)
+  result:u32 = call(publish_output,publish_days,publish_packed,publish_offset) {"function":"publish_value"}
+  offset_position:usize = const() {"value":32}
+  _ = buffer.store.u64.le(publish_output,offset_position,result_offset)
+  ret(result)
+block out_of_range(range_output:mutbuf)
+  range_error:u64 = const() {"value":1}
+  jump failed(range_output,range_error)
+block impossible(impossible_output:mutbuf)
+  impossible_error:u64 = const() {"value":2}
+  jump failed(impossible_output,impossible_error)
+block failed(failed_output:mutbuf,failed_error:u64)
+  failed_result:u32 = call(failed_output,failed_error) {"function":"publish_error"}
+  ret(failed_result)
 end
