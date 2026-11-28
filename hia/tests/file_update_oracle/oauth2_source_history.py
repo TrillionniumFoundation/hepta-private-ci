@@ -112,7 +112,8 @@ def restore_predecessor(repo, actual, predecessor_identity):
               "dependency_graph_equivalence_claimed": False}
     if otel_admission is not None:
         report["otel_source_history"] = otel_admission["report"]
-        report["workspace_variant"] = otel_admission["report"]["source_variant"]
+        report["workspace_variant"] = otel_admission["report"].get(
+            "workspace_variant", otel_admission["report"]["source_variant"])
         report["projected_oauth2_files"] = history["current_files"]
     return {"restored": restored, "report": report}
 

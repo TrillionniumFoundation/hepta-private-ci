@@ -91,6 +91,11 @@ def admit_workspace_sources(repo, originals):
         restored = oauth2_admission["restored"]
         if "otel_source_history" in oauth2_admission["report"]:
             outer = oauth2_admission["report"]["otel_source_history"]
+            if "windows_fleet_source_history" in outer:
+                fleet = outer["windows_fleet_source_history"]
+                observed.append({"name": "windows-fleet-source", "from": "windows-fleet",
+                                 "to": "otel-time", "complete_package_inverses": 1,
+                                 "restored_files": fleet["predecessor_files"]})
             observed.append({"name": "otel-time-source", "from": "otel-time",
                              "to": "oauth2-epoch", "complete_package_inverses": 1,
                              "restored_files": outer["predecessor_files"]})

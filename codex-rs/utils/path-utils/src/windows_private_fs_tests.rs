@@ -18,6 +18,23 @@ use crate::windows_security::current_user_sid;
 use crate::windows_security::owner_sid;
 
 #[test]
+fn private_directory_creation_never_adopts_an_existing_entry() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().join("state");
+    let created = PrivateDirectory::create_new_directory(&root)?;
+    let before = snapshot_private_file(created.as_file())?;
+    assert_eq!(
+        PrivateDirectory::create_new_directory(&root)
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::AlreadyExists
+    );
+    assert_eq!(snapshot_private_file(created.as_file())?, before);
+    assert_eq!(fs::read_dir(&root)?.count(), 0);
+    Ok(())
+}
+
+#[test]
 fn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("state");

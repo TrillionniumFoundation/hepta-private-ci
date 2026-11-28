@@ -529,7 +529,13 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
     builder.mode(0o700).create(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_private_directory(path: &Path) -> std::io::Result<()> {
+    codex_utils_path::windows_private_fs::PrivateDirectory::create_new_directory(path)?;
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_private_directory(path: &Path) -> std::io::Result<()> {
     std::fs::create_dir(path)
 }
@@ -542,7 +548,15 @@ fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryErr
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryError> {
+    // Existing Windows state is admitted only when its current owner and DACL
+    // already satisfy the private-state contract. Never repair an unsafe root.
+    codex_utils_path::windows_private_fs::PrivateDirectory::open_existing(path)?;
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn set_private_directory_permissions(_path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
@@ -561,7 +575,13 @@ fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
+    codex_utils_path::windows_private_fs::PrivateDirectory::open_existing(path)?;
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
     validate_physical_directory(path)
 }
