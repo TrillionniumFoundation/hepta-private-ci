@@ -189,10 +189,7 @@ async fn concurrent_ordinary_close_cannot_borrow_another_requests_size_failure()
     let (oversized, ordinary) = tokio::join!(
         client.list_tools(/*params*/ None, Some(Duration::from_secs(5))),
         client.list_tools_with_connector_ids(
-            Some(PaginatedRequestParams {
-                cursor: Some("ordinary".to_string()),
-                meta: None
-            }),
+            Some(PaginatedRequestParams::default().with_cursor(Some("ordinary".to_string()))),
             Some(Duration::from_secs(5)),
         ),
     );
