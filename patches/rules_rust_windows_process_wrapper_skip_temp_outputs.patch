@@ -1,13 +1,18 @@
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
+@@ -213,6 +213,17 @@ fn consolidate_dependency_search_paths(
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
++            // Parallel Windows link actions can leave temporary executables, codegen
++            // units, and temporary MSVC archives next to their final outputs. None
++            // are stable linker search-path inputs.
++            let is_temporary_msvc_archive = file_name_lower.contains(".lib.temp-archive-")
++                && file_name_lower.ends_with(".a");
++            if file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++                || is_temporary_msvc_archive
++            {
 +                continue;
 +            }
              if !seen.insert(file_name_lower) {

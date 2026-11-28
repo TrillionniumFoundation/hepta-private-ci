@@ -2908,7 +2908,16 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(10), async {
-        test.submit_text_turn("A").await?;
+        let first_turn = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::new(user_input("A")))
+            .await?;
+        let TurnInputSubmission::Started {
+            turn_id: first_turn_id,
+        } = first_turn
+        else {
+            anyhow::bail!("expected a new first turn, got {first_turn:?}");
+        };
         entered.notified().await;
 
         // Queue's callback must already have returned for the next contributor
@@ -2954,10 +2963,12 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         assert_eq!(1, responses.requests().len());
 
         release.notify_one();
-        wait_for_event_match(test.codex.as_ref(), |event| {
-            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        let queued_turn = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(event) if event.turn_id != first_turn_id => Some(event.clone()),
+            _ => None,
         })
         .await;
+        assert!(queued_turn.error.is_none(), "queued turn did not succeed");
         anyhow::Ok(())
     })
     .await??;
@@ -3042,7 +3053,11 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
-        test.submit_text_turn("initial user A").await?;
+        let first_turn = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::new(user_input("initial user A")))
+            .await?;
+        assert!(matches!(first_turn, TurnInputSubmission::Started { .. }));
         entered.notified().await;
         let completion = test
             .codex
