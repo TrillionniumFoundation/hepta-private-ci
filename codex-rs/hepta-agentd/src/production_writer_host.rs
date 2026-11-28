@@ -281,7 +281,7 @@ pub struct AgentdProductionWriterHost {
     cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
     mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
     #[cfg(target_os = "linux")]
-    terminal_owner_claimed: std::sync::atomic::AtomicBool,
+    terminal_owner_claimed: Arc<std::sync::atomic::AtomicBool>,
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -409,7 +409,7 @@ impl AgentdProductionWriterHost {
             )),
             mutation: Some(mutation),
             #[cfg(target_os = "linux")]
-            terminal_owner_claimed: std::sync::atomic::AtomicBool::default(),
+            terminal_owner_claimed: Arc::new(std::sync::atomic::AtomicBool::default()),
             dispatchers: BTreeMap::new(),
             grants: None,
             previous_notes: None,
@@ -448,7 +448,7 @@ impl AgentdProductionWriterHost {
             )),
             mutation: None,
             #[cfg(target_os = "linux")]
-            terminal_owner_claimed: std::sync::atomic::AtomicBool::default(),
+            terminal_owner_claimed: Arc::new(std::sync::atomic::AtomicBool::default()),
         })
     }
 

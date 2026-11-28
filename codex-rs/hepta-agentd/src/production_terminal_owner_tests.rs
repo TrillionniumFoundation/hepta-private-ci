@@ -148,6 +148,10 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
     let (inputs, probes, _peer) = fixture.inputs()?;
     attach_production_operation_host(&mut config, inputs).await?;
     let original = config.production_writer_host().unwrap().writer();
+    // Production operation attachment clones this host. A clone made before
+    // assembly must share the same once-only claim after the first owner drops.
+    let cloned_host = Arc::new(config.production_writer_host().unwrap().as_ref().clone());
+    let identity = config.identity().clone();
     let (_directory, _ledger_fixture, ledger) = ledger();
     let before = ledger.lock().unwrap().snapshot()?;
     let pins = metadata(&ledger);
@@ -171,6 +175,30 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
     bootstrap.require_original_paired_policy(&pins.original, pins.records)?;
     drop((bootstrap, handle, inbox));
     let result = config
+        .with_original_terminal_learning_owners_v1(
+            Arc::clone(&ledger),
+            id("factory-producer"),
+            "terminal.local".into(),
+            /*maximum_jobs*/ 4,
+            /*capacity*/ 1,
+            pins.clone(),
+            end(),
+        )
+        .await;
+    assert!(
+        matches!(result, Err(AgentdError::Invalid(message)) if message.contains("already assembled"))
+    );
+    let cloned_config = AgentdConfig::load(
+        identity.fleet_root,
+        identity.agent_id,
+        identity.spawn_generation,
+        identity.home_root.clone(),
+        identity.run_root,
+        identity.home_root,
+        identity.workspace,
+    )?
+    .with_production_writer_host(cloned_host)?;
+    let result = cloned_config
         .with_original_terminal_learning_owners_v1(
             Arc::clone(&ledger),
             id("factory-producer"),
