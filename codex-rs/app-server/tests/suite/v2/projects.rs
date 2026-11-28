@@ -877,11 +877,7 @@ async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children()
             ..Default::default()
         })
         .await?;
-    let JSONRPCMessage::Response(response) = server.read_next_message().await? else {
-        panic!("thread/fork must respond before lifecycle notifications");
-    };
-    assert_eq!(response.id, RequestId::Integer(fork_id));
-    let forked: ThreadForkResponse = serde_json::from_value(response.result)?;
+    let forked = read_fork_response_before_thread_started(&mut server, fork_id).await?;
     let _: serde_json::Value = server.read_notification("thread/started").await?;
     assert_eq!(forked.thread.project_id, Some(project.project.id.clone()));
 
@@ -893,14 +889,31 @@ async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children()
             ..Default::default()
         })
         .await?;
-    let JSONRPCMessage::Response(response) = server.read_next_message().await? else {
-        panic!("ephemeral thread/fork must respond before lifecycle notifications");
-    };
-    assert_eq!(response.id, RequestId::Integer(ephemeral_id));
-    let ephemeral_fork: ThreadForkResponse = serde_json::from_value(response.result)?;
+    let ephemeral_fork =
+        read_fork_response_before_thread_started(&mut server, ephemeral_id).await?;
     let _: serde_json::Value = server.read_notification("thread/started").await?;
     assert_eq!(ephemeral_fork.thread.project_id, Some(project.project.id));
     assert!(ephemeral_fork.thread.ephemeral);
     assert!(ephemeral_fork.thread.path.is_none());
     Ok(())
+}
+
+async fn read_fork_response_before_thread_started(
+    server: &mut TestAppServer,
+    request_id: i64,
+) -> Result<ThreadForkResponse> {
+    loop {
+        match server.read_next_message().await? {
+            JSONRPCMessage::Response(response) => {
+                assert_eq!(response.id, RequestId::Integer(request_id));
+                return Ok(serde_json::from_value(response.result)?);
+            }
+            // The file watcher may emit an unrelated notification at any time.
+            JSONRPCMessage::Notification(notification)
+                if notification.method == "skills/changed" => {}
+            message => anyhow::bail!(
+                "thread/fork must respond before its lifecycle notifications; got {message:?}"
+            ),
+        }
+    }
 }

@@ -33,7 +33,7 @@ const DEFAULT_READ_TIMEOUT: Duration = Duration::from_secs(60);
 const ATTESTATION_HEADER: &str = "v1.integration-test";
 const APP_SERVER_ATTESTATION_HEADER: &str = r#"{"v":1,"s":0,"t":"v1.integration-test"}"#;
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn attestation_generate_round_trip_adds_header_to_responses_websocket_handshake() -> Result<()>
 {
     skip_if_no_network!(Ok(()));
@@ -119,6 +119,31 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
     )
     .await??;
     let ThreadStartResponse { thread, .. } = to_response(thread_response)?;
+
+    // Service the startup attestation before sending protocol traffic for a
+    // normal turn. Both connections still need a real successful attestation.
+    timeout(DEFAULT_READ_TIMEOUT, async {
+        while attestation_requests == 0 {
+            match mcp.read_next_message().await? {
+                JSONRPCMessage::Request(request) => {
+                    answer_attestation_generate(
+                        &mut mcp,
+                        ServerRequest::try_from(request)?,
+                        &mut attestation_requests,
+                    )
+                    .await?;
+                }
+                message => pending_messages.push_back(message),
+            }
+        }
+        Ok::<(), anyhow::Error>(())
+    })
+    .await??;
+    timeout(
+        DEFAULT_READ_TIMEOUT,
+        websocket_server.wait_for_request(0, 0),
+    )
+    .await?;
 
     let turn_request_id = mcp
         .send_turn_start_request(TurnStartParams {
