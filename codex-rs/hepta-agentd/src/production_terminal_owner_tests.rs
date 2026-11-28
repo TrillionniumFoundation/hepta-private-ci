@@ -148,8 +148,8 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
     let (inputs, probes, _peer) = fixture.inputs()?;
     attach_production_operation_host(&mut config, inputs).await?;
     let original = config.production_writer_host().unwrap().writer();
-    // Production operation attachment clones this host. A clone made before
-    // assembly must share the same once-only claim after the first owner drops.
+    // Production operation attachment clones this host. Retain the original
+    // process-owner lock even after the first assembled owner is dropped.
     let cloned_host = Arc::new(config.production_writer_host().unwrap().as_ref().clone());
     let identity = config.identity().clone();
     let (_directory, _ledger_fixture, ledger) = ledger();
@@ -188,7 +188,10 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
     assert!(
         matches!(result, Err(AgentdError::Invalid(message)) if message.contains("already assembled"))
     );
-    let cloned_config = AgentdConfig::load(
+    drop(original);
+    // The retained clone still owns the original writer lock. A new Config
+    // cannot reopen this identity to reset the once-only assembly claim.
+    let reopened = AgentdConfig::load(
         identity.fleet_root,
         identity.agent_id,
         identity.spawn_generation,
@@ -196,22 +199,11 @@ async fn original_host_installs_fixed_policy_and_cannot_reset_owner_after_drop()
         identity.run_root,
         identity.home_root,
         identity.workspace,
-    )?
-    .with_production_writer_host(cloned_host)?;
-    let result = cloned_config
-        .with_original_terminal_learning_owners_v1(
-            Arc::clone(&ledger),
-            id("factory-producer"),
-            "terminal.local".into(),
-            /*maximum_jobs*/ 4,
-            /*capacity*/ 1,
-            pins,
-            end(),
-        )
-        .await;
-    assert!(
-        matches!(result, Err(AgentdError::Invalid(message)) if message.contains("already assembled"))
     );
+    assert!(
+        matches!(reopened, Err(AgentdError::Invalid(message)) if message.contains("already has a live writer lock"))
+    );
+    drop(cloned_host);
     assert_eq!(ledger.lock().unwrap().snapshot()?, before);
     assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
     Ok(())
@@ -330,6 +322,14 @@ async fn grant_before_recovery(
             },
         )
         .await?;
+    let real_now = i64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?
+            .as_secs(),
+    )?;
+    let expires_at_unix_seconds = real_now
+        .checked_add(/*rhs*/ 3600)
+        .ok_or("fixture grant expiry overflow")?;
     let grant = store
         .grant_shared_experience(
             &access,
@@ -344,7 +344,7 @@ async fn grant_before_recovery(
                     parameter_scope: "terminal.local".into(),
                     artifact_consumer: config.identity().agent_id.clone(),
                 },
-                expires_at_unix_seconds: 4_000_000_000,
+                expires_at_unix_seconds,
             },
             /*expected_revision*/ 0,
         )
