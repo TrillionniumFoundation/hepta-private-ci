@@ -1,0 +1,354 @@
+{
+  "schema": "codex.hia.duration-units-buffer-contract.v1",
+  "revision": 1,
+  "status": "Checked TimeDelta unit constructors, integer accessors and canonical std Duration conversions; public panic adapters, general arithmetic, production integration and whole-product qualification remain separate.",
+  "module": "duration_units",
+  "source_sha256": "1dab3ce8a1440d109e60d9f58c5a4c3d2e9905678eccf42f9baa272727ca1c6d",
+  "core_sha256": "24a0209fdab96d36b69501ebf88405a2dbee716aa4985fb297d495130acab0de",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "TimeDelta::new",
+      "TimeDelta::try_weeks",
+      "TimeDelta::try_days",
+      "TimeDelta::try_hours",
+      "TimeDelta::try_minutes",
+      "TimeDelta::try_seconds",
+      "TimeDelta::try_milliseconds",
+      "TimeDelta::microseconds",
+      "TimeDelta::nanoseconds",
+      "TimeDelta::from_std",
+      "TimeDelta::zero",
+      "TimeDelta::num_weeks",
+      "TimeDelta::num_days",
+      "TimeDelta::num_hours",
+      "TimeDelta::num_minutes",
+      "TimeDelta::num_seconds",
+      "TimeDelta::num_milliseconds",
+      "TimeDelta::num_microseconds",
+      "TimeDelta::num_nanoseconds",
+      "TimeDelta::subsec_millis",
+      "TimeDelta::subsec_micros",
+      "TimeDelta::subsec_nanos",
+      "TimeDelta::to_std",
+      "TimeDelta::is_zero"
+    ],
+    "oracle_registry_packages": 43,
+    "source_files": {
+      "src/time_delta.rs": {
+        "bytes": 57500,
+        "sha256": "31c15727ca89f4aa1a5e7a3ef8a9814c1bf5a30a7baf20f90b1a21b20cd00ed3"
+      }
+    }
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed arguments use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "meaning": "0: canonical TimeDelta::new; 1: weeks; 2: days; 3: hours; 4: minutes; 5: seconds; 6: milliseconds; 7: microseconds; 8: nanoseconds; 9: canonical std Duration to TimeDelta; 10: zero"
+      },
+      {
+        "offset": 16,
+        "name": "argument",
+        "meaning": "signed canonical seconds for 0; signed value in selected unit for 1..8; unsigned canonical std Duration seconds for 9; required zero for 10"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "meaning": "u64 nanoseconds for 0 and 9; required zero for other operations"
+      },
+      {
+        "offset": 32,
+        "name": "reserved0",
+        "required": 0
+      },
+      {
+        "offset": 40,
+        "name": "reserved1",
+        "required": 0
+      },
+      {
+        "offset": 48,
+        "name": "reserved2",
+        "required": 0
+      },
+      {
+        "offset": 56,
+        "name": "reserved3",
+        "required": 0
+      }
+    ],
+    "mutation": "Never modified; all eight words are loaded before any output write."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 168,
+    "byte_order": "21 little-endian u64 words; signed results use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "valid",
+        "value": "1 when the actual original constructor succeeds; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "canonical_seconds",
+        "value": "signed canonical TimeDelta seconds"
+      },
+      {
+        "offset": 24,
+        "name": "canonical_nanoseconds",
+        "value": "canonical nonnegative fraction below one billion"
+      },
+      {
+        "offset": 32,
+        "name": "num_weeks",
+        "value": "signed original whole weeks"
+      },
+      {
+        "offset": 40,
+        "name": "num_days",
+        "value": "signed original whole days"
+      },
+      {
+        "offset": 48,
+        "name": "num_hours",
+        "value": "signed original whole hours"
+      },
+      {
+        "offset": 56,
+        "name": "num_minutes",
+        "value": "signed original whole minutes"
+      },
+      {
+        "offset": 64,
+        "name": "num_seconds",
+        "value": "signed original truncated whole seconds"
+      },
+      {
+        "offset": 72,
+        "name": "num_milliseconds",
+        "value": "signed original total whole milliseconds"
+      },
+      {
+        "offset": 80,
+        "name": "microseconds_valid",
+        "value": "1 when original num_microseconds() returns Some"
+      },
+      {
+        "offset": 88,
+        "name": "num_microseconds",
+        "value": "signed original optional value or zero"
+      },
+      {
+        "offset": 96,
+        "name": "nanoseconds_valid",
+        "value": "1 when original num_nanoseconds() returns Some"
+      },
+      {
+        "offset": 104,
+        "name": "num_nanoseconds",
+        "value": "signed original optional value or zero"
+      },
+      {
+        "offset": 112,
+        "name": "subsec_millis",
+        "value": "signed original subsecond milliseconds"
+      },
+      {
+        "offset": 120,
+        "name": "subsec_micros",
+        "value": "signed original subsecond microseconds"
+      },
+      {
+        "offset": 128,
+        "name": "subsec_nanos",
+        "value": "signed original subsecond nanoseconds"
+      },
+      {
+        "offset": 136,
+        "name": "std_valid",
+        "value": "1 when original to_std() succeeds"
+      },
+      {
+        "offset": 144,
+        "name": "std_seconds",
+        "value": "unsigned original standard duration seconds or zero"
+      },
+      {
+        "offset": 152,
+        "name": "std_nanoseconds",
+        "value": "unsigned original standard duration fraction or zero"
+      },
+      {
+        "offset": 160,
+        "name": "is_zero",
+        "value": "1 exactly when original is_zero() is true"
+      }
+    ],
+    "absent": "A failed constructor writes version 1 followed by twenty zero words. Optional accessor failure leaves the valid duration and other accessor values intact.",
+    "tail": "Bytes after offset 168 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "canonical_duration": "Match TimeDelta::new: seconds from -9223372036854776 through 9223372036854775, fraction below one billion; lower endpoint fraction at least 193000000, upper endpoint at most 807000000. Wider-than-u32 nanoseconds are explicitly rejected by the observer's transport guard.",
+    "large_units": "Checked weeks/days/hours/minutes/seconds constructors use integer seconds. Bound arguments symmetrically by floor(9223372036854775 / unit factor) before multiplication. This preserves the original checked multiplication and TimeDelta::new result for all i64 inputs.",
+    "small_units": "Milliseconds rejects i64::MIN, preserving the original symmetric duration limit. Microsecond and nanosecond constructors accept all i64 values. Use quotient and remainder directly, adjusting negative remainder to Euclidean form without an overflowing floor-quotient reconstruction.",
+    "integer_accessors": "Use the exact original truncated num_seconds and signed subsec_nanos rules for negative canonical fractions. Weeks follows num_days()/7; days/hours/minutes use truncating integer division. Milliseconds remains representable across the complete constructor range.",
+    "optional_accessors": "Preserve original checked whole-second multiplication followed by checked fraction addition, including cases where a mathematically combined expression could be evaluated differently. Guard multiply and use sign-specific addition bounds before executing checked arithmetic.",
+    "standard_duration": "Input operation 9 represents an already canonical std::time::Duration: unsigned seconds and fraction below one billion. Noncanonical fractions are rejected as semantic transport values before constructing the original standard type. Original from_std rejects values above TimeDelta::MAX. Original to_std rejects negative canonical seconds, including negative subsecond durations.",
+    "scope": "Checked unit constructors and integer/std accessors only. Public panicking constructor adapters, floating accessors, arbitrary TimeDelta checked_mul/div/add/sub, timezone conversion, production integration and whole-product gates are separate."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is below 168, before reading source or validating workspace"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source size is not 64, workspace is nonempty, version is not 1, operation is outside 0..10, any reserved word is nonzero, nanoseconds is nonzero for operations other than 0 or 9, or operation 10 has a nonzero argument"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 168 output bytes encode the actual original constructor and accessor observations, or version 1 followed by zero words for a failed constructor"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 523938,
+    "input_sha256": "beed563062fea1af17c13ff5ee2ed3596f1528763a9eb53a71b89f3fda8a1da5",
+    "original_output_sha256": "f698abfaeffb2bd33ace36be7971c82426f3339350300d3ee281a11960755377",
+    "original_result_counts": {
+      "0,0,0,0,0": 42693,
+      "0,1,0,0,0": 15294,
+      "0,1,0,0,1": 14981,
+      "0,1,1,0,0": 5148,
+      "0,1,1,0,1": 5146,
+      "0,1,1,1,0": 30793,
+      "0,1,1,1,1": 30897,
+      "1,0,0,0,0": 20617,
+      "1,1,0,0,0": 10234,
+      "1,1,0,0,1": 10044,
+      "1,1,1,0,0": 120,
+      "1,1,1,0,1": 128,
+      "1,1,1,1,0": 229,
+      "1,1,1,1,1": 236,
+      "2,0,0,0,0": 20587,
+      "2,1,0,0,0": 10196,
+      "2,1,0,0,1": 10083,
+      "2,1,1,0,0": 123,
+      "2,1,1,0,1": 124,
+      "2,1,1,1,0": 244,
+      "2,1,1,1,1": 251,
+      "3,0,0,0,0": 20537,
+      "3,1,0,0,0": 10318,
+      "3,1,0,0,1": 9821,
+      "3,1,1,0,0": 128,
+      "3,1,1,0,1": 129,
+      "3,1,1,1,0": 334,
+      "3,1,1,1,1": 341,
+      "4,0,0,0,0": 20477,
+      "4,1,0,0,0": 10202,
+      "4,1,0,0,1": 9946,
+      "4,1,1,0,0": 123,
+      "4,1,1,0,1": 125,
+      "4,1,1,1,0": 364,
+      "4,1,1,1,1": 371,
+      "5,0,0,0,0": 20397,
+      "5,1,0,0,0": 10147,
+      "5,1,0,0,1": 10023,
+      "5,1,1,0,0": 61,
+      "5,1,1,0,1": 55,
+      "5,1,1,1,0": 459,
+      "5,1,1,1,1": 466,
+      "6,0,0,0,0": 3,
+      "6,1,0,0,0": 19997,
+      "6,1,0,0,1": 20377,
+      "6,1,1,0,0": 76,
+      "6,1,1,0,1": 67,
+      "6,1,1,1,0": 509,
+      "6,1,1,1,1": 516,
+      "7,1,1,0,0": 20307,
+      "7,1,1,0,1": 20058,
+      "7,1,1,1,0": 581,
+      "7,1,1,1,1": 598,
+      "8,1,1,1,0": 20748,
+      "8,1,1,1,1": 20796,
+      "9,0,0,0,0": 23692,
+      "9,1,0,0,1": 22560,
+      "9,1,1,0,1": 20,
+      "9,1,1,1,1": 40,
+      "10,1,1,1,1": 1
+    },
+    "result_count_key": "operation,constructor-valid,microsecond-option-valid,nanosecond-option-valid,std-conversion-valid",
+    "buffer_control_calls": 2582,
+    "native_calls_required": 2098334,
+    "coverage": "Canonical duration endpoints and invalid fractions; exact optional total microsecond/nanosecond boundaries; full i64 power-of-two neighborhoods and extremes; all checked unit boundaries; deterministic full-range and valid-range inputs; unsigned standard-duration overflow and canonical fraction guards; actual TimeDelta::zero.",
+    "controls": "Two fills and exact/excess output capacities for every semantic case. All 168 shorter output capacities and three nonempty workspace sizes for all eleven operations; truncated/oversized source, invalid metadata, nonzero reserved/unused words and nonzero zero-constructor arguments. All inputs, outputs, tails and unaligned guards compared.",
+    "recording": "Complete input, original output and native-call transcript retained as gzip streams, with SHA-256 hashes of every uncompressed byte.",
+    "buffer_control_groups": {
+      "frame_sizes": 536,
+      "metadata": 39,
+      "short_capacity_by_operation": 1848,
+      "workspace_by_operation": 99,
+      "unused_nanoseconds": 54,
+      "zero_arguments": 6
+    }
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "public_panicking_adapters_qualified": false,
+    "general_duration_arithmetic_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}
