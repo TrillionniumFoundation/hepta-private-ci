@@ -8,3 +8,8 @@ codex-rs/app-server-protocol/schema/json/codex_app_server_protocol.v2.schemas.js
 codex-rs/tui/tests/fixtures/oss-story.jsonl
 codex-rs/tui_app_server/tests/fixtures/oss-story.jsonl
 codex-rs/tui/src/app.rs
+
+# Full-precision WikiText-2 reference endpoints for independent score replay.
+qualification/hcsn_wikitext2_20261128/results/hx-137-best.pt # sha256:01aa522dd32ed89a21c63b67eee115cdaa3cfed03b30e702d76d7f9e1b71b86b
+qualification/hcsn_wikitext2_20261128/curved/results/hxcurve-137-best.pt # sha256:1f8143d38d59637a587c55a0f56d16e57cc00e18c32f653ae3156d3a55eb068b
+qualification/hcsn_wikitext2_20261128/direct/direct-137-init71.pt # sha256:01ccd521cb10d2a2d3a3354315bcb5730bb425957e2970404ae7e3da6938de83
