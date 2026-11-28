@@ -107,21 +107,16 @@ impl ResolvedWindowsSandboxPermissions {
         self.file_system.has_full_disk_read_access()
     }
 
-    pub(crate) fn has_full_disk_write_access(&self) -> bool {
-        self.file_system.has_full_disk_write_access()
+    pub(crate) fn has_write_policy(&self) -> bool {
+        self.file_system
+            .entries
+            .iter()
+            .any(|entry| entry.access.can_write())
     }
 
     /// Whether this filesystem policy needs the broker's enforcement.
-    pub fn requires_elevated_filesystem(
-        &self,
-        cwd: &Path,
-        env_map: &HashMap<String, String>,
-        has_overrides: bool,
-    ) -> bool {
-        has_overrides
-            || !self.has_full_disk_read_access()
-            || self.has_full_disk_write_access()
-            || self.uses_write_capabilities_for_cwd(cwd, env_map)
+    pub fn requires_elevated_filesystem(&self, has_overrides: bool) -> bool {
+        has_overrides || !self.has_full_disk_read_access() || self.has_write_policy()
     }
 
     pub(crate) fn has_symbolic_root_read_access(&self, cwd: &Path) -> bool {
@@ -455,7 +450,6 @@ mod tests {
     fn only_unmodified_read_only_filesystem_policy_uses_the_legacy_backend() -> Result<()> {
         let workspace = TempDir::new()?;
         let roots = workspace_roots_for(workspace.path());
-        let env = HashMap::new();
         let readonly =
             ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
                 &PermissionProfile::read_only(),
@@ -467,9 +461,9 @@ mod tests {
                 &roots,
             )?;
 
-        assert!(!readonly.requires_elevated_filesystem(workspace.path(), &env, false));
-        assert!(readonly.requires_elevated_filesystem(workspace.path(), &env, true));
-        assert!(writable.requires_elevated_filesystem(workspace.path(), &env, false));
+        assert!(!readonly.requires_elevated_filesystem(false));
+        assert!(readonly.requires_elevated_filesystem(true));
+        assert!(writable.requires_elevated_filesystem(false));
         Ok(())
     }
 

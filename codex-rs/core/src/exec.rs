@@ -666,7 +666,7 @@ async fn exec_windows_sandbox(
             || elevated_write_roots_override.is_some()
             || !additional_deny_read_paths.is_empty()
             || !additional_deny_write_paths.is_empty();
-        permissions.requires_elevated_filesystem(&cwd, &env, has_overrides)
+        permissions.requires_elevated_filesystem(has_overrides)
     };
     let spawn_res = tokio::task::spawn_blocking(move || {
         if use_elevated {

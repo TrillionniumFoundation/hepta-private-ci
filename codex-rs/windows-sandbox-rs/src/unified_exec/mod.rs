@@ -89,13 +89,11 @@ fn select_windows_sandbox_backend(
         || !request.deny_read_paths_override.is_empty()
         || !request.deny_write_paths_override.is_empty();
 
-    Ok(
-        if permissions.requires_elevated_filesystem(request.cwd, &request.env_map, has_overrides) {
-            WindowsSandboxBackend::Elevated
-        } else {
-            WindowsSandboxBackend::RestrictedToken
-        },
-    )
+    Ok(if permissions.requires_elevated_filesystem(has_overrides) {
+        WindowsSandboxBackend::Elevated
+    } else {
+        WindowsSandboxBackend::RestrictedToken
+    })
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(
