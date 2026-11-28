@@ -309,6 +309,7 @@ def verify(args, report):
         'full-native36': ('full36_manifest_verified', 36),
         'full-native37': ('full37_manifest_verified', 37),
         'full-native38': ('full38_manifest_verified', 38),
+        'full-native39': ('full39_manifest_verified', 39),
     }[args.build_profile]
     require(report['native_build'][manifest_flag] is True
             and report['native_build']['module_count'] == module_count,
@@ -370,7 +371,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native35', 'full-native36', 'full-native37', 'full-native38'], default='full-native35')
+    parser.add_argument('--build-profile', choices=['full-native35', 'full-native36', 'full-native37', 'full-native38', 'full-native39'], default='full-native35')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {

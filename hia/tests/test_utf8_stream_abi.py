@@ -44,7 +44,7 @@ CASES = [
 def verify(directory, profile, report):
     native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta',
                   profile, report)
-    verified = {'full-native36': 'full36_manifest_verified', 'full-native37': 'full37_manifest_verified', 'full-native38': 'full38_manifest_verified'}[profile]
+    verified = {'full-native36': 'full36_manifest_verified', 'full-native37': 'full37_manifest_verified', 'full-native38': 'full38_manifest_verified', 'full-native39': 'full39_manifest_verified'}[profile]
     if not report['native_build'][verified]:
         raise RuntimeError('the requested complete build was not admitted')
     contract_path = ROOT / 'utf8_stream_buffer_contract.json'
@@ -93,7 +93,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native36', 'full-native37', 'full-native38'], default='full-native36')
+    parser.add_argument('--build-profile', choices=['full-native36', 'full-native37', 'full-native38', 'full-native39'], default='full-native36')
     args = parser.parse_args()
     report = {'schema': 'codex.hia.utf8-stream-abi.v1', 'passed': False, 'calls': [],
               'scope': 'Native admission and literal UTF-8 buffers; public Rust tests are separate.'}
