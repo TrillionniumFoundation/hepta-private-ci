@@ -7,6 +7,7 @@ use codex_execpolicy::Policy;
 use codex_protocol::capabilities::CapabilityRootLocation;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::Result as CodexResult;
+use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::EnvironmentConfig;
 use codex_protocol::protocol::EnvironmentConfigState;
 use codex_protocol::protocol::TurnEnvironmentSelection;
@@ -17,6 +18,38 @@ use crate::config::NetworkProxySpec;
 use crate::session::session::Session;
 use crate::session::session::SessionConfiguration;
 use crate::session::session::SessionSettingsUpdate;
+
+#[cfg(test)]
+#[path = "environment_permission_persistence_tests.rs"]
+mod permission_persistence_tests;
+
+/// Preserves the configured policy when host paths cannot represent the selected
+/// executor. Dropping foreign roots would erase relative policy entries and make
+/// different profiles indistinguishable when deciding whether to reuse roots.
+pub(super) fn permission_profile_for_persistence(
+    profile: &PermissionProfile,
+    selection: Option<&TurnEnvironmentSelection>,
+) -> PermissionProfile {
+    let workspace_roots = if let Some(selection) = selection {
+        if selection.cwd.to_abs_path().is_err() {
+            return profile.clone();
+        }
+        let Ok(workspace_roots) = selection
+            .workspace_roots
+            .iter()
+            .map(|root| root.to_abs_path())
+            .collect::<Result<Vec<_>, _>>()
+        else {
+            return profile.clone();
+        };
+        workspace_roots
+    } else {
+        Vec::new()
+    };
+    profile
+        .clone()
+        .materialize_project_roots_with_workspace_roots(&workspace_roots)
+}
 
 pub(super) fn validate_environment_selections(
     selections: &[TurnEnvironmentSelection],

@@ -38,8 +38,12 @@ fn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()>
     file.write_all(b"first durable state")?;
     file.sync_all()?;
     let before = snapshot_private_file(&file)?;
-    directory.replace("state.next", "state.json")?;
-    directory.sync_all()?;
+    directory
+        .replace("state.next", "state.json")
+        .inspect_err(|error| eprintln!("publish initial private state: {error}"))?;
+    directory
+        .sync_all()
+        .inspect_err(|error| eprintln!("sync initial private state directory: {error}"))?;
     let after = snapshot_private_file(&directory.open_read("state.json")?)?;
     assert!(before.same_file(&after));
     assert!(!directory.entry_exists("state.next")?);
@@ -56,8 +60,12 @@ fn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()>
     let mut next = reopened.create_new("state.next")?;
     next.write_all(b"second durable state")?;
     next.sync_all()?;
-    reopened.replace("state.next", "state.json")?;
-    reopened.sync_all()?;
+    reopened
+        .replace("state.next", "state.json")
+        .inspect_err(|error| eprintln!("replace reopened private state: {error}"))?;
+    reopened
+        .sync_all()
+        .inspect_err(|error| eprintln!("sync reopened private state directory: {error}"))?;
     assert_eq!(fs::read(root.join("state.json"))?, b"second durable state");
     Ok(())
 }
@@ -73,8 +81,12 @@ fn retained_parent_does_not_follow_a_replacement_path() -> io::Result<()> {
     let mut file = directory.create_new("state.next")?;
     file.write_all(b"retained directory")?;
     file.sync_all()?;
-    directory.replace("state.next", "state.json")?;
-    directory.sync_all()?;
+    directory
+        .replace("state.next", "state.json")
+        .inspect_err(|error| eprintln!("publish through retained private directory: {error}"))?;
+    directory
+        .sync_all()
+        .inspect_err(|error| eprintln!("sync retained private directory: {error}"))?;
     assert_eq!(fs::read(moved.join("state.json"))?, b"retained directory");
     assert!(!replacement.entry_exists("state.json")?);
     Ok(())

@@ -348,7 +348,10 @@ impl SessionConfiguration {
             service_tier: self.service_tier.clone(),
             approval_policy: self.approval_policy.value(),
             approvals_reviewer: self.approvals_reviewer,
-            permission_profile: self.materialized_permission_profile(environment_selections),
+            permission_profile: super::environment::permission_profile_for_persistence(
+                self.permission_profile_state.permission_profile(),
+                environment_selections.first(),
+            ),
             active_permission_profile: self.active_permission_profile(),
             cwd: self.legacy_fallback_cwd.clone(),
             reasoning_effort: self.collaboration_mode.reasoning_effort(),

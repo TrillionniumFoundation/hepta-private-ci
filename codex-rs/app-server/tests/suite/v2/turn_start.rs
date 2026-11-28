@@ -1344,8 +1344,9 @@ async fn turn_profile_tracks_blocking_tool_and_follow_up_sampling() -> Result<()
         })
     );
 
-    let second_turn = mcp
-        .start_turn_and_wait_for_completion(TurnStartParams {
+    let second_turn = timeout(
+        DEFAULT_READ_TIMEOUT,
+        mcp.start_turn_and_wait_for_completion(TurnStartParams {
             thread_id: thread.id.clone(),
             input: vec![V2UserInput::Text {
                 text: "run the other control tools".to_string(),
@@ -1360,8 +1361,10 @@ async fn turn_profile_tracks_blocking_tool_and_follow_up_sampling() -> Result<()
                 },
             }),
             ..Default::default()
-        })
-        .await?;
+        }),
+    )
+    .await
+    .context("timed out waiting for the control-tool analytics turn to complete")??;
 
     for (call_id, tool_name, _) in control_tools {
         let event = wait_for_matching_analytics_event(&server, DEFAULT_READ_TIMEOUT, |event| {
