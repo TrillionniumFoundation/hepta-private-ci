@@ -1,0 +1,405 @@
+{
+  "bazel_lock": {
+    "bytes": 1743125,
+    "sha256": "303c5f4c929ab5343c1e29292a850482944690a7736b6d12ad2ea63d7dafb1a6"
+  },
+  "crates": {
+    "codex-rs/hepta-fleet": {
+      "current_files": {
+        "BUILD.bazel": {
+          "bytes": 178,
+          "sha256": "fd56928559f52f7038e76e5aca9a5abe4a55f138226d7ede8050594a10ac7647"
+        },
+        "Cargo.toml": {
+          "bytes": 709,
+          "sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1"
+        },
+        "src/allocation.rs": {
+          "bytes": 10063,
+          "sha256": "dee4997f562b343ed03948e3dfe50fc413199f7449cbc9d3365afbc377c19e28"
+        },
+        "src/allocation_digest.rs": {
+          "bytes": 2752,
+          "sha256": "3462a0f23b4668e05b6aed1d3669cfcac5a99bfbc5e1e94e621f537262603531"
+        },
+        "src/allocation_model.rs": {
+          "bytes": 7551,
+          "sha256": "bc383329366e035cb59be4db24f06f37b80a6f3e9dfb925172b5f5efa80623c3"
+        },
+        "src/allocation_tests.rs": {
+          "bytes": 15085,
+          "sha256": "c56190dc07f1cac62891286fe9ebd79e7270df31aac8858710d918f9deec6a31"
+        },
+        "src/allocation_validation.rs": {
+          "bytes": 3771,
+          "sha256": "58550051c6247e4faccf4a4e47e4855630afd3a45082484900f35626dbecbcd2"
+        },
+        "src/authority_port.rs": {
+          "bytes": 10102,
+          "sha256": "438e66886213940fbed04c7e2e11b62d82353eb6f1b66f10dfc1ef7e37522895"
+        },
+        "src/bin/hepta-fleet-leased.rs": {
+          "bytes": 233,
+          "sha256": "ef05c6ff03bfef1a27936f648fb7d6a6ae144fc2a73b967e5ad47c4500c25ab7"
+        },
+        "src/error.rs": {
+          "bytes": 1713,
+          "sha256": "0936b2483cd750846b535e125327bef923a4ffbd499c4bca9474742cea24c309"
+        },
+        "src/lease_ledger.rs": {
+          "bytes": 11392,
+          "sha256": "26651b897fc385a96564bea6f20b22767e30e40d1eeb5166e1e217f1e36fc3bb"
+        },
+        "src/lease_ledger_tests.rs": {
+          "bytes": 2356,
+          "sha256": "2485fd56d953154354f091bfa62e4e4726ba8106df54b235be601f8debb01c80"
+        },
+        "src/lib.rs": {
+          "bytes": 2594,
+          "sha256": "638e4615f0bb8f115cdb5e475bea975f749d8ab7177862ea1361ac18ccb82eeb"
+        },
+        "src/model.rs": {
+          "bytes": 6311,
+          "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e"
+        },
+        "src/module_catalog.rs": {
+          "bytes": 14521,
+          "sha256": "b3d31ec223895d92a16054971d7de634bb864573f5bf3e801579bf8d4c55dffc"
+        },
+        "src/registry.rs": {
+          "bytes": 22037,
+          "sha256": "276be3e5376dc673520d72b69f1e743568778e34fa2a33845448703058dd25e0"
+        },
+        "src/registry_isolation_tests.rs": {
+          "bytes": 3380,
+          "sha256": "2d523394796650f5140d818c8be207d61672ca7984de3be3e9afab3c2846b47b"
+        },
+        "src/registry_tests.rs": {
+          "bytes": 12539,
+          "sha256": "a9c8f45d863e93b49775b4bf602df35d62cdfa8a38a2af0ec5c199be6615f231"
+        },
+        "src/release.rs": {
+          "bytes": 51036,
+          "sha256": "22fb0c441cd0ff2cbecd4cea005dd164f205d45385ae05d5e2b85d34e8de17d9"
+        },
+        "src/release_copy_tests.rs": {
+          "bytes": 1628,
+          "sha256": "65a7b7756c6f9c9abf51f0f49f796632f5fafdf0812990635a72248ddb273f49"
+        },
+        "src/revocation_control.rs": {
+          "bytes": 19549,
+          "sha256": "5790beab1fb2364380a0a4daeae5f5779895251fd5933c6a7657271f4b950fa1"
+        }
+      },
+      "directories": [
+        ".",
+        "src",
+        "src/bin"
+      ],
+      "inverse": {
+        "Cargo.toml": {
+          "after_sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1",
+          "before": "[package]\nedition.workspace = true\nlicense.workspace = true\nname = \"codex-hepta-fleet\"\nversion.workspace = true\npublish = false\n\n[lib]\nname = \"codex_hepta_fleet\"\npath = \"src/lib.rs\"\ndoctest = false\n\n[lints]\nworkspace = true\n\n[dependencies]\ncodex-hepta-contracts = { workspace = true }\ncodex-hepta-paths = { workspace = true }\nserde = { workspace = true, features = [\"derive\"] }\nserde_json = { workspace = true }\nsha2 = { workspace = true }\nthiserror = { workspace = true }\ntoml = { workspace = true }\n\n[dev-dependencies]\ned25519-dalek = { workspace = true }\npretty_assertions = { workspace = true }\ntempfile = { workspace = true }\n"
+        },
+        "src/registry.rs": {
+          "after_sha256": "276be3e5376dc673520d72b69f1e743568778e34fa2a33845448703058dd25e0",
+          "before": "use std::collections::BTreeMap;\n#[cfg(unix)]\nuse std::fs::File;\nuse std::fs::OpenOptions;\nuse std::io::ErrorKind;\nuse std::io::Write;\nuse std::path::Path;\nuse std::path::PathBuf;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n\nuse codex_hepta_contracts::AgentId;\nuse codex_hepta_paths::HeptaAgentLayout;\nuse codex_hepta_paths::HeptaFleetLayout;\nuse codex_hepta_paths::HeptaFleetRoot;\n\nuse crate::AGENT_STATE_SCHEMA_VERSION;\nuse crate::AgentLifecycle;\nuse crate::AgentLifecycleState;\nuse crate::AgentManifest;\nuse crate::AgentReleaseState;\nuse crate::FleetRegistryError;\nuse crate::release::initialize_release_state;\nuse crate::release::load_release_state;\n\nconst LIFECYCLE_FILE_PREFIX: &str = \"lifecycle-\";\nconst LIFECYCLE_FILE_SUFFIX: &str = \".json\";\nstatic STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);\n\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct AgentRecord {\n    pub manifest: AgentManifest,\n    pub lifecycle: AgentLifecycleState,\n    pub release_state: AgentReleaseState,\n    pub layout: HeptaAgentLayout,\n}\n\n#[derive(Clone, Debug, Default, Eq, PartialEq)]\npub struct FleetSnapshot {\n    pub agents: BTreeMap<AgentId, AgentRecord>,\n}\n\nimpl FleetSnapshot {\n    pub fn agent(&self, agent_id: &AgentId) -> Option<&AgentRecord> {\n        self.agents.get(agent_id)\n    }\n}\n\n/// Durable registry for one supervisor. Agents never write this control model.\n#[derive(Clone, Debug)]\npub struct FleetRegistry {\n    layout: HeptaFleetLayout,\n}\n\nimpl FleetRegistry {\n    pub fn initialize(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {\n        let layout = fleet_root.layout();\n        for directory in [\n            layout.fleet_root().as_path(),\n            layout.state_root(),\n            layout.run_root(),\n            layout.releases_root(),\n            layout.agents_root(),\n        ] {\n            std::fs::create_dir_all(directory)?;\n            validate_physical_directory(directory)?;\n        }\n        sync_directory(layout.fleet_root().as_path())?;\n        Ok(Self { layout })\n    }\n\n    pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {\n        let registry = Self {\n            layout: fleet_root.layout(),\n        };\n        for directory in [\n            registry.layout.fleet_root().as_path(),\n            registry.layout.state_root(),\n            registry.layout.run_root(),\n            registry.layout.releases_root(),\n            registry.layout.agents_root(),\n        ] {\n            validate_physical_directory(directory)?;\n        }\n        registry.migrate_legacy_matrix_roots()?;\n        registry.load()?;\n        Ok(registry)\n    }\n\n    pub fn layout(&self) -> &HeptaFleetLayout {\n        &self.layout\n    }\n\n    pub fn load(&self) -> Result<FleetSnapshot, FleetRegistryError> {\n        let mut agents = BTreeMap::new();\n        for entry in std::fs::read_dir(self.layout.agents_root())? {\n            let entry = entry?;\n            let file_name = entry.file_name();\n            let name = file_name.to_str().ok_or_else(|| {\n                FleetRegistryError::Corrupt(\"agent directory name is not UTF-8\".to_string())\n            })?;\n            if name.starts_with(\".staging-\") {\n                continue;\n            }\n            let agent_id = AgentId::parse(name)\n                .map_err(|error| FleetRegistryError::Corrupt(error.to_string()))?;\n            validate_physical_directory(&entry.path())?;\n            let record = self.load_agent(&agent_id)?;\n            if agents.insert(agent_id, record).is_some() {\n                return Err(FleetRegistryError::Corrupt(\n                    \"duplicate agent identity in registry\".to_string(),\n                ));\n            }\n        }\n        validate_workspace_isolation(&agents)?;\n        Ok(FleetSnapshot { agents })\n    }\n\n    pub fn register(&self, manifest: AgentManifest) -> Result<AgentRecord, FleetRegistryError> {\n        manifest.validate(self.layout.fleet_root())?;\n        let snapshot = self.load()?;\n        if snapshot.agent(&manifest.agent_id).is_some() {\n            return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));\n        }\n        validate_manifest_workspace(&manifest, &snapshot.agents)?;\n\n        let staging_root = staging_root(self.layout.agents_root(), &manifest.agent_id);\n        create_private_directory(&staging_root)?;\n        let registration = self.stage_registration(&staging_root, &manifest);\n        if let Err(error) = registration {\n            let _ = std::fs::remove_dir_all(&staging_root);\n            return Err(error);\n        }\n\n        let final_root = self\n            .layout\n            .agent(&manifest.agent_id)\n            .agent_root()\n            .to_path_buf();\n        if final_root.exists() {\n            let _ = std::fs::remove_dir_all(&staging_root);\n            return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));\n        }\n        if let Err(error) = std::fs::rename(&staging_root, &final_root) {\n            let _ = std::fs::remove_dir_all(&staging_root);\n            return if error.kind() == ErrorKind::AlreadyExists {\n                Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id))\n            } else {\n                Err(error.into())\n            };\n        }\n        sync_directory(self.layout.agents_root())?;\n        self.load_agent(&manifest.agent_id)\n    }\n\n    /// One-time, fail-closed upgrade for Agent roots created before the Matrix\n    /// companion geometry existed. New private directories are staged,\n    /// fsynced, and renamed; existing paths must be physical directories and\n    /// are only tightened to owner-only permissions.\n    fn migrate_legacy_matrix_roots(&self) -> Result<(), FleetRegistryError> {\n        for entry in std::fs::read_dir(self.layout.agents_root())? {\n            let entry = entry?;\n            let Some(name) = entry.file_name().to_str().map(str::to_owned) else {\n                return Err(FleetRegistryError::Corrupt(\n                    \"agent directory name is not UTF-8\".to_string(),\n                ));\n            };\n            if name.starts_with(\".staging-\") {\n                continue;\n            }\n            let agent_id = AgentId::parse(&name)\n                .map_err(|error| FleetRegistryError::Corrupt(error.to_string()))?;\n            let layout = self.layout.agent(&agent_id);\n            validate_physical_directory(layout.agent_root())?;\n            migrate_private_directory(layout.agent_root(), \"matrix\")?;\n            migrate_private_directory(layout.matrix_root(), \"secrets\")?;\n            validate_private_directory(layout.matrix_root())?;\n            validate_private_directory(layout.matrix_secrets_root())?;\n        }\n        Ok(())\n    }\n\n    pub fn compare_and_transition(\n        &self,\n        agent_id: &AgentId,\n        expected_generation: u64,\n        requested: AgentLifecycle,\n    ) -> Result<AgentLifecycleState, FleetRegistryError> {\n        let current = self.load_agent(agent_id)?.lifecycle;\n        if current.generation != expected_generation {\n            return Err(FleetRegistryError::StaleGeneration {\n                agent_id: agent_id.clone(),\n                expected: expected_generation,\n                current: current.generation,\n            });\n        }\n        let next = current.successor(requested)?;\n        let layout = self.layout.agent(agent_id);\n        match publish_lifecycle(layout.run_root(), &next)? {\n            PublishOutcome::Published => Ok(next),\n            PublishOutcome::AlreadyExists => {\n                let actual = self.load_agent(agent_id)?.lifecycle.generation;\n                Err(FleetRegistryError::StaleGeneration {\n                    agent_id: agent_id.clone(),\n                    expected: expected_generation,\n                    current: actual,\n                })\n            }\n        }\n    }\n\n    fn stage_registration(\n        &self,\n        staging_root: &Path,\n        manifest: &AgentManifest,\n    ) -> Result<(), FleetRegistryError> {\n        for name in [\n            \"home\",\n            \"run\",\n            \"logs\",\n            \"releases\",\n            \"cognitive\",\n            \"matrix\",\n            \"automation\",\n        ] {\n            create_private_directory(&staging_root.join(name))?;\n        }\n        let matrix_secrets_root = staging_root.join(\"matrix/secrets\");\n        create_private_directory(&matrix_secrets_root)?;\n        write_new_file(\n            &staging_root.join(\"agent.toml\"),\n            toml::to_string(manifest)?.as_bytes(),\n        )?;\n        let initial = AgentLifecycleState::initial(manifest.agent_id.clone());\n        write_new_file(\n            &lifecycle_path(&staging_root.join(\"run\"), initial.generation),\n            &lifecycle_json(&initial)?,\n        )?;\n        sync_directory(&staging_root.join(\"run\"))?;\n        initialize_release_state(&staging_root.join(\"releases\"), &manifest.agent_id)?;\n        sync_directory(&staging_root.join(\"releases\"))?;\n        sync_directory(staging_root)\n    }\n\n    /// Read and validate one registered Agent without enumerating its peers.\n    ///\n    /// This is a fresh owner-local control read, not a cached grant or a fleet\n    /// admission check. Registration and `load` retain global workspace-isolation\n    /// validation. Runtime callers must additionally compare the returned roots,\n    /// resource budget and lifecycle generation with their immutable launch\n    /// identity. Missing or corrupt local state remains an error; an unrelated\n    /// Agent's state is outside this read's failure domain.\n    ///\n    /// Cost depends on this Agent's retained lifecycle/release history, not on\n    /// fleet size. History compaction is a separate owner-controlled operation.\n    pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {\n        let layout = self.layout.agent(agent_id);\n        for directory in [\n            layout.agent_root(),\n            layout.home_root(),\n            layout.run_root(),\n            layout.logs_root(),\n            layout.releases_root(),\n            layout.cognitive_root(),\n            layout.matrix_root(),\n            layout.matrix_secrets_root(),\n            layout.automation_root(),\n        ] {\n            validate_physical_directory(directory)?;\n        }\n        validate_private_directory(layout.matrix_root())?;\n        validate_private_directory(layout.matrix_secrets_root())?;\n        let manifest: AgentManifest = toml::from_str(&read_regular_file(layout.agent_config())?)\n            .map_err(|error| {\n                FleetRegistryError::Corrupt(format!(\"invalid agent manifest: {error}\"))\n            })?;\n        manifest.validate(self.layout.fleet_root())?;\n        if &manifest.agent_id != agent_id {\n            return Err(FleetRegistryError::Corrupt(format!(\n                \"manifest identity {} differs from directory {agent_id}\",\n                manifest.agent_id\n            )));\n        }\n        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;\n        let release_state = load_release_state(layout.releases_root(), agent_id)?;\n        Ok(AgentRecord {\n            manifest,\n            lifecycle,\n            release_state,\n            layout,\n        })\n    }\n}\n\nenum PublishOutcome {\n    Published,\n    AlreadyExists,\n}\n\nfn publish_lifecycle(\n    run_root: &Path,\n    state: &AgentLifecycleState,\n) -> Result<PublishOutcome, FleetRegistryError> {\n    let final_path = lifecycle_path(run_root, state.generation);\n    let temp_path = run_root.join(format!(\n        \".lifecycle-{}-{}-{}.tmp\",\n        state.generation,\n        std::process::id(),\n        STAGING_SEQUENCE.fetch_add(1, Ordering::Relaxed)\n    ));\n    write_new_file(&temp_path, &lifecycle_json(state)?)?;\n    let outcome = match std::fs::hard_link(&temp_path, &final_path) {\n        Ok(()) => PublishOutcome::Published,\n        Err(error) if error.kind() == ErrorKind::AlreadyExists => PublishOutcome::AlreadyExists,\n        Err(error) => {\n            let _ = std::fs::remove_file(&temp_path);\n            return Err(error.into());\n        }\n    };\n    let _ = std::fs::remove_file(temp_path);\n    sync_directory(run_root)?;\n    Ok(outcome)\n}\n\nfn load_lifecycle(\n    run_root: &Path,\n    agent_id: &AgentId,\n) -> Result<AgentLifecycleState, FleetRegistryError> {\n    let mut states = BTreeMap::new();\n    for entry in std::fs::read_dir(run_root)? {\n        let entry = entry?;\n        let file_name = entry.file_name();\n        let Some(name) = file_name.to_str() else {\n            return Err(FleetRegistryError::Corrupt(\n                \"lifecycle filename is not UTF-8\".to_string(),\n            ));\n        };\n        if name.starts_with('.') || !name.starts_with(LIFECYCLE_FILE_PREFIX) {\n            continue;\n        }\n        let generation = parse_lifecycle_generation(name)?;\n        let state: AgentLifecycleState = serde_json::from_str(&read_regular_file(&entry.path())?)\n            .map_err(|error| {\n            FleetRegistryError::Corrupt(format!(\"invalid lifecycle state: {error}\"))\n        })?;\n        if state.schema_version != AGENT_STATE_SCHEMA_VERSION\n            || &state.agent_id != agent_id\n            || state.generation != generation\n        {\n            return Err(FleetRegistryError::Corrupt(format!(\n                \"lifecycle state does not match agent {agent_id} generation {generation}\"\n            )));\n        }\n        states.insert(generation, state);\n    }\n    let mut previous: Option<AgentLifecycleState> = None;\n    for (expected, (generation, state)) in states.iter().enumerate() {\n        if *generation != expected as u64 {\n            return Err(FleetRegistryError::Corrupt(\n                \"agent lifecycle generations are not contiguous\".to_string(),\n            ));\n        }\n        if expected == 0 && state != &AgentLifecycleState::initial(agent_id.clone()) {\n            return Err(FleetRegistryError::Corrupt(\n                \"agent lifecycle history has an invalid initial state\".to_string(),\n            ));\n        }\n        if let Some(previous) = previous.as_ref()\n            && !previous.lifecycle.can_transition_to(state.lifecycle)\n        {\n            return Err(FleetRegistryError::Corrupt(\n                \"agent lifecycle history contains an invalid transition\".to_string(),\n            ));\n        }\n        previous = Some(state.clone());\n    }\n    previous\n        .ok_or_else(|| FleetRegistryError::Corrupt(\"agent lifecycle state is missing\".to_string()))\n}\n\nfn validate_workspace_isolation(\n    agents: &BTreeMap<AgentId, AgentRecord>,\n) -> Result<(), FleetRegistryError> {\n    // Canonical Path ordering groups a directory with all of its descendants.\n    // Any overlapping pair therefore has an adjacent overlapping witness. Keep\n    // the global invariant without comparing every agent with every other one.\n    let mut ordered = agents.values().collect::<Vec<_>>();\n    ordered.sort_unstable_by(|left, right| {\n        left.manifest\n            .workspace\n            .as_path()\n            .cmp(right.manifest.workspace.as_path())\n            .then_with(|| left.manifest.agent_id.cmp(&right.manifest.agent_id))\n    });\n    for pair in ordered.windows(/*size*/ 2) {\n        let parent = &pair[0].manifest;\n        let child = &pair[1].manifest;\n        if child\n            .workspace\n            .as_path()\n            .starts_with(parent.workspace.as_path())\n        {\n            return Err(FleetRegistryError::WorkspaceConflict {\n                agent_id: child.agent_id.clone(),\n                registered_agent_id: parent.agent_id.clone(),\n            });\n        }\n    }\n    Ok(())\n}\n\nfn validate_manifest_workspace(\n    manifest: &AgentManifest,\n    agents: &BTreeMap<AgentId, AgentRecord>,\n) -> Result<(), FleetRegistryError> {\n    for (registered_id, record) in agents {\n        if registered_id == &manifest.agent_id {\n            continue;\n        }\n        let candidate = manifest.workspace.as_path();\n        let registered = record.manifest.workspace.as_path();\n        if candidate.starts_with(registered) || registered.starts_with(candidate) {\n            return Err(FleetRegistryError::WorkspaceConflict {\n                agent_id: manifest.agent_id.clone(),\n                registered_agent_id: registered_id.clone(),\n            });\n        }\n    }\n    Ok(())\n}\n\nfn parse_lifecycle_generation(name: &str) -> Result<u64, FleetRegistryError> {\n    let value = name\n        .strip_prefix(LIFECYCLE_FILE_PREFIX)\n        .and_then(|value| value.strip_suffix(LIFECYCLE_FILE_SUFFIX))\n        .filter(|value| value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit()))\n        .ok_or_else(|| {\n            FleetRegistryError::Corrupt(format!(\"invalid lifecycle filename {name:?}\"))\n        })?;\n    value\n        .parse()\n        .map_err(|_| FleetRegistryError::Corrupt(format!(\"invalid lifecycle generation {value}\")))\n}\n\nfn lifecycle_path(run_root: &Path, generation: u64) -> PathBuf {\n    run_root.join(format!(\n        \"{LIFECYCLE_FILE_PREFIX}{generation:020}{LIFECYCLE_FILE_SUFFIX}\"\n    ))\n}\n\nfn lifecycle_json(state: &AgentLifecycleState) -> Result<Vec<u8>, FleetRegistryError> {\n    let mut json = serde_json::to_vec(state)\n        .map_err(|error| FleetRegistryError::Corrupt(format!(\"encode lifecycle state: {error}\")))?;\n    json.push(b'\\n');\n    Ok(json)\n}\n\nfn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {\n    agents_root.join(format!(\n        \".staging-{agent_id}-{}-{}\",\n        std::process::id(),\n        STAGING_SEQUENCE.fetch_add(1, Ordering::Relaxed)\n    ))\n}\n\nfn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {\n    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;\n    file.write_all(contents)?;\n    file.sync_all()?;\n    Ok(())\n}\n\nfn read_regular_file(path: &Path) -> Result<String, FleetRegistryError> {\n    let metadata = std::fs::symlink_metadata(path)?;\n    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {\n        return Err(FleetRegistryError::Corrupt(format!(\n            \"control path is not a regular file: {}\",\n            path.display()\n        )));\n    }\n    std::fs::read_to_string(path).map_err(Into::into)\n}\n\nfn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {\n    let metadata = std::fs::symlink_metadata(path)?;\n    if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {\n        return Err(FleetRegistryError::Corrupt(format!(\n            \"control path is not a physical directory: {}\",\n            path.display()\n        )));\n    }\n    Ok(())\n}\n\nfn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegistryError> {\n    let final_path = parent.join(name);\n    match std::fs::symlink_metadata(&final_path) {\n        Ok(metadata) => {\n            if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {\n                return Err(FleetRegistryError::Corrupt(format!(\n                    \"private Matrix path is not a physical directory: {}\",\n                    final_path.display()\n                )));\n            }\n            set_private_directory_permissions(&final_path)?;\n            sync_directory(parent)?;\n            return Ok(());\n        }\n        Err(error) if error.kind() == ErrorKind::NotFound => {}\n        Err(error) => return Err(error.into()),\n    }\n\n    match create_private_directory(&final_path) {\n        Ok(()) => {}\n        Err(error) if error.kind() == ErrorKind::AlreadyExists => {\n            validate_physical_directory(&final_path)?;\n            set_private_directory_permissions(&final_path)?;\n        }\n        Err(error) => return Err(error.into()),\n    }\n    sync_directory(parent)\n}\n\n#[cfg(unix)]\nfn create_private_directory(path: &Path) -> std::io::Result<()> {\n    use std::os::unix::fs::DirBuilderExt;\n\n    let mut builder = std::fs::DirBuilder::new();\n    builder.mode(0o700).create(path)\n}\n\n#[cfg(not(unix))]\nfn create_private_directory(path: &Path) -> std::io::Result<()> {\n    std::fs::create_dir(path)\n}\n\n#[cfg(unix)]\nfn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryError> {\n    use std::os::unix::fs::PermissionsExt;\n\n    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;\n    Ok(())\n}\n\n#[cfg(not(unix))]\nfn set_private_directory_permissions(_path: &Path) -> Result<(), FleetRegistryError> {\n    Ok(())\n}\n\n#[cfg(unix)]\nfn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {\n    use std::os::unix::fs::PermissionsExt;\n\n    let mode = std::fs::symlink_metadata(path)?.permissions().mode();\n    if mode & 0o077 != 0 || mode & 0o700 != 0o700 {\n        return Err(FleetRegistryError::Corrupt(format!(\n            \"private Matrix directory has unsafe permissions: {}\",\n            path.display()\n        )));\n    }\n    Ok(())\n}\n\n#[cfg(not(unix))]\nfn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {\n    validate_physical_directory(path)\n}\n\n#[cfg(unix)]\nfn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {\n    File::open(path)?.sync_all()?;\n    Ok(())\n}\n\n#[cfg(not(unix))]\nfn sync_directory(_path: &Path) -> Result<(), FleetRegistryError> {\n    Ok(())\n}\n\n#[cfg(test)]\n#[path = \"registry_tests.rs\"]\nmod tests;\n\n#[cfg(test)]\n#[path = \"registry_isolation_tests.rs\"]\nmod isolation_tests;\n"
+        },
+        "src/registry_tests.rs": {
+          "after_sha256": "a9c8f45d863e93b49775b4bf602df35d62cdfa8a38a2af0ec5c199be6615f231",
+          "before": "use std::fs;\nuse std::path::Path;\n#[cfg(unix)]\nuse std::sync::Arc;\n#[cfg(unix)]\nuse std::sync::Barrier;\n\nuse codex_hepta_contracts::AgentId;\nuse codex_hepta_paths::HeptaFleetRoot;\nuse pretty_assertions::assert_eq;\nuse tempfile::TempDir;\n\nuse super::FleetRegistry;\nuse super::FleetRegistryError;\nuse super::lifecycle_path;\nuse crate::AgentLifecycle;\nuse crate::AgentManifest;\nuse crate::ResourceBudget;\nuse crate::WorkspaceBinding;\n\nconst FIRST_AGENT_ID: &str = \"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\";\nconst SECOND_AGENT_ID: &str = \"019153a4-3088-7e03-a56a-9b1964f75dd3\";\n\nstruct TestFleet {\n    _temp: TempDir,\n    root: HeptaFleetRoot,\n    registry: FleetRegistry,\n    first_workspace: std::path::PathBuf,\n    second_workspace: std::path::PathBuf,\n}\n\nimpl TestFleet {\n    fn new() -> Result<Self, FleetRegistryError> {\n        let temp = tempfile::tempdir()?;\n        let root = HeptaFleetRoot::parse(temp.path().join(\"fleet\"))\n            .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;\n        let registry = FleetRegistry::initialize(root.clone())?;\n        let first_workspace = create_workspace(temp.path(), \"workspace-a\")?;\n        let second_workspace = create_workspace(temp.path(), \"workspace-b\")?;\n        Ok(Self {\n            _temp: temp,\n            root,\n            registry,\n            first_workspace,\n            second_workspace,\n        })\n    }\n\n    fn manifest(\n        &self,\n        agent_id: &str,\n        workspace: &Path,\n    ) -> Result<AgentManifest, FleetRegistryError> {\n        AgentManifest::new(\n            AgentId::parse(agent_id)\n                .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?,\n            WorkspaceBinding::new(workspace, &self.root)?,\n            ResourceBudget::local_default(),\n        )\n    }\n}\n\n#[test]\nfn two_agents_reload_with_isolated_paths_and_generations() -> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let first = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let second = fleet.manifest(SECOND_AGENT_ID, &fleet.second_workspace)?;\n    fleet.registry.register(first)?;\n    fleet.registry.register(second)?;\n\n    let first_id = AgentId::parse(FIRST_AGENT_ID)\n        .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;\n    fleet\n        .registry\n        .compare_and_transition(&first_id, 0, AgentLifecycle::Starting)?;\n    let expected = fleet.registry.load()?;\n    let reopened = FleetRegistry::open_existing(fleet.root)?;\n    let actual = reopened.load()?;\n\n    assert_eq!(actual, expected);\n    let first = actual.agent(&first_id).expect(\"first agent\");\n    let second_id = AgentId::parse(SECOND_AGENT_ID)\n        .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;\n    let second = actual.agent(&second_id).expect(\"second agent\");\n    assert_eq!(\n        (\n            first.lifecycle.generation,\n            first.lifecycle.lifecycle,\n            second.lifecycle.generation,\n            second.lifecycle.lifecycle,\n        ),\n        (1, AgentLifecycle::Starting, 0, AgentLifecycle::Stopped)\n    );\n    assert_ne!(first.layout.agent_root(), second.layout.agent_root());\n    assert_ne!(\n        first.manifest.workspace.as_path(),\n        second.manifest.workspace.as_path()\n    );\n    Ok(())\n}\n\n#[test]\nfn stale_generation_is_rejected_without_appending_state() -> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let agent_id = manifest.agent_id.clone();\n    fleet.registry.register(manifest)?;\n    let first = fleet\n        .registry\n        .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;\n\n    let error = fleet\n        .registry\n        .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)\n        .expect_err(\"stale generation must fail\");\n    assert!(matches!(\n        error,\n        FleetRegistryError::StaleGeneration {\n            expected: 0,\n            current: 1,\n            ..\n        }\n    ));\n    assert_eq!(\n        &fleet.registry.load()?.agent(&agent_id).unwrap().lifecycle,\n        &first\n    );\n    Ok(())\n}\n\n#[test]\nfn corrupt_lifecycle_state_fails_closed() -> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let agent_id = manifest.agent_id.clone();\n    let record = fleet.registry.register(manifest)?;\n    fs::write(\n        lifecycle_path(record.layout.run_root(), 0),\n        format!(\n            \"{{\\\"schema_version\\\":1,\\\"agent_id\\\":\\\"{agent_id}\\\",\\\"generation\\\":0,\\\"lifecycle\\\":\\\"running\\\"}}\\n\"\n        ),\n    )?;\n\n    assert!(matches!(\n        fleet.registry.load(),\n        Err(FleetRegistryError::Corrupt(_))\n    ));\n    Ok(())\n}\n\n#[test]\nfn crash_leftovers_are_ignored_but_published_state_reloads() -> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let agent_id = manifest.agent_id.clone();\n    let record = fleet.registry.register(manifest)?;\n    fs::write(\n        record.layout.run_root().join(\".lifecycle-crashed.tmp\"),\n        b\"partial\",\n    )?;\n    fs::create_dir(\n        fleet\n            .registry\n            .layout()\n            .agents_root()\n            .join(\".staging-crashed\"),\n    )?;\n\n    let expected = record.lifecycle;\n    let reloaded = FleetRegistry::open_existing(fleet.root)?\n        .load()?\n        .agent(&agent_id)\n        .expect(\"registered agent\")\n        .lifecycle\n        .clone();\n    assert_eq!(reloaded, expected);\n    Ok(())\n}\n\n#[test]\nfn overlapping_workspace_bindings_are_rejected() -> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let nested = create_workspace(&fleet.first_workspace, \"nested\")?;\n    fleet\n        .registry\n        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;\n    let error = fleet\n        .registry\n        .register(fleet.manifest(SECOND_AGENT_ID, &nested)?)\n        .expect_err(\"overlapping workspace must fail\");\n\n    assert!(matches!(\n        error,\n        FleetRegistryError::WorkspaceConflict { .. }\n    ));\n    assert_eq!(fleet.registry.load()?.agents.len(), 1);\n\n    let mut invalid_budget = ResourceBudget::local_default();\n    invalid_budget.turn_queue_capacity = 0;\n    let invalid = AgentManifest::new(\n        AgentId::parse(SECOND_AGENT_ID)\n            .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?,\n        WorkspaceBinding::new(&fleet.second_workspace, &fleet.root)?,\n        invalid_budget,\n    );\n    assert!(matches!(invalid, Err(FleetRegistryError::Invalid(_))));\n    Ok(())\n}\n\n#[cfg(unix)]\n#[test]\nfn concurrent_open_atomically_migrates_legacy_matrix_private_roots()\n-> Result<(), FleetRegistryError> {\n    use std::os::unix::fs::PermissionsExt;\n\n    let fleet = TestFleet::new()?;\n    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let agent_id = manifest.agent_id.clone();\n    let record = fleet.registry.register(manifest)?;\n    fs::remove_dir(record.layout.matrix_secrets_root())?;\n    fs::remove_dir(record.layout.matrix_root())?;\n\n    let barrier = Arc::new(Barrier::new(3));\n    let handles: Vec<_> = (0..2)\n        .map(|_| {\n            let root = fleet.root.clone();\n            let barrier = Arc::clone(&barrier);\n            std::thread::spawn(move || {\n                barrier.wait();\n                FleetRegistry::open_existing(root)\n            })\n        })\n        .collect();\n    barrier.wait();\n    for handle in handles {\n        handle\n            .join()\n            .map_err(|_| FleetRegistryError::Corrupt(\"migration thread panicked\".to_string()))??;\n    }\n\n    let layout = fleet.registry.layout().agent(&agent_id);\n    for private_root in [layout.matrix_root(), layout.matrix_secrets_root()] {\n        let metadata = fs::symlink_metadata(private_root)?;\n        assert!(metadata.file_type().is_dir() && !metadata.file_type().is_symlink());\n        assert_eq!(metadata.permissions().mode() & 0o777, 0o700);\n    }\n    assert!(fs::read_dir(layout.agent_root())?.all(|entry| {\n        !entry\n            .unwrap()\n            .file_name()\n            .to_string_lossy()\n            .contains(\"staging\")\n    }));\n    Ok(())\n}\n\nfn create_workspace(parent: &Path, name: &str) -> Result<std::path::PathBuf, FleetRegistryError> {\n    let workspace = parent.join(name);\n    fs::create_dir(&workspace)?;\n    Ok(workspace.canonicalize()?)\n}\n\n#[test]\nfn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()\n-> Result<(), FleetRegistryError> {\n    let fleet = TestFleet::new()?;\n    let first = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;\n    let template = fleet.registry.register(first)?;\n    let names = [\"a\", \"a/b\", \"a/b/c\", \"a-b\", \"aa\", \"b\", \"b/a\", \"b/c\"];\n    let paths = names\n        .iter()\n        .map(|name| {\n            let path = fleet._temp.path().join(\"sweep\").join(name);\n            fs::create_dir_all(&path)?;\n            WorkspaceBinding::new(&path.canonicalize()?, &fleet.root)\n        })\n        .collect::<Result<Vec<_>, FleetRegistryError>>()?;\n    // Every subset and both identity orders exercise parents, descendants,\n    // interleaved siblings and lexical lookalikes without timing assertions.\n    for mask in 0_u16..1 << names.len() {\n        for reverse in [false, true] {\n            let mut agents = std::collections::BTreeMap::new();\n            for (index, workspace) in paths.iter().enumerate() {\n                if mask & (1 << index) == 0 {\n                    continue;\n                }\n                let identity = if reverse { names.len() - index } else { index };\n                let id = AgentId::parse(format!(\"019153a4-3088-7e03-a56a-{identity:012x}\"))\n                    .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;\n                let mut record = template.clone();\n                record.manifest.agent_id = id.clone();\n                record.manifest.workspace = workspace.clone();\n                agents.insert(id, record);\n            }\n            let values = agents.values().collect::<Vec<_>>();\n            let overlaps = values.iter().enumerate().any(|(index, left)| {\n                values.iter().skip(index + 1).any(|right| {\n                    left.manifest\n                        .workspace\n                        .as_path()\n                        .starts_with(right.manifest.workspace.as_path())\n                        || right\n                            .manifest\n                            .workspace\n                            .as_path()\n                            .starts_with(left.manifest.workspace.as_path())\n                })\n            });\n            assert_eq!(\n                super::validate_workspace_isolation(&agents).is_err(),\n                overlaps\n            );\n        }\n    }\n    Ok(())\n}\n\n#[cfg(unix)]\n#[test]\nfn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {\n    use std::os::unix::fs::PermissionsExt;\n    let fleet = TestFleet::new()?;\n    let record = fleet\n        .registry\n        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;\n    for root in [\n        record.layout.agent_root(),\n        record.layout.home_root(),\n        record.layout.run_root(),\n        record.layout.logs_root(),\n        record.layout.releases_root(),\n        record.layout.cognitive_root(),\n        record.layout.matrix_root(),\n        record.layout.matrix_secrets_root(),\n        record.layout.automation_root(),\n    ] {\n        assert_eq!(\n            fs::symlink_metadata(root)?.permissions().mode() & 0o777,\n            0o700,\n            \"{}\",\n            root.display()\n        );\n    }\n    Ok(())\n}\n"
+        }
+      },
+      "modes": {
+        "BUILD.bazel": "100644",
+        "Cargo.toml": "100644",
+        "src/allocation.rs": "100644",
+        "src/allocation_digest.rs": "100644",
+        "src/allocation_model.rs": "100644",
+        "src/allocation_tests.rs": "100644",
+        "src/allocation_validation.rs": "100644",
+        "src/authority_port.rs": "100644",
+        "src/bin/hepta-fleet-leased.rs": "100644",
+        "src/error.rs": "100644",
+        "src/lease_ledger.rs": "100644",
+        "src/lease_ledger_tests.rs": "100644",
+        "src/lib.rs": "100644",
+        "src/model.rs": "100644",
+        "src/module_catalog.rs": "100644",
+        "src/registry.rs": "100644",
+        "src/registry_isolation_tests.rs": "100644",
+        "src/registry_tests.rs": "100644",
+        "src/release.rs": "100644",
+        "src/release_copy_tests.rs": "100644",
+        "src/revocation_control.rs": "100644"
+      },
+      "original_files": {
+        "BUILD.bazel": {
+          "bytes": 178,
+          "sha256": "fd56928559f52f7038e76e5aca9a5abe4a55f138226d7ede8050594a10ac7647"
+        },
+        "Cargo.toml": {
+          "bytes": 631,
+          "sha256": "c651dae8fede019ba6409f9e59815796444e4a9fb4a698aad40db94859dc3870"
+        },
+        "src/allocation.rs": {
+          "bytes": 10063,
+          "sha256": "dee4997f562b343ed03948e3dfe50fc413199f7449cbc9d3365afbc377c19e28"
+        },
+        "src/allocation_digest.rs": {
+          "bytes": 2752,
+          "sha256": "3462a0f23b4668e05b6aed1d3669cfcac5a99bfbc5e1e94e621f537262603531"
+        },
+        "src/allocation_model.rs": {
+          "bytes": 7551,
+          "sha256": "bc383329366e035cb59be4db24f06f37b80a6f3e9dfb925172b5f5efa80623c3"
+        },
+        "src/allocation_tests.rs": {
+          "bytes": 15085,
+          "sha256": "c56190dc07f1cac62891286fe9ebd79e7270df31aac8858710d918f9deec6a31"
+        },
+        "src/allocation_validation.rs": {
+          "bytes": 3771,
+          "sha256": "58550051c6247e4faccf4a4e47e4855630afd3a45082484900f35626dbecbcd2"
+        },
+        "src/authority_port.rs": {
+          "bytes": 10102,
+          "sha256": "438e66886213940fbed04c7e2e11b62d82353eb6f1b66f10dfc1ef7e37522895"
+        },
+        "src/bin/hepta-fleet-leased.rs": {
+          "bytes": 233,
+          "sha256": "ef05c6ff03bfef1a27936f648fb7d6a6ae144fc2a73b967e5ad47c4500c25ab7"
+        },
+        "src/error.rs": {
+          "bytes": 1713,
+          "sha256": "0936b2483cd750846b535e125327bef923a4ffbd499c4bca9474742cea24c309"
+        },
+        "src/lease_ledger.rs": {
+          "bytes": 11392,
+          "sha256": "26651b897fc385a96564bea6f20b22767e30e40d1eeb5166e1e217f1e36fc3bb"
+        },
+        "src/lease_ledger_tests.rs": {
+          "bytes": 2356,
+          "sha256": "2485fd56d953154354f091bfa62e4e4726ba8106df54b235be601f8debb01c80"
+        },
+        "src/lib.rs": {
+          "bytes": 2594,
+          "sha256": "638e4615f0bb8f115cdb5e475bea975f749d8ab7177862ea1361ac18ccb82eeb"
+        },
+        "src/model.rs": {
+          "bytes": 6311,
+          "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e"
+        },
+        "src/module_catalog.rs": {
+          "bytes": 14521,
+          "sha256": "b3d31ec223895d92a16054971d7de634bb864573f5bf3e801579bf8d4c55dffc"
+        },
+        "src/registry.rs": {
+          "bytes": 21262,
+          "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753"
+        },
+        "src/registry_isolation_tests.rs": {
+          "bytes": 3380,
+          "sha256": "2d523394796650f5140d818c8be207d61672ca7984de3be3e9afab3c2846b47b"
+        },
+        "src/registry_tests.rs": {
+          "bytes": 11752,
+          "sha256": "29ed9b3b68abc8c414fcfc7359f225c95a9e07a628104eef1266f64452702781"
+        },
+        "src/release.rs": {
+          "bytes": 51036,
+          "sha256": "22fb0c441cd0ff2cbecd4cea005dd164f205d45385ae05d5e2b85d34e8de17d9"
+        },
+        "src/release_copy_tests.rs": {
+          "bytes": 1628,
+          "sha256": "65a7b7756c6f9c9abf51f0f49f796632f5fafdf0812990635a72248ddb273f49"
+        },
+        "src/revocation_control.rs": {
+          "bytes": 19549,
+          "sha256": "5790beab1fb2364380a0a4daeae5f5779895251fd5933c6a7657271f4b950fa1"
+        }
+      }
+    },
+    "codex-rs/utils/path-utils": {
+      "current_files": {
+        "BUILD.bazel": {
+          "bytes": 123,
+          "sha256": "077c5bd595e45a9180c4df4e5f8ab249ee15a1708f819ce0664f41b430c235d8"
+        },
+        "Cargo.toml": {
+          "bytes": 661,
+          "sha256": "1b51af6945a16b39e619dfa3f5aa2e6be1d43a8a50c47846cc8280ffeeae5b42"
+        },
+        "src/env.rs": {
+          "bytes": 563,
+          "sha256": "a252bfec34d98d176179987e572377866ea52f371ce756aafa61bc1de91dfc76"
+        },
+        "src/lib.rs": {
+          "bytes": 6844,
+          "sha256": "453535a8990428c5d53dbcb91bc6fa9af39946077677b259779e73b9ef07c9d7"
+        },
+        "src/path_utils_tests.rs": {
+          "bytes": 3298,
+          "sha256": "e64f277c43eb9c85d5fd2c92ca3e180562f77ef4189f842e4bde5a333fcf2f10"
+        },
+        "src/publish.rs": {
+          "bytes": 2991,
+          "sha256": "2f67f386ed05aa50a335421909eb4948a050ac27fba8209f5bda90fe45f2c08f"
+        },
+        "src/publish_tests.rs": {
+          "bytes": 1771,
+          "sha256": "213304fca0555e3934da8cd574b40266c365a2f49427b6e6eea33beac79b3daa"
+        },
+        "src/windows_private_fs.rs": {
+          "bytes": 6984,
+          "sha256": "349f147193af2ac8728f544b1cd10191625fe7953f7f4806f76f05cae8b55dc7"
+        },
+        "src/windows_private_fs/nt.rs": {
+          "bytes": 11157,
+          "sha256": "8dbd6185463b6c052b1fc8edd3425f13d24bd4219fd14afbc566a4cc09833dfa"
+        },
+        "src/windows_private_fs/snapshot.rs": {
+          "bytes": 4182,
+          "sha256": "7974e1109025c4e696e22f1b9dd34101449f212bd42820f63c819887ee00388e"
+        },
+        "src/windows_private_fs_tests.rs": {
+          "bytes": 8390,
+          "sha256": "2fbf4ba5e58d17a9067998cc90ffe02c6a41168635d419f373a43d603ce7d688"
+        },
+        "src/windows_security.rs": {
+          "bytes": 12628,
+          "sha256": "8ec224e58d1393d87824cd5a1804acb512c024a5bdc9f0792f74d055c750435f"
+        },
+        "src/windows_security/acl.rs": {
+          "bytes": 5175,
+          "sha256": "5196684650a66a132db8ed9055a5254eeeb716750a7600b60cf9c55d2e38150f"
+        },
+        "src/windows_security_tests.rs": {
+          "bytes": 3916,
+          "sha256": "9c1430958dd56ed61b8ab1ac6c199837b4235274070765b39e63e2d0e9622098"
+        }
+      },
+      "directories": [
+        ".",
+        "src",
+        "src/windows_private_fs",
+        "src/windows_security"
+      ],
+      "inverse": {
+        "src/windows_private_fs.rs": {
+          "after_sha256": "349f147193af2ac8728f544b1cd10191625fe7953f7f4806f76f05cae8b55dc7",
+          "before": "//! Private Windows state anchored to a retained, validated directory handle.\n//!\n//! Existing objects are rejected when their owner, DACL, type, link count, or\n//! reparse status is unsafe. Creation supplies the protected DACL atomically;\n//! it never changes permissions on a pre-existing object to make it acceptable.\n\nmod nt;\nmod snapshot;\n\npub use snapshot::FileSnapshot;\npub use snapshot::snapshot_private_file;\n\nuse std::fs::File;\nuse std::io;\nuse std::path::Path;\n\nuse crate::windows_security::CurrentIdentity;\nuse crate::windows_security::DescriptorInheritance;\nuse crate::windows_security::OwnerSecurityDescriptor;\nuse crate::windows_security::invalid_security;\n\n/// A private state directory whose children are resolved relative to its handle.\n#[derive(Debug)]\npub struct PrivateDirectory {\n    file: File,\n}\n\nimpl PrivateDirectory {\n    /// Opens or creates one directory. Its parent must already exist.\n    pub fn open_or_create(path: &Path) -> io::Result<Self> {\n        let identity = CurrentIdentity::read()?;\n        let descriptor = OwnerSecurityDescriptor::new(\n            &identity.user,\n            DescriptorInheritance::ContainersAndObjects,\n        )?;\n        let file = nt::open_absolute(\n            path,\n            nt::Access::ReadWrite,\n            nt::Kind::Directory,\n            nt::Disposition::OpenOrCreate,\n            Some(&descriptor),\n        )?;\n        if !snapshot::snapshot(&file, &identity)?.is_directory() {\n            return Err(invalid_security(\"private state root is not a directory\"));\n        }\n        Ok(Self { file })\n    }\n\n    /// Opens a pre-existing private directory without following any reparse point.\n    pub fn open_existing(path: &Path) -> io::Result<Self> {\n        Self::open_directory(path, nt::Access::ReadWrite)\n    }\n\n    /// Retains a read-only directory handle for inspection without requesting writes.\n    pub fn open_existing_read_only(path: &Path) -> io::Result<Self> {\n        Self::open_directory(path, nt::Access::Read)\n    }\n\n    fn open_directory(path: &Path, access: nt::Access) -> io::Result<Self> {\n        let file = nt::open_absolute(\n            path,\n            access,\n            nt::Kind::Directory,\n            nt::Disposition::Existing,\n            /*descriptor*/ None,\n        )?;\n        let directory = Self { file };\n        directory.validate()?;\n        Ok(directory)\n    }\n\n    /// Returns the retained handle for identity inspection, without reopening a path.\n    pub fn as_file(&self) -> &File {\n        &self.file\n    }\n\n    /// Revalidates the current effective owner and private ACL on the retained root.\n    pub fn validate(&self) -> io::Result<()> {\n        if !snapshot_private_file(&self.file)?.is_directory() {\n            return Err(invalid_security(\"private state root is not a directory\"));\n        }\n        Ok(())\n    }\n\n    pub fn open_read(&self, name: &str) -> io::Result<File> {\n        self.validate()?;\n        let file = nt::open_child(\n            &self.file,\n            name,\n            nt::Access::Read,\n            nt::Kind::RegularFile,\n            nt::Disposition::Existing,\n            /*descriptor*/ None,\n        )?;\n        snapshot_private_file(&file)?;\n        Ok(file)\n    }\n\n    /// Opens read/write, creating a private file if missing. Never truncates it.\n    pub fn open_write(&self, name: &str) -> io::Result<File> {\n        self.open_for_write(name, nt::Disposition::OpenOrCreate)\n    }\n\n    /// Opens an existing file read/write without creating or truncating it.\n    pub fn open_write_existing(&self, name: &str) -> io::Result<File> {\n        self.open_for_write(name, nt::Disposition::Existing)\n    }\n\n    /// Creates a private file and refuses to overwrite an existing entry.\n    pub fn create_new(&self, name: &str) -> io::Result<File> {\n        self.open_for_write(name, nt::Disposition::CreateNew)\n    }\n\n    fn open_for_write(&self, name: &str, disposition: nt::Disposition) -> io::Result<File> {\n        self.validate()?;\n        let identity = CurrentIdentity::read()?;\n        let descriptor =\n            OwnerSecurityDescriptor::new(&identity.user, DescriptorInheritance::ObjectOnly)?;\n        let file = nt::open_child(\n            &self.file,\n            name,\n            nt::Access::ReadWrite,\n            nt::Kind::RegularFile,\n            disposition,\n            Some(&descriptor),\n        )?;\n        snapshot::snapshot(&file, &identity)?;\n        Ok(file)\n    }\n\n    /// Checks for a valid private file. Unsafe or unreadable entries remain errors.\n    pub fn entry_exists(&self, name: &str) -> io::Result<bool> {\n        match self.open_read(name) {\n            Ok(_) => Ok(true),\n            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),\n            Err(error) => Err(error),\n        }\n    }\n\n    /// Replaces an entry using the source and parent handles, without a path reopen.\n    ///\n    /// The caller must sync the source contents first, then call `sync_all` on\n    /// this directory. A later sync error does not imply publication was undone.\n    pub fn replace(&self, source: &str, destination: &str) -> io::Result<()> {\n        self.validate()?;\n        let file = nt::open_child(\n            &self.file,\n            source,\n            nt::Access::Rename,\n            nt::Kind::RegularFile,\n            nt::Disposition::Existing,\n            /*descriptor*/ None,\n        )?;\n        snapshot_private_file(&file)?;\n        self.entry_exists(destination)?;\n        nt::replace(&self.file, &file, destination)\n    }\n\n    /// Removes only the validated file represented by this exact prior snapshot.\n    ///\n    /// The deletion applies to the opened file handle, so a later entry swap\n    /// cannot redirect cleanup to another file. The caller must sync the directory.\n    pub fn remove_if_unchanged(&self, name: &str, expected: &FileSnapshot) -> io::Result<()> {\n        self.validate()?;\n        let file = nt::open_child(\n            &self.file,\n            name,\n            nt::Access::Rename,\n            nt::Kind::RegularFile,\n            nt::Disposition::Existing,\n            /*descriptor*/ None,\n        )?;\n        if snapshot_private_file(&file)? != *expected {\n            return Err(invalid_security(\"cleanup file identity changed\"));\n        }\n        nt::remove(&file)\n    }\n\n    /// Flushes the writable directory handle and propagates every OS error.\n    pub fn sync_all(&self) -> io::Result<()> {\n        self.validate()?;\n        self.file.sync_all()\n    }\n}\n\n#[cfg(test)]\n#[path = \"windows_private_fs_tests.rs\"]\nmod tests;\n"
+        },
+        "src/windows_private_fs_tests.rs": {
+          "after_sha256": "2fbf4ba5e58d17a9067998cc90ffe02c6a41168635d419f373a43d603ce7d688",
+          "before": "use std::fs;\nuse std::io;\nuse std::io::Read;\nuse std::io::Write;\nuse std::os::windows::ffi::OsStrExt;\nuse std::os::windows::io::AsHandle;\nuse std::os::windows::io::AsRawHandle;\nuse std::path::Path;\nuse std::ptr;\n\nuse pretty_assertions::assert_eq;\nuse windows_sys::Win32::System::IO::DeviceIoControl;\nuse windows_sys::Win32::System::Ioctl::FSCTL_SET_REPARSE_POINT;\n\nuse super::PrivateDirectory;\nuse super::snapshot_private_file;\nuse crate::windows_security::current_user_sid;\nuse crate::windows_security::owner_sid;\n\n#[test]\nfn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()> {\n    let temp = tempfile::tempdir()?;\n    let root = temp.path().join(\"state\");\n    let directory = PrivateDirectory::open_or_create(&root)?;\n    assert_eq!(\n        owner_sid(directory.as_file().as_handle())?,\n        current_user_sid()?\n    );\n    assert_eq!(\n        directory\n            .open_write_existing(\"state.json\")\n            .unwrap_err()\n            .kind(),\n        io::ErrorKind::NotFound\n    );\n    assert!(!directory.entry_exists(\"state.json\")?);\n    let mut file = directory.create_new(\"state.next\")?;\n    file.write_all(b\"first durable state\")?;\n    file.sync_all()?;\n    let before = snapshot_private_file(&file)?;\n    directory\n        .replace(\"state.next\", \"state.json\")\n        .inspect_err(|error| eprintln!(\"publish initial private state: {error}\"))?;\n    directory\n        .sync_all()\n        .inspect_err(|error| eprintln!(\"sync initial private state directory: {error}\"))?;\n    let after = snapshot_private_file(&directory.open_read(\"state.json\")?)?;\n    assert!(before.same_file(&after));\n    assert!(!directory.entry_exists(\"state.next\")?);\n    assert_eq!(after.len(), 19);\n    drop(file);\n    drop(directory);\n\n    let reopened = PrivateDirectory::open_existing(&root)?;\n    let mut contents = String::new();\n    reopened\n        .open_read(\"state.json\")?\n        .read_to_string(&mut contents)?;\n    assert_eq!(contents, \"first durable state\");\n    let mut next = reopened.create_new(\"state.next\")?;\n    next.write_all(b\"second durable state\")?;\n    next.sync_all()?;\n    reopened\n        .replace(\"state.next\", \"state.json\")\n        .inspect_err(|error| eprintln!(\"replace reopened private state: {error}\"))?;\n    reopened\n        .sync_all()\n        .inspect_err(|error| eprintln!(\"sync reopened private state directory: {error}\"))?;\n    assert_eq!(fs::read(root.join(\"state.json\"))?, b\"second durable state\");\n    Ok(())\n}\n\n#[test]\nfn retained_parent_does_not_follow_a_replacement_path() -> io::Result<()> {\n    let temp = tempfile::tempdir()?;\n    let root = temp.path().join(\"state\");\n    let moved = temp.path().join(\"retained\");\n    let directory = PrivateDirectory::open_or_create(&root)?;\n    fs::rename(&root, &moved)?;\n    let replacement = PrivateDirectory::open_or_create(&root)?;\n    let mut file = directory.create_new(\"state.next\")?;\n    file.write_all(b\"retained directory\")?;\n    file.sync_all()?;\n    directory\n        .replace(\"state.next\", \"state.json\")\n        .inspect_err(|error| eprintln!(\"publish through retained private directory: {error}\"))?;\n    directory\n        .sync_all()\n        .inspect_err(|error| eprintln!(\"sync retained private directory: {error}\"))?;\n    assert_eq!(fs::read(moved.join(\"state.json\"))?, b\"retained directory\");\n    assert!(!replacement.entry_exists(\"state.json\")?);\n    Ok(())\n}\n\n#[test]\nfn hardlinked_state_is_rejected_without_changing_contents() -> io::Result<()> {\n    let temp = tempfile::tempdir()?;\n    let root = temp.path().join(\"state\");\n    let directory = PrivateDirectory::open_or_create(&root)?;\n    let mut file = directory.create_new(\"state.json\")?;\n    file.write_all(b\"unchanged\")?;\n    file.sync_all()?;\n    fs::hard_link(root.join(\"state.json\"), temp.path().join(\"second-link\"))?;\n    assert_eq!(\n        directory.open_read(\"state.json\").unwrap_err().kind(),\n        io::ErrorKind::PermissionDenied\n    );\n    assert_eq!(\n        directory.open_write(\"state.json\").unwrap_err().kind(),\n        io::ErrorKind::PermissionDenied\n    );\n    assert_eq!(fs::read(root.join(\"state.json\"))?, b\"unchanged\");\n    Ok(())\n}\n\n#[test]\nfn entry_names_cannot_escape_the_retained_directory() -> io::Result<()> {\n    let temp = tempfile::tempdir()?;\n    let directory = PrivateDirectory::open_or_create(&temp.path().join(\"state\"))?;\n    for name in [\n        \"\",\n        \".\",\n        \"..\",\n        \"../other\",\n        \"..\\\\other\",\n        \"state:stream\",\n        \"a\\0b\",\n    ] {\n        assert_eq!(\n            directory.create_new(name).unwrap_err().kind(),\n            io::ErrorKind::InvalidInput\n        );\n    }\n    assert_eq!(fs::read_dir(temp.path().join(\"state\"))?.count(), 0);\n    Ok(())\n}\n\n#[test]\nfn directory_reparse_points_are_rejected_in_every_resolved_component() -> io::Result<()> {\n    let temp = tempfile::tempdir()?;\n    let target = temp.path().join(\"target\");\n    fs::create_dir(&target)?;\n    let junction = temp.path().join(\"junction\");\n    create_junction(&junction, &target)?;\n    assert!(PrivateDirectory::open_existing(&junction).is_err());\n    assert!(PrivateDirectory::open_or_create(&junction.join(\"state\")).is_err());\n    assert!(!target.join(\"state\").exists());\n    Ok(())\n}\n\n// Mount-point fixtures need no symlink privilege and never address another\n// user's path. The payload is the documented REPARSE_DATA_BUFFER mount-point\n// layout, set only on a newly created empty directory within this test TempDir.\nfn create_junction(link: &Path, target: &Path) -> io::Result<()> {\n    let directory = PrivateDirectory::open_or_create(link)?;\n    let target = target.canonicalize()?;\n    let target: Vec<u16> = target.as_os_str().encode_wide().collect();\n    let verbatim: Vec<u16> = \"\\\\\\\\?\\\\\".encode_utf16().collect();\n    let target = target.strip_prefix(verbatim.as_slice()).ok_or_else(|| {\n        io::Error::new(\n            io::ErrorKind::InvalidInput,\n            \"junction fixture requires a disk path\",\n        )\n    })?;\n    let substitute: Vec<u16> = \"\\\\??\\\\\"\n        .encode_utf16()\n        .chain(target.iter().copied())\n        .collect();\n    let substitute_length = u16::try_from(substitute.len() * 2)\n        .map_err(|_| io::Error::other(\"fixture path is too long\"))?;\n    let print_length = u16::try_from(target.len() * 2)\n        .map_err(|_| io::Error::other(\"fixture path is too long\"))?;\n    let payload_length = 8 + substitute_length + 2 + print_length + 2;\n    let mut bytes = Vec::new();\n    bytes.extend_from_slice(&0xA000_0003_u32.to_le_bytes());\n    bytes.extend_from_slice(&payload_length.to_le_bytes());\n    bytes.extend_from_slice(&0_u16.to_le_bytes());\n    for value in [0, substitute_length, substitute_length + 2, print_length] {\n        bytes.extend_from_slice(&value.to_le_bytes());\n    }\n    for unit in substitute\n        .iter()\n        .chain([0].iter())\n        .chain(target)\n        .chain([0].iter())\n    {\n        bytes.extend_from_slice(&unit.to_le_bytes());\n    }\n    let mut aligned = vec![0_u32; bytes.len().div_ceil(4)];\n    let mut returned = 0;\n    // SAFETY: the aligned allocation contains the complete initialized input;\n    // the synchronous call uses the retained empty-directory handle and no\n    // output payload. Both buffers and the output count outlive the call.\n    unsafe {\n        ptr::copy_nonoverlapping(bytes.as_ptr(), aligned.as_mut_ptr().cast(), bytes.len());\n        if DeviceIoControl(\n            directory.as_file().as_raw_handle(),\n            FSCTL_SET_REPARSE_POINT,\n            aligned.as_ptr().cast(),\n            u32::try_from(bytes.len()).map_err(io::Error::other)?,\n            ptr::null_mut(),\n            /*noutbuffersize*/ 0,\n            &mut returned,\n            ptr::null_mut(),\n        ) == 0\n        {\n            return Err(io::Error::last_os_error());\n        }\n    }\n    Ok(())\n}\n"
+        }
+      },
+      "modes": {
+        "BUILD.bazel": "100644",
+        "Cargo.toml": "100644",
+        "src/env.rs": "100644",
+        "src/lib.rs": "100644",
+        "src/path_utils_tests.rs": "100644",
+        "src/publish.rs": "100644",
+        "src/publish_tests.rs": "100644",
+        "src/windows_private_fs.rs": "100644",
+        "src/windows_private_fs/nt.rs": "100644",
+        "src/windows_private_fs/snapshot.rs": "100644",
+        "src/windows_private_fs_tests.rs": "100644",
+        "src/windows_security.rs": "100644",
+        "src/windows_security/acl.rs": "100644",
+        "src/windows_security_tests.rs": "100644"
+      },
+      "original_files": {
+        "BUILD.bazel": {
+          "bytes": 123,
+          "sha256": "077c5bd595e45a9180c4df4e5f8ab249ee15a1708f819ce0664f41b430c235d8"
+        },
+        "Cargo.toml": {
+          "bytes": 661,
+          "sha256": "1b51af6945a16b39e619dfa3f5aa2e6be1d43a8a50c47846cc8280ffeeae5b42"
+        },
+        "src/env.rs": {
+          "bytes": 563,
+          "sha256": "a252bfec34d98d176179987e572377866ea52f371ce756aafa61bc1de91dfc76"
+        },
+        "src/lib.rs": {
+          "bytes": 6844,
+          "sha256": "453535a8990428c5d53dbcb91bc6fa9af39946077677b259779e73b9ef07c9d7"
+        },
+        "src/path_utils_tests.rs": {
+          "bytes": 3298,
+          "sha256": "e64f277c43eb9c85d5fd2c92ca3e180562f77ef4189f842e4bde5a333fcf2f10"
+        },
+        "src/publish.rs": {
+          "bytes": 2991,
+          "sha256": "2f67f386ed05aa50a335421909eb4948a050ac27fba8209f5bda90fe45f2c08f"
+        },
+        "src/publish_tests.rs": {
+          "bytes": 1771,
+          "sha256": "213304fca0555e3934da8cd574b40266c365a2f49427b6e6eea33beac79b3daa"
+        },
+        "src/windows_private_fs.rs": {
+          "bytes": 6540,
+          "sha256": "0f65e4b74a8a4b90dbd29d342d501d8092b604b25a8877ab6102ab81662b3ec8"
+        },
+        "src/windows_private_fs/nt.rs": {
+          "bytes": 11157,
+          "sha256": "8dbd6185463b6c052b1fc8edd3425f13d24bd4219fd14afbc566a4cc09833dfa"
+        },
+        "src/windows_private_fs/snapshot.rs": {
+          "bytes": 4182,
+          "sha256": "7974e1109025c4e696e22f1b9dd34101449f212bd42820f63c819887ee00388e"
+        },
+        "src/windows_private_fs_tests.rs": {
+          "bytes": 7803,
+          "sha256": "e3acf3e375fecf23b8c75bc2ab902d1d765b33af2140650655883d51a189ef98"
+        },
+        "src/windows_security.rs": {
+          "bytes": 12628,
+          "sha256": "8ec224e58d1393d87824cd5a1804acb512c024a5bdc9f0792f74d055c750435f"
+        },
+        "src/windows_security/acl.rs": {
+          "bytes": 5175,
+          "sha256": "5196684650a66a132db8ed9055a5254eeeb716750a7600b60cf9c55d2e38150f"
+        },
+        "src/windows_security_tests.rs": {
+          "bytes": 3916,
+          "sha256": "9c1430958dd56ed61b8ab1ac6c199837b4235274070765b39e63e2d0e9622098"
+        }
+      }
+    }
+  },
+  "current_files": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 423245,
+      "sha256": "4ede160c194721c01b6e642d7f747a847d92d1d0b60e3e7392bb61bae19646fe"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22696,
+      "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    }
+  },
+  "dependency_graph_equivalence_claimed": false,
+  "lock_inverse": {
+    "after": "name = \"codex-hepta-fleet\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-contracts\",\n \"codex-hepta-paths\",\n \"codex-utils-path\",\n \"ed25519-dalek 2.2.0\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"toml 0.9.11+spec-1.1.0\",\n]\n",
+    "before": "name = \"codex-hepta-fleet\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-contracts\",\n \"codex-hepta-paths\",\n \"ed25519-dalek 2.2.0\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"toml 0.9.11+spec-1.1.0\",\n]\n",
+    "package": "codex-hepta-fleet"
+  },
+  "predecessor_files": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 423224,
+      "sha256": "8088a2797efb63448b4eae4dcf0f86932ce5fc67b6df9cdd4b5926091461b34d"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22696,
+      "sha256": "dc1d21f3cdd15cda7b7e8ddd00669d93db62b9a872d1f92e20e868613984fcaf"
+    }
+  },
+  "predecessor_revision": "8dc5802777bbf076a37daea8f0e47a3f0ec663f7",
+  "schema": "codex.hia.windows-fleet-dependency-source-history.v1",
+  "source_variant": "codex-windows-fleet-private-20261128",
+  "unchanged_lock_packages": 1533,
+  "windows_execution_qualified": false
+}

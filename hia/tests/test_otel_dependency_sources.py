@@ -24,6 +24,17 @@ class OtelDependencySourceTests(unittest.TestCase):
             "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095:" + p])
             for p in admission.ROOT_FILES}
 
+        cls.fleet_fixture = None
+        if admission._pair_identity(cls.current) != cls.history["current_files"]:
+            from file_update_oracle.windows_fleet_source_history import restore_predecessor
+            cls.fleet_fixture = restore_predecessor(REPO, cls.current, cls.history["current_files"])
+            cls.current = cls.fleet_fixture["restored"]
+
+    @classmethod
+    def tearDownClass(cls):
+        from file_update_oracle.windows_fleet_source_history import verify_predecessor
+        verify_predecessor(cls.fleet_fixture)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="otel-source-controls-")
         self.addCleanup(self.temporary.cleanup)
@@ -166,6 +177,8 @@ if __name__ == "__main__":
                                          for p in admission.ROOT_FILES},
               "history_sha256": hashlib.sha256(otel.HISTORY.read_bytes()).hexdigest(),
               "helper_sha256": hashlib.sha256(Path(otel.__file__).read_bytes()).hexdigest(),
+              "current_fixture_admission": (None if OtelDependencySourceTests.fleet_fixture is None
+                  else OtelDependencySourceTests.fleet_fixture["report"]),
               "controls_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     with args.report.open("x") as handle:
         json.dump(report, handle, indent=2)
