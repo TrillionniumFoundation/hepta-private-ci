@@ -1,0 +1,22 @@
+{
+  "arm": "attention",
+  "seed": 137,
+  "rung": 30,
+  "matched_step": 0,
+  "device": "cpu",
+  "native": false,
+  "checkpoint_sha256": "850476672b83e1696ecf44c16d949c2e692a979f5e668abf5059388c17be94e3",
+  "score_sha256": "aa6108b5f3ad0b73e5129ebe4a44533d0948929720a995d51de521fd7658bbd4",
+  "seal_sha256": "19c29b495d9a039c9d95733ea5f4a45388fa2292f0130cdb5a7aa043bc9aa773",
+  "input_setup_wall_s": 2.199678048000351,
+  "model_restore_wall_s": 0.03629972600174369,
+  "forward_wall_s": {
+    "natural": 1.3913422190016718,
+    "fast": 1.0536587349997717,
+    "slow": 1.3256485660022008,
+    "silent": 1.0671563850009989,
+    "reverse": 1.3738953030006087
+  },
+  "prediction_write_hash_wall_s": 0.16344148799907998,
+  "cold_arm_wall_s": 6.412248068001645
+}

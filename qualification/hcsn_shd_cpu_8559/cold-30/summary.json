@@ -1,0 +1,496 @@
+{
+  "sealed_rung": 30,
+  "records": 2264,
+  "speakers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "methods": {
+    "literal": {
+      "dev_macro_across_seeds": 0.09179542834560077,
+      "natural": {
+        "macro_accuracy": 0.09726795588742802,
+        "macro_nll": 2.9749241048358233,
+        "new_speaker_macro": 0.09495271867612276,
+        "new_speaker_specific": {
+          "4": 0.08777777777777772,
+          "5": 0.10212765957446779
+        },
+        "speaker_ECE": 0.04188337520041685,
+        "class_half_0_accuracy": 0.11121408711770157,
+        "class_half_1_accuracy": 0.08157524613220815
+      },
+      "fast": {
+        "macro_accuracy": 0.08971904412489372,
+        "macro_nll": 2.9775587030926007,
+        "new_speaker_macro": 0.09592986603624883,
+        "new_speaker_specific": {
+          "4": 0.10037037037037014,
+          "5": 0.09148936170212751
+        },
+        "speaker_ECE": 0.03305075852955674,
+        "class_half_0_accuracy": 0.11337658325610131,
+        "class_half_1_accuracy": 0.07735583684950773
+      },
+      "slow": {
+        "macro_accuracy": 0.09551346984298557,
+        "macro_nll": 2.979045701565111,
+        "new_speaker_macro": 0.08597714736012597,
+        "new_speaker_specific": {
+          "4": 0.06592592592592607,
+          "5": 0.10602836879432588
+        },
+        "speaker_ECE": 0.03747365974992203,
+        "class_half_0_accuracy": 0.10101946246524558,
+        "class_half_1_accuracy": 0.07679324894514768
+      },
+      "reverse": {
+        "macro_accuracy": 0.06628456598270717,
+        "macro_nll": 2.9985485169022628,
+        "new_speaker_macro": 0.058884948778565885,
+        "new_speaker_specific": {
+          "4": 0.05925925925925934,
+          "5": 0.058510638297872425
+        },
+        "speaker_ECE": 0.015606203691333522,
+        "class_half_0_accuracy": 0.09916589434661724,
+        "class_half_1_accuracy": 0.025316455696202528
+      },
+      "silent": {
+        "macro_accuracy": 0.049716246814464966,
+        "macro_nll": 2.9989086145989865,
+        "new_speaker_macro": 0.04908983451536643,
+        "new_speaker_specific": {
+          "4": 0.04888888888888888,
+          "5": 0.04929078014184398
+        },
+        "speaker_ECE": 0.010068209511124042,
+        "class_half_0_accuracy": 0.06734630831016372,
+        "class_half_1_accuracy": 0.03319268635724332
+      }
+    },
+    "smooth": {
+      "dev_macro_across_seeds": 0.06965231895446777,
+      "natural": {
+        "macro_accuracy": 0.08255309216164637,
+        "macro_nll": 2.969731859006403,
+        "new_speaker_macro": 0.08117415287628055,
+        "new_speaker_specific": {
+          "4": 0.08185185185185188,
+          "5": 0.08049645390070923
+        },
+        "speaker_ECE": 0.025933622535280188,
+        "class_half_0_accuracy": 0.10997837503861599,
+        "class_half_1_accuracy": 0.05541490857946554
+      },
+      "fast": {
+        "macro_accuracy": 0.07538937665068023,
+        "macro_nll": 2.972998331831398,
+        "new_speaker_macro": 0.07880220646178096,
+        "new_speaker_specific": {
+          "4": 0.07037037037037054,
+          "5": 0.0872340425531914
+        },
+        "speaker_ECE": 0.017881167174113807,
+        "class_half_0_accuracy": 0.11615693543404385,
+        "class_half_1_accuracy": 0.04331926863572433
+      },
+      "slow": {
+        "macro_accuracy": 0.08834055249162763,
+        "macro_nll": 2.974099319348839,
+        "new_speaker_macro": 0.08714342001576039,
+        "new_speaker_specific": {
+          "4": 0.08740740740740738,
+          "5": 0.08687943262411339
+        },
+        "speaker_ECE": 0.030862463114881042,
+        "class_half_0_accuracy": 0.1053444547420451,
+        "class_half_1_accuracy": 0.07060478199718705
+      },
+      "reverse": {
+        "macro_accuracy": 0.07028922969553386,
+        "macro_nll": 2.9971574607086304,
+        "new_speaker_macro": 0.06407407407407416,
+        "new_speaker_specific": {
+          "4": 0.06148148148148155,
+          "5": 0.06666666666666678
+        },
+        "speaker_ECE": 0.018416701164867235,
+        "class_half_0_accuracy": 0.10441767068273092,
+        "class_half_1_accuracy": 0.03009845288326301
+      },
+      "silent": {
+        "macro_accuracy": 0.049716246814464966,
+        "macro_nll": 2.997456014072395,
+        "new_speaker_macro": 0.04908983451536643,
+        "new_speaker_specific": {
+          "4": 0.04888888888888888,
+          "5": 0.04929078014184398
+        },
+        "speaker_ECE": 0.009301120616649809,
+        "class_half_0_accuracy": 0.06734630831016372,
+        "class_half_1_accuracy": 0.03319268635724332
+      }
+    },
+    "fixed": {
+      "dev_macro_across_seeds": 0.04606535782416662,
+      "natural": {
+        "macro_accuracy": 0.04934779670136477,
+        "macro_nll": 2.999530429199195,
+        "new_speaker_macro": 0.047269503546099295,
+        "new_speaker_specific": {
+          "4": 0.04666666666666666,
+          "5": 0.04787234042553193
+        },
+        "speaker_ECE": 0.008325110555552484,
+        "class_half_0_accuracy": 0.09916589434661723,
+        "class_half_1_accuracy": 0.0
+      },
+      "fast": {
+        "macro_accuracy": 0.04881360866717674,
+        "macro_nll": 2.9995846252025538,
+        "new_speaker_macro": 0.047269503546099295,
+        "new_speaker_specific": {
+          "4": 0.04666666666666666,
+          "5": 0.04787234042553193
+        },
+        "speaker_ECE": 0.008864813624486862,
+        "class_half_0_accuracy": 0.09885696632684583,
+        "class_half_1_accuracy": 0.0
+      },
+      "slow": {
+        "macro_accuracy": 0.04934779670136477,
+        "macro_nll": 2.9995007530428257,
+        "new_speaker_macro": 0.047269503546099295,
+        "new_speaker_specific": {
+          "4": 0.04666666666666666,
+          "5": 0.04787234042553193
+        },
+        "speaker_ECE": 0.008317880543945812,
+        "class_half_0_accuracy": 0.09916589434661723,
+        "class_half_1_accuracy": 0.0
+      },
+      "reverse": {
+        "macro_accuracy": 0.06071370693334508,
+        "macro_nll": 2.999709840207841,
+        "new_speaker_macro": 0.05251379038613083,
+        "new_speaker_specific": {
+          "4": 0.05148148148148148,
+          "5": 0.053546099290780184
+        },
+        "speaker_ECE": 0.010092634405529112,
+        "class_half_0_accuracy": 0.11214087117701575,
+        "class_half_1_accuracy": 0.0
+      },
+      "silent": {
+        "macro_accuracy": 0.05877128305829709,
+        "macro_nll": 2.999768180767885,
+        "new_speaker_macro": 0.04726950354609931,
+        "new_speaker_specific": {
+          "4": 0.046666666666666676,
+          "5": 0.04787234042553195
+        },
+        "speaker_ECE": 0.008150843058474829,
+        "class_half_0_accuracy": 0.10256410256410256,
+        "class_half_1_accuracy": 0.0
+      }
+    },
+    "no_feedback": {
+      "dev_macro_across_seeds": 0.09674986451864243,
+      "natural": {
+        "macro_accuracy": 0.11389150247140988,
+        "macro_nll": 2.9732514140278448,
+        "new_speaker_macro": 0.11256107171000776,
+        "new_speaker_specific": {
+          "4": 0.10703703703703701,
+          "5": 0.11808510638297849
+        },
+        "speaker_ECE": 0.055725006590691094,
+        "class_half_0_accuracy": 0.09731232622798887,
+        "class_half_1_accuracy": 0.12601969057665258
+      },
+      "fast": {
+        "macro_accuracy": 0.11376840068601453,
+        "macro_nll": 2.975882270272935,
+        "new_speaker_macro": 0.11358944050433399,
+        "new_speaker_specific": {
+          "4": 0.11370370370370368,
+          "5": 0.1134751773049643
+        },
+        "speaker_ECE": 0.055483393131379066,
+        "class_half_0_accuracy": 0.11306765523632993,
+        "class_half_1_accuracy": 0.11336146272855133
+      },
+      "slow": {
+        "macro_accuracy": 0.10583984276607307,
+        "macro_nll": 2.9780305738385398,
+        "new_speaker_macro": 0.10578408195429456,
+        "new_speaker_specific": {
+          "4": 0.0885185185185185,
+          "5": 0.12304964539007061
+        },
+        "speaker_ECE": 0.04770149163877042,
+        "class_half_0_accuracy": 0.06518381217176397,
+        "class_half_1_accuracy": 0.1423347398030942
+      },
+      "reverse": {
+        "macro_accuracy": 0.05093833769967643,
+        "macro_nll": 2.9976625142104165,
+        "new_speaker_macro": 0.05642237982663517,
+        "new_speaker_specific": {
+          "4": 0.05185185185185186,
+          "5": 0.060992907801418486
+        },
+        "speaker_ECE": 0.007681959403779837,
+        "class_half_0_accuracy": 0.08001235712079086,
+        "class_half_1_accuracy": 0.03319268635724332
+      },
+      "silent": {
+        "macro_accuracy": 0.049716246814464966,
+        "macro_nll": 2.998253771302982,
+        "new_speaker_macro": 0.04908983451536643,
+        "new_speaker_specific": {
+          "4": 0.04888888888888888,
+          "5": 0.04929078014184398
+        },
+        "speaker_ECE": 0.010183291316094753,
+        "class_half_0_accuracy": 0.06734630831016372,
+        "class_half_1_accuracy": 0.03319268635724332
+      }
+    },
+    "lif": {
+      "dev_macro_across_seeds": 0.36469922463099164,
+      "natural": {
+        "macro_accuracy": 0.4620100401189244,
+        "macro_nll": 1.7972546835984184,
+        "new_speaker_macro": 0.4455476753349096,
+        "new_speaker_specific": {
+          "4": 0.4574074074074071,
+          "5": 0.4336879432624121
+        },
+        "speaker_ECE": 0.2033432116627458,
+        "class_half_0_accuracy": 0.48810627123880135,
+        "class_half_1_accuracy": 0.41434599156118146
+      },
+      "fast": {
+        "macro_accuracy": 0.3693912799895687,
+        "macro_nll": 1.980375651528332,
+        "new_speaker_macro": 0.3892868400315206,
+        "new_speaker_specific": {
+          "4": 0.4214814814814806,
+          "5": 0.3570921985815605
+        },
+        "speaker_ECE": 0.10721053015388567,
+        "class_half_0_accuracy": 0.4609206054989187,
+        "class_half_1_accuracy": 0.3136427566807313
+      },
+      "slow": {
+        "macro_accuracy": 0.4162355843210935,
+        "macro_nll": 1.883703729437426,
+        "new_speaker_macro": 0.4127304964539005,
+        "new_speaker_specific": {
+          "4": 0.4233333333333331,
+          "5": 0.4021276595744679
+        },
+        "speaker_ECE": 0.15936544132391636,
+        "class_half_0_accuracy": 0.41458140253320974,
+        "class_half_1_accuracy": 0.4132208157524613
+      },
+      "reverse": {
+        "macro_accuracy": 0.06203484769436734,
+        "macro_nll": 3.7074432205953776,
+        "new_speaker_macro": 0.061765169424744026,
+        "new_speaker_specific": {
+          "4": 0.0696296296296298,
+          "5": 0.05390070921985824
+        },
+        "speaker_ECE": 0.26766244328351035,
+        "class_half_0_accuracy": 0.07568736484399134,
+        "class_half_1_accuracy": 0.04866385372714486
+      },
+      "silent": {
+        "macro_accuracy": 0.04966413905201287,
+        "macro_nll": 4.271824385644016,
+        "new_speaker_macro": 0.04908983451536648,
+        "new_speaker_specific": {
+          "4": 0.048888888888888926,
+          "5": 0.04929078014184403
+        },
+        "speaker_ECE": 0.34186148423127366,
+        "class_half_0_accuracy": 0.0688909484090207,
+        "class_half_1_accuracy": 0.031504922644163144
+      }
+    },
+    "cnn": {
+      "dev_macro_across_seeds": 0.785228451093038,
+      "natural": {
+        "macro_accuracy": 0.8967575442747543,
+        "macro_nll": 0.3968620136912478,
+        "new_speaker_macro": 0.8124507486209609,
+        "new_speaker_specific": {
+          "4": 0.8018518518518511,
+          "5": 0.8230496453900707
+        },
+        "speaker_ECE": 0.056947842716280984,
+        "class_half_0_accuracy": 0.8894037689218413,
+        "class_half_1_accuracy": 0.779746835443038
+      },
+      "fast": {
+        "macro_accuracy": 0.76847216852206,
+        "macro_nll": 1.0272507084930769,
+        "new_speaker_macro": 0.7122064617809303,
+        "new_speaker_specific": {
+          "4": 0.7070370370370378,
+          "5": 0.7173758865248229
+        },
+        "speaker_ECE": 0.13935797601549912,
+        "class_half_0_accuracy": 0.8205128205128205,
+        "class_half_1_accuracy": 0.6399437412095639
+      },
+      "slow": {
+        "macro_accuracy": 0.8447181740388654,
+        "macro_nll": 0.6432868098897856,
+        "new_speaker_macro": 0.7758431836091411,
+        "new_speaker_specific": {
+          "4": 0.722962962962963,
+          "5": 0.828723404255319
+        },
+        "speaker_ECE": 0.0901175096422826,
+        "class_half_0_accuracy": 0.8016682113067655,
+        "class_half_1_accuracy": 0.7848101265822784
+      },
+      "reverse": {
+        "macro_accuracy": 0.04613860030909034,
+        "macro_nll": 24.4995701602205,
+        "new_speaker_macro": 0.06407407407407409,
+        "new_speaker_specific": {
+          "4": 0.0614814814814815,
+          "5": 0.06666666666666667
+        },
+        "speaker_ECE": 0.8674285862645691,
+        "class_half_0_accuracy": 0.017608897126969416,
+        "class_half_1_accuracy": 0.09929676511954995
+      },
+      "silent": {
+        "macro_accuracy": 0.05132240148202671,
+        "macro_nll": 12.836483050929422,
+        "new_speaker_macro": 0.04726950354609932,
+        "new_speaker_specific": {
+          "4": 0.04666666666666669,
+          "5": 0.04787234042553196
+        },
+        "speaker_ECE": 0.6875011245227771,
+        "class_half_0_accuracy": 0.1010194624652456,
+        "class_half_1_accuracy": 0.0
+      }
+    },
+    "attention": {
+      "dev_macro_across_seeds": 0.716392993927002,
+      "natural": {
+        "macro_accuracy": 0.8648155958147653,
+        "macro_nll": 0.4567226045104617,
+        "new_speaker_macro": 0.785630417651694,
+        "new_speaker_specific": {
+          "4": 0.7829629629629626,
+          "5": 0.7882978723404254
+        },
+        "speaker_ECE": 0.06316111369351134,
+        "class_half_0_accuracy": 0.8476984862527032,
+        "class_half_1_accuracy": 0.7639943741209564
+      },
+      "fast": {
+        "macro_accuracy": 0.7617128033262088,
+        "macro_nll": 0.939482105459922,
+        "new_speaker_macro": 0.7113120567375883,
+        "new_speaker_specific": {
+          "4": 0.74,
+          "5": 0.6826241134751768
+        },
+        "speaker_ECE": 0.12185868969046447,
+        "class_half_0_accuracy": 0.8007414272474513,
+        "class_half_1_accuracy": 0.6500703234880449
+      },
+      "slow": {
+        "macro_accuracy": 0.8016531690417926,
+        "macro_nll": 0.7255918549093386,
+        "new_speaker_macro": 0.7331008668242709,
+        "new_speaker_specific": {
+          "4": 0.6974074074074071,
+          "5": 0.7687943262411348
+        },
+        "speaker_ECE": 0.1013168635519754,
+        "class_half_0_accuracy": 0.7877664504170528,
+        "class_half_1_accuracy": 0.7150492264416315
+      },
+      "reverse": {
+        "macro_accuracy": 0.0752471487896222,
+        "macro_nll": 12.702988409646316,
+        "new_speaker_macro": 0.09633569739952719,
+        "new_speaker_specific": {
+          "4": 0.0944444444444445,
+          "5": 0.09822695035460986
+        },
+        "speaker_ECE": 0.587616717378071,
+        "class_half_0_accuracy": 0.11615693543404386,
+        "class_half_1_accuracy": 0.070042194092827
+      },
+      "silent": {
+        "macro_accuracy": 0.041091940407419335,
+        "macro_nll": 15.812351876352748,
+        "new_speaker_macro": 0.050910165484633556,
+        "new_speaker_specific": {
+          "4": 0.05111111111111109,
+          "5": 0.05070921985815602
+        },
+        "speaker_ECE": 0.6754985908643917,
+        "class_half_0_accuracy": 0.03367315415508186,
+        "class_half_1_accuracy": 0.06300984528832629
+      }
+    }
+  },
+  "paired_resamples": 4000,
+  "quality_comparisons": {
+    "smooth": {
+      "literal_minus": 0.01471486372578167,
+      "marginal95": [
+        -0.000628737303400339,
+        0.029632050803172782
+      ],
+      "bonferroni_one_sided_lower": -0.002635379911670629,
+      "gating_threshold": 0.0,
+      "passed": false
+    },
+    "lif": {
+      "literal_minus": -0.36474208423149634,
+      "marginal95": [
+        -0.41925457772464614,
+        -0.3095417492187527
+      ],
+      "bonferroni_one_sided_lower": -0.4237132801111427,
+      "gating_threshold": 0.0,
+      "passed": false
+    },
+    "cnn": {
+      "literal_minus": -0.799489588387326,
+      "marginal95": [
+        -0.8490718900400545,
+        -0.7461754637094032
+      ],
+      "bonferroni_one_sided_lower": -0.8524111045257795,
+      "gating_threshold": -0.02,
+      "passed": false
+    }
+  },
+  "full_architecture_gate": false,
+  "qualification": "Conditional on fixed corpus and training seeds; new speakers 4 and 5 reported individually."
+}

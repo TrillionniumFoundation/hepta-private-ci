@@ -1,0 +1,22 @@
+{
+  "arm": "cnn",
+  "seed": 137,
+  "rung": 30,
+  "matched_step": 0,
+  "device": "cpu",
+  "native": false,
+  "checkpoint_sha256": "38087b2a378fc821b82f440cbc84fb89052f342e8ea8d14ef4655894801544b0",
+  "score_sha256": "d3e0a197a5b0190c03c6a7ab9c054feed30f9a874813da4a2d6fa513e3f41ef6",
+  "seal_sha256": "19c29b495d9a039c9d95733ea5f4a45388fa2292f0130cdb5a7aa043bc9aa773",
+  "input_setup_wall_s": 2.199678048000351,
+  "model_restore_wall_s": 0.14989640900239465,
+  "forward_wall_s": {
+    "natural": 0.3428728090002551,
+    "fast": 0.26117711599727045,
+    "slow": 0.2755212970005232,
+    "silent": 0.23249570500047412,
+    "reverse": 0.33596915599991917
+  },
+  "prediction_write_hash_wall_s": 0.15414923799835378,
+  "cold_arm_wall_s": 1.7525863219998428
+}
