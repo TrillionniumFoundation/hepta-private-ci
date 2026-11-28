@@ -1477,7 +1477,16 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
-        result = future => Ok(result),
+        result = future => {
+            // A timer can still be pending when the result first becomes ready.
+            if tokio::time::Instant::now() >= deadline {
+                Err(GuardianReviewSessionOutcome::TimedOut)
+            } else if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+                Err(GuardianReviewSessionOutcome::Aborted)
+            } else {
+                Ok(result)
+            }
+        },
     }
 }
 
