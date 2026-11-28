@@ -536,7 +536,7 @@ pub(crate) async fn run_turn(
             break;
         }
 
-        let window_id = sess.current_window_id().await;
+        let (window_id, context_window_id) = sess.current_window().await;
         if !recovering_first_generation {
             super::rollout_budget::maybe_record_reminder(
                 sess.as_ref(),
@@ -593,11 +593,12 @@ pub(crate) async fn run_turn(
             let sampling_request_input: Vec<ResponseItem> =
                 prepare_sampling_request_input_future(&sess, step_context.as_ref()).await;
 
-            let responses_metadata = turn_context.turn_metadata_state.to_responses_metadata(
+            let mut responses_metadata = turn_context.turn_metadata_state.to_responses_metadata(
                 sess.installation_id.clone(),
                 window_id,
                 CodexResponsesRequestKind::Turn,
             );
+            responses_metadata.context_window_id = Some(context_window_id);
             run_sampling_request_future(
                 Arc::clone(&sess),
                 Arc::clone(&step_context),
