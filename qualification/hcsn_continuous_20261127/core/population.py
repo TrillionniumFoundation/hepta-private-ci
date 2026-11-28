@@ -11,8 +11,9 @@ from torch import nn
 from he_xiong import Published
 
 class BoundaryPopulation(nn.Module):
-    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.)):
+    def __init__(self,input_size,width,atoms=12,dt=.25,reset=.30,probe_horizons=(.08,.125,.5,3.),matrix_free=False):
         super().__init__()
+        self.matrix_free=matrix_free
         if atoms<3 or width<1 or dt<=0 or not 0<reset<1.30 or any(t<=0 for t in probe_horizons):
             raise ValueError('invalid population geometry or horizon')
         self.width=width; self.dt=float(dt); self.probe_horizons=tuple(probe_horizons)
@@ -59,10 +60,16 @@ class BoundaryPopulation(nn.Module):
         mass,refractory,old_b,old_value=state
         u=self.sender(frame)+self.recurrent(old_b)+(old_value.tanh()*self.feedback).sum(-1)
         P=self.prices.p.P0*(1+.28*u.tanh());b=torch.log(self.prices.boundary(P)/self.prices.B0)
-        margin=self.grid+old_b[...,None]-b[...,None]
-        surv,hit=self.kernels(margin)
-        flow=(mass*hit).sum(-1)
-        newmass=(mass[...,None]*surv).sum(-2)+refractory[...,None]*self.reset_weights
+        if self.matrix_free:
+            from fft_transport import transported_mass
+            newmass,flow=transported_mass(mass,old_b-b,self.grid,
+                sigma=self.prices.p.sigma,a=self.prices.a,dt=self.dt)
+        else:
+            margin=self.grid+old_b[...,None]-b[...,None]
+            surv,hit=self.kernels(margin)
+            flow=(mass*hit).sum(-1)
+            newmass=(mass[...,None]*surv).sum(-2)
+        newmass=newmass+refractory[...,None]*self.reset_weights
         E,L=self.priced_channels(P)
         v=torch.stack([(newmass*E).sum(-1)/20.,(newmass*L).sum(-1)/20.],dim=-1)
         probes=[(newmass*self.prices.passage(self.grid,t)).sum(-1) for t in self.probe_horizons]
@@ -77,13 +84,13 @@ class BoundaryPopulation(nn.Module):
         return torch.stack(outputs),state
 
 class ContinuousSpikingNetwork(nn.Module):
-    def __init__(self,input_size,width,outputs,atoms=12,port='augmented'):
+    def __init__(self,input_size,width,outputs,atoms=12,port='augmented',matrix_free=False):
         super().__init__()
         if port not in ('boundary','priced','augmented'):raise ValueError('unknown message port')
         self.port=port
-        self.first=BoundaryPopulation(input_size,width,atoms)
+        self.first=BoundaryPopulation(input_size,width,atoms,matrix_free=matrix_free)
         channels={'boundary':1,'priced':4,'augmented':4+len(self.first.probe_horizons)}[port]
-        self.second=BoundaryPopulation(width*channels,width,atoms)
+        self.second=BoundaryPopulation(width*channels,width,atoms,matrix_free=matrix_free)
         self.head=nn.Linear(width*(4+len(self.second.probe_horizons)),outputs,dtype=torch.float64)
         self.channels=channels
     def forward(self,frames,state=None):
