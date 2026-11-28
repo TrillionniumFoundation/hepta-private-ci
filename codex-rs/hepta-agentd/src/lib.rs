@@ -183,11 +183,15 @@ mod root_production_inputs;
 #[cfg(target_os = "linux")]
 mod root_production_learning_inputs;
 #[cfg(target_os = "linux")]
+mod root_production_paired_inputs;
+#[cfg(target_os = "linux")]
 pub use root_production_inputs::AgentdRootProductionInputs;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_learning_inputs::AgentdRootLearningInputsV1;
+#[cfg(target_os = "linux")]
+pub(crate) use root_production_paired_inputs::AgentdRootPairedTrainingInputsV1;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
@@ -197,15 +201,21 @@ pub use config::drop_root_native_owner_credentials;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootLearningHandoffV1;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootPairedTrainingHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_learning_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_paired_training_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_learning_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_paired_training_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
 #[cfg(target_os = "linux")]
@@ -429,6 +439,14 @@ mod objective_runtime;
 mod paired_original_turn;
 #[cfg(target_os = "linux")]
 mod paired_preparation;
+#[cfg(target_os = "linux")]
+mod paired_training_bootstrap;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HOST_AUTHORITY_PAIRED_TRAINING_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HostAuthorityPairedTrainingBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use paired_training_bootstrap::HostAuthorityPairedTrainingProfileV1;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;

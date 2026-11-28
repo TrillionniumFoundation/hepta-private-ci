@@ -18,6 +18,8 @@ pub use record_identity::PairedRecordIdentityV1;
 pub use record_identity::PairedRecordMetadataV1;
 pub use record_identity::PairedRecordPinsV1;
 pub use record_identity::identify_original_paired_records_v1;
+#[cfg(test)]
+pub(crate) use record_identity::tests::fresh as record_fixture_materials;
 
 /// Material bytes are returned only after both Root and the native recipient
 /// validate their fixed commitment. They are not an adoption or FinalUse receipt.

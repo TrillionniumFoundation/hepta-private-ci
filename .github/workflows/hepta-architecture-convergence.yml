@@ -212,6 +212,16 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-consumer.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(notes_thread_tool::training_trigger::tests) | test(paired_preparation::training::consumer::tests)'
+      - name: Original AuthBus Ack readiness and pending-owner controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-ack.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(authbus_dispatch::tests) | test(paired_preparation::training::tests::readiness)'
+      - name: Original paired sealed purpose and startup binding controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-handoff.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(root_production_handoff::paired_training::tests) | test(root_production_paired_inputs::tests)'
       - name: Root CLI original descriptor ownership and login controls
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -232,6 +242,21 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-late-admission.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(deployment_issuer::paired::tests::materials::admission)'
+      - name: Original paired Root CLI descriptor controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-cli.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --bin hepta-authority-host --retries 0 --test-threads 1 -E 'test(paired_tests)'
+      - name: Original paired training startup metadata controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-training-bootstrap.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(paired_training_bootstrap::tests)'
+      - name: Original paired session exit and peer controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-session-lifecycle.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib --retries 0 --test-threads 1 -E 'test(authority_host_runtime::session::paired::tests)'
       - name: Isolated paired Root gate rejection controls
         if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

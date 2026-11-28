@@ -134,6 +134,14 @@ fn run(
             .remove(std::ffi::OsStr::new("--learning-profile"))
             .map(PathBuf::from);
         let learning_handoff = options.remove(std::ffi::OsStr::new("--root-learning-handoff-fd"));
+        let paired_profile = options
+            .remove(std::ffi::OsStr::new("--paired-training-profile"))
+            .map(PathBuf::from);
+        let paired_failure = options.remove(std::ffi::OsStr::new("--paired-training-failure-fd"));
+        let paired_correction =
+            options.remove(std::ffi::OsStr::new("--paired-training-correction-fd"));
+        let paired_handoff =
+            options.remove(std::ffi::OsStr::new("--root-paired-training-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -145,6 +153,22 @@ fn run(
         }
         if original_login.is_some() && native_profile.is_none() {
             return Err("original login pidfd requires the original native profile".into());
+        }
+        let paired_slots = [
+            paired_profile.is_some(),
+            paired_failure.is_some(),
+            paired_correction.is_some(),
+            paired_handoff.is_some(),
+        ];
+        if paired_slots.iter().any(|provided| *provided)
+            && (paired_slots.iter().any(|provided| !provided)
+                || command != "serve-fresh-session"
+                || native_profile.is_none()
+                || original_login.is_none()
+                || handoff.is_none()
+                || root_fd.is_none())
+        {
+            return Err("paired training requires its complete profile/material/handoff group and the original fresh native launch, login and Root descriptors".into());
         }
         // Claim every numeric inherited FD before any clone/open/runtime can
         // reuse a missing number. One slot owns each FD and closes the original.
@@ -170,6 +194,18 @@ fn run(
         {
             return Err("learning serving requires its Root profile, separate handoff and original Root pidfd".into());
         }
+        let paired_handoff = paired_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let paired_failure = paired_failure
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let paired_correction = paired_correction
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
         let notes = match (notes_profile, notes_reservation, notes_session, notes_deployment) {
             (None, None, None, None) => None,
             (Some(profile), Some(reservation), Some(session), Some(deployment))
@@ -215,6 +251,16 @@ fn run(
                 )?,
                 None => prepared,
             };
+            let prepared = match (paired_profile, paired_failure, paired_correction) {
+                (Some(profile), Some(failure), Some(correction)) => prepared
+                    .with_original_paired_training_plan(
+                        &profile,
+                        std::fs::File::from(failure),
+                        std::fs::File::from(correction),
+                    )?,
+                (None, None, None) => prepared,
+                _ => return Err("complete original paired training inputs required".into()),
+            };
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
             let prepared = match notes {
                 Some((profile, reservation, session, deployment)) => prepared
@@ -257,14 +303,29 @@ fn run(
             .as_ref()
             .map(|_| prepared.seal_learning_bootstrap())
             .transpose()?;
+        let paired_bootstrap = paired_handoff
+            .as_ref()
+            .map(|_| prepared.seal_paired_training_bootstrap())
+            .transpose()?;
         let ready = || {
             if let (Some(handoff), Some(bootstrap), Some(root)) =
-                (learning_handoff, learning_bootstrap, root_fd)
+                (learning_handoff, learning_bootstrap, root_fd.as_ref())
             {
                 codex_hepta_agentd::send_root_learning_handoff(
                     std::os::unix::net::UnixDatagram::from(handoff),
                     &bootstrap,
-                    &root,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let (Some(handoff), Some(bootstrap), Some(root)) =
+                (paired_handoff, paired_bootstrap, root_fd.as_ref())
+            {
+                codex_hepta_agentd::send_root_paired_training_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    &bootstrap,
+                    root,
                     std::time::Duration::from_secs(30),
                 )
                 .map_err(std::io::Error::other)?;
@@ -325,6 +386,10 @@ mod descriptor_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "../root_cli_login_tests.rs"]
 mod login_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../root_cli_paired_tests.rs"]
+mod paired_tests;
 
 #[cfg(not(target_os = "linux"))]
 fn main() {

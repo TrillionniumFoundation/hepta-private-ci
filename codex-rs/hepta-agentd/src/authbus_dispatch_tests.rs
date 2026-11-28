@@ -466,3 +466,6 @@ async fn matching_receipt_metadata_with_different_queue_input_never_acknowledges
         (AuthBusDeliveryState::Quarantined, None)
     );
 }
+
+#[path = "authbus_ack_readiness_tests.rs"]
+mod ack_readiness;

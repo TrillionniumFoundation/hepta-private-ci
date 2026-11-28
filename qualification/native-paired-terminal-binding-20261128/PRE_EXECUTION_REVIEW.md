@@ -25,3 +25,7 @@ The cap remains 600 seconds and the original shared 3600-second cumulative budge
 The four existing regressions also execute their original synthetic native fits;
 the claim of one positive fit in the original protocol describes the new paired
 controls only. All such execution is engineering, with no scientific-budget reset.
+
+The original native job cache can return an existing exact result. A new signed
+pair association is not proof that this delivery executed a fresh fit; the receipt
+does not add an executed-this-delivery flag or permission to award work again.

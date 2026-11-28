@@ -25,7 +25,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
-fn bundles() -> anyhow::Result<(
+pub(crate) fn bundles() -> anyhow::Result<(
     tempfile::TempDir,
     AgentdIdentity,
     HostAuthorityPublicBootstrapV1,

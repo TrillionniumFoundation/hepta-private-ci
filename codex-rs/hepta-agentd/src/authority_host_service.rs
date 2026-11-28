@@ -61,6 +61,9 @@ mod notes_successor;
 mod paired_admission;
 #[path = "authority_host_paired_material.rs"]
 mod paired_material;
+#[path = "authority_host_paired_startup.rs"]
+mod paired_startup;
+pub(crate) use paired_startup::RegisteredPairedTrainingPlan;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]

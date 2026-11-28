@@ -44,7 +44,7 @@ fn request(failure: &[u8], correction: &[u8]) -> PairedPreparationRequest {
     }
 }
 
-fn fresh(failure: &[u8], correction: &[u8]) -> PairedTrainingReadResult {
+pub(crate) fn fresh(failure: &[u8], correction: &[u8]) -> PairedTrainingReadResult {
     PairedTrainingReadResult::FreshRead(PairedTrainingMaterials {
         failure: failure.to_vec(),
         correction: correction.to_vec(),
