@@ -20,6 +20,10 @@ mod learning_registration;
 pub use learning_registration::HostAuthorityLearningRegistrationV1;
 pub(crate) use learning_registration::RegisteredHostLearningCheckpointV1;
 
+#[path = "authority_host_paired_startup.rs"]
+mod paired_startup;
+pub(crate) use paired_startup::RegisteredPairedTrainingPlan;
+
 #[path = "authority_host_fresh.rs"]
 mod fresh;
 pub use fresh::FreshHostCognitiveState;
