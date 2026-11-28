@@ -1,0 +1,237 @@
+hia-asm.v1 hepta.hia.program.v9 codex_datetime_units
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_size:usize = buffer.len(output)
+  required:usize = const() {"value":80}
+  enough:bool = compare.ge(output_size,required)
+  branch enough frame(source,output,workspace) short()
+block frame(frame_source:readbuf,frame_output:mutbuf,frame_workspace:mutbuf)
+  source_size:usize = buffer.len(frame_source)
+  workspace_size:usize = buffer.len(frame_workspace)
+  frame_required:usize = const() {"value":64}
+  empty:usize = const() {"value":0}
+  source_ok:bool = compare.eq(source_size,frame_required)
+  workspace_ok:bool = compare.eq(workspace_size,empty)
+  sizes_ok:bool = bool.and(source_ok,workspace_ok)
+  branch sizes_ok decode(frame_source,frame_output) invalid_frame()
+block decode(decode_source:readbuf,decode_output:mutbuf)
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  version:u64 = buffer.load.u64.le(decode_source,p0)
+  operation:u64 = buffer.load.u64.le(decode_source,p8)
+  seconds_bits:u64 = buffer.load.u64.le(decode_source,p16)
+  nanos:u64 = buffer.load.u64.le(decode_source,p24)
+  reserved_a:u64 = buffer.load.u64.le(decode_source,p32)
+  reserved_b:u64 = buffer.load.u64.le(decode_source,p40)
+  reserved_c:u64 = buffer.load.u64.le(decode_source,p48)
+  reserved_d:u64 = buffer.load.u64.le(decode_source,p56)
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  version_ok:bool = compare.eq(version,one)
+  four:u64 = const() {"value":4}
+  operation_ok:bool = compare.le(operation,four)
+  pair_operation:bool = compare.eq(operation,zero)
+  unused_nanos:bool = compare.eq(nanos,zero)
+  nanos_field_ok:bool = bool.or(pair_operation,unused_nanos)
+  reserved_ab:u64 = bit.or(reserved_a,reserved_b)
+  reserved_cd:u64 = bit.or(reserved_c,reserved_d)
+  reserved:u64 = bit.or(reserved_ab,reserved_cd)
+  reserved_ok:bool = compare.eq(reserved,zero)
+  header_ok:bool = bool.and(version_ok,operation_ok)
+  metadata_ok:bool = bool.and(header_ok,reserved_ok)
+  frame_ok:bool = bool.and(metadata_ok,nanos_field_ok)
+  seconds:i64 = int.cast(seconds_bits) {"mode":"wrap"}
+  branch frame_ok mode(decode_output,operation,seconds,nanos) invalid_frame()
+block mode(mode_output:mutbuf,mode_operation:u64,mode_value:i64,mode_nanos:u64)
+  pair:u64 = const() {"value":0}
+  is_pair:bool = compare.eq(mode_operation,pair)
+  branch is_pair validate(mode_output,mode_value,mode_nanos) units(mode_output,mode_operation,mode_value)
+block units(units_output:mutbuf,units_operation:u64,units_value:i64)
+  units_one:u64 = const() {"value":1}
+  units_two:u64 = const() {"value":2}
+  units_three:u64 = const() {"value":3}
+  is_seconds:bool = compare.eq(units_operation,units_one)
+  is_millis:bool = compare.eq(units_operation,units_two)
+  is_micros:bool = compare.eq(units_operation,units_three)
+  one_i:i64 = const() {"value":1}
+  thousand_i:i64 = const() {"value":1000}
+  million_i:i64 = const() {"value":1000000}
+  billion_i:i64 = const() {"value":1000000000}
+  micro_or_nano:i64 = select(is_micros,million_i,billion_i)
+  subsecond_divisor:i64 = select(is_millis,thousand_i,micro_or_nano)
+  divisor:i64 = select(is_seconds,one_i,subsecond_divisor)
+  units_thousand:u64 = const() {"value":1000}
+  units_million:u64 = const() {"value":1000000}
+  units_billion:u64 = const() {"value":1000000000}
+  micro_or_nano_scale:u64 = select(is_micros,units_thousand,units_one)
+  subsecond_scale:u64 = select(is_millis,units_million,micro_or_nano_scale)
+  scale:u64 = select(is_seconds,units_billion,subsecond_scale)
+  unit_seconds:i64,unit_nanos:u64 = call(units_value,divisor,scale) {"function":"split_units"}
+  jump validate(units_output,unit_seconds,unit_nanos)
+block validate(validate_output:mutbuf,validate_seconds:i64,validate_nanos:u64)
+  minimum:i64 = const() {"value":-8334601228800}
+  maximum:i64 = const() {"value":8210266876799}
+  after_minimum:bool = compare.ge(validate_seconds,minimum)
+  before_maximum:bool = compare.le(validate_seconds,maximum)
+  seconds_ok:bool = bool.and(after_minimum,before_maximum)
+  branch seconds_ok fraction(validate_output,validate_seconds,validate_nanos) invalid_value(validate_output)
+block fraction(fraction_output:mutbuf,fraction_seconds:i64,fraction_nanos:u64)
+  billion:u64 = const() {"value":1000000000}
+  two_billion:u64 = const() {"value":2000000000}
+  minute:i64 = const() {"value":60}
+  last:i64 = const() {"value":59}
+  minute_index:i64 = call(fraction_seconds,minute) {"function":"floor_div"}
+  minute_start:i64 = int.mul.checked(minute_index,minute)
+  minute_second:i64 = int.sub.checked(fraction_seconds,minute_start)
+  leap_position:bool = compare.eq(minute_second,last)
+  ordinary:bool = compare.lt(fraction_nanos,billion)
+  fraction_bound:bool = compare.lt(fraction_nanos,two_billion)
+  fraction_position:bool = bool.or(ordinary,leap_position)
+  fraction_ok:bool = bool.and(fraction_bound,fraction_position)
+  branch fraction_ok publish(fraction_output,fraction_seconds,fraction_nanos) invalid_value(fraction_output)
+block publish(calendar_output:mutbuf,calendar_seconds:i64,calendar_nanos:u64)
+  result:u32 = call(calendar_output,calendar_seconds,calendar_nanos) {"function":"publish_units"}
+  ret(result)
+block invalid_value(invalid_output:mutbuf)
+  first:usize = const() {"value":0}
+  jump clear(invalid_output,first)
+block clear(clear_output:mutbuf,index:usize)
+  end:usize = const() {"value":80}
+  more:bool = compare.lt(index,end)
+  branch more clear_word(clear_output,index) invalid_header(clear_output)
+block clear_word(word_output:mutbuf,clear_word_index:usize)
+  clear_word_zero:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(word_output,clear_word_index,clear_word_zero)
+  eight:usize = const() {"value":8}
+  next:usize = int.add.checked(clear_word_index,eight)
+  jump clear(word_output,next)
+block invalid_header(header_output:mutbuf)
+  start:usize = const() {"value":0}
+  invalid_header_version:u64 = const() {"value":1}
+  _ = buffer.store.u64.le(header_output,start,invalid_header_version)
+  success:u32 = const() {"value":0}
+  ret(success)
+block short()
+  code:u32 = const() {"value":4294967294}
+  ret(code)
+block invalid_frame()
+  invalid_frame_code:u32 = const() {"value":4294967295}
+  ret(invalid_frame_code)
+end
+fn floor_div(numerator:i64,denominator:i64) -> (i64) effects(trap) entry(entry)
+block entry(numerator:i64,denominator:i64)
+  quotient:i64 = int.div.checked(numerator,denominator)
+  remainder:i64 = int.rem.checked(numerator,denominator)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  negative:bool = compare.lt(remainder,zero)
+  adjustment:i64 = select(negative,one,zero)
+  result:i64 = int.sub.checked(quotient,adjustment)
+  ret(result)
+end
+fn split_units(value:i64,divisor:i64,scale:u64) -> (i64,u64) effects(trap) entry(entry)
+block entry(value:i64,divisor:i64,scale:u64)
+  quotient:i64 = int.div.checked(value,divisor)
+  remainder:i64 = int.rem.checked(value,divisor)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  negative:bool = compare.lt(remainder,zero)
+  adjustment:i64 = select(negative,one,zero)
+  seconds:i64 = int.sub.checked(quotient,adjustment)
+  remainder_adjustment:i64 = select(negative,divisor,zero)
+  positive_remainder:i64 = int.add.checked(remainder,remainder_adjustment)
+  fraction:u64 = int.cast(positive_remainder) {"mode":"wrap"}
+  nanos:u64 = int.mul.checked(fraction,scale)
+  ret(seconds,nanos)
+end
+fn nanos_value(seconds:i64,nanos:u64) -> (u64,i64) effects(trap) entry(entry)
+block entry(seconds:i64,nanos:u64)
+  zero:i64 = const() {"value":0}
+  one:i64 = const() {"value":1}
+  billion:i64 = const() {"value":1000000000}
+  fraction:i64 = int.cast(nanos) {"mode":"wrap"}
+  negative:bool = compare.lt(seconds,zero)
+  seconds_adjustment:i64 = select(negative,one,zero)
+  fraction_adjustment:i64 = select(negative,billion,zero)
+  adjusted_seconds:i64 = int.add.checked(seconds,seconds_adjustment)
+  adjusted_fraction:i64 = int.sub.checked(fraction,fraction_adjustment)
+  minimum:i64 = const() {"value":-9223372036}
+  maximum:i64 = const() {"value":9223372036}
+  after_minimum:bool = compare.ge(adjusted_seconds,minimum)
+  before_maximum:bool = compare.le(adjusted_seconds,maximum)
+  product_safe:bool = bool.and(after_minimum,before_maximum)
+  branch product_safe product(adjusted_seconds,adjusted_fraction) absent()
+block product(product_seconds:i64,product_fraction:i64)
+  product_billion:i64 = const() {"value":1000000000}
+  product_zero:i64 = const() {"value":0}
+  whole:i64 = int.mul.checked(product_seconds,product_billion)
+  fraction_negative:bool = compare.lt(product_fraction,product_zero)
+  branch fraction_negative lower(whole,product_fraction) upper(whole,product_fraction)
+block lower(lower_whole:i64,lower_fraction:i64)
+  lower_minimum:i64 = const() {"value":-9223372036854775808}
+  lower_bound:i64 = int.sub.checked(lower_minimum,lower_fraction)
+  lower_safe:bool = compare.ge(lower_whole,lower_bound)
+  branch lower_safe present(lower_whole,lower_fraction) absent()
+block upper(upper_whole:i64,upper_fraction:i64)
+  upper_maximum:i64 = const() {"value":9223372036854775807}
+  upper_bound:i64 = int.sub.checked(upper_maximum,upper_fraction)
+  upper_safe:bool = compare.le(upper_whole,upper_bound)
+  branch upper_safe present(upper_whole,upper_fraction) absent()
+block present(present_whole:i64,present_fraction:i64)
+  valid:u64 = const() {"value":1}
+  value:i64 = int.add.checked(present_whole,present_fraction)
+  ret(valid,value)
+block absent()
+  invalid:u64 = const() {"value":0}
+  empty:i64 = const() {"value":0}
+  ret(invalid,empty)
+end
+fn publish_units(output:mutbuf,seconds:i64,nanos:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,seconds:i64,nanos:u64)
+  thousand_i:i64 = const() {"value":1000}
+  million_i:i64 = const() {"value":1000000}
+  thousand:u64 = const() {"value":1000}
+  million:u64 = const() {"value":1000000}
+  millis_fraction:u64 = int.div.checked(nanos,million)
+  micros_fraction:u64 = int.div.checked(nanos,thousand)
+  millis_fraction_i:i64 = int.cast(millis_fraction) {"mode":"wrap"}
+  micros_fraction_i:i64 = int.cast(micros_fraction) {"mode":"wrap"}
+  millis_whole:i64 = int.mul.checked(seconds,thousand_i)
+  micros_whole:i64 = int.mul.checked(seconds,million_i)
+  millis:i64 = int.add.checked(millis_whole,millis_fraction_i)
+  micros:i64 = int.add.checked(micros_whole,micros_fraction_i)
+  nanos_valid:u64,nanos_timestamp:i64 = call(seconds,nanos) {"function":"nanos_value"}
+  seconds_word:u64 = int.cast(seconds) {"mode":"wrap"}
+  millis_word:u64 = int.cast(millis) {"mode":"wrap"}
+  micros_word:u64 = int.cast(micros) {"mode":"wrap"}
+  nanos_word:u64 = int.cast(nanos_timestamp) {"mode":"wrap"}
+  p0:usize = const() {"value":0}
+  p8:usize = const() {"value":8}
+  p16:usize = const() {"value":16}
+  p24:usize = const() {"value":24}
+  p32:usize = const() {"value":32}
+  p40:usize = const() {"value":40}
+  p48:usize = const() {"value":48}
+  p56:usize = const() {"value":56}
+  p64:usize = const() {"value":64}
+  p72:usize = const() {"value":72}
+  one:u64 = const() {"value":1}
+  _ = buffer.store.u64.le(output,p0,one)
+  _ = buffer.store.u64.le(output,p8,one)
+  _ = buffer.store.u64.le(output,p16,seconds_word)
+  _ = buffer.store.u64.le(output,p24,nanos)
+  _ = buffer.store.u64.le(output,p32,millis_word)
+  _ = buffer.store.u64.le(output,p40,micros_word)
+  _ = buffer.store.u64.le(output,p48,nanos_valid)
+  _ = buffer.store.u64.le(output,p56,nanos_word)
+  _ = buffer.store.u64.le(output,p64,millis_fraction)
+  _ = buffer.store.u64.le(output,p72,micros_fraction)
+  status:u32 = const() {"value":0}
+  ret(status)
+end

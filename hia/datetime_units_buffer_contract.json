@@ -1,0 +1,223 @@
+{
+  "schema": "codex.hia.datetime-units-buffer-contract.v1",
+  "revision": 1,
+  "status": "UTC timestamp unit constructor and accessor component; duration arithmetic, Local timezones, production integration and whole-product qualification remain separate gates.",
+  "module": "datetime_units",
+  "source_sha256": "3d7b246ce374fd61bd90c896dd8695f45ff51ec0ed6740344b2b9529bee6f2d4",
+  "core_sha256": "70ef87e38b7f94533b5715c66d41c4f2ba2f6a0593a77d81fa85ffa556ed1eb1",
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "native_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "target": "x86_64-unknown-linux-gnu",
+    "bootstrap": "Explicit Python B0, followed by native HIA B1, B2, B3 and component compilation."
+  },
+  "reference": {
+    "commit": "756f7a31ad4373809a00da65a91ba1ca4571f6cb",
+    "workspace_lock_sha256": "5d91e889e7ed013a802393356402c2211b86ebb3e25e6356cd57a82912771c19",
+    "name": "chrono",
+    "version": "0.4.43",
+    "checksum": "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118",
+    "operations": [
+      "DateTime::from_timestamp",
+      "DateTime::from_timestamp_secs",
+      "DateTime::from_timestamp_millis",
+      "DateTime::from_timestamp_micros",
+      "DateTime::from_timestamp_nanos",
+      "DateTime::timestamp",
+      "DateTime::timestamp_millis",
+      "DateTime::timestamp_micros",
+      "DateTime::timestamp_nanos_opt",
+      "DateTime::timestamp_subsec_millis",
+      "DateTime::timestamp_subsec_micros",
+      "DateTime::timestamp_subsec_nanos"
+    ],
+    "oracle_registry_packages": 43
+  },
+  "entry": {
+    "symbol": "f0",
+    "signature": "u64 f0(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 zero extended to u64 by the fixed native borrowed-buffer wrapper."
+  },
+  "caller_preconditions": [
+    "Advertised source and output ranges are live for the synchronous call, readable for source and writable for output.",
+    "Source and output ranges do not overlap, including exact aliasing. Source is not concurrently modified.",
+    "No alignment is required. Lengths are actual allocated capacities; invalid pointers or invented capacities are outside the contract.",
+    "Zero-length workspace is never read or written. Native retains no pointers and has no mutable global state."
+  ],
+  "source": {
+    "bytes_exact": 64,
+    "byte_order": "eight little-endian u64 words; signed argument uses two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "meaning": "0: seconds plus nanoseconds; 1: seconds; 2: milliseconds; 3: microseconds; 4: nanoseconds"
+      },
+      {
+        "offset": 16,
+        "name": "argument",
+        "meaning": "signed i64 timestamp in the unit selected by operation"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "meaning": "u64 nanoseconds for operation 0; required zero for operations 1 through 4"
+      },
+      {
+        "offset": 32,
+        "name": "reserved0",
+        "required": 0
+      },
+      {
+        "offset": 40,
+        "name": "reserved1",
+        "required": 0
+      },
+      {
+        "offset": 48,
+        "name": "reserved2",
+        "required": 0
+      },
+      {
+        "offset": 56,
+        "name": "reserved3",
+        "required": 0
+      }
+    ],
+    "mutation": "Never modified; all eight words are loaded before any output write."
+  },
+  "workspace": {
+    "bytes_exact": 0,
+    "mutation": "Never modified."
+  },
+  "output": {
+    "bytes_written_on_success": 80,
+    "byte_order": "ten little-endian u64 words; signed values use two's-complement bits",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "version",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "valid",
+        "value": "1 when the original constructor succeeds; otherwise 0"
+      },
+      {
+        "offset": 16,
+        "name": "unix_seconds",
+        "value": "signed timestamp() on success; otherwise 0"
+      },
+      {
+        "offset": 24,
+        "name": "nanoseconds",
+        "value": "timestamp_subsec_nanos() on success; otherwise 0"
+      },
+      {
+        "offset": 32,
+        "name": "unix_milliseconds",
+        "value": "signed timestamp_millis() on success; otherwise 0"
+      },
+      {
+        "offset": 40,
+        "name": "unix_microseconds",
+        "value": "signed timestamp_micros() on success; otherwise 0"
+      },
+      {
+        "offset": 48,
+        "name": "nanos_valid",
+        "value": "1 when timestamp_nanos_opt() is Some; otherwise 0"
+      },
+      {
+        "offset": 56,
+        "name": "unix_nanoseconds",
+        "value": "signed timestamp_nanos_opt() value when present; otherwise 0"
+      },
+      {
+        "offset": 64,
+        "name": "subsecond_milliseconds",
+        "value": "timestamp_subsec_millis() on success; otherwise 0"
+      },
+      {
+        "offset": 72,
+        "name": "subsecond_microseconds",
+        "value": "timestamp_subsec_micros() on success; otherwise 0"
+      }
+    ],
+    "tail": "Bytes after offset 80 remain unchanged. Frame and capacity errors leave the entire output unchanged."
+  },
+  "semantics": {
+    "seconds_range": [
+      -8334601228800,
+      8210266876799
+    ],
+    "fraction": "For operation 0, nanoseconds must be below 2000000000; values at least 1000000000 require the Euclidean second within the minute to be 59. Values outside u32 are rejected by the observer's explicit argument-type guard, matching the wider ABI extension.",
+    "unit_construction": "Use Euclidean quotient and remainder for seconds, milliseconds, microseconds and nanoseconds, including negative i64 values. Compute the remainder directly and adjust it; never reconstruct a possibly overflowing floor quotient times divisor.",
+    "accessors": "Millis and micros use non-leap seconds multiplied by 1000/1000000 plus truncated subsecond units. Leap fractions can make the subsecond accessors exceed ordinary 999/999999 limits. The full Chrono timestamp range fits both accessors in i64.",
+    "nanosecond_option": "Preserve the original checked operation order: for negative seconds add one to seconds and subtract one billion from the fraction; checked multiply adjusted seconds by one billion, then checked add the adjusted fraction. A failed check produces nanos_valid=0 and unix_nanoseconds=0 while retaining the valid DateTime and other units.",
+    "scope": "UTC constructors and timestamp accessors only. DateTime/TimeDelta addition, subtraction, ordering adapters, Local timezone conversion and production API integration are separate."
+  },
+  "status_precedence": [
+    {
+      "status": 4294967294,
+      "condition": "output capacity is below 80, before reading source or validating workspace"
+    },
+    {
+      "status": 4294967295,
+      "condition": "source size is not 64, workspace is nonempty, version is not 1, operation is outside 0..4, any reserved word is nonzero, or nanoseconds is nonzero for operations 1..4"
+    },
+    {
+      "status": 0,
+      "condition": "valid frame; exactly 80 output bytes encode the original constructed DateTime and accessors, or version 1 followed by zero words when construction fails"
+    }
+  ],
+  "differential_corpus": {
+    "total_cases": 366356,
+    "calendar_constructor_cases_preserved": 166327,
+    "calendar_cycle_cases": 146097,
+    "input_sha256": "b76ba7faae01aa302ce2270f1a15c08f8c4b4c5bb976a8fa7fed98b3c40aef88",
+    "original_output_sha256": "f34d4d1e2cc56d7ecc0b63a8aec3b5bcd56d4d29fc39285dcde6a6f1d71df71f",
+    "original_result_counts": {
+      "0,0,0": 25163,
+      "0,1,0": 162587,
+      "0,1,1": 14557,
+      "1,0,0": 20482,
+      "1,1,0": 20108,
+      "1,1,1": 438,
+      "2,0,0": 20366,
+      "2,1,0": 20126,
+      "2,1,1": 536,
+      "3,0,0": 2315,
+      "3,1,0": 38055,
+      "3,1,1": 658,
+      "4,1,1": 40965
+    },
+    "result_count_key": "operation,constructor-valid,nanosecond-option-valid",
+    "buffer_control_calls": 1008,
+    "native_calls_required": 1466432,
+    "coverage": "All original calendar constructor cases, nanosecond-option lower/upper boundaries with leap and ordinary fractions, every i64 power-of-two neighborhood, i64 minimum/maximum neighborhoods, full Chrono unit boundaries and deterministic generated i64 inputs.",
+    "controls": "Two fills and exact/excess output capacities for every semantic case. All 80 shorter output capacities for each operation; truncated and oversized source, invalid metadata, nonempty workspace, and nonzero unused nanoseconds. All inputs, outputs, tails and unaligned guards compared.",
+    "recording": "Complete input, original output and native-call transcript retained as gzip streams, with SHA-256 hashes of every uncompressed byte."
+  },
+  "claims": {
+    "production_callers_migrated": false,
+    "duration_arithmetic_qualified": false,
+    "local_timezone_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement": false
+  }
+}
