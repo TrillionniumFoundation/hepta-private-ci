@@ -4,7 +4,7 @@ import math
 import torch
 import torch.nn.functional as F
 from torch import nn
-sys.path.insert(0,str(Path(__file__).resolve().parent.parent/"direct_hidden"))
+sys.path.append(str(Path(__file__).resolve().parent.parent/"direct_hidden"))
 from model import make_table
 from data import LENGTH
 

@@ -1,0 +1,20 @@
+{
+  "state": "Complete original epoch1/time120 archives on independent disk. The original large-object publisher returned HTTP 400/401. Restartable small-object publication is separate from original model verification.",
+  "original_large_writer": "dpty-f9e0fe3cbbd6c8b5e4aba685d9e00e93256721bd84f46cc0b3161ab7dd46c064",
+  "independent_archive": {
+    "host": "desktop",
+    "session_id": "dpty-d0de777b60ddee4a7d10dc1c5f28ae7cd35927d4c0a0713ab8165d49e2d6ddf5",
+    "files": [
+      "disk_epoch1.json",
+      "disk_time120.json"
+    ]
+  },
+  "small_object_publication": {
+    "host": "desktop",
+    "session_id": "dpty-7db997f7ece257341c904168b1ec01441e78aa3536a29223cf37768a380ee00e",
+    "branch": "research/hcsn-returning-regimes-9de7-results",
+    "directory": "qualification/hcsn_recurrent_boundary_20261128/trainable_encoder/results/archives"
+  },
+  "native_development_receipt": "development_all_120.json",
+  "native_files": "weights and original score arrays independently SHA-verified and reloaded"
+}
