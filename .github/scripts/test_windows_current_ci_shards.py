@@ -524,7 +524,7 @@ class OriginalWindowsShardControls(unittest.TestCase):
             ),
             (
                 "sandbox-original-failures",
-                "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+                "unified_exec::tests::legacy_and_elevated_non_tty_refuse_before_cmd_emits_output",
             ),
             (
                 "sandbox-original-failures",
@@ -532,7 +532,7 @@ class OriginalWindowsShardControls(unittest.TestCase):
             ),
             (
                 "sandbox-original-failures",
-                "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots",
+                "unified_exec::tests::legacy_and_elevated_refuse_before_deleting_owned_roots",
             ),
             (
                 "sandbox-legacy-delete-admission",
@@ -540,7 +540,7 @@ class OriginalWindowsShardControls(unittest.TestCase):
             ),
             (
                 "sandbox-legacy-delete-admission",
-                "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+                "unified_exec::tests::delete_permission_tests::legacy_and_elevated_refuse_before_four_cell_delete_attempt",
             ),
         )
         original = copy.deepcopy(self.receipts["process"])
