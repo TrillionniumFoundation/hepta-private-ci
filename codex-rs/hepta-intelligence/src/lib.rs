@@ -321,6 +321,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 #[cfg(test)]
+mod filesystem_test_support;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
 

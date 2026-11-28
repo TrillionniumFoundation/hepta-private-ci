@@ -24,6 +24,21 @@ use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+fn open_durable_directory(path: &std::path::Path) -> std::io::Result<File> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(path)
+    }
+    #[cfg(not(windows))]
+    File::open(path)
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
@@ -189,8 +204,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = open_durable_directory(temp.path()).expect("ledger directory");
+    let witness_directory = open_durable_directory(temp.path()).expect("witness directory");
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
