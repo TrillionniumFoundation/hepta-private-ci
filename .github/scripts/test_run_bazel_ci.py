@@ -105,6 +105,36 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             WindowsSdkDir=r"C:\SDK",
         )
 
+    def test_clippy_selects_test_binaries_for_the_build_mode(self) -> None:
+        unit = "//codex-rs/fake:fake-unit-tests-bin"
+        native = "//codex-rs/fake:fake-integration-test-bin"
+        cross = "//codex-rs/fake:fake-integration-test-windows-cross-bin"
+        query_output = self.root / "clippy-query.txt"
+        query_output.write_text(f"{unit}\n{native}\n{cross}\n", encoding="utf-8")
+        script = SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"
+        for runner_os, flags, integration in (
+            ("Windows", [], native),
+            ("Windows", ["--windows-cross-compile"], cross),
+            ("Linux", [], native),
+        ):
+            with self.subTest(runner_os=runner_os, flags=flags):
+                result = subprocess.run(
+                    [self.bash, str(script), *flags],
+                    env={
+                        **self.env,
+                        "RUNNER_OS": runner_os,
+                        "BAZEL_PROBE_QUERY_FILE": str(query_output),
+                    },
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    result.stdout.splitlines(),
+                    ["//codex-rs/...", "-//codex-rs/v8-poc:all", unit, integration],
+                )
+
     def run_wrapper(
         self, *args: str
     ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:

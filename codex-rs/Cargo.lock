@@ -3411,6 +3411,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-template",
  "codex-utils-time",
+ "core_test_support",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -3506,6 +3507,7 @@ dependencies = [
  "codex-utils-cargo-bin",
  "codex-utils-cli",
  "codex-utils-home-dir",
+ "codex-utils-path",
  "core_test_support",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
@@ -3576,6 +3578,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-http-client",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
  "pretty_assertions",
@@ -3663,6 +3666,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "rustix 1.1.6",
@@ -3713,6 +3717,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "serde",
@@ -4118,11 +4123,13 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
+ "winapi-util",
 ]
 
 [[package]]
@@ -4192,6 +4199,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek 2.2.0",
  "jsonschema",
@@ -5560,6 +5568,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5755,6 +5765,7 @@ dependencies = [
  "base64 0.22.1",
  "codex-otel",
  "codex-protocol",
+ "codex-utils-cargo-bin",
  "codex-utils-absolute-path",
  "codex-utils-pty",
  "codex-utils-string",

@@ -15,6 +15,7 @@ use std::os::unix::fs::symlink;
 use super::*;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
+#[cfg(unix)]
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
 use crate::MemoryDraft;
@@ -135,6 +136,7 @@ enum EntryPayload {
     Symlink(PathBuf),
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn exact_current_cut_recovers_writable_generation_and_persists_activation() {
     let temp = TempDir::new().expect("temp dir");
@@ -197,6 +199,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate() {
     let temp = TempDir::new().expect("temp");
@@ -253,10 +256,12 @@ async fn writable_recovery_requires_exclusive_store_fence() {
             &RecoveryVerifier,
         )
         .await,
-        Err(CognitiveRecoveryError::Unavailable(_))
+        Err(CognitiveRecoveryError::Unavailable(message))
+            if message.contains("cannot fence active store handles")
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     let temp = TempDir::new().expect("temp dir");
@@ -358,20 +363,49 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
         Err(CognitiveRecoveryError::Invalid(_))
     ));
 
+    #[cfg(unix)]
+    {
+        store.pool.close().await;
+        drop(store);
+        let mut tampered = anchor;
+        tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
+        assert!(matches!(
+            CognitiveStore::open_with_recovery(
+                &layout(&temp, &owner),
+                CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
+                &authority,
+                &RecoveryVerifier,
+            )
+            .await,
+            Err(CognitiveRecoveryError::AccessDenied(_))
+        ));
+    }
+}
+
+#[cfg(not(unix))]
+#[tokio::test]
+async fn recovery_without_retained_descriptors_never_activates_a_writer() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(95);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
     store.pool.close().await;
     drop(store);
-    let mut tampered = anchor;
-    tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
+
+    let layout = layout(&temp, &owner);
+    let before = capture_recovery_tree(layout.cognitive_root());
     assert!(matches!(
         CognitiveStore::open_with_recovery(
-            &layout(&temp, &owner),
-            CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
-            &authority,
+            &layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &recovery_authority(&owner),
             &RecoveryVerifier,
         )
         .await,
-        Err(CognitiveRecoveryError::AccessDenied(_))
+        Err(CognitiveRecoveryError::Indeterminate(message))
+            if message == SqliteRecoveryError::Indeterminate.to_string()
     ));
+    assert_eq!(capture_recovery_tree(layout.cognitive_root()), before);
 }
 
 #[cfg(unix)]
