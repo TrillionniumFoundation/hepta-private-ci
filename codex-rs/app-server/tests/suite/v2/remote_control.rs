@@ -1113,12 +1113,11 @@ impl PairingRemoteControlBackend {
                 )
                 .await?;
 
-                let request_after_enroll = read_http_request(&listener).await?;
-                let pair_http_request = if request_after_enroll.request_line.starts_with("GET ") {
-                    read_http_request(&listener).await?
-                } else {
-                    request_after_enroll
-                };
+                let pair_http_request = Self::read_pairing_request(&listener).await?;
+                assert_eq!(
+                    pair_http_request.request_line,
+                    "POST /backend-api/wham/remote/control/server/pair HTTP/1.1"
+                );
                 respond_with_json(
                     pair_http_request.reader.into_inner(),
                     serde_json::json!({
@@ -1134,7 +1133,7 @@ impl PairingRemoteControlBackend {
                     serde_json::json!({ "pairing_code": "pairing-code" }),
                     serde_json::json!({ "manual_pairing_code": "ABCD-EFGH" }),
                 ] {
-                    let status_http_request = read_http_request(&listener).await?;
+                    let status_http_request = Self::read_pairing_request(&listener).await?;
                     assert_eq!(
                         status_http_request.request_line,
                         "POST /backend-api/wham/remote/control/server/pair/status HTTP/1.1"
@@ -1166,6 +1165,16 @@ impl PairingRemoteControlBackend {
             enroll_request_rx: Some(enroll_request_rx),
             server_task,
         })
+    }
+
+    async fn read_pairing_request(listener: &TcpListener) -> Result<HttpRequest> {
+        loop {
+            let request = read_http_request(listener).await?;
+            // The background WebSocket may reconnect between pairing RPCs.
+            if request.request_line != "GET /backend-api/wham/remote/control/server HTTP/1.1" {
+                return Ok(request);
+            }
+        }
     }
 
     async fn wait_for_enroll_request(&mut self) -> Result<String> {
