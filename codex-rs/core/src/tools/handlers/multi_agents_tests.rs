@@ -3142,6 +3142,7 @@ async fn multi_agent_v2_wait_agent_uses_configured_default_timeout() {
     let session = Arc::new(session);
     let turn = Arc::new(turn);
 
+    tokio::time::pause();
     let early = timeout(
         Duration::from_millis(/*millis*/ 20),
         WaitAgentHandlerV2::default().handle(invocation(

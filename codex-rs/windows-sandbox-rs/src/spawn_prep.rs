@@ -535,7 +535,7 @@ mod tests {
         let workspace_roots = workspace_roots_for(cwd.path());
 
         let _context = prepare_legacy_spawn_context(
-            &PermissionProfile::workspace_write(),
+            &PermissionProfile::read_only(),
             workspace_roots.as_slice(),
             codex_home.path(),
             cwd.path(),

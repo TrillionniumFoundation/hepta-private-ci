@@ -364,7 +364,7 @@ checksum = "0258346f92c78dbc5b336b9a5b27c64447aa10643bc64e651db2edb145361564"
 dependencies = [
  "anstyle",
  "memchr",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -2639,7 +2639,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "unicode-segmentation",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -3506,6 +3506,7 @@ dependencies = [
  "codex-utils-cargo-bin",
  "codex-utils-cli",
  "codex-utils-home-dir",
+ "codex-utils-path",
  "core_test_support",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
@@ -3576,6 +3577,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-http-client",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
  "pretty_assertions",
@@ -3663,6 +3665,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "rustix 1.1.6",
@@ -3713,6 +3716,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "serde",
@@ -4118,11 +4122,13 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
+ "winapi-util",
 ]
 
 [[package]]
@@ -5399,7 +5405,7 @@ dependencies = [
  "tracing-subscriber",
  "two-face",
  "unicode-segmentation",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
  "url",
  "urlencoding",
  "uuid",
@@ -5560,6 +5566,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5755,6 +5763,7 @@ dependencies = [
  "base64 0.22.1",
  "codex-otel",
  "codex-protocol",
+ "codex-utils-cargo-bin",
  "codex-utils-absolute-path",
  "codex-utils-pty",
  "codex-utils-string",
@@ -13574,7 +13583,7 @@ dependencies = [
  "thiserror 2.0.21",
  "unicode-segmentation",
  "unicode-truncate",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -13648,7 +13657,7 @@ dependencies = [
  "strum 0.28.0",
  "time",
  "unicode-segmentation",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -16308,7 +16317,7 @@ checksum = "c13547615a44dc9c452a8a534638acdf07120d4b6847c8178705da06306a3057"
 dependencies = [
  "smawk",
  "unicode-linebreak",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -17231,7 +17240,7 @@ checksum = "16b380a1238663e5f8a691f9039c73e1cdae598a30e9855f541d29b08b53e9a5"
 dependencies = [
  "itertools 0.14.0",
  "unicode-segmentation",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -17242,9 +17251,9 @@ checksum = "7dd6e30e90baa6f72411720665d41d89b9a3d039dc45b8faea1ddd07f617f6af"
 
 [[package]]
 name = "unicode-width"
-version = "0.2.3"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca718471876992059f251e33aafc334346ada08042b7661dd1fe313a9bced557"
+checksum = "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254"
 
 [[package]]
 name = "unicode-xid"
@@ -17455,7 +17464,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "054ff75fb8fa83e609e685106df4faeffdf3a735d3c74ebce97ec557d5d36fd9"
 dependencies = [
  "itoa",
- "unicode-width 0.2.3",
+ "unicode-width 0.2.2",
  "vte",
 ]
 
