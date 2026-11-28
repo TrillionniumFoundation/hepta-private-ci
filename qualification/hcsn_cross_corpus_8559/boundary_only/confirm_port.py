@@ -91,7 +91,7 @@ def one_gallery(model,pix,tok,groups,ids,peers):
         width=(prob>0).sum(1).tolist();prob/=prob.sum(1,keepdims=True)
         h=-(prob*np.log2(prob.clip(1e-300))).sum(1)
         wire_stats.append(dict(marginal_entropy_8bit_bins_per_group=h.tolist(),occupied_bins=width))
-    center=128 if model.bits==8 else float((model.hi+model.lo)*.5);fixed=[np.full_like(w,center) for w in wires]
+    center=getattr(model,'clamp_wire_code',128) if model.bits==8 else float((model.hi+model.lo)*.5);fixed=[np.full_like(w,center) for w in wires]
     perm=shuffled(groups);outputs={}
     for mode,values in [('pair',wires),('visual_derange',(wires[0][perm],wires[1])),('image_clamp',(fixed[0],wires[1])),('text_clamp',(wires[0],fixed[1])),('both_clamp',fixed)]:
         arrays=[[],[]]
