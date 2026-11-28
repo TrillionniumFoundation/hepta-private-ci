@@ -30,6 +30,12 @@ pub use learning::RootLearningHandoffV1;
 pub use learning::receive_root_learning_handoff;
 pub use learning::send_root_learning_handoff;
 
+#[path = "root_production_paired_handoff.rs"]
+mod paired_training;
+pub use paired_training::RootPairedTrainingHandoffV1;
+pub use paired_training::receive_root_paired_training_handoff;
+pub use paired_training::send_root_paired_training_handoff;
+
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
 /// All received rights close on malformed/truncated frames. This function does
