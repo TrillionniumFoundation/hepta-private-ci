@@ -1,0 +1,77 @@
+{
+  "arm": "hcsn",
+  "best_nll": 3.102830707268908,
+  "best_seconds": 235.3456869982183,
+  "best_step": 4119,
+  "child_cpu_seconds": 301.446507742,
+  "child_wall_seconds": 301.6865903120488,
+  "combined_cpu": 299.96170627199996,
+  "combined_wall": 300.06603800226003,
+  "common_initial": "f72b033253914218780641886cb153d49ee75b4174803cb2c9428019391ff37b",
+  "dev_images": 128,
+  "development_ids_sha256": "b933519a4d64ab4d97f1a9e215c5ffb2bc09f59896e74f89f077720618edfeeb",
+  "device": "cpu",
+  "final_steps": 5113,
+  "final_tokens": 2100237,
+  "history": [
+    {
+      "dev_and_snapshot_seconds": 0.36206785682588816,
+      "eligible": true,
+      "nll": 8.187636648159097,
+      "observed": 0.3621544321067631,
+      "requested": 0,
+      "steps": 0,
+      "tokens": 0,
+      "training_seconds": 1.1399388313293457e-06
+    },
+    {
+      "dev_and_snapshot_seconds": 0.3221505992114544,
+      "eligible": true,
+      "nll": 3.7550593856880856,
+      "observed": 35.35612153308466,
+      "requested": 35,
+      "steps": 627,
+      "tokens": 257862,
+      "training_seconds": 34.671712127979845
+    },
+    {
+      "dev_and_snapshot_seconds": 0.37748659029603004,
+      "eligible": true,
+      "nll": 3.305694717032262,
+      "observed": 110.3777669603005,
+      "requested": 110,
+      "steps": 1962,
+      "tokens": 804832,
+      "training_seconds": 109.31573559204116
+    },
+    {
+      "dev_and_snapshot_seconds": 0.32993725314736366,
+      "eligible": true,
+      "nll": 3.102830707268908,
+      "observed": 235.3456869982183,
+      "requested": 235,
+      "steps": 4119,
+      "tokens": 1691291,
+      "training_seconds": 233.95355820516124
+    }
+  ],
+  "initial": "f1091c85db26a8f42005b1d524cc2368ac0203a751fca0187985d7982cbae4db",
+  "params": 327760,
+  "peak_rss_kib": 1077544,
+  "seed": 17011,
+  "selected": "023189696226354bd6072a93c0f2660740c5e7ae10801576790358426f4eb29e",
+  "setup_seconds": 1.6159060392528772,
+  "source": {
+    "PROTOCOL.md": "76602cc2728af5b8769d029c8b2fe1655d46940d091daf7e186f14d21449ed67",
+    "cohort.py": "376cf8174daa851718edc6952beec4231c50a291a6bc4723023a669ef062adaf",
+    "free_boundary_decoder.py": "5469f9af3e39d418b8b5445632519c6bda62fdf3b256c44ff8bf88227853a948",
+    "qualify.py": "f721a5379e402bd98b258def1e95109e7bdc5d250137c16050f1c3c77ef90802",
+    "run.py": "2147dfd00a8e228da974483f5978615240a1fa73b7acf89a7c3595d2621a2ab8",
+    "study.py": "0e29de0354bdf4afcf95c48fdfbe97f11a13a0b0d4d66b655c6f54a06903e027"
+  },
+  "torch": "2.13.0+rocm10.0.0",
+  "torch_threads": 1,
+  "train_images": 5999,
+  "train_seconds": 298.6737367371097,
+  "vocab": 3490
+}
