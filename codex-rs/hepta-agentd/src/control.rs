@@ -170,6 +170,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
+    // Winsock may report ConnectionRefused for a socket pathname that has
+    // never existed. Confirm absence without following a link or treating
+    // an inspection error as absence.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket",
+                socket_path,
+                error,
+            ));
+        }
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
@@ -182,7 +196,6 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
