@@ -1,0 +1,3 @@
+# Fixed binary ingress outcome
+
+The private job acquired a Tesla T4 running PyTorch 2.14.1+cu130, performed an actual CUDA dot product (140) and retrieved the pinned public FFmpeg wheel. The original executable's SHA matched. Creating the 79,826,272-byte file raised `OSError` 27 under the managed process file-size limit. The original prepared reference is unchanged. No media clip reached the planned comparisons, and no encoder was fitted. The accelerator program saved its negative result in 6.74 seconds. Its four declared files were recovered and the owned runtime was released. The separate native-decoder study retains this failure as its starting observation.
