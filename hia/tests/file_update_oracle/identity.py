@@ -334,9 +334,14 @@ def _reviewed_4280_root(producer, current):
     path = "hia/tests/file_update_oracle/identity.py"
     code = (producer / path).read_bytes()
     blob = hashlib.sha1(f"blob {len(code)}\0".encode() + code).hexdigest()
-    inverse = _project_tree(producer, current["tree"], {
-        path: (blob, _REVIEWED_4280["identity_blob"]),
-    })
+    changes = {path: (blob, _REVIEWED_4280["identity_blob"])}
+    # A single separately cross-lock-qualified unified formatter oracle change.
+    unified_path = "hia/tests/unified_diff_oracle/original.py"
+    unified_code = (producer / unified_path).read_bytes()
+    unified_blob = hashlib.sha1(f"blob {len(unified_code)}\0".encode() + unified_code).hexdigest()
+    if unified_blob == "96e7a4d7da8744b585359103c59ede4c8b5c5311":
+        changes[unified_path] = (unified_blob, "eb0c055730407bdfbeeffaffe7ac552605971e8f")
+    inverse = _project_tree(producer, current["tree"], changes)
     if inverse != _REVIEWED_4280["tree"]:
         raise RuntimeError("unreviewed producing tree; exact 4280 inverse required")
     return inverse

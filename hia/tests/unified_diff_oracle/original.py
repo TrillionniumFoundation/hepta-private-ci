@@ -6,8 +6,32 @@ from .common import BASE as COMMIT, CRATE_TREE
 def extract_original(context):
     OUT, REPO, REPORT, common = context.output, context.args.original_root.resolve(strict=True), context.report, context
     assert subprocess.check_output(['git', '-C', REPO, 'rev-parse', f'{COMMIT}:codex-rs/apply-patch']).decode().strip() == CRATE_TREE
-    for relative in ('codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/apply-patch/Cargo.toml'):
-        assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+    # Preserve the frozen aeb88 source, admitting only the independently
+    # reviewed dependency identity. All other source/manifest changes fail closed.
+    from file_update_oracle.identity import (
+        _REVIEWED_4280_FILES, _reviewed_4280_root, clean_identity,
+    )
+    paths = ('codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/apply-patch/Cargo.toml')
+    differences = {}
+    for relative in paths:
+        frozen = subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}'])
+        actual = (context.repo / relative).read_bytes()
+        if frozen != actual:
+            differences[relative] = (hashlib.sha256(frozen).hexdigest(), hashlib.sha256(actual).hexdigest())
+    if differences:
+        expected = {path: _REVIEWED_4280_FILES[path] for path in paths[:2]}
+        if differences != expected:
+            raise RuntimeError('unreviewed unified formatter dependency declaration change')
+        if subprocess.check_output(['git', '-C', REPO, 'rev-parse', f'{COMMIT}^{{tree}}']).decode().strip() != '29386bcac408706d83ee0aa2a51107bb115a1295':
+            raise RuntimeError('unified formatter original tree differs')
+        projected = _reviewed_4280_root(context.repo, clean_identity(context.repo))
+        REPORT['reviewed_dependency_identity'] = {
+            'projected_tree': projected,
+            'files': {path: list(pair) for path, pair in differences.items()},
+            'cross_lock_ledger_sha256': '25dbc0f047be0fe369a4f75d22839810962227ea84d164053cd00cb2a2f5262b',
+            'checked_transcript_sha256': '81d61c3d99dfb71091604dd6ec60e242d34fc351840d81fcac97419c084830a8',
+            'wrapping_transcript_sha256': 'c13c6f01114b989a0b3a96bf7a068da2e83f15d8656c93dc7857e7faff4ca526',
+        }
     root = OUT / 'original-source'
     root.mkdir()
     rows = []
