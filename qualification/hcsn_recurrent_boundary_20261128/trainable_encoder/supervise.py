@@ -29,7 +29,7 @@ def verify_sources(study,out):
 def run(study,source):
     out=study/"run"
     with (study/"supervisor.lock").open("a") as guard:
-        fcntl.flock(guard,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        fcntl.flock(guard,fcntl.LOCK_EX)
         misses=0
         while not (out/"terminal.json").exists():
             if not (out/"recipe.json").exists():
@@ -37,6 +37,8 @@ def run(study,source):
             misses=0 if held(out/"worker.lock") else misses+1
             if misses>=2 and not (out/"terminal.json").exists():
                 verify_sources(study,out)
+                from recovery_safe import pre_resume
+                pre_resume(study,out)
                 with (study/"restarts.jsonl").open("a") as f:
                     f.write(json.dumps(dict(when=time.time(),reason="original writer lock vacant"))+"\n")
                 code=subprocess.run([sys.executable,"-u",str(study/"train.py"),str(source),str(out),

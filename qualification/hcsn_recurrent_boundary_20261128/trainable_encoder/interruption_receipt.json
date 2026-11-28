@@ -1,0 +1,14 @@
+{
+  "first_attempt_time_threshold_step": 3,
+  "surviving_original_files_before_restart": [
+    "step3-dev.npz",
+    "step3.pt"
+  ],
+  "original_sha256": {
+    "step3-dev.npz": "9818281238c4a1cc80ccccc30fa2e99761bb9ccce8a3cede1802f681eb1573ed",
+    "step3.pt": "c5667d47b5472b056d2d24b7d163a0f847a4d6a05040a26ed83a5317da500a37"
+  },
+  "restart_recorded_threshold_step": 2,
+  "step3_in_restart_history": false,
+  "setup": "Only the test clock tick is changed. The registered one_stage writes weights and development scores before checkpoint cursor/progress."
+}

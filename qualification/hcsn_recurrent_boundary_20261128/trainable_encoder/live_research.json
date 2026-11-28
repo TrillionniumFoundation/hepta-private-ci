@@ -1,0 +1,250 @@
+{
+  "worker": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/bin/nice",
+      "args": [
+        "-n",
+        "8",
+        "/home/qq/.venvs/rocm10/bin/python",
+        "-u",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/train.py",
+        "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/run",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/study.py"
+      ],
+      "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+      "env": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "ROCR_VISIBLE_DEVICES": ""
+      },
+      "idempotency_key": "hcsn-9de7-returning-encoder-fp32-15cell-original-v1"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "ai395",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-63f9352b39a889937b94adb59b0b13d87d8f0380e2ea08d41d8b57984097c324",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795875189503,
+        "output_complete": false,
+        "owner_pid": 3917217,
+        "pid": 3917218,
+        "state": "running"
+      }
+    }
+  },
+  "initial_supervisor": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/bin/nice",
+      "args": [
+        "-n",
+        "8",
+        "/home/qq/.venvs/rocm10/bin/python",
+        "-u",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/supervise.py",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+        "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127"
+      ],
+      "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+      "env": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "ROCR_VISIBLE_DEVICES": ""
+      },
+      "idempotency_key": "hcsn-9de7-returning-encoder-same-process-supervisor-v1"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "ai395",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-0cd6a4994a943ff13e84bb065831a70b4563067dc930eba421501dc8b9c15c06",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795875682502,
+        "output_complete": false,
+        "owner_pid": 3991013,
+        "pid": 3991014,
+        "state": "running"
+      }
+    }
+  },
+  "recovery_supervisor": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/bin/nice",
+      "args": [
+        "-n",
+        "8",
+        "/home/qq/.venvs/rocm10/bin/python",
+        "-u",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/supervise_safe.py",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+        "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127"
+      ],
+      "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+      "env": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "ROCR_VISIBLE_DEVICES": ""
+      },
+      "idempotency_key": "hcsn-9de7-recovery-evidence-and-resume-v2"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "ai395",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-48efffdfaf29b09325e6230263f29dca3d5665ad02214347eefcce39ebc77d9a",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795875943637,
+        "output_complete": false,
+        "owner_pid": 4000109,
+        "pid": 4000110,
+        "state": "running"
+      }
+    }
+  },
+  "evidence_replay": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/bin/nice",
+      "args": [
+        "-n",
+        "10",
+        "/home/qq/.venvs/rocm10/bin/python",
+        "-u",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/observe.py",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+        "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127"
+      ],
+      "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+      "env": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "ROCR_VISIBLE_DEVICES": ""
+      },
+      "idempotency_key": "hcsn9de7-observe-first-and-replay-registered-endpoints-v1"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "ai395",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-43e767b36029fe982877176b8cfd67b8796090167e42c08f51c09289facf18d3",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795875892213,
+        "output_complete": false,
+        "owner_pid": 3998551,
+        "pid": 3998552,
+        "state": "running"
+      }
+    }
+  },
+  "results_publisher": {
+    "request": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-u",
+        "/home/qian-qi/.local/state/hcsn-9de7-evidence-release/publish_strict.py",
+        "/home/qian-qi/.local/state/hcsn-9de7-evidence-release/stage"
+      ],
+      "cwd": "/home/qian-qi/.local/state/hcsn-9de7-evidence-release",
+      "idempotency_key": "hcsn-9de7-native-results-escrow-v1"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "desktop",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-f9e0fe3cbbd6c8b5e4aba685d9e00e93256721bd84f46cc0b3161ab7dd46c064",
+      "status": {
+        "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795875779247,
+        "output_complete": false,
+        "owner_pid": 3675241,
+        "pid": 3675247,
+        "state": "running"
+      }
+    }
+  },
+  "intervention": {
+    "request": {
+      "host": "ai395",
+      "executable": "/usr/bin/nice",
+      "args": [
+        "-n",
+        "9",
+        "/home/qq/.venvs/rocm10/bin/python",
+        "-u",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7/delta_probe.py",
+        "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+        "/home/qq/.local/share/hepta-research/hcsn-cremad-e0bf-20261127"
+      ],
+      "cwd": "/home/qq/.local/share/hepta-research/hcsn-returning-regimes-9de7",
+      "env": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "ROCR_VISIBLE_DEVICES": ""
+      },
+      "idempotency_key": "hcsn9de7-endpoint-conditioned-scalar-edits-registered-v1"
+    },
+    "receipt": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "ai395",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-885f6fc5023e6456eff1b62248847142ed57be6e730138172c006298eece7334",
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1795876045938,
+        "output_complete": false,
+        "owner_pid": 4003163,
+        "pid": 4003166,
+        "state": "running"
+      }
+    }
+  }
+}
