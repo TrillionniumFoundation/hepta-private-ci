@@ -19,3 +19,13 @@ HCSN 只训练完整一遍时三项 NLL 为 2.24116、2.23948、2.04154；平滑
 在 60 秒的开发选定端点，断开 HCSN 层间唯一连接后三项 NLL 变为 4.70348、4.46623、5.40223；训练集目标位置先验分别为 2.62491、2.43391、2.06447。**能生成不等于强依赖另外两种模态。** 打乱两个条件源、保持真实目标前缀时，HCSN 三项 NLL 仅升 0.00461、0.00712、0.00674。相同处理下，同宽注意力分别增加 0.01462、0.16612、0.06957。每词 NLL 使用真前文，自由生成清除真目标，之后只喂自己的 token；表中 12.46% 的整句命中揭示了这一差别。对任意更换目标后缀及截短序列做因果性检查，先前 logits 最大漂移 8.11e−6（含不同长度调用的浮点差异）。
 
 [PROTOCOL.md](PROTOCOL.md) 与 [CONDITIONING.md](CONDITIONING.md) 保存主协议和条件干预。[panel.json](panel.json) 锁定开发选择，[terminal.json](terminal.json) 包含所有 30 个端点的实际训练样本、用时、NLL、自由序列、配对结果和原始分数文件摘要。参见 [生成脚本](evaluate.py)、[独立串行重放](verify.py) 和 [推断敏感性](sensitivity.py)。
+
+FP32 原生逐点重放再次恢复全部冻结测试概率。独立 NumPy FP64 按时间逐步推进神经元，注意力则直接构造因果矩阵，重算 30 个端点、1,583,760 个真实目标 token 对数概率，以及 1,570,591 个自由生成决策。一个自由生成 argmax 在分数差 1.10e−8 时交换名次。发现一个硬 LIF 序列在膜阈值附近因精度不同而翻转，FP32 电位 0.599999845、FP64 电位 0.600000044，阈值 0.6；该处使后续某个 token 的对数概率相差 0.02873。其余连续算子原件的独立前向误差小于 4.2e−5。两种现象均独立列账。[逐端点核对](verified.json) · [硬阈值事件定位](precision_event.json)
+
+全部原始权重、开发及测试分数、完整自由生成序列、扰动记录与摘要的逐文件 SHA-256 均保存在 [归档清单](archive/manifest.json)。从本目录可运行：
+
+```bash
+mkdir -p /tmp/hcsn-trimodal-verify
+cat archive/results.tar.gz.part* | tar -xz -C /tmp/hcsn-trimodal-verify
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python verify.py /tmp/hcsn-trimodal-verify
+```
