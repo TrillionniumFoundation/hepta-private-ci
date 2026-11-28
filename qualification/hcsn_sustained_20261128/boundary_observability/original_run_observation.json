@@ -1,0 +1,165 @@
+{
+  "study_root": "hcsn-sustained-1140569",
+  "trainer_sha256": "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1",
+  "native_sustained": {
+    "observed": "2026-11-28T14:04:38.016835+00:00",
+    "optseconds": 12360.318311840761,
+    "steps": 338559,
+    "bytag": {
+      "update16": 12,
+      "update128": 12,
+      "time20": 12,
+      "time240": 12,
+      "time1000": 12
+    },
+    "dev1000": {
+      "lif-137": [
+        3.0082716941833496,
+        35315,
+        1000.0087907700799
+      ],
+      "lif-311": [
+        3.0943734645843506,
+        29311,
+        1000.0268408250995
+      ],
+      "lif-557": [
+        2.558234930038452,
+        24117,
+        1000.0244795153849
+      ],
+      "literal-137": [
+        2.9464120864868164,
+        18784,
+        1000.0274704201147
+      ],
+      "literal-311": [
+        2.5235936641693115,
+        14069,
+        1000.037788618356
+      ],
+      "literal-557": [
+        2.5295677185058594,
+        15995,
+        1000.0422228691168
+      ],
+      "sdpa-137": [
+        3.8188254833221436,
+        54303,
+        1000.010480962228
+      ],
+      "sdpa-311": [
+        3.557417631149292,
+        49228,
+        1000.0173442591913
+      ],
+      "sdpa-557": [
+        3.752185106277466,
+        43006,
+        1000.0147683685645
+      ],
+      "smooth-137": [
+        2.667081594467163,
+        18071,
+        1000.0464109373279
+      ],
+      "smooth-311": [
+        2.491570472717285,
+        13500,
+        1000.0226555354893
+      ],
+      "smooth-557": [
+        2.422114372253418,
+        16517,
+        1000.0018735085614
+      ]
+    },
+    "sources": [
+      "69e8cf12bcfcd414175250405ac08286901457377d76c1ad28f08d33a775dbc1"
+    ],
+    "terminal": false,
+    "seal": false,
+    "n_score_indices": 0
+  },
+  "mean_development_nll_at_1000s": {
+    "lif": 2.886960029602051,
+    "literal": 2.6665244897206626,
+    "sdpa": 3.7094760735829673,
+    "smooth": 2.5269221464792886
+  },
+  "collector_sha256": "2d5826fe047cb24d31bb80aebffc7e05bc39c2d2cd22826a6eb996c94fdfcd45",
+  "collector_v2_sha256": "be141f99e01d06eaee8febbf215cc13646f0de893f474816bf55cc4abe5c54a2",
+  "separate_replay_sha256": "b2376ac84b1378f1ec660c076e6af93b93d1fe0f7f57231dc0106efbc6ae02b6",
+  "original_sustained_has_strict_selection_profile": false,
+  "independent_billion_epoch": {
+    "control": "original ai395 PTY",
+    "session": "dpty-9ae49d3a47ccc77b55a0fca890507a2d8b2b83c03f675027f97c8018f89996ab",
+    "state": "running",
+    "observations": [
+      "literal-137 16 180.55",
+      "literal-137 64 744.938",
+      "literal-137 128 1493.682",
+      "literal-137 192 2288.655",
+      "literal-137 256 3130.307",
+      "literal-137 312 3933.22",
+      "sdpa-137 16 300.652",
+      "sdpa-137 64 939.184",
+      "sdpa-137 128 1768.51",
+      "sdpa-137 192 2546.849"
+    ]
+  },
+  "cloud_survey": {
+    "observed_utc": "2026-11-28T14:03:20Z",
+    "router": "0.1.4-integrity-retirement+adoption-v1",
+    "platforms": {
+      "kaggle": [
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": false,
+          "blockers": [
+            "ACCOUNT_RESERVED"
+          ]
+        },
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": false,
+          "blockers": [
+            "ACCOUNT_RESERVED"
+          ]
+        },
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": true,
+          "blockers": []
+        }
+      ],
+      "colab": [
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": true,
+          "blockers": []
+        },
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": false,
+          "blockers": [
+            "ACCOUNT_RESERVED"
+          ]
+        },
+        {
+          "authenticated": true,
+          "eligible": true,
+          "ready": false,
+          "blockers": [
+            "ACCOUNT_RESERVED"
+          ]
+        }
+      ]
+    }
+  }
+}

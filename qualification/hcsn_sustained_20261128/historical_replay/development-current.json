@@ -1,0 +1,999 @@
+{
+  "utc": 1795880717.4895196,
+  "n": 62,
+  "stored_score_values": 5120208,
+  "scores": {
+    "literal-137-step16": {
+      "weight_sha256": "c99386fb87b7b6265de9c1dedef7108abdfa16723d18fe8979460700af1677ed",
+      "score_sha256": "cdeab81e456b3fd90bc090df1337b8d9483a58c2015576d3099ae4c6a72756f0",
+      "metrics": {
+        "nll": 4.277473790175253,
+        "top1": 0.02005231037489102
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 1.1077897655777633,
+      "file": "literal-137-step16.npz"
+    },
+    "literal-137-step128": {
+      "weight_sha256": "2c8e73b6cbef3c6e16d2cdf7e8f4ced04faa447f5b90f422ebd3e28ba03db985",
+      "score_sha256": "43b275a470a701a804dcb97790608b8960563723090bfffd802d1a83b6f4245a",
+      "metrics": {
+        "nll": 4.001425331463531,
+        "top1": 0.04097646033129904
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 7.130686827469617,
+      "file": "literal-137-step128.npz"
+    },
+    "literal-137-step383": {
+      "weight_sha256": "8d1c63dc9b6c1b431ffad2694e5f96031a3ca24971cfe3d05444ecb178b34c45",
+      "score_sha256": "a537a48200f29d79d0092e150da7c50473bf648a244c772191179f3613150040",
+      "metrics": {
+        "nll": 3.504207786614672,
+        "top1": 0.12467306015693112
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "time20"
+      ],
+      "steps": 383,
+      "training_s": 20.024304076563567,
+      "file": "literal-137-step383.npz"
+    },
+    "literal-137-step4783": {
+      "weight_sha256": "1b154f441abbb860311199d29f17bc9db4ce91bd96f1439f1440cdd71327deae",
+      "score_sha256": "a7d3edb4f1bcf6448b308a57a8f50265b5afba98ad90ce21c9947515b64a9fbc",
+      "metrics": {
+        "nll": 2.2784077254835404,
+        "top1": 0.3722755013077594
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4783,
+      "training_s": 240.0107709900476,
+      "file": "literal-137-step4783.npz"
+    },
+    "literal-137-step18784": {
+      "weight_sha256": "d831d84077f34db807ca9dc8537dd3cbc424086ae22fb825aa6d4102f6af82c3",
+      "score_sha256": "be1757c1c0d8f3b153ffc27b5727c08f634f077b1d1db6f262d6b76efcd71eeb",
+      "metrics": {
+        "nll": 2.946412009836746,
+        "top1": 0.3931996512641674
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 18784,
+      "training_s": 1000.0274704201147,
+      "file": "literal-137-step18784.npz"
+    },
+    "literal-137-step58153": {
+      "weight_sha256": "013fff36e53bec269bc44ea8c8fb76f93e076af731583b3e9087dcde83da4faa",
+      "score_sha256": "0fddcf15d004ac9bfd243af17ab283626b7c54076620d1e6afc7ae21bfb3cd51",
+      "metrics": {
+        "nll": 3.367919088135664,
+        "top1": 0.42632955536181344
+      },
+      "arm": "literal",
+      "seed": 137,
+      "tags": [
+        "time3150"
+      ],
+      "steps": 58153,
+      "training_s": 3150.04673910141,
+      "file": "literal-137-step58153.npz"
+    },
+    "literal-311-step16": {
+      "weight_sha256": "69028b3739f4722971532967aa970cda70f0116630df0db5dbfe1e5d09987d16",
+      "score_sha256": "0a70204c191706b9533db519c0252932e92446533eb7996622c299b5a723168f",
+      "metrics": {
+        "nll": 4.267477741258109,
+        "top1": 0.02789886660854403
+      },
+      "arm": "literal",
+      "seed": 311,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.8328357692807913,
+      "file": "literal-311-step16.npz"
+    },
+    "literal-311-step128": {
+      "weight_sha256": "1b13ba144a81f5a8052f942ee8e63cf94e9f81541fee87744cb1f46608122a4b",
+      "score_sha256": "a6fd13fa5da7a41bca86a510e06b2270fd73143304a7178021a958210b96aad0",
+      "metrics": {
+        "nll": 4.151838416019571,
+        "top1": 0.04969485614646905
+      },
+      "arm": "literal",
+      "seed": 311,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 7.136256517376751,
+      "file": "literal-311-step128.npz"
+    },
+    "literal-311-step366": {
+      "weight_sha256": "8dfe18e0d8e30f8f0f9e90d9c5880a01dac40ec4d5f32eac06cba98cd320b71e",
+      "score_sha256": "e1871cdea2517686a6d63a83deb88e8a3f0b17d2b0539f49f6d6c8519eb460c2",
+      "metrics": {
+        "nll": 3.6493034107448366,
+        "top1": 0.10723626852659111
+      },
+      "arm": "literal",
+      "seed": 311,
+      "tags": [
+        "time20"
+      ],
+      "steps": 366,
+      "training_s": 20.023412433452904,
+      "file": "literal-311-step366.npz"
+    },
+    "literal-311-step3834": {
+      "weight_sha256": "09c532697d05389dd9ffd42ba1b55dcb9a6d919e75c0b5961292c66b21c1e3e9",
+      "score_sha256": "70c6c27bc20a0930b90603823fa09e8ca25c62b004ddf8d117402ffc32a719c7",
+      "metrics": {
+        "nll": 2.1815950157755655,
+        "top1": 0.37053182214472535
+      },
+      "arm": "literal",
+      "seed": 311,
+      "tags": [
+        "time240"
+      ],
+      "steps": 3834,
+      "training_s": 240.0484999534674,
+      "file": "literal-311-step3834.npz"
+    },
+    "literal-311-step14069": {
+      "weight_sha256": "ab5fe167d11224c5e0486c7448a1a2d35b1e898e617b5013a5c8e214b55e2e50",
+      "score_sha256": "d2e347f767d2aed47fa482f498b6c7191920e84ce095d47c487617a8b589d995",
+      "metrics": {
+        "nll": 2.5235936213465076,
+        "top1": 0.41935483870967744
+      },
+      "arm": "literal",
+      "seed": 311,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 14069,
+      "training_s": 1000.037788618356,
+      "file": "literal-311-step14069.npz"
+    },
+    "literal-557-step16": {
+      "weight_sha256": "e47a72c5f0374a361e4c1fa00616d7d435c3b4649acfa5fbf6174149ad7cd8bd",
+      "score_sha256": "6f613841fd0fe2a8e65b5bd62713d7f2999d1e3789f333bf4e6b327e9f4f83a1",
+      "metrics": {
+        "nll": 4.26751716476855,
+        "top1": 0.017436791630340016
+      },
+      "arm": "literal",
+      "seed": 557,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.7894804677926004,
+      "file": "literal-557-step16.npz"
+    },
+    "literal-557-step128": {
+      "weight_sha256": "7942518a27a8c337e160897e87c77ca0d3cf41703126f16ada802c4758038d74",
+      "score_sha256": "e5d072f0bb8285be7b1141662c8cc474f9cc093bb27c7a5066b15a760a146c7e",
+      "metrics": {
+        "nll": 4.079932438696476,
+        "top1": 0.04010462074978204
+      },
+      "arm": "literal",
+      "seed": 557,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 6.253292584326118,
+      "file": "literal-557-step128.npz"
+    },
+    "literal-557-step423": {
+      "weight_sha256": "1cad328523ba6922074aad09fe8d08136951ec3a8b262f01cf68d97f9a17c680",
+      "score_sha256": "64722add0b0f0b0bfccebba46d68576b64a3fcae82cd3b1c91771732c2d5a07e",
+      "metrics": {
+        "nll": 3.468749885415834,
+        "top1": 0.11421098517872712
+      },
+      "arm": "literal",
+      "seed": 557,
+      "tags": [
+        "time20"
+      ],
+      "steps": 423,
+      "training_s": 20.036038411781192,
+      "file": "literal-557-step423.npz"
+    },
+    "literal-557-step3988": {
+      "weight_sha256": "145d3584186ce326ec733616aee0cdd8f70c5c360f4cd28925845f59917a3673",
+      "score_sha256": "8e777471c96275a0295ed3ec0ea2fbc1b73925c69589a927acf8e8b59cb77f11",
+      "metrics": {
+        "nll": 2.1854594742516444,
+        "top1": 0.37314734088927637
+      },
+      "arm": "literal",
+      "seed": 557,
+      "tags": [
+        "time240"
+      ],
+      "steps": 3988,
+      "training_s": 240.0289008100517,
+      "file": "literal-557-step3988.npz"
+    },
+    "literal-557-step15995": {
+      "weight_sha256": "5aaafc0e871dfb5c58d03feeb884d111c4ac65b970b5b3fc6c0c60b897abfde6",
+      "score_sha256": "21df09682ad4c5e53be2c8d93c942e3b8fecb1f5d3b5fe415f6f8441e2d8d818",
+      "metrics": {
+        "nll": 2.529568044922438,
+        "top1": 0.44376634699215345
+      },
+      "arm": "literal",
+      "seed": 557,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 15995,
+      "training_s": 1000.0422228691168,
+      "file": "literal-557-step15995.npz"
+    },
+    "smooth-137-step16": {
+      "weight_sha256": "660f10a24c7fb384b3326431ef77bcf7744888d90e6bdef000b1dd734537d83a",
+      "score_sha256": "92e22f56d7df7303fe5ea260d43e4aede2e35ae5a191b65c8b93ace932821d47",
+      "metrics": {
+        "nll": 4.272226581496645,
+        "top1": 0.01918047079337402
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.860226035118103,
+      "file": "smooth-137-step16.npz"
+    },
+    "smooth-137-step128": {
+      "weight_sha256": "2805f9567c7bc1c341db4c916a490a66dc5aaab26e22b57ab04e4c5832ab9884",
+      "score_sha256": "958ece2d5eefcc993b2e16c92464c307b32e5576053dda5c041701cc7d8b6a38",
+      "metrics": {
+        "nll": 3.983327137888824,
+        "top1": 0.04969485614646905
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 6.709504830650985,
+      "file": "smooth-137-step128.npz"
+    },
+    "smooth-137-step395": {
+      "weight_sha256": "5401965e0ec53770343ebdb7de40e5167e21d5875dc8681ba0d739bb4e0e276a",
+      "score_sha256": "428419bab5d2a6432e19a8ce1965655a97c22365c90931b219b6fd8735dbd368",
+      "metrics": {
+        "nll": 3.9913579756933983,
+        "top1": 0.06800348735832606
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "time20"
+      ],
+      "steps": 395,
+      "training_s": 20.04307567048818,
+      "file": "smooth-137-step395.npz"
+    },
+    "smooth-137-step4378": {
+      "weight_sha256": "79162a2b307937b95659c7b117257b425e75224d7eb57f463d9abfb4fce4b925",
+      "score_sha256": "e7fb8f6262b4f363e0e0ab13487852fe0c7a436af280a28521e25ee3a28cc1c5",
+      "metrics": {
+        "nll": 2.3681198212135057,
+        "top1": 0.3469921534437663
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4378,
+      "training_s": 240.01210642419755,
+      "file": "smooth-137-step4378.npz"
+    },
+    "smooth-137-step18071": {
+      "weight_sha256": "4f156ed2d6d74e59faa9e193d00ef9beb151a6d8ed2ae4611ad2c03b20e7b9b1",
+      "score_sha256": "296c3a3570b37f62de9a721d458c1873de534faf8a99a89fdadf325cdce826fe",
+      "metrics": {
+        "nll": 2.667081543111944,
+        "top1": 0.42632955536181344
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 18071,
+      "training_s": 1000.0464109373279,
+      "file": "smooth-137-step18071.npz"
+    },
+    "smooth-137-step54326": {
+      "weight_sha256": "0049ce5f597515015c4afbca6c7402e61fe059cf46321561d670dd66134ce73b",
+      "score_sha256": "04d4f3f18bd3446ce80782b1cec3592f12b65add5e83c24fb582f048326204b6",
+      "metrics": {
+        "nll": 3.3312961188248584,
+        "top1": 0.4315605928509154
+      },
+      "arm": "smooth",
+      "seed": 137,
+      "tags": [
+        "time3150"
+      ],
+      "steps": 54326,
+      "training_s": 3150.00863095792,
+      "file": "smooth-137-step54326.npz"
+    },
+    "smooth-311-step16": {
+      "weight_sha256": "187f48fb466e6b9a090c634598cc6ee745472f904e4d5b9bcbcd43a73da1ae62",
+      "score_sha256": "709fd166de3da91982e7237a11ed8fda4ad1e5e898ef3430d264c94bc1542e23",
+      "metrics": {
+        "nll": 4.269487644779157,
+        "top1": 0.020924149956408022
+      },
+      "arm": "smooth",
+      "seed": 311,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.8732473491691053,
+      "file": "smooth-311-step16.npz"
+    },
+    "smooth-311-step128": {
+      "weight_sha256": "c4eb03d220cb944b2bfc221063dd21ac1bbee414c11463946564e5f01c274a13",
+      "score_sha256": "9fd4e61355e28be9a4f08b71fefb529344854f96b5b9c8e56edc7f459de3200c",
+      "metrics": {
+        "nll": 4.107310486500946,
+        "top1": 0.05056669572798605
+      },
+      "arm": "smooth",
+      "seed": 311,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 7.761403849348426,
+      "file": "smooth-311-step128.npz"
+    },
+    "smooth-311-step344": {
+      "weight_sha256": "e19cf1b7cfe746f47b7142cc113d16c63c9a7bed8818ecd76f04d2a804c4a3fc",
+      "score_sha256": "b0f57faf98297b7ff60cc2420ee2a51959ef8602d87d03aa7affa7749e718cb1",
+      "metrics": {
+        "nll": 3.8011525513520197,
+        "top1": 0.09067131647776809
+      },
+      "arm": "smooth",
+      "seed": 311,
+      "tags": [
+        "time20"
+      ],
+      "steps": 344,
+      "training_s": 20.034578382968903,
+      "file": "smooth-311-step344.npz"
+    },
+    "smooth-311-step4236": {
+      "weight_sha256": "3d76ebdd57cf421b2d649bedac4fec698dd65706645988697ae788c3c8e6e81a",
+      "score_sha256": "fefdc43f46b6376cb39defe85bf88a02b41f0bc606a4867961947a6f5f2f74e9",
+      "metrics": {
+        "nll": 2.336827453881408,
+        "top1": 0.36268526591107236
+      },
+      "arm": "smooth",
+      "seed": 311,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4236,
+      "training_s": 240.027461593505,
+      "file": "smooth-311-step4236.npz"
+    },
+    "smooth-311-step13500": {
+      "weight_sha256": "06e5d18b702d6b09c9687ee67be50a1f5aa70b50f20f81c934971ab63d920690",
+      "score_sha256": "2430c6ed74b02e9146b6f283409d0c3cd1c1e5b14f5b7cdf0d517c3b666197e0",
+      "metrics": {
+        "nll": 2.4915704323897705,
+        "top1": 0.4245858761987794
+      },
+      "arm": "smooth",
+      "seed": 311,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 13500,
+      "training_s": 1000.0226555354893,
+      "file": "smooth-311-step13500.npz"
+    },
+    "smooth-557-step16": {
+      "weight_sha256": "0bd0ccab1e8be03f56ccabbdec8200eee28dbf0e5991a3205a66c67ce070666a",
+      "score_sha256": "0507b2de4d95e79f47d7e6ffb7865a832c012ee496163db2cf37df3e030e91fa",
+      "metrics": {
+        "nll": 4.270649153417841,
+        "top1": 0.013949433304272014
+      },
+      "arm": "smooth",
+      "seed": 557,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.7636271216906607,
+      "file": "smooth-557-step16.npz"
+    },
+    "smooth-557-step128": {
+      "weight_sha256": "91d66f0fb7e955d18955edf20baf3f43360a2dd1e3984aa064eb96cebbd4ff01",
+      "score_sha256": "eb5e30ba3e4fa7d6efe6a43cf057663e1fa1e4927a4a7074c45cd43c1da524c2",
+      "metrics": {
+        "nll": 4.05571104017689,
+        "top1": 0.04097646033129904
+      },
+      "arm": "smooth",
+      "seed": 557,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 6.0244055413641036,
+      "file": "smooth-557-step128.npz"
+    },
+    "smooth-557-step425": {
+      "weight_sha256": "e6d073f0632b4c8da88679f24d01804aff3434c7d816c6e491ec592722130fdc",
+      "score_sha256": "98c160709a49ce83578975e272e90792b1fc93ea92aa0acf548da077f3af60f0",
+      "metrics": {
+        "nll": 3.6024328022942385,
+        "top1": 0.0959023539668701
+      },
+      "arm": "smooth",
+      "seed": 557,
+      "tags": [
+        "time20"
+      ],
+      "steps": 425,
+      "training_s": 20.014506774488837,
+      "file": "smooth-557-step425.npz"
+    },
+    "smooth-557-step4459": {
+      "weight_sha256": "0bc026042c48432c135198a51ef1eedf4ae6da01e95a646995ccf8f69c3ae2b5",
+      "score_sha256": "53fad3eafde75d3985fe04edf7e886bd87f8da40d481a851170e3db499fa94e3",
+      "metrics": {
+        "nll": 2.4168856823835965,
+        "top1": 0.33129904097646035
+      },
+      "arm": "smooth",
+      "seed": 557,
+      "tags": [
+        "time240"
+      ],
+      "steps": 4459,
+      "training_s": 240.04774107504636,
+      "file": "smooth-557-step4459.npz"
+    },
+    "smooth-557-step16517": {
+      "weight_sha256": "7f26176384fec3a6ecf91dc9d0ce94e5484140b8f182bfd7cc1d3d16d67f9acc",
+      "score_sha256": "935ccc842b0e425984b4ae0f98e4f81a7090b980f08a1d3a025500d05d7df029",
+      "metrics": {
+        "nll": 2.422114508172695,
+        "top1": 0.45422842197035745
+      },
+      "arm": "smooth",
+      "seed": 557,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 16517,
+      "training_s": 1000.0018735085614,
+      "file": "smooth-557-step16517.npz"
+    },
+    "lif-137-step16": {
+      "weight_sha256": "faae1a4b2960f2c1ac49ee6ce113410ee4c63bc793ac9aed397eb49ed557cbe5",
+      "score_sha256": "5bcf5ed3f24d000049241b319312164eb93797fc489682d6cb5ae4b2d8b5bd74",
+      "metrics": {
+        "nll": 4.292364997064278,
+        "top1": 0.013077593722755012
+      },
+      "arm": "lif",
+      "seed": 137,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.39252037089318037,
+      "file": "lif-137-step16.npz"
+    },
+    "lif-137-step128": {
+      "weight_sha256": "e15ae85379fa5d3718955409cde7bf9699ce9fd3e0ca1b57f7eff635e78596f7",
+      "score_sha256": "bc6603533cd84271a9593d3353a0ae7bb6890e81ac45c9262eec681734b55e9d",
+      "metrics": {
+        "nll": 4.275661208215302,
+        "top1": 0.021795989537925022
+      },
+      "arm": "lif",
+      "seed": 137,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 3.1051449249498546,
+      "file": "lif-137-step128.npz"
+    },
+    "lif-137-step829": {
+      "weight_sha256": "dcd510d8b879dca979695ed6931a76a07b810139cbcffd98b996b10a61b4ea57",
+      "score_sha256": "5f316e802860c795208a3c803bbaaf18cd4f44669a95a9767ce6f8058d7fb132",
+      "metrics": {
+        "nll": 3.714956749431578,
+        "top1": 0.07149084568439407
+      },
+      "arm": "lif",
+      "seed": 137,
+      "tags": [
+        "time20"
+      ],
+      "steps": 829,
+      "training_s": 20.00362985022366,
+      "file": "lif-137-step829.npz"
+    },
+    "lif-137-step9099": {
+      "weight_sha256": "43e62262be4bc0211c7edb62b83a56f5078ae4b4a3d1198a3fe9314f8468a885",
+      "score_sha256": "4eb0072fb1d63c0edd5529f99d4f54e6a37710a3856ef12ca88588a35aad3734",
+      "metrics": {
+        "nll": 2.5132999248220615,
+        "top1": 0.32519616390584133
+      },
+      "arm": "lif",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 9099,
+      "training_s": 240.00657727895305,
+      "file": "lif-137-step9099.npz"
+    },
+    "lif-137-step35315": {
+      "weight_sha256": "288b53be5e5229632c1b1305aa85f9f4a6b435bb9e6117b7c0b87b2c2b4b1760",
+      "score_sha256": "56f9f0392f59905baf688c65370d525818c39553c93631922de0d910f96dd96e",
+      "metrics": {
+        "nll": 3.008271884651035,
+        "top1": 0.38448125544899736
+      },
+      "arm": "lif",
+      "seed": 137,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 35315,
+      "training_s": 1000.0087907700799,
+      "file": "lif-137-step35315.npz"
+    },
+    "lif-311-step16": {
+      "weight_sha256": "d19d51e5c80ad2d1d2dd5e232cbc45f75be3908707a0c8e8750e20aa4b88da40",
+      "score_sha256": "7acf17e02ab3edb984cc0533f4feb711332ffe2fe580ea50301e167cd674f681",
+      "metrics": {
+        "nll": 4.281294722782536,
+        "top1": 0.016564952048823016
+      },
+      "arm": "lif",
+      "seed": 311,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.3897099015302956,
+      "file": "lif-311-step16.npz"
+    },
+    "lif-311-step128": {
+      "weight_sha256": "6308cc0672c76b00f39be9962e82c564beea52a4f8d5cac3196a25533e70d08b",
+      "score_sha256": "796c0d9f27ae109f20c8c1c28d0c5d26099618ff02e4963b34ca111d8208261c",
+      "metrics": {
+        "nll": 4.280391058971196,
+        "top1": 0.022667829119442023
+      },
+      "arm": "lif",
+      "seed": 311,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 3.359226585365832,
+      "file": "lif-311-step128.npz"
+    },
+    "lif-311-step787": {
+      "weight_sha256": "eea1b2b268043a78060a467f76d7a95eb0787c10e7c42cbc434f88353b7d7660",
+      "score_sha256": "1c19a6af3614a6c7d07d58fea3a3ba84ad487486371efa5aa7ec87e59d96377e",
+      "metrics": {
+        "nll": 3.8499911087133833,
+        "top1": 0.05754141238012206
+      },
+      "arm": "lif",
+      "seed": 311,
+      "tags": [
+        "time20"
+      ],
+      "steps": 787,
+      "training_s": 20.010329271201044,
+      "file": "lif-311-step787.npz"
+    },
+    "lif-311-step8337": {
+      "weight_sha256": "03a4581f1f17a7d25e1459c5221bfce19d029d3d654c1f87b447e167a476f090",
+      "score_sha256": "2b36df8657292249a4721d9bc948ecd9dd12fd989dc7755177e7ac2b364ce465",
+      "metrics": {
+        "nll": 2.6600972999854133,
+        "top1": 0.2920662598081953
+      },
+      "arm": "lif",
+      "seed": 311,
+      "tags": [
+        "time240"
+      ],
+      "steps": 8337,
+      "training_s": 240.01904096454382,
+      "file": "lif-311-step8337.npz"
+    },
+    "lif-311-step29311": {
+      "weight_sha256": "a950b19020cbf946b867d5baace6c6b3066500fa7564a6ec1e1c3430b7886aaf",
+      "score_sha256": "733cce5adfed3abdae567b8ed6f91bcf6ae36ce139df9218f205b133639b40eb",
+      "metrics": {
+        "nll": 3.094373518637153,
+        "top1": 0.3862249346120314
+      },
+      "arm": "lif",
+      "seed": 311,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 29311,
+      "training_s": 1000.0268408250995,
+      "file": "lif-311-step29311.npz"
+    },
+    "lif-557-step16": {
+      "weight_sha256": "e3057eca22585c6765707f7cd3f3b4b291b2072a4ecbffa974276df489d3327c",
+      "score_sha256": "5f279bb228f28b33ee54fb7bb56ea4fed251ae5752b42d5a509999a7c1c38614",
+      "metrics": {
+        "nll": 4.3104456017032975,
+        "top1": 0.013949433304272014
+      },
+      "arm": "lif",
+      "seed": 557,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.4473118018358946,
+      "file": "lif-557-step16.npz"
+    },
+    "lif-557-step128": {
+      "weight_sha256": "f3bd8f2b505c903b3f9afa2f7d0f1679eb0e4eaeba4c181997f23ccc1ede7fec",
+      "score_sha256": "c42032c0d2f30f26708f001cabaf477bac4d4c6e7208347c646274c7932fa33a",
+      "metrics": {
+        "nll": 4.2666645816376265,
+        "top1": 0.041848299912816043
+      },
+      "arm": "lif",
+      "seed": 557,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 3.7041423483751714,
+      "file": "lif-557-step128.npz"
+    },
+    "lif-557-step656": {
+      "weight_sha256": "ded8b9351f1dd7c508e3277a01bbef046f69b93042ee49f1c3d176c54530da74",
+      "score_sha256": "df1972cbf0c04dae84ca496aa84e525bcc4b1ea0c080c2088c5e947025a79df7",
+      "metrics": {
+        "nll": 3.8119148325711265,
+        "top1": 0.0950305143853531
+      },
+      "arm": "lif",
+      "seed": 557,
+      "tags": [
+        "time20"
+      ],
+      "steps": 656,
+      "training_s": 20.0236570360139,
+      "file": "lif-557-step656.npz"
+    },
+    "lif-557-step8119": {
+      "weight_sha256": "19d5ee7e571cf92733bf4a7f6b7db3f193207ba4ad681857db9dfb461c0c1bdd",
+      "score_sha256": "0797ff35330bb77bb3e92e3cee7ea3dda0f50325bbb1d4c179150d7a87e923ed",
+      "metrics": {
+        "nll": 2.423634124153459,
+        "top1": 0.32432432432432434
+      },
+      "arm": "lif",
+      "seed": 557,
+      "tags": [
+        "time240"
+      ],
+      "steps": 8119,
+      "training_s": 240.02603579312563,
+      "file": "lif-557-step8119.npz"
+    },
+    "lif-557-step24117": {
+      "weight_sha256": "abb03689837c73d86c56fc0f4c64f34499c7deb642f6127c57e0609689bc705e",
+      "score_sha256": "c3d31432eb64556de1fa1a7cd5d49549aedd08d094dafecc79aa7b9b884f2e4c",
+      "metrics": {
+        "nll": 2.5582350722042957,
+        "top1": 0.4097646033129904
+      },
+      "arm": "lif",
+      "seed": 557,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 24117,
+      "training_s": 1000.0244795153849,
+      "file": "lif-557-step24117.npz"
+    },
+    "sdpa-137-step16": {
+      "weight_sha256": "1efd2baede4ca49ad2857bdbd09f40b9983e4663f647caae377126d216f997a9",
+      "score_sha256": "e84e29002876580f8ffe27b1591f5d081d781ddbce3db78a3b20c578a0701481",
+      "metrics": {
+        "nll": 4.227646599112888,
+        "top1": 0.03836094158674804
+      },
+      "arm": "sdpa",
+      "seed": 137,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.26284416345879436,
+      "file": "sdpa-137-step16.npz"
+    },
+    "sdpa-137-step128": {
+      "weight_sha256": "25a4089f45bc0bf86e50f5e49a730247c5dac100dc0f22503cbf4529c907c4f0",
+      "score_sha256": "00f98561470ea3ca44481368a37da398985152997a345b1e941387b9d7c7aac8",
+      "metrics": {
+        "nll": 4.003297641924537,
+        "top1": 0.043591979075850044
+      },
+      "arm": "sdpa",
+      "seed": 137,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 2.126426399219781,
+      "file": "sdpa-137-step128.npz"
+    },
+    "sdpa-137-step1238": {
+      "weight_sha256": "748bfab4314be9a9a0e3566c699485bcbdc74e5daf64b2f4eaa217b24f4c5d50",
+      "score_sha256": "962e304164f1279d22cdc8bdcab9322f4c8c253b7331768e9db9ccf823219f3b",
+      "metrics": {
+        "nll": 2.969032494414337,
+        "top1": 0.21272885789014823
+      },
+      "arm": "sdpa",
+      "seed": 137,
+      "tags": [
+        "time20"
+      ],
+      "steps": 1238,
+      "training_s": 20.012814823072404,
+      "file": "sdpa-137-step1238.npz"
+    },
+    "sdpa-137-step13559": {
+      "weight_sha256": "4e5dcc271ee4a904a820843191de081ecc8c0d8eca36f8981a2eb11181dda761",
+      "score_sha256": "189821574312c149ab08f8701fbc86a531a8547ba9ea4a8d8731bee6d5f0e3f2",
+      "metrics": {
+        "nll": 2.7298119395258706,
+        "top1": 0.3966870095902354
+      },
+      "arm": "sdpa",
+      "seed": 137,
+      "tags": [
+        "time240"
+      ],
+      "steps": 13559,
+      "training_s": 240.0014982149005,
+      "file": "sdpa-137-step13559.npz"
+    },
+    "sdpa-137-step54303": {
+      "weight_sha256": "33ca9cfc05de40520650b744a98b9cefe74b727c07e2d884a3f348a6b8e46b62",
+      "score_sha256": "3167cd5d8bf98487bf9f0044c8e8952885256ca77e84d858aaa43987397859fc",
+      "metrics": {
+        "nll": 3.8188251804429174,
+        "top1": 0.42981691368788144
+      },
+      "arm": "sdpa",
+      "seed": 137,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 54303,
+      "training_s": 1000.010480962228,
+      "file": "sdpa-137-step54303.npz"
+    },
+    "sdpa-311-step16": {
+      "weight_sha256": "5d7dc2bb69a68d54d48f4041e032b0b20d91bdbdb4ebc3a5b50bb770c30e9241",
+      "score_sha256": "781d9fbc54bcca0da8e383a6eb4949155e3cf50832cfdccc680a6fffa7355537",
+      "metrics": {
+        "nll": 4.276455129947035,
+        "top1": 0.015693112467306015
+      },
+      "arm": "sdpa",
+      "seed": 311,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.2653284454718232,
+      "file": "sdpa-311-step16.npz"
+    },
+    "sdpa-311-step128": {
+      "weight_sha256": "6e04b3b75f111030135b4db275ef3227f2d3a06eb1e9f6c1d7b493454f7455ca",
+      "score_sha256": "53cc421caea16c2093b67abba8e29a8d5f609f4d9fca25f61ac025210292bacb",
+      "metrics": {
+        "nll": 4.138281785200352,
+        "top1": 0.05841325196163906
+      },
+      "arm": "sdpa",
+      "seed": 311,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 2.111415603198111,
+      "file": "sdpa-311-step128.npz"
+    },
+    "sdpa-311-step1127": {
+      "weight_sha256": "73938de251b11741d305055160d04e8914aaaec391c94977ea768b1efa525ded",
+      "score_sha256": "7fceeb855c41d6d5fe57073ce1cd43f3c99669ef8ddcf549ce8648f36a6e3f3b",
+      "metrics": {
+        "nll": 3.2796841059220703,
+        "top1": 0.1822144725370532
+      },
+      "arm": "sdpa",
+      "seed": 311,
+      "tags": [
+        "time20"
+      ],
+      "steps": 1127,
+      "training_s": 20.00170891871676,
+      "file": "sdpa-311-step1127.npz"
+    },
+    "sdpa-311-step11872": {
+      "weight_sha256": "7bd5629b8263b7f6fe63006e327e2368fd7d943a9442ba65f904c52b3a9fdace",
+      "score_sha256": "940701b0b75188558ec3d49fd90cd21d826dcd648adf324e27b70a46ddf002e0",
+      "metrics": {
+        "nll": 2.8183226749318133,
+        "top1": 0.3958151700087184
+      },
+      "arm": "sdpa",
+      "seed": 311,
+      "tags": [
+        "time240"
+      ],
+      "steps": 11872,
+      "training_s": 240.01058222074062,
+      "file": "sdpa-311-step11872.npz"
+    },
+    "sdpa-311-step49228": {
+      "weight_sha256": "4531d3423de2fa140c1629d7cfcdbe9558587184cf4e23f376aa96ffae1528fd",
+      "score_sha256": "8b9fd6156299cdc08e9489f9c6cbe422e89090ac8b3c5afc598ceff2d3d66b95",
+      "metrics": {
+        "nll": 3.5574175167442696,
+        "top1": 0.42284219703574544
+      },
+      "arm": "sdpa",
+      "seed": 311,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 49228,
+      "training_s": 1000.0173442591913,
+      "file": "sdpa-311-step49228.npz"
+    },
+    "sdpa-557-step16": {
+      "weight_sha256": "80058bda920acf4fdcb7ea7d13b5c93dfa633dde94aa8acb3e03a56fa9e79885",
+      "score_sha256": "901724df1ca22e548ec73d1d95a0fdb4dcd853877093bf0d3cd7762c7f5233c2",
+      "metrics": {
+        "nll": 4.260461454554079,
+        "top1": 0.02005231037489102
+      },
+      "arm": "sdpa",
+      "seed": 557,
+      "tags": [
+        "update16"
+      ],
+      "steps": 16,
+      "training_s": 0.3436866169795394,
+      "file": "sdpa-557-step16.npz"
+    },
+    "sdpa-557-step128": {
+      "weight_sha256": "b2d73c9c482b8ad6715f8e6f79a5fb715612cb54b2eb3f92b4f41fd19381663b",
+      "score_sha256": "51d2cfa8ed640319f10095fda24981d3e5a9dc514309836f3668f555b4632eea",
+      "metrics": {
+        "nll": 4.04159030785669,
+        "top1": 0.04795117698343505
+      },
+      "arm": "sdpa",
+      "seed": 557,
+      "tags": [
+        "update128"
+      ],
+      "steps": 128,
+      "training_s": 2.549937553703785,
+      "file": "sdpa-557-step128.npz"
+    },
+    "sdpa-557-step1107": {
+      "weight_sha256": "e84f64a29f76610d277e59d78728a87e01f1e3858a20925ac7580e84c0742ffa",
+      "score_sha256": "4bdd1f893b80e77f96f24ef0ba37c0be646c1039938c88ed8f362b2574908268",
+      "metrics": {
+        "nll": 2.9436745225712104,
+        "top1": 0.22493461203138623
+      },
+      "arm": "sdpa",
+      "seed": 557,
+      "tags": [
+        "time20"
+      ],
+      "steps": 1107,
+      "training_s": 20.001485725864768,
+      "file": "sdpa-557-step1107.npz"
+    },
+    "sdpa-557-step9222": {
+      "weight_sha256": "83272435cd0ae37ae81e2c47fd14e65fc5afa71e6d3d47e4b610a6f5a6e64714",
+      "score_sha256": "4cd6ad4e23e4c6715514b3f0d391633cf019651152f7a0e85bfb763682e33adf",
+      "metrics": {
+        "nll": 2.6091330430653232,
+        "top1": 0.3801220575414124
+      },
+      "arm": "sdpa",
+      "seed": 557,
+      "tags": [
+        "time240"
+      ],
+      "steps": 9222,
+      "training_s": 240.00196030037478,
+      "file": "sdpa-557-step9222.npz"
+    },
+    "sdpa-557-step43006": {
+      "weight_sha256": "1ccc1fdca5fe52e139030752d020888f8dd7579fe08931e5c842272d93bedd80",
+      "score_sha256": "f80dbed0186c94deee9b986245919c88016d8498f9a69a2160b6432f817b2a63",
+      "metrics": {
+        "nll": 3.7521847446639915,
+        "top1": 0.40889276373147343
+      },
+      "arm": "sdpa",
+      "seed": 557,
+      "tags": [
+        "time1000"
+      ],
+      "steps": 43006,
+      "training_s": 1000.0147683685645,
+      "file": "sdpa-557-step43006.npz"
+    }
+  }
+}
