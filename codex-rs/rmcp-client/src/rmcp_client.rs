@@ -275,6 +275,12 @@ where
 pub(crate) enum ClientOperationError {
     #[error(transparent)]
     Service(#[from] rmcp::service::ServiceError),
+    #[error("MCP response body exceeds {maximum_bytes} bytes")]
+    LocalResponseTooLarge {
+        maximum_bytes: usize,
+        #[source]
+        source: rmcp::service::ServiceError,
+    },
     #[error("timed out awaiting {label} after {duration:.0?}")]
     Timeout { label: String, duration: Duration },
 }
@@ -725,7 +731,8 @@ impl RmcpClient {
         let result = self
             .run_service_operation("tools/list", timeout, move |service| {
                 let params = params.clone();
-                async move { service.list_tools(params).await }.boxed()
+                async move { crate::list_tools_request::list_tools(service.peer(), params).await }
+                    .boxed()
             })
             .await?;
         self.persist_oauth_tokens().await;
@@ -742,7 +749,8 @@ impl RmcpClient {
         let result = self
             .run_service_operation("tools/list", timeout, move |service| {
                 let params = params.clone();
-                async move { service.list_tools(params).await }.boxed()
+                async move { crate::list_tools_request::list_tools(service.peer(), params).await }
+                    .boxed()
             })
             .await?;
         let tools = result
@@ -1345,7 +1353,7 @@ impl RmcpClient {
         Ok((Arc::new(service), oauth_persistor))
     }
 
-    async fn run_service_operation<T, F, Fut>(
+    async fn run_service_operation<T, F, Fut, E>(
         &self,
         label: &str,
         timeout: Option<Duration>,
@@ -1353,7 +1361,8 @@ impl RmcpClient {
     ) -> Result<T>
     where
         F: Fn(Arc<RunningService<RoleClient, ElicitationClientService>>) -> Fut,
-        Fut: std::future::Future<Output = std::result::Result<T, rmcp::service::ServiceError>>,
+        Fut: std::future::Future<Output = std::result::Result<T, E>>,
+        E: Into<ClientOperationError>,
     {
         let service = self.service().await?;
         match Self::run_service_operation_with_transient_retries(
@@ -1383,7 +1392,7 @@ impl RmcpClient {
         }
     }
 
-    async fn run_service_operation_with_transient_retries<T, F, Fut>(
+    async fn run_service_operation_with_transient_retries<T, F, Fut, E>(
         service: Arc<RunningService<RoleClient, ElicitationClientService>>,
         label: &str,
         timeout: Option<Duration>,
@@ -1392,7 +1401,8 @@ impl RmcpClient {
     ) -> std::result::Result<T, ClientOperationError>
     where
         F: Fn(Arc<RunningService<RoleClient, ElicitationClientService>>) -> Fut,
-        Fut: std::future::Future<Output = std::result::Result<T, rmcp::service::ServiceError>>,
+        Fut: std::future::Future<Output = std::result::Result<T, E>>,
+        E: Into<ClientOperationError>,
     {
         let retry_deadline = timeout.map(|duration| Instant::now() + duration);
         for (attempt, retry_delay_ms) in STREAMABLE_HTTP_RETRY_DELAYS_MS
@@ -1439,7 +1449,7 @@ impl RmcpClient {
         unreachable!("service operation retry loop should return on success or final error")
     }
 
-    async fn run_service_operation_once<T, F, Fut>(
+    async fn run_service_operation_once<T, F, Fut, E>(
         service: Arc<RunningService<RoleClient, ElicitationClientService>>,
         label: &str,
         timeout: Option<Duration>,
@@ -1448,7 +1458,8 @@ impl RmcpClient {
     ) -> std::result::Result<T, ClientOperationError>
     where
         F: Fn(Arc<RunningService<RoleClient, ElicitationClientService>>) -> Fut,
-        Fut: std::future::Future<Output = std::result::Result<T, rmcp::service::ServiceError>>,
+        Fut: std::future::Future<Output = std::result::Result<T, E>>,
+        E: Into<ClientOperationError>,
     {
         match timeout {
             Some(duration) => {
@@ -1458,9 +1469,9 @@ impl RmcpClient {
                         label: label.to_string(),
                         duration,
                     })?
-                    .map_err(ClientOperationError::from)
+                    .map_err(Into::into)
             }
-            None => operation(service).await.map_err(ClientOperationError::from),
+            None => operation(service).await.map_err(Into::into),
         }
     }
 

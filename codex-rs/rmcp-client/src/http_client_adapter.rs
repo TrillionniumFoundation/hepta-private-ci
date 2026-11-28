@@ -42,6 +42,7 @@ use rmcp::model::ConstString;
 use rmcp::model::DiscoverRequestMethod;
 use rmcp::model::ErrorCode;
 use rmcp::model::ErrorData;
+use rmcp::model::GetExtensions;
 use rmcp::model::JsonRpcMessage;
 use rmcp::model::ProtocolVersion;
 use rmcp::model::RequestId;
@@ -59,6 +60,8 @@ use tokio::sync::oneshot;
 
 use crate::event_notification_transport::MAX_EVENT_NOTIFICATION_BYTES;
 use crate::http_client_redirect::SameOriginRedirectHttpClient;
+use crate::local_response_diagnostic::BoundResponseObserver;
+use crate::local_response_diagnostic::LocalResponseObserver;
 use crate::local_stdio_transport::MAX_MCP_STDIO_LINE_BYTES;
 
 mod www_authenticate;
@@ -92,6 +95,7 @@ pub(crate) struct StreamableHttpClientAdapter {
     redirect_mode: StreamableHttpRedirectMode,
     initialize_deadline: Arc<Mutex<Option<Instant>>>,
     single_attempt_requests: Arc<AtomicBool>,
+    response_diagnostic_connection: Arc<()>,
 }
 
 struct EventStreamCancellation {
@@ -138,6 +142,7 @@ impl StreamableHttpClientAdapter {
             redirect_mode,
             initialize_deadline,
             single_attempt_requests: Arc::default(),
+            response_diagnostic_connection: Arc::new(()),
         }
     }
 
@@ -399,6 +404,16 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
                 let mut event_stream = sse_stream_from_body(
                     body_stream,
                     maximum_response_bytes.min(max_sse_event_size),
+                    match &message {
+                        JsonRpcMessage::Request(request) => request
+                            .request
+                            .extensions()
+                            .get::<LocalResponseObserver>()
+                            .and_then(|observer| {
+                                observer.bind(&self.response_diagnostic_connection, &request.id)
+                            }),
+                        _ => None,
+                    },
                 );
                 if mcp_method.as_deref() == Some(DiscoverRequestMethod::VALUE) {
                     while let Some(event) = event_stream.next().await {
@@ -663,6 +678,7 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         Ok(sse_stream_from_body(
             body_stream,
             maximum_event_bytes.min(max_sse_event_size),
+            /*diagnostic*/ None,
         ))
     }
 }
@@ -1027,6 +1043,7 @@ async fn collect_body(
 fn sse_stream_from_body(
     body_stream: HttpResponseBodyStream,
     maximum_event_bytes: usize,
+    mut diagnostic: Option<BoundResponseObserver>,
 ) -> BoxStream<'static, std::result::Result<Sse, sse_stream::Error>> {
     SseStream::from_bytes_stream(stream::unfold(
         (body_stream, SseEventSizeLimit::new(maximum_event_bytes)),
@@ -1044,6 +1061,27 @@ fn sse_stream_from_body(
             }
         },
     ))
+    .inspect(move |event| {
+        // Once the SDK has an event ID it may resume through GET. That path
+        // carries no request-local extension, so do not attribute its eventual
+        // close to an earlier POST error. Preserve the SDK's reconnect policy.
+        if let Ok(event) = event
+            && event.id.is_some()
+            && let Some(diagnostic) = diagnostic.take()
+        {
+            diagnostic.disqualify();
+        }
+        if let Err(sse_stream::Error::Body(error)) = event
+            && let Some(diagnostic) = diagnostic.take()
+            && let Some(StreamableHttpClientAdapterError::ResponseTooLarge { maximum_bytes }) =
+                error
+                    .downcast_ref::<io::Error>()
+                    .and_then(|error| error.get_ref())
+                    .and_then(|source| source.downcast_ref::<StreamableHttpClientAdapterError>())
+        {
+            diagnostic.record_response_too_large(*maximum_bytes);
+        }
+    })
     .boxed()
 }
 
@@ -1124,7 +1162,7 @@ impl SseEventSizeLimit {
             self.failed = true;
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                format!("MCP response body exceeds {maximum_bytes} bytes"),
+                StreamableHttpClientAdapterError::ResponseTooLarge { maximum_bytes },
             ));
         }
         Ok(())
