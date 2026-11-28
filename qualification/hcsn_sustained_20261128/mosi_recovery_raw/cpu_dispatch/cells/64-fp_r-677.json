@@ -1,0 +1,121 @@
+{
+ "aten_reported": "NO AVX",
+ "default_candidate_sha256": "8996e4fb30de1f747513b17c6dd67a9701347932b906cd30d59a4091f3eef1ec",
+ "group": "64-fp_r-677",
+ "records": [
+  {
+   "candidate_sha256": "ea29331454a915bc6aca0cc080b1f415724e5f0efd697090a9417723e3bc3295",
+   "dev_mse": 1.7120035886764526,
+   "dev_video_mae": 1.0964375734329224,
+   "exact_historical": false,
+   "historical_sha256": "a1a3ca1bb70f272f0c97a2c52bcd0c1090d3fc41bb55820be1f3a2290c1f3d69",
+   "penalty": 0.001
+  },
+  {
+   "candidate_sha256": "1a7f9b769b8e830b0dcd39fa3ed5edb93bc3e7bb610dc152bc93715bb76aa339",
+   "dev_mse": 1.6750874519348145,
+   "dev_video_mae": 1.0777512788772583,
+   "exact_historical": false,
+   "historical_sha256": "a1a3ca1bb70f272f0c97a2c52bcd0c1090d3fc41bb55820be1f3a2290c1f3d69",
+   "penalty": 0.03,
+   "same_penalty_numeric_comparison_to_default_dispatch": {
+    "head.bias": {
+     "baseline_rms": 0.196191668510437,
+     "count": 1,
+     "max_abs": 1.341104507446289e-07,
+     "nonidentical": 1,
+     "rmse": 1.341104507446289e-07
+    },
+    "head.weight": {
+     "baseline_rms": 0.08700200550172439,
+     "count": 128,
+     "max_abs": 1.7881393432617188e-07,
+     "nonidentical": 124,
+     "rmse": 7.062566655523562e-08
+    },
+    "layers.0.weight": {
+     "baseline_rms": 0.041103949915744176,
+     "count": 50752,
+     "max_abs": 0.0,
+     "nonidentical": 0,
+     "rmse": 0.0
+    },
+    "layers.1.weight": {
+     "baseline_rms": 0.10331996557338868,
+     "count": 4096,
+     "max_abs": 3.5390257835388184e-07,
+     "nonidentical": 3464,
+     "rmse": 3.437627015299862e-08
+    },
+    "layers.2.weight": {
+     "baseline_rms": 0.10220497195779005,
+     "count": 4096,
+     "max_abs": 4.76837158203125e-07,
+     "nonidentical": 3883,
+     "rmse": 7.720823498444074e-08
+    },
+    "mean0": {
+     "baseline_rms": 0.3709862829503353,
+     "count": 64,
+     "max_abs": 8.940696716308594e-08,
+     "nonidentical": 22,
+     "rmse": 2.414264045062609e-08
+    },
+    "mean1": {
+     "baseline_rms": 0.36074999554091114,
+     "count": 64,
+     "max_abs": 8.940696716308594e-08,
+     "nonidentical": 34,
+     "rmse": 3.611802948576457e-08
+    },
+    "mean2": {
+     "baseline_rms": 0.347672267915325,
+     "count": 64,
+     "max_abs": 8.940696716308594e-08,
+     "nonidentical": 34,
+     "rmse": 3.5341206865404316e-08
+    },
+    "sd0": {
+     "baseline_rms": 0.5303008652893143,
+     "count": 64,
+     "max_abs": 5.960464477539063e-08,
+     "nonidentical": 3,
+     "rmse": 9.125060374972142e-09
+    },
+    "sd1": {
+     "baseline_rms": 0.5320318635097627,
+     "count": 64,
+     "max_abs": 5.960464477539063e-08,
+     "nonidentical": 29,
+     "rmse": 3.204615886152769e-08
+    },
+    "sd2": {
+     "baseline_rms": 0.5165272836767413,
+     "count": 64,
+     "max_abs": 5.960464477539063e-08,
+     "nonidentical": 29,
+     "rmse": 3.268928970170067e-08
+    }
+   }
+  },
+  {
+   "candidate_sha256": "5cd973f34eb528ef7a51f20c7146973b3c19c90be7ff7e365b842e7b7a411141",
+   "dev_mse": 1.6934069395065308,
+   "dev_video_mae": 1.1048489809036255,
+   "exact_historical": false,
+   "historical_sha256": "a1a3ca1bb70f272f0c97a2c52bcd0c1090d3fc41bb55820be1f3a2290c1f3d69",
+   "penalty": 0.3
+  }
+ ],
+ "requested_dispatch": {
+  "ATEN_CPU_CAPABILITY": "default",
+  "MKL_CBWR": "COMPATIBLE",
+  "MKL_NUM_THREADS": "1",
+  "OMP_NUM_THREADS": "1",
+  "ONEDNN_MAX_CPU_ISA": "SSE41",
+  "OPENBLAS_NUM_THREADS": "1"
+ },
+ "selected_baseline_penalty": 0.03,
+ "torch": "2.8.0+cpu",
+ "weight_filename": "64-fp_r-677-r15.pt"
+}

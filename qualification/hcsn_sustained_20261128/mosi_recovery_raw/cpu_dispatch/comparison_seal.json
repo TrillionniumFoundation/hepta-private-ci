@@ -1,0 +1,130 @@
+{
+ "candidate_operations": 54,
+ "groups": 18,
+ "historical_matches": [
+  "0-raw_all-413-r15.pt",
+  "0-raw_av-413-r15.pt",
+  "0-raw_text-413-r15.pt"
+ ],
+ "new_historical_matches": [],
+ "requested_dispatch": {
+  "ATEN_CPU_CAPABILITY": "default",
+  "MKL_CBWR": "COMPATIBLE",
+  "MKL_NUM_THREADS": "1",
+  "OMP_NUM_THREADS": "1",
+  "ONEDNN_MAX_CPU_ISA": "SSE41",
+  "OPENBLAS_NUM_THREADS": "1"
+ },
+ "same_penalty": {
+  "0-raw_all-413": {
+   "changed": 0,
+   "elements": 1587,
+   "max_abs": 0.0,
+   "same_default_serialize": true
+  },
+  "0-raw_av-413": {
+   "changed": 0,
+   "elements": 51,
+   "max_abs": 0.0,
+   "same_default_serialize": true
+  },
+  "0-raw_text-413": {
+   "changed": 0,
+   "elements": 1537,
+   "max_abs": 0.0,
+   "same_default_serialize": true
+  },
+  "64-fp_h-413": {
+   "changed": 6963,
+   "elements": 60225,
+   "max_abs": 2.384185791015625e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h-677": {
+   "changed": 7129,
+   "elements": 60225,
+   "max_abs": 2.384185791015625e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h-941": {
+   "changed": 7384,
+   "elements": 60225,
+   "max_abs": 2.384185791015625e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h_shuffle-413": {
+   "changed": 7677,
+   "elements": 60225,
+   "max_abs": 0.0018140021711587906,
+   "same_default_serialize": false
+  },
+  "64-fp_h_shuffle-677": {
+   "changed": 7337,
+   "elements": 60225,
+   "max_abs": 2.384185791015625e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h_shuffle-941": {
+   "changed": 7325,
+   "elements": 60225,
+   "max_abs": 3.5762786865234375e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h_text-413": {
+   "changed": 10166,
+   "elements": 60225,
+   "max_abs": 0.0020910054445266724,
+   "same_default_serialize": false
+  },
+  "64-fp_h_text-677": {
+   "changed": 7530,
+   "elements": 60225,
+   "max_abs": 4.917383193969727e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_h_text-941": {
+   "changed": 6893,
+   "elements": 60225,
+   "max_abs": 2.384185791015625e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_r-413": {
+   "changed": 7029,
+   "elements": 59457,
+   "max_abs": 1.993030309677124e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_r-677": {
+   "changed": 7623,
+   "elements": 59457,
+   "max_abs": 4.76837158203125e-07,
+   "same_default_serialize": false
+  },
+  "64-fp_r-941": {
+   "changed": 7472,
+   "elements": 59457,
+   "max_abs": 2.4028122425079346e-07,
+   "same_default_serialize": false
+  },
+  "64-random_h-413": {
+   "changed": 27191,
+   "elements": 60225,
+   "max_abs": 1.1362135410308838e-06,
+   "same_default_serialize": false
+  },
+  "64-random_h-677": {
+   "changed": 27280,
+   "elements": 60225,
+   "max_abs": 3.725290298461914e-07,
+   "same_default_serialize": false
+  },
+  "64-random_h-941": {
+   "changed": 27440,
+   "elements": 60225,
+   "max_abs": 1.259148120880127e-06,
+   "same_default_serialize": false
+  }
+ },
+ "scope": "Only this controlled dispatch change on one machine is observed; missing original tensors cannot be inferred from archive SHA.",
+ "source_sha256": "1242a7d450229917f2a33908ffb56d26b7bc527531a18e190128dcc8dcb19770"
+}
