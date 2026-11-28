@@ -5,18 +5,21 @@ import sys
 import json
 import math
 import numpy as np
-from scipy.integrate import quad
-from scipy.special import log_ndtr
 import torch
 from force_kernel import table,transport,DT,SIGMA,signed_term,NODES
 
+GL_NODES,GL_WEIGHTS=np.polynomial.legendre.leggauss(96)
+def integrate(fn,lo,hi):
+    mid=(hi+lo)/2; half=(hi-lo)/2
+    return half*sum(w*fn(mid+half*n) for w,n in zip(GL_WEIGHTS,GL_NODES))
+def normal_cdf(z):return .5*math.erfc(-z/math.sqrt(2))
 def direct(x,d,grid):
-    cuts=[0.,*list(.5*(grid[1:]+grid[:-1])),np.inf]
+    cuts=[0.,*list(.5*(grid[1:]+grid[:-1])),max(3.,x+d*DT+15*SIGMA*math.sqrt(DT))]
     scale=SIGMA*math.sqrt(DT)
     def density(y):
         return math.exp(-.5*((y-x-d*DT)/scale)**2)/(math.sqrt(2*math.pi)*scale)*(-math.expm1(-2*x*y/(SIGMA**2*DT)))
-    alive=[quad(density,a,b,epsabs=2e-13)[0] for a,b in zip(cuts,cuts[1:])]
-    hit=math.exp(log_ndtr((-x-d*DT)/scale))+math.exp(-2*d*x/SIGMA**2+log_ndtr((-x+d*DT)/scale))
+    alive=[integrate(density,a,b) for a,b in zip(cuts,cuts[1:])]
+    hit=normal_cdf((-x-d*DT)/scale)+math.exp(-2*d*x/SIGMA**2)*normal_cdf((-x+d*DT)/scale)
     return np.array([*alive,hit])
 
 def test_kernel():

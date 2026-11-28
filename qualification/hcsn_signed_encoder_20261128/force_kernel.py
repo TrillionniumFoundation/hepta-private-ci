@@ -1,11 +1,13 @@
 """A killed drifted Brownian transition on the registered four-atom physical grid."""
 import numpy as np
-from scipy.special import log_ndtr
 import torch
 
 SIGMA=.23
 DT=.25
 MU=.08-.02-.23**2/2
+def log_ndtr(x):
+    return torch.special.log_ndtr(torch.as_tensor(x,dtype=torch.float64)).numpy()
+
 NODES=4097
 BOUND=5.
 
