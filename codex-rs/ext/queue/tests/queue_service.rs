@@ -292,6 +292,7 @@ struct FailDeleteOnceQueueStore {
     complete_attempts: AtomicUsize,
     short_dispatch_lease: bool,
     release_count: AtomicUsize,
+    completion_barrier: Option<Arc<listing_consistency::CompletionBarrier>>,
 }
 
 impl FailDeleteOnceQueueStore {
@@ -306,6 +307,7 @@ impl FailDeleteOnceQueueStore {
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: false,
             release_count: AtomicUsize::new(0),
+            completion_barrier: None,
         }
     }
 
@@ -320,6 +322,7 @@ impl FailDeleteOnceQueueStore {
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
+            completion_barrier: None,
         }
     }
 
@@ -334,6 +337,7 @@ impl FailDeleteOnceQueueStore {
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
+            completion_barrier: None,
         }
     }
 
@@ -348,6 +352,7 @@ impl FailDeleteOnceQueueStore {
             complete_attempts: AtomicUsize::new(0),
             short_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
+            completion_barrier: None,
         }
     }
 }
@@ -425,6 +430,37 @@ impl QueueStore for FailDeleteOnceQueueStore {
         queued_item_id: String,
         turn_id: String,
     ) -> ThreadStoreFuture<'_, bool> {
+        if let Some(barrier) = self.completion_barrier.as_ref() {
+            return Box::pin(async move {
+                let snapshot = self
+                    .inner
+                    .list_page(
+                        thread_id,
+                        /*offset*/ 0,
+                        codex_thread_store::MAX_QUEUE_ITEMS,
+                    )
+                    .await?;
+                *barrier
+                    .snapshot
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(snapshot);
+                barrier.entered.notify_one();
+                barrier.release.notified().await;
+                *barrier
+                    .snapshot
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner) = None;
+                self.inner
+                    .mark_client_binding_persisted(
+                        thread_id,
+                        client_id,
+                        payload_sha256,
+                        queued_item_id,
+                        turn_id,
+                    )
+                    .await
+            });
+        }
         self.inner.mark_client_binding_persisted(
             thread_id,
             client_id,
@@ -553,6 +589,16 @@ impl QueueStore for FailDeleteOnceQueueStore {
         offset: usize,
         limit: usize,
     ) -> ThreadStoreFuture<'_, Vec<codex_thread_store::QueuedUserSubmissionRecord>> {
+        if let Some(barrier) = self.completion_barrier.as_ref()
+            && let Some(snapshot) = barrier
+                .snapshot
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .as_ref()
+        {
+            let records = snapshot.iter().skip(offset).take(limit).cloned().collect();
+            return Box::pin(async move { Ok(records) });
+        }
         self.inner.list_page(thread_id, offset, limit)
     }
 
@@ -2746,3 +2792,6 @@ async fn resumed_idle_dispatches_input_without_a_loaded_manager() -> anyhow::Res
     assert!(service.list(thread_id).await?.is_empty());
     Ok(())
 }
+
+#[path = "queue_service/listing_consistency.rs"]
+mod listing_consistency;
