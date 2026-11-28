@@ -180,7 +180,7 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         /*replay_kind*/ None,
     );
     let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
+        "powershell.exe -NoProfile -NonInteractive -Command \"Start-Sleep -Seconds 30\""
     } else {
         "sleep 30"
     };

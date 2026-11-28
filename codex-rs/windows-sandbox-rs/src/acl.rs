@@ -329,9 +329,6 @@ unsafe fn dacl_has_complete_deny_for_sid(
         if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
             return false;
         }
-        if (hdr.AceFlags & INHERITED_ACE) != 0 {
-            continue;
-        }
         let known_flags = CONTAINER_INHERIT_ACE
             | OBJECT_INHERIT_ACE
             | u32::from(INHERIT_ONLY_ACE)
