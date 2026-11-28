@@ -46,6 +46,7 @@ pub struct JournalAnchor {
 enum RecoveryPolicy {
     Unanchored,
     Require(JournalAnchor),
+    RequireExact(JournalAnchor),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -125,6 +126,25 @@ impl SparseJournal {
         )
     }
 
+    /// Recover a first segment only when its latest complete frame is the
+    /// independently expected checkpoint. Reject mismatches before repairing
+    /// an incomplete suffix.
+    pub(crate) fn open_exact_anchored(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        anchor: JournalAnchor,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::RequireExact(anchor),
+        )
+    }
+
     fn open_with_policy(
         file: File,
         config: SparseConfig,
@@ -133,7 +153,7 @@ impl SparseJournal {
         policy: RecoveryPolicy,
     ) -> Result<Self, JournalError> {
         validate_limit(max_records)?;
-        if let RecoveryPolicy::Require(anchor) = policy
+        if let RecoveryPolicy::Require(anchor) | RecoveryPolicy::RequireExact(anchor) = policy
             && (anchor.sequence == 0
                 || anchor.sequence > max_records as u64
                 || anchor.checkpoint_digest.is_zero())
@@ -147,7 +167,7 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(_) = policy {
+            if !matches!(policy, RecoveryPolicy::Unanchored) {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
             file.write_all(&header)
@@ -324,7 +344,12 @@ impl SparseJournal {
             journal.current = Some(state);
         }
 
-        if let RecoveryPolicy::Require(anchor) = policy {
+        if let RecoveryPolicy::Require(anchor) | RecoveryPolicy::RequireExact(anchor) = policy {
+            if matches!(policy, RecoveryPolicy::RequireExact(_))
+                && journal.current.as_ref().map(SparseCheckpoint::sequence) != Some(anchor.sequence)
+            {
+                return Err(JournalError::AnchorMismatch);
+            }
             let actual = journal.anchor_at(anchor.sequence);
             match actual {
                 None => return Err(JournalError::AcknowledgedHistoryMissing),
@@ -456,6 +481,25 @@ impl SparseJournal {
         } else {
             Ok(self.current.as_ref())
         }
+    }
+
+    /// Reject a mismatched submitted owner scope/objective before any external
+    /// model invocation. This repeats the commit-time check; it does not grant
+    /// authority or substitute for the final commit's own verification.
+    pub(crate) fn verify_owner_context(
+        &self,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> Result<(), JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if self.scope.scope_digest != scope_digest
+            || self.scope.objective_digest != objective_digest
+        {
+            return Err(JournalError::ContextMismatch);
+        }
+        Ok(())
     }
 
     /// Return the current durable checkpoint frontier. This is an observation,

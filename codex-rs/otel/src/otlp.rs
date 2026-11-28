@@ -1,6 +1,11 @@
 use crate::config::OtelTlsConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use http::Uri;
+use opentelemetry_http::Bytes;
+use opentelemetry_http::HttpClient;
+use opentelemetry_http::HttpError;
+use opentelemetry_http::Request;
+use opentelemetry_http::Response;
 use opentelemetry_otlp::OTEL_EXPORTER_OTLP_TIMEOUT;
 use opentelemetry_otlp::OTEL_EXPORTER_OTLP_TIMEOUT_DEFAULT;
 use opentelemetry_otlp::tonic_types::transport::Certificate as TonicCertificate;
@@ -14,9 +19,11 @@ use reqwest::header::HeaderValue;
 use std::env;
 use std::error::Error;
 use std::fs;
+use std::future::Future;
 use std::io;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::time::Duration;
 
 pub(crate) fn build_header_map(headers: &std::collections::HashMap<String, String>) -> HeaderMap {
@@ -67,6 +74,57 @@ pub(crate) fn build_grpc_tls_config(
     Ok(config)
 }
 
+type SendResponse<'future> =
+    Pin<Box<dyn Future<Output = Result<Response<Bytes>, HttpError>> + Send + 'future>>;
+
+// OpenTelemetry 0.32 implements HttpClient for a different reqwest version.
+// Keep the workspace clients and their TLS configuration at the export boundary.
+#[derive(Debug)]
+pub(crate) struct BlockingOtlpClient(reqwest::blocking::Client);
+
+impl HttpClient for BlockingOtlpClient {
+    fn send_bytes<'client, 'future>(&'client self, request: Request<Bytes>) -> SendResponse<'future>
+    where
+        'client: 'future,
+        Self: 'future,
+    {
+        Box::pin(async move {
+            opentelemetry::otel_debug!(name: "ReqwestBlockingClient.Send");
+            let request = request.try_into()?;
+            let mut response = self.0.execute(request)?.error_for_status()?;
+            let headers = std::mem::take(response.headers_mut());
+            let mut result = Response::builder()
+                .status(response.status())
+                .body(response.bytes()?)?;
+            *result.headers_mut() = headers;
+            Ok(result)
+        })
+    }
+}
+
+#[derive(Debug)]
+pub(crate) struct AsyncOtlpClient(reqwest::Client);
+
+impl HttpClient for AsyncOtlpClient {
+    fn send_bytes<'client, 'future>(&'client self, request: Request<Bytes>) -> SendResponse<'future>
+    where
+        'client: 'future,
+        Self: 'future,
+    {
+        Box::pin(async move {
+            opentelemetry::otel_debug!(name: "ReqwestClient.Send");
+            let request = request.try_into()?;
+            let mut response = self.0.execute(request).await?.error_for_status()?;
+            let headers = std::mem::take(response.headers_mut());
+            let mut result = Response::builder()
+                .status(response.status())
+                .body(response.bytes().await?)?;
+            *result.headers_mut() = headers;
+            Ok(result)
+        })
+    }
+}
+
 /// Build a blocking HTTP client with TLS configuration for OTLP HTTP exporters.
 ///
 /// We use `reqwest::blocking::Client` because OTEL exporters run on dedicated
@@ -74,8 +132,8 @@ pub(crate) fn build_grpc_tls_config(
 pub(crate) fn build_http_client(
     tls: &OtelTlsConfig,
     timeout_var: &str,
-) -> Result<reqwest::blocking::Client, Box<dyn Error>> {
-    if current_tokio_runtime_is_multi_thread() {
+) -> Result<BlockingOtlpClient, Box<dyn Error>> {
+    let client = if current_tokio_runtime_is_multi_thread() {
         tokio::task::block_in_place(|| build_http_client_inner(tls, timeout_var))
     } else if tokio::runtime::Handle::try_current().is_ok() {
         let tls = tls.clone();
@@ -88,7 +146,8 @@ pub(crate) fn build_http_client(
         .map_err(config_error)
     } else {
         build_http_client_inner(tls, timeout_var)
-    }
+    }?;
+    Ok(BlockingOtlpClient(client))
 }
 
 pub(crate) fn current_tokio_runtime_is_multi_thread() -> bool {
@@ -148,7 +207,7 @@ fn build_http_client_inner(
 pub(crate) fn build_async_http_client(
     tls: Option<&OtelTlsConfig>,
     timeout_var: &str,
-) -> Result<reqwest::Client, Box<dyn Error>> {
+) -> Result<AsyncOtlpClient, Box<dyn Error>> {
     let mut builder = reqwest::Client::builder().timeout(resolve_otlp_timeout(timeout_var));
 
     if let Some(tls) = tls {
@@ -190,6 +249,7 @@ pub(crate) fn build_async_http_client(
 
     builder
         .build()
+        .map(AsyncOtlpClient)
         .map_err(|error| Box::new(error) as Box<dyn Error>)
 }
 

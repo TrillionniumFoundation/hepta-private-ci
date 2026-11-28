@@ -312,6 +312,13 @@ pub async fn submit_thread_settings(
     use tokio::time::Duration;
     use tokio::time::timeout;
 
+    // A terminal event can precede release of its persistence/admission fence.
+    if let Some(completion) = codex.pending_admission_fence_completion() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .context("timeout waiting for turn terminalization before updating thread settings")?;
+    }
+
     let submission_id = codex.submit(Op::ThreadSettings { thread_settings }).await?;
     loop {
         let ev = timeout(Duration::from_secs(10), codex.next_event())
@@ -334,6 +341,35 @@ where
 {
     let ev = wait_for_event(codex, |ev| matcher(ev).is_some()).await;
     matcher(&ev).expect("EventMsg should match matcher predicate")
+}
+
+/// Waits for a normal terminal event and the lifecycle work owned by that exact turn.
+pub async fn wait_for_completed_turn(
+    codex: &CodexThread,
+    expected_turn_id: Option<&str>,
+    wait_time: tokio::time::Duration,
+) {
+    use codex_protocol::protocol::EventMsg;
+    use tokio::time::Duration;
+    use tokio::time::timeout;
+
+    let event = wait_for_event_with_timeout(
+        codex,
+        |event| {
+            matches!(event, EventMsg::TurnComplete(event)
+                if expected_turn_id.is_none_or(|expected_id| expected_id == event.turn_id))
+        },
+        wait_time,
+    )
+    .await;
+    let EventMsg::TurnComplete(event) = event else {
+        unreachable!("the predicate accepts only TurnComplete");
+    };
+    if let Some(finish) = codex.pending_normal_turn_finish_completion(&event.turn_id) {
+        timeout(wait_time.max(Duration::from_secs(10)), finish)
+            .await
+            .expect("timeout waiting for the completed turn's finish owner");
+    }
 }
 
 pub async fn wait_for_event_with_timeout<F>(

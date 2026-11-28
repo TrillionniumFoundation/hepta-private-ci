@@ -97,7 +97,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -1992,16 +1991,25 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+/// The provider receipt and its verifier must be used together to observe a delivery.
+pub struct ContextProviderDeliveryInputV2<'a, V> {
+    pub receipt: &'a ProviderInvocationReceipt,
+    pub verifier: &'a V,
+}
+
 pub fn observe_delivery(
     preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
     serialization: &SerializedContextV2,
     profile: &ContextModelProfileV2,
     delivery_id: StableId,
-    provider_receipt: &ProviderInvocationReceipt,
-    delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
+    provider: ContextProviderDeliveryInputV2<'_, impl ContextProviderDeliveryVerifierV2>,
     observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+    let ContextProviderDeliveryInputV2 {
+        receipt: provider_receipt,
+        verifier: delivery_verifier,
+    } = provider;
     preparation.validate_for(attachment, serialization, profile)?;
     provider_receipt
         .validate()

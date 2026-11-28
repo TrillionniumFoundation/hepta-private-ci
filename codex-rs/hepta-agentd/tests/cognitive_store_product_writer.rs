@@ -3,6 +3,7 @@
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -12,6 +13,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
+use codex_hepta_cognitive_store::CognitiveRecoveryError;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::CognitiveScope;
 use codex_hepta_cognitive_store::DurableCognitiveStore;
@@ -49,6 +51,8 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -143,7 +147,17 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    let original_path = store.path().to_path_buf();
     drop(store);
+    // Freeze the test-owned predecessor before hashing it. The recovery
+    // gate still requires a private ordinary file regardless of CI umask.
+    let sqlite_home =
+        AbsolutePathBuf::from_absolute_path(config.identity().layout.cognitive_root())?;
+    SqliteConfig::from_sqlite_home(sqlite_home)
+        .checkpoint_private_recovery_database(&original_path)
+        .await?;
+    fs::set_permissions(&original_path, fs::Permissions::from_mode(0o600))?;
+    let predecessor = Sha256Digest::for_bytes(&fs::read(&original_path)?);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -173,6 +187,21 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let mut wrong_cut = expected.clone();
+    wrong_cut.state_digest = Sha256Digest::for_bytes(b"not the current product cut");
+    let rejected = DurableCognitiveStore::open_with_recovery(
+        &config.identity().layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&wrong_cut),
+        &authority,
+        verifier.as_ref(),
+    )
+    .await;
+    assert!(matches!(
+        rejected,
+        Err(CognitiveRecoveryError::AccessDenied(message))
+            if message.contains("differs from independently retained current cut")
+    ));
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +212,17 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    // The independently authenticated cut predates the new writer lease.
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(host.writer().generation(), 1);
+    assert_ne!(host.writer().database_path(), original_path);
+    assert_eq!(
+        Sha256Digest::for_bytes(&fs::read(&original_path)?),
+        predecessor
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());

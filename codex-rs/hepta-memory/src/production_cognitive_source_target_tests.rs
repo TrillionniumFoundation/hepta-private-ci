@@ -22,6 +22,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use crate::LocalOutcomeState;
@@ -320,7 +321,8 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
 }
 
 #[tokio::test]
-async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
+async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch()
+-> Result<(), Box<dyn std::error::Error>> {
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
     let owner = store.owner_agent_id().clone();
@@ -333,9 +335,11 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
     )
     .await
     .expect("production writer");
-    let real_target =
-        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
-            .expect("real target");
+    let real_target = CognitiveSourceOutboxTarget::new(
+        store.clone(),
+        CognitiveAccess::agent_private(owner.clone()),
+    )
+    .expect("real target");
     let target = Arc::new(LostAckTarget {
         inner: real_target.clone(),
     });
@@ -363,6 +367,11 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         .await
         .expect("dispatch with lost ack");
     assert_eq!(dispatched.state, LocalOutcomeState::Indeterminate);
+    let CognitiveSourceTerminalObservation::Applied { receipt } =
+        real_target.observe_terminal(&dispatched.request).await
+    else {
+        return Err("destination did not retain the actual terminal receipt".into());
+    };
 
     assert_eq!(
         dispatcher
@@ -375,4 +384,26 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         writer.status(operation_id).await.expect("terminal status"),
         LocalOutcomeState::Committed
     );
+    let expected = terminal_journal_tests::expected_journal(
+        &dispatched.request,
+        serde_json::json!({"disposition": "committed", "receipt": receipt}),
+    );
+    let retained = terminal_journal_tests::retained_journal(&store, operation_id).await?;
+    assert_eq!(retained, expected);
+    assert_eq!(dispatcher.reconcile(&writer, 8).await?, 0);
+
+    drop(dispatcher);
+    drop(real_target);
+    drop(writer);
+    store.pool.close().await;
+    drop(store);
+    let reopened = self::store(&temp).await;
+    assert_eq!(
+        terminal_journal_tests::retained_journal(&reopened, operation_id).await?,
+        expected
+    );
+    Ok(())
 }
+
+#[path = "production_terminal_journal_tests.rs"]
+mod terminal_journal_tests;

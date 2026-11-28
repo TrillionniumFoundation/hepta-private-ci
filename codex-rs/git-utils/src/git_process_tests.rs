@@ -12,6 +12,76 @@ enum GitWrapperLifetime {
     ExitBeforeTimeout,
 }
 
+#[cfg(windows)]
+#[test]
+fn windows_git_child_lifetime_fixture() {
+    // This is a real descendant of the Git wrapper, not a mock process.
+    // In the ordinary test run it exits immediately; the wrapper launches
+    // this *same test binary* with a private fixture marker.
+    if std::env::var_os("CODEX_GIT_PROCESS_TEST_CHILD").is_none() {
+        return;
+    }
+    let ready =
+        std::path::PathBuf::from(std::env::var_os("CHILD_READY_FILE").expect("child ready path"));
+    let release = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_CHILD_FILE").expect("child release path"),
+    );
+    let survived = std::path::PathBuf::from(
+        std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path"),
+    );
+    std::fs::write(ready, "ready").expect("mark child ready");
+    while !release.exists() {
+        std::thread::sleep(Duration::from_millis(25));
+    }
+    std::thread::sleep(Duration::from_secs(1));
+    std::fs::write(survived, "survived").expect("mark child survived");
+    // A leaked descendant remains observable after the parent's timeout.
+    std::thread::sleep(Duration::from_secs(60));
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_git_wrapper_lifetime_fixture() {
+    // Use the test executable as both wrapper and descendant so the
+    // exit-before-timeout case is independent of external shell host behavior.
+    if std::env::var_os("CODEX_GIT_PROCESS_TEST_WRAPPER").is_none() {
+        return;
+    }
+
+    let child_pid_file =
+        std::path::PathBuf::from(std::env::var_os("CHILD_PID_FILE").expect("child PID path"));
+    let release_wrapper_file = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_WRAPPER_FILE").expect("wrapper release path"),
+    );
+    let test_exe = std::env::current_exe().expect("test executable path");
+    let mut child = std::process::Command::new(test_exe)
+        .args([
+            "--exact",
+            "git_process::tests::windows_git_child_lifetime_fixture",
+            "--nocapture",
+        ])
+        .env("CODEX_GIT_PROCESS_TEST_CHILD", "1")
+        .env_remove("CODEX_GIT_PROCESS_TEST_WRAPPER")
+        .spawn()
+        .expect("spawn real Git wrapper descendant");
+    std::fs::write(&child_pid_file, child.id().to_string()).expect("write child PID");
+
+    match std::env::var("CODEX_GIT_PROCESS_WRAPPER_LIFETIME")
+        .expect("wrapper lifetime")
+        .as_str()
+    {
+        "wait-for-child" => {
+            child.wait().expect("wait for Git wrapper descendant");
+        }
+        "exit-before-timeout" => {
+            while !release_wrapper_file.exists() {
+                std::thread::sleep(Duration::from_millis(25));
+            }
+        }
+        other => panic!("unexpected Git wrapper lifetime: {other}"),
+    }
+}
+
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
@@ -37,19 +107,22 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
+        // Test the real descendant-lifecycle invariant with a native wrapper
+        // fixture rather than PowerShell-specific child lifetime behavior.
+        let lifetime = match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "wait-for-child",
+            GitWrapperLifetime::ExitBeforeTimeout => "exit-before-timeout",
         };
+        let test_exe = std::env::current_exe().expect("test executable path");
+        let mut command = Command::new(test_exe);
         command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .args([
+                "--exact",
+                "git_process::tests::windows_git_wrapper_lifetime_fixture",
+                "--nocapture",
+            ])
+            .env("CODEX_GIT_PROCESS_TEST_WRAPPER", "1")
+            .env("CODEX_GIT_PROCESS_WRAPPER_LIFETIME", lifetime);
         command
     };
     command
@@ -60,19 +133,33 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let ready = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
                 && child_ready_file.exists()
             {
-                break child_pid.trim().to_string();
+                break Ok(child_pid.trim().to_string());
+            }
+            if let Some(status) = wrapper.try_wait().expect("poll Git wrapper readiness") {
+                break Err(format!(
+                    "Git wrapper exited before descendant readiness: {status}"
+                ));
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match ready {
+        Ok(Ok(pid)) => pid,
+        other => {
+            // Keep the process-tree guard armed. A normal wait can preserve
+            // descendants when the wrapper has already exited.
+            drop(process_tree);
+            drop(wrapper);
+            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");

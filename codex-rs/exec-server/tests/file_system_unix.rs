@@ -1101,6 +1101,13 @@ async fn file_system_sandboxed_read_rejects_symlink_parent_dotdot_escape(
     Ok(())
 }
 
+fn remote_authorized_read_unavailable(implementation: FileSystemImplementation) -> bool {
+    matches!(implementation, FileSystemImplementation::Remote)
+        && !codex_exec_server::local_environment_info()
+            .capabilities
+            .stable_handle_authorized_read
+}
+
 #[test_case(FileSystemImplementation::Local ; "local")]
 #[test_case(FileSystemImplementation::Remote ; "remote")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -1121,9 +1128,17 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
 
     let exact = file_system
         .read_file_bounded_authorized(&PathUri::from_host_native_path(&exact_path)?, &sandbox, 8)
-        .await
-        .with_context(|| format!("mode={implementation}, exact bound"))?;
-    assert_eq!(exact, b"12345678");
+        .await;
+    let unsupported = remote_authorized_read_unavailable(implementation);
+    if unsupported {
+        let error = exact.expect_err("a remote host without stable handles must reject the read");
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    } else {
+        assert_eq!(
+            exact.with_context(|| format!("mode={implementation}, exact bound"))?,
+            b"12345678"
+        );
+    }
 
     let error = file_system
         .read_file_bounded_authorized(
@@ -1133,8 +1148,12 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         )
         .await
         .expect_err("a file larger than the bound must fail closed");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    if unsupported {
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    } else {
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+        assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    }
 
     Ok(())
 }
@@ -1167,7 +1186,12 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    let unsupported = remote_authorized_read_unavailable(implementation);
+    if unsupported {
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    } else {
+        assert_sandbox_denied(&error);
+    }
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1183,7 +1207,11 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    if unsupported {
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    } else {
+        assert_normalized_path_rejected(&error);
+    }
 
     Ok(())
 }

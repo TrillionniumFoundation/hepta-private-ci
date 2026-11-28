@@ -1,6 +1,11 @@
 use anyhow::Result;
+use anyhow::bail;
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
+use codex_history::RolloutItem;
+use codex_history::RolloutLine;
 use codex_protocol::items::TurnItem;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::AdditionalContextEntry;
 use codex_protocol::protocol::AdditionalContextKind;
 use codex_protocol::protocol::EventMsg;
@@ -16,9 +21,11 @@ use core_test_support::responses::sse;
 use core_test_support::responses::start_mock_server;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
+use core_test_support::wait_for_completed_turn;
 use core_test_support::wait_for_event_match;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
+use std::time::Duration;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Result<()> {
@@ -35,7 +42,8 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
         .build(&server)
         .await?;
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "inspect the active tab".to_string(),
@@ -59,6 +67,9 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
             ])),
         )
         .await?;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
 
     let user_item = wait_for_event_match(&test.codex, |event| match event {
         EventMsg::ItemCompleted(ItemCompletedEvent {
@@ -75,15 +86,45 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
             text_elements: Vec::new(),
         }]
     );
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
+
+    test.codex.flush_rollout().await?;
+    let rollout_path = test.codex.rollout_path().expect("local rollout path");
+    let rollout = tokio::fs::read_to_string(rollout_path).await?;
+    let lines = rollout
+        .lines()
+        .map(serde_json::from_str::<RolloutLine>)
+        .collect::<serde_json::Result<Vec<_>>>()?;
+    for expected_kind in [
+        "additional_content.automation_info",
+        "additional_content.browser_info",
+        "user.text",
+    ] {
+        assert!(
+            lines.iter().any(|line| matches!(
+                &line.item,
+                RolloutItem::ResponseItem(item)
+                    if matches!(
+                        &item.item,
+                        ResponseItem::Message {
+                            internal_chat_message_metadata_passthrough: Some(metadata),
+                            ..
+                        } if metadata.content_item_kinds.as_deref().is_some_and(|kinds| {
+                            kinds.len() == 1 && kinds[0].0 == expected_kind
+                        })
+                    )
+            )),
+            "the local rollout must retain the typed item {expected_kind}"
+        );
+    }
 
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    assert!(
+        request.input().iter().all(|item| item
+            .get("internal_chat_message_metadata_passthrough")
+            .is_none()),
+        "the loopback provider must not receive internal metadata"
+    );
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(
@@ -249,7 +290,8 @@ async fn additional_context_is_deduplicated_between_turns_while_retained() -> Re
         },
     )]);
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "first turn".to_string(),
@@ -258,12 +300,13 @@ async fn additional_context_is_deduplicated_between_turns_while_retained() -> Re
             .with_additional_context(additional_context.clone()),
         )
         .await?;
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "second turn".to_string(),
@@ -272,10 +315,10 @@ async fn additional_context_is_deduplicated_between_turns_while_retained() -> Re
             .with_additional_context(additional_context),
         )
         .await?;
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
 
     assert_eq!(
         first_request.single_request().message_input_texts("user"),
@@ -321,7 +364,8 @@ async fn additional_context_removes_one_value_while_adding_another() -> Result<(
         .build(&server)
         .await?;
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "first turn".to_string(),
@@ -345,12 +389,13 @@ async fn additional_context_removes_one_value_while_adding_another() -> Result<(
             ])),
         )
         .await?;
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "second turn".to_string(),
@@ -374,12 +419,13 @@ async fn additional_context_removes_one_value_while_adding_another() -> Result<(
             ])),
         )
         .await?;
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
 
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "third turn".to_string(),
@@ -410,10 +456,10 @@ async fn additional_context_removes_one_value_while_adding_another() -> Result<(
             ])),
         )
         .await?;
-    wait_for_event_match(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    let TurnInputSubmission::Started { turn_id } = submission else {
+        bail!("expected a separate turn, got {submission:?}");
+    };
+    wait_for_completed_turn(&test.codex, Some(&turn_id), Duration::from_secs(10)).await;
 
     assert_eq!(
         first_request.single_request().message_input_texts("user"),

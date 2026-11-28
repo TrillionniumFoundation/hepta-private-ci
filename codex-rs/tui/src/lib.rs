@@ -2013,9 +2013,11 @@ mod tests {
             .to_string(),
         ];
         std::fs::write(&rollout_path, lines.join("\n") + "\n")?;
-        let updated_at =
-            chrono::DateTime::parse_from_rfc3339(meta_rfc3339)?.with_timezone(&chrono::Utc);
-        let times = std::fs::FileTimes::new().set_modified(updated_at.into());
+        let updated_at = codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
+        let modified = updated_at.to_system_time().ok_or_else(|| {
+            std::io::Error::other("rollout timestamp is outside the platform file-time range")
+        })?;
+        let times = std::fs::FileTimes::new().set_modified(modified);
         std::fs::OpenOptions::new()
             .append(true)
             .open(rollout_path)?
@@ -3236,7 +3238,7 @@ mod tests {
     -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let mut config = build_config(&temp_dir).await?;
-        let sqlite_home = temp_dir.path().join("sqlite-home");
+        let sqlite_home = temp_dir.path().canonicalize()?.join("sqlite-home");
         std::fs::create_dir_all(&sqlite_home)?;
         let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
         let logs_db_path = sqlite.logs_db_path();

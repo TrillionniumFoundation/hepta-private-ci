@@ -3092,9 +3092,16 @@ fn map_response_stream(
         inference_trace_attempt,
         provider,
         provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        ResponseObservationOptions {
+            redact_provider_errors,
+            encoded_request_observer,
+        },
     )
+}
+
+struct ResponseObservationOptions {
+    redact_provider_errors: bool,
+    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 }
 
 fn map_response_events<S>(
@@ -3104,8 +3111,7 @@ fn map_response_events<S>(
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
-    redact_provider_errors: bool,
-    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+    observation: ResponseObservationOptions,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3119,10 @@ where
         + Send
         + 'static,
 {
+    let ResponseObservationOptions {
+        redact_provider_errors,
+        encoded_request_observer,
+    } = observation;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

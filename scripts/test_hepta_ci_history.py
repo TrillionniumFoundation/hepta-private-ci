@@ -17,6 +17,9 @@ class ExactHistoryTests(unittest.TestCase):
         self.source = self.root / "source"
         self.source.mkdir()
         self.git(self.source, "init", "-q", "-b", "main")
+        # Keep background Git writes from racing TemporaryDirectory cleanup.
+        self.git(self.source, "config", "maintenance.auto", "false")
+        self.git(self.source, "config", "gc.auto", "0")
         self.git(self.source, "config", "user.name", "History test")
         self.git(self.source, "config", "user.email", "history@example.invalid")
         (self.source / "common").write_text("common\n")
@@ -43,6 +46,8 @@ class ExactHistoryTests(unittest.TestCase):
             "-q",
             "--no-tags",
             "--depth=1",
+            "--config=maintenance.auto=false",
+            "--config=gc.auto=0",
             "--branch",
             "candidate",
             self.source.as_uri(),
@@ -97,6 +102,107 @@ class ExactHistoryTests(unittest.TestCase):
         self.assertEqual(
             self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "false"
         )
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": ""})
+    def test_snapshot_only_fetch_supplies_base_content_without_other_history(self):
+        prepare(self.checkout, [self.base, self.head], with_blobs=True)
+        self.assertEqual(self.git(self.checkout, "rev-parse", "HEAD"), self.head)
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{self.base}:base"),
+            "independent base change",
+        )
+        self.assertEqual(
+            self.git(self.checkout, "diff", "--numstat", self.base, self.head),
+            self.git(self.source, "diff", "--numstat", self.base, self.head),
+        )
+        self.assertEqual(
+            self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "true"
+        )
+        self.missing(self.common)
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": "", "GIT_NO_LAZY_FETCH": "1"})
+    def test_snapshot_with_blobs_upgrades_a_cached_blobless_comparison(self):
+        self.git(self.source, "config", "uploadpack.allowFilter", "true")
+        self.git(self.source, "config", "uploadpack.allowReachableSHA1InWant", "true")
+        prepare(self.checkout, [self.base, self.head])
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.git(self.checkout, "show", f"{self.base}:base")
+        prepare(self.checkout, [self.base, self.head], with_blobs=True)
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{self.base}:base"),
+            "independent base change",
+        )
+        self.missing(self.common)
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": "", "GIT_NO_LAZY_FETCH": "1"})
+    def test_full_history_with_blobs_upgrades_cached_blobless_history(self):
+        self.git(self.source, "config", "uploadpack.allowFilter", "true")
+        self.git(self.source, "config", "uploadpack.allowReachableSHA1InWant", "true")
+        self.git(self.source, "switch", "-q", "main")
+        (self.source / "base").write_text("base after cached snapshot\n")
+        self.commit("new base")
+        new_base = self.git(self.source, "rev-parse", "HEAD")
+        prepare(self.checkout, [new_base, self.head], full_history=True)
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.git(self.checkout, "show", f"{self.base}:base")
+        prepare(
+            self.checkout, [new_base, self.head], full_history=True, with_blobs=True
+        )
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{self.base}:base"),
+            "independent base change",
+        )
+        self.assertEqual(
+            self.git(self.checkout, "merge-tree", "--write-tree", new_base, self.head),
+            self.git(self.source, "merge-tree", "--write-tree", new_base, self.head),
+        )
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": "", "GIT_NO_LAZY_FETCH": "1"})
+    def test_full_history_with_blobs_unshallows_a_cached_blobless_snapshot(self):
+        self.git(self.source, "config", "uploadpack.allowFilter", "true")
+        self.git(self.source, "config", "uploadpack.allowReachableSHA1InWant", "true")
+        prepare(self.checkout, [self.base, self.head])
+        self.assertEqual(
+            self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "true"
+        )
+        prepare(
+            self.checkout, [self.base, self.head], full_history=True, with_blobs=True
+        )
+        self.assertEqual(
+            self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "false"
+        )
+        self.assertEqual(
+            self.git(self.checkout, "merge-tree", "--write-tree", self.base, self.head),
+            self.git(self.source, "merge-tree", "--write-tree", self.base, self.head),
+        )
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": ""})
+    def test_full_history_with_blobs_materializes_merge_without_lazy_fetch(self):
+        self.git(self.source, "config", "uploadpack.allowFilter", "true")
+        prepare(
+            self.checkout, [self.base, self.head], full_history=True, with_blobs=True
+        )
+        self.git(self.checkout, "remote", "remove", "origin")
+        merge = self.git(
+            self.checkout, "merge-tree", "--write-tree", self.base, self.head
+        )
+        self.assertEqual(
+            merge,
+            self.git(self.source, "merge-tree", "--write-tree", self.base, self.head),
+        )
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{merge}:base"), "independent base change"
+        )
+        self.missing(self.unrelated)
         self.archives_unselected()
 
     @patch.dict(os.environ, {"GH_TOKEN": ""})

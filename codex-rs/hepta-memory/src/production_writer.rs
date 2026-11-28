@@ -57,6 +57,11 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_terminal_journal.rs"]
+mod terminal_journal;
+
+use terminal_journal::TerminalObservation;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -932,15 +937,28 @@ impl ProductionDurableWriter {
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
             match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
-                        .await?;
+                ProductionTerminalObservation::Applied { receipt } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Committed { receipt: &receipt },
+                    )
+                    .await?;
                     reconciled += 1;
                 }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
-                        .await?;
+                ProductionTerminalObservation::NotApplied { reason } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::NotApplied { reason: &reason },
+                    )
+                    .await?;
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::Quarantined { reason } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Quarantined { reason: &reason },
+                    )
+                    .await?;
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Indeterminate { .. } => {
@@ -1350,13 +1368,8 @@ impl ProductionDurableWriter {
         };
         let outcome = future.await;
         let settled = if inherited_from_generation.is_some() {
-            self.settle_inherited_dispatch_outcome(
-                request,
-                &receipt.occurrence_key,
-                dispatch_claim_event_id,
-                outcome,
-            )
-            .await
+            self.settle_inherited_dispatch_outcome(request, dispatch_claim_event_id, outcome)
+                .await
         } else {
             self.settle_dispatch_outcome(
                 request,
@@ -1399,14 +1412,16 @@ impl ProductionDurableWriter {
     async fn settle_inherited_dispatch_outcome(
         &self,
         request: ProductionDispatchRequest,
-        occurrence_key: &str,
         dispatch_claim_event_id: String,
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         match outcome {
             ProductionTargetOutcome::Committed { receipt } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Committed { receipt: &receipt },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1420,7 +1435,10 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::NotApplied { reason: &reason },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1434,7 +1452,10 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::Rejected { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Rejected { reason: &reason },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1608,8 +1629,7 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    (memory_id, expected_revision),
                     source,
                     draft,
                     facts,
@@ -3493,18 +3513,14 @@ mod final_use_dispatch_tests {
     use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
-    fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
-    }
+    type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
 
-    async fn store(temp: &TempDir) -> CognitiveStore {
+    async fn store(temp: &TempDir) -> FixtureResult<CognitiveStore> {
         let root = temp.path().join("fleet-final-use");
-        std::fs::create_dir_all(&root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-            .expect("fleet root");
-        CognitiveStore::open(&fleet.layout().agent(&agent()))
-            .await
-            .expect("store")
+        std::fs::create_dir_all(&root)?;
+        let fleet = HeptaFleetRoot::parse(root.canonicalize()?)?;
+        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff")?;
+        Ok(CognitiveStore::open(&fleet.layout().agent(&agent)).await?)
     }
 
     struct FinalUseVerifier;
@@ -3563,40 +3579,34 @@ mod final_use_dispatch_tests {
         operation_id: &str,
         destination: &str,
         payload: &str,
-    ) -> OperationIntentV1 {
-        OperationIntentV1::new(
-            StableId::new(operation_id).expect("operation id"),
-            StableId::new(owner.as_str()).expect("subject"),
-            StableId::new(destination).expect("destination"),
+    ) -> FixtureResult<OperationIntentV1> {
+        Ok(OperationIntentV1::new(
+            StableId::new(operation_id)?,
+            StableId::new(owner.as_str())?,
+            StableId::new(destination)?,
             Digest32::of_bytes(payload.as_bytes()),
             Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).expect("policy generation"),
+            codex_hepta_types::Generation::new(1)?,
             None,
-        )
-        .expect("operation intent")
+        )?)
     }
 
-    fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
-        ProductionAuthorityLease::from_verified_parts(
+    fn production_authority(owner: AgentId) -> FixtureResult<ProductionAuthorityLease> {
+        Ok(ProductionAuthorityLease::from_verified_parts(
             owner,
             Sha256Digest::for_bytes(b"production-grant"),
             31,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
-            ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
-                .expect("token"),
-        )
-        .expect("authority")
+            now_unix_seconds()? + 3_600,
+            ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())?,
+        )?)
     }
 
-    fn test_nonce(label: &str) -> [u8; 32] {
-        let now_nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_nanos();
+    fn test_nonce(label: &str) -> FixtureResult<[u8; 32]> {
+        let now_nanos = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
-        digest.into()
+        Ok(digest.into())
     }
 
     fn signed_final_use(
@@ -3604,11 +3614,8 @@ mod final_use_dispatch_tests {
         binding: FinalUseBinding,
         grant_id: &str,
         nonce: [u8; 32],
-    ) -> SignedFinalUseGrant {
-        let now_ms = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_millis() as u64;
+    ) -> FixtureResult<SignedFinalUseGrant> {
+        let now_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "final-use-owner".to_string(),
@@ -3619,21 +3626,19 @@ mod final_use_dispatch_tests {
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
         };
-        let signature = issuer
-            .sign(&grant.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
     #[tokio::test]
-    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() {
+    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target()
+    -> FixtureResult<()> {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:final-use",
             1,
@@ -3669,7 +3674,7 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:1",
                     target.destination_id(),
                     payload_one,
-                ),
+                )?,
                 "memory.write",
                 payload_one,
             )
@@ -3683,8 +3688,8 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-good",
-            test_nonce("final-use-good"),
-        );
+            test_nonce("final-use-good")?,
+        )?;
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
@@ -3700,7 +3705,7 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:2",
                     target.destination_id(),
                     payload_two,
-                ),
+                )?,
                 "memory.write",
                 payload_two,
             )
@@ -3715,8 +3720,8 @@ mod final_use_dispatch_tests {
             &issuer,
             bad_binding.clone(),
             "final-use-bad-destination",
-            test_nonce("final-use-bad-destination"),
-        );
+            test_nonce("final-use-bad-destination")?,
+        )?;
         assert!(matches!(
             dispatcher
                 .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
@@ -3744,16 +3749,18 @@ mod final_use_dispatch_tests {
             .claim(&bad_signed, &bad_binding)
             .expect("nonce remains unused");
         drop(token);
+        Ok(())
     }
 
     #[tokio::test]
-    async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() {
+    async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() -> FixtureResult<()>
+    {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:claim-lease",
             1,
@@ -3768,7 +3775,7 @@ mod final_use_dispatch_tests {
                     "occurrence:claim-lease",
                     "destination:cognitive-store",
                     payload,
-                ),
+                )?,
                 "memory.write",
                 payload,
             )
@@ -3792,16 +3799,18 @@ mod final_use_dispatch_tests {
         assert_eq!(renewed.attempt, 1);
         assert!(renewed.lease_expires_at_unix_ms > first.lease_expires_at_unix_ms);
         assert_ne!(renewed.claim_sha256, first.claim_sha256);
+        Ok(())
     }
 
     #[tokio::test]
-    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use()
+    -> FixtureResult<()> {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
         let old = ProductionDurableWriter::open(
             store.clone(),
-            production_authority(owner.clone()),
+            production_authority(owner.clone())?,
             &FinalUseVerifier,
             "production:h4:queued-handoff",
             1,
@@ -3816,7 +3825,7 @@ mod final_use_dispatch_tests {
                     "occurrence:queued-handoff",
                     "destination:cognitive-store",
                     handoff_payload,
-                ),
+                )?,
                 "memory.write",
                 handoff_payload,
             )
@@ -3841,7 +3850,7 @@ mod final_use_dispatch_tests {
             Sha256Digest::for_bytes(b"production-grant-next"),
             31,
             42,
-            now_unix_seconds().expect("clock") + 7_200,
+            now_unix_seconds()? + 7_200,
             ProductionAuthorityToken::from_verified_bytes(b"production-token-next".to_vec())
                 .expect("token"),
         )
@@ -3890,8 +3899,8 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-handoff",
-            test_nonce("final-use-handoff"),
-        );
+            test_nonce("final-use-handoff")?,
+        )?;
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await
@@ -3921,5 +3930,34 @@ mod final_use_dispatch_tests {
             max_attempt, 2,
             "successor takeover must advance the durable dispatch attempt"
         );
+        let (generation, payload): (i64, String) = sqlx::query_as(
+            "SELECT generation, payload_json FROM cognitive_local_events
+             WHERE occurrence_key = 'occurrence:queued-handoff'
+               AND event_kind = 'reconcile_committed'",
+        )
+        .fetch_one(&successor.store.pool)
+        .await?;
+        let expected = serde_json::json!({
+            "schema_version": 1,
+            "namespace": "production_terminal_observation",
+            "lease_id": result.request.lease_id,
+            "operation_id": result.request.occurrence_key,
+            "destination_id": result.request.operation_destination_id,
+            "operation_semantic_sha256": result.request.operation_semantic_sha256,
+            "payload_sha256": result.request.payload_sha256,
+            "operation_digest": result.request.operation_digest,
+            "observation": {
+                "disposition": "committed",
+                "receipt": "target:committed",
+            },
+        });
+        pretty_assertions::assert_eq!(
+            (
+                generation,
+                serde_json::from_str::<serde_json::Value>(&payload)?
+            ),
+            (2, expected)
+        );
+        Ok(())
     }
 }

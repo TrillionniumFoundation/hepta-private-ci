@@ -41,12 +41,16 @@ jobs:
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
+          LANE: ${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
           args=(--full-history --commit "$SOURCE_SHA")
           if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
             args+=(--commit "$BASE_SHA")
+          fi
+          if [[ "$LANE" == "base-merge" ]]; then
+            args+=(--with-blobs)
           fi
           python3 scripts/hepta_ci_history.py "${args[@]}"
       - name: Verify GitHub prospective merge ref matches this exact candidate

@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -544,16 +546,15 @@ fn run_agent_child() -> Result<()> {
             PathBuf::from(std::env::var_os("HEPTA_AGENT_HOME").context("HEPTA_AGENT_HOME")?);
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
-        let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        anyhow::ensure!(
+            request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                && request.spawn_generation == spawn_generation,
+            "fixture received a request for the wrong process generation"
+        );
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
-                ready: running,
+                ready: lifecycle.lifecycle == AgentLifecycle::Running,
                 fenced: false,
                 lifecycle: lifecycle.lifecycle,
                 process_id: std::process::id(),
@@ -561,6 +562,24 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain if lifecycle.lifecycle == AgentLifecycle::Draining => {
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unexpected Agentd fixture method {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

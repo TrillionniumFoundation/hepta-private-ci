@@ -522,14 +522,22 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
 }
 
 #[cfg(unix)]
-fn create_private_directory(path: &Path) -> std::io::Result<()> {
+pub(crate) fn create_private_directory(path: &Path) -> std::io::Result<()> {
     use std::os::unix::fs::DirBuilderExt;
 
     let mut builder = std::fs::DirBuilder::new();
     builder.mode(0o700).create(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_private_directory(path: &Path) -> std::io::Result<()> {
+    // Preserve exclusive staging creation while establishing the exact private
+    // owner expected by the original CognitiveStore Windows acquisition.
+    drop(codex_utils_path::create_private_state_directory(path)?);
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_private_directory(path: &Path) -> std::io::Result<()> {
     std::fs::create_dir(path)
 }

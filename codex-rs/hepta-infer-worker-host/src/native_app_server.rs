@@ -48,10 +48,10 @@ use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerRequestBinding;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
+use codex_hepta_codex_adapter::adapt_execution_port_request_v1;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
-use codex_hepta_codex_adapter::adapt_request;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
@@ -67,12 +67,15 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ExecutionPortIntentV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_execution_port.rs"]
+mod native_execution_port;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
@@ -82,11 +85,32 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_STOP_REASON_BYTES: usize = 4096;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+
+fn truncate_utf8(value: &str, maximum_bytes: usize) -> &str {
+    let mut end = value.len().min(maximum_bytes);
+    while !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    &value[..end]
+}
+
+fn append_stop_reason(existing: Option<String>, note: String) -> String {
+    let Some(existing) = existing.filter(|reason| !reason.is_empty()) else {
+        return truncate_utf8(&note, MAX_STOP_REASON_BYTES).to_string();
+    };
+    let note = truncate_utf8(&note, MAX_STOP_REASON_BYTES.saturating_sub(2));
+    let existing = truncate_utf8(
+        &existing,
+        MAX_STOP_REASON_BYTES.saturating_sub(note.len() + 2),
+    );
+    format!("{existing}; {note}")
+}
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -565,17 +589,20 @@ impl AppServerModelDriver {
         let adapted_at_ms = unix_time_ms()?;
         let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
-        let source_admission_digest: Digest32 = control
-            .native_record(request_id)
-            .ok_or("missing durable native admission")?
-            .request
-            .payload_digest
-            .parse()?;
+        // Read the original Control journal, not the Codex envelope, to
+        // establish source, operation and generation before final-use.
+        let original_port = native_execution_port::bind_reserved_native_port_v1(
+            control
+                .native_record(request_id)
+                .ok_or("missing durable native admission")?,
+            request_id,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+        )?;
+        let source_admission_digest = original_port.source_admission_digest;
         let adapter_intent = CodexOperationIntent {
-            operation_id: StableId::new(format!(
-                "native:{}",
-                Digest32::of_bytes(request_id.as_bytes())
-            ))?,
+            operation_id: original_port.operation_id.clone(),
             thread_id: StableId::new(started.thread.id.clone())?,
             method_id: StableId::new(TURN_START_METHOD_ID)?,
             payload_digest,
@@ -585,7 +612,7 @@ impl AppServerModelDriver {
                 .ok_or("native execution deadline overflow")?,
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
-                agent_generation: Generation::new(self.config.generation)?,
+                agent_generation: original_port.generation,
                 session_id: StableId::new(started.thread.session_id.clone())?,
                 client_user_message_id: StableId::new(request_id.to_string())?,
                 user_input_digest,
@@ -595,7 +622,19 @@ impl AppServerModelDriver {
                 connection_id,
             }),
         };
-        let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
+        // The backend-neutral borrowed intent is validated against the exact
+        // App Server turn/start intent before the original Final-use claim.
+        // This adds no executor, process hop, durable writer or capability.
+        let port_intent = ExecutionPortIntentV1 {
+            operation_id: &original_port.operation_id,
+            source_admission_digest: original_port.source_admission_digest,
+            generation: original_port.generation,
+            payload_digest,
+            lease_payload_digest: payload_digest,
+            deadline_ms: adapter_intent.deadline_ms,
+        };
+        let request_receipt =
+            adapt_execution_port_request_v1(adapted_at_ms, &port_intent, &adapter_intent)?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,
@@ -616,46 +655,28 @@ impl AppServerModelDriver {
             Digest32::from_array(verified_use.claimed_revocation_head_sha256()).to_string();
         let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
-        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(
-                    &turn_params.additional_context,
-                )?),
-                owner_context_digest,
-                codex_payload_digest: Some(payload_digest.to_string()),
-                codex_request_digest: Some(request_receipt.request_digest.to_string()),
-                app_server_version: Some(app_server_version.clone()),
-                protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
-                codex_source_admission_digest: Some(source_admission_digest.to_string()),
-                codex_home_digest: Some(codex_home_digest.to_string()),
-                codex_connection_id: Some(connection_id),
-                codex_session_id: Some(started.thread.session_id.clone()),
-                codex_deadline_ms: Some(adapter_intent.deadline_ms),
-                codex_authority_epoch: Some(authority_epoch),
-                codex_revocation_revision: Some(revocation_revision),
-                codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
-                codex_authority_witness_sha256: Some(authority_witness.clone()),
-            },
-        )?;
-        verify_persisted_dispatch_binding(
-            control,
-            request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
-        )?;
+        let expected = NativeDispatch {
+            thread_id: started.thread.id.clone(),
+            model_provider: started.model_provider.clone(),
+            context_digest: control::digest(&serde_json::to_vec(&turn_params.additional_context)?),
+            owner_context_digest,
+            codex_payload_digest: Some(payload_digest.to_string()),
+            codex_request_digest: Some(request_receipt.request_digest.to_string()),
+            app_server_version: Some(app_server_version.clone()),
+            protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
+            codex_source_admission_digest: Some(source_admission_digest.to_string()),
+            codex_home_digest: Some(codex_home_digest.to_string()),
+            codex_connection_id: Some(connection_id),
+            codex_session_id: Some(started.thread.session_id.clone()),
+            codex_deadline_ms: Some(adapter_intent.deadline_ms),
+            codex_authority_epoch: Some(authority_epoch),
+            codex_revocation_revision: Some(revocation_revision),
+            codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
+            codex_authority_witness_sha256: Some(authority_witness.clone()),
+        };
+        let (_, pre_effect_abort) =
+            control.dispatch_native_with_pre_effect_abort(request_id, expected.clone())?;
+        verify_persisted_dispatch_binding(control, request_id, &expected)?;
 
         if let Some(binding) = intelligence {
             let dispatched = match owner
@@ -913,17 +934,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -964,10 +984,7 @@ impl AppServerModelDriver {
                     .await
             {
                 let note = format!("Agentd indeterminate reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
         }
         if output.terminal_observed {
@@ -995,10 +1012,7 @@ impl AppServerModelDriver {
                     commit_intelligence_terminal(&owner, binding, revision, &output).await
             {
                 let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
         }
         Ok(output)
@@ -1149,40 +1163,24 @@ async fn send_authorized_turn_start(
 fn verify_persisted_dispatch_binding(
     control: &DurableInferenceControl,
     request_id: &str,
-    payload_digest: Digest32,
-    request_digest: Digest32,
-    source_admission_digest: Digest32,
-    codex_home_digest: Digest32,
-    connection_id: u64,
-    session_id: &str,
-    deadline_ms: u64,
-    authority_epoch: u64,
-    revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    expected: &NativeDispatch,
 ) -> Result<()> {
     let dispatch = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
         .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let payload_digest = payload_digest.to_string();
-    let request_digest = request_digest.to_string();
-    let source_admission_digest = source_admission_digest.to_string();
-    let codex_home_digest = codex_home_digest.to_string();
-    let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-        && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-        && dispatch.codex_source_admission_digest.as_deref()
-            == Some(source_admission_digest.as_str())
-        && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-        && dispatch.codex_connection_id == Some(connection_id)
-        && dispatch.codex_session_id.as_deref() == Some(session_id)
-        && dispatch.codex_deadline_ms == Some(deadline_ms)
-        && dispatch.codex_authority_epoch == Some(authority_epoch)
-        && dispatch.codex_revocation_revision == Some(revocation_revision)
-        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-        && dispatch.app_server_version.as_deref() == Some(app_server_version)
+    let exact = dispatch.codex_payload_digest == expected.codex_payload_digest
+        && dispatch.codex_request_digest == expected.codex_request_digest
+        && dispatch.codex_source_admission_digest == expected.codex_source_admission_digest
+        && dispatch.codex_home_digest == expected.codex_home_digest
+        && dispatch.codex_connection_id == expected.codex_connection_id
+        && dispatch.codex_session_id == expected.codex_session_id
+        && dispatch.codex_deadline_ms == expected.codex_deadline_ms
+        && dispatch.codex_authority_epoch == expected.codex_authority_epoch
+        && dispatch.codex_revocation_revision == expected.codex_revocation_revision
+        && dispatch.codex_revocation_head_sha256 == expected.codex_revocation_head_sha256
+        && dispatch.codex_authority_witness_sha256 == expected.codex_authority_witness_sha256
+        && dispatch.app_server_version == expected.app_server_version
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
     if !exact {
         return Err("durable runtime.codex dispatch binding changed before physical send".into());
@@ -1290,12 +1288,10 @@ async fn reconcile_intelligence_start_unknown(
             .await
     {
         let reason = output.stop_reason.take().unwrap_or_default();
-        output.stop_reason = Some(
-            format!("{reason}; Agentd reconciliation remains required: {error}")
-                .chars()
-                .take(1024)
-                .collect(),
-        );
+        output.stop_reason = Some(append_stop_reason(
+            Some(reason),
+            format!("Agentd reconciliation remains required: {error}"),
+        ));
     }
     output
 }
@@ -1429,14 +1425,58 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
+            // Delta text is output evidence, not an unbound stream of bytes.
+            // Check the real App Server connection/version/home before mutation.
+            if adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server delta witness: {error}"))?
+                .is_some()
+            {
+                return Err(
+                    "agent message delta unexpectedly produced a terminal receipt".to_string(),
+                );
+            }
             if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
                 return Err("output byte limit exceeded".to_string());
             }
             output.output.push_str(&delta.delta);
         }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item {
+                // A Responses API output_item.done can carry the entire text
+                // without any preceding text delta. Bind the real App Server
+                // connection before accepting that completed item as output.
+                // This is content observation, never terminality or authority.
+                let unexpected_terminal =
+                    adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                        .map_err(|error| format!("invalid App Server item witness: {error}"))?;
+                if unexpected_terminal.is_some() {
+                    return Err(
+                        "item/completed unexpectedly produced a terminal receipt".to_string()
+                    );
+                }
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("completed agent message exceeds output byte limit".to_string());
+                }
+                // Streaming deltas have already supplied this answer when
+                // present. Never count the completed item a second time.
+                if output.output.is_empty() {
+                    output.output.push_str(text);
+                }
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
+            // Usage is an observed provider fact. A matching thread/turn without
+            // the exact App Server transport identity cannot update it.
+            if adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server usage witness: {error}"))?
+                .is_some()
+            {
+                return Err("token usage unexpectedly produced a terminal receipt".to_string());
+            }
             let observed_tokens = u64::try_from(usage.token_usage.total.output_tokens)
                 .map_err(|_| "invalid negative provider usage".to_string())?;
             if output
@@ -1492,3 +1532,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_observed_output_tests.rs"]
+mod observed_output_tests;

@@ -1,14 +1,3 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::ffi::OsStr;
-use std::fs::FileTimes;
-use std::fs::OpenOptions;
-use std::path::Path;
-use std::path::PathBuf;
-use std::time::SystemTime;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_git_utils::GitSha;
 use codex_protocol::ThreadId;
 use codex_protocol::models::PermissionProfile;
@@ -23,6 +12,14 @@ use codex_rollout::RolloutReferenceIndex;
 use codex_rollout::ThreadItem;
 use codex_rollout::find_thread_names_by_ids;
 use codex_state::ThreadMetadata;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::ffi::OsStr;
+use std::fs::FileTimes;
+use std::fs::OpenOptions;
+use std::path::Path;
+use std::path::PathBuf;
+use std::time::SystemTime;
 
 use super::LocalThreadStore;
 use crate::StoredThread;
@@ -134,7 +131,8 @@ pub(super) fn stored_thread_from_rollout_item(
     let thread_id = item
         .thread_id
         .or_else(|| thread_id_from_rollout_path(item.path.as_path()))?;
-    let created_at = parse_rfc3339(item.created_at.as_deref()).unwrap_or_else(Utc::now);
+    let created_at =
+        parse_rfc3339(item.created_at.as_deref()).unwrap_or_else(codex_utils_time::Timestamp::now);
     let updated_at = parse_rfc3339(item.updated_at.as_deref()).unwrap_or(created_at);
     let recency_at = parse_rfc3339(item.recency_at.as_deref()).unwrap_or(updated_at);
     let archived_at = archived.then_some(updated_at);
@@ -223,7 +221,7 @@ pub(super) fn sqlite_thread_name(metadata: &ThreadMetadata) -> Option<String> {
 pub(super) async fn resolve_thread_section_metadata(
     state_db: &codex_state::StateRuntime,
     thread_ids: &[ThreadId],
-) -> HashMap<ThreadId, (Option<i64>, Option<DateTime<Utc>>)> {
+) -> HashMap<ThreadId, (Option<i64>, Option<codex_utils_time::Timestamp>)> {
     if thread_ids.is_empty() {
         return HashMap::new();
     }
@@ -286,10 +284,8 @@ pub(super) fn set_thread_name(thread: &mut StoredThread, name: String) {
     }
 }
 
-fn parse_rfc3339(value: Option<&str>) -> Option<DateTime<Utc>> {
-    DateTime::parse_from_rfc3339(value?)
-        .ok()
-        .map(|dt| dt.with_timezone(&Utc))
+fn parse_rfc3339(value: Option<&str>) -> Option<codex_utils_time::Timestamp> {
+    codex_utils_time::Timestamp::parse_from_rfc3339(value?).ok()
 }
 
 fn parse_legacy_sandbox_policy(value: &str) -> serde_json::Result<SandboxPolicy> {
